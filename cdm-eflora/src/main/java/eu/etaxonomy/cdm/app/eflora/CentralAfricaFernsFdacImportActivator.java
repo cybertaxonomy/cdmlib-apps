@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URI;
@@ -19,8 +18,8 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.dwca.in.DwcaDataImportConfiguratorBase.DatasetUse;
-import eu.etaxonomy.cdm.io.stream.mapping.IImportMapping.MappingType;
 import eu.etaxonomy.cdm.io.dwca.in.DwcaImportConfigurator;
+import eu.etaxonomy.cdm.io.stream.mapping.IImportMapping.MappingType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -28,9 +27,9 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @since 03.04.2012
- * @version 1.0
  */
 public class CentralAfricaFernsFdacImportActivator {
+
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CentralAfricaFernsFdacImportActivator.class);
 
@@ -60,11 +59,8 @@ public class CentralAfricaFernsFdacImportActivator {
 	//validate
 	static boolean validateRankConsistency = true;
 
-
 	//taxa
 	static final boolean doTaxa = true;
-
-
 
 	static final MappingType mappingType = MappingType.InMemoryMapping;
 
@@ -81,8 +77,7 @@ public class CentralAfricaFernsFdacImportActivator {
 		config.setSourceReferenceTitle(sourceReferenceTitle);
 		config.setUseSourceReferenceAsSec(useSourceReferenceAsSec);
 
-		CdmDefaultImport myImport = new CdmDefaultImport();
-
+		CdmDefaultImport<DwcaImportConfigurator> myImport = new CdmDefaultImport<>();
 
 		//...
 		if (true){
@@ -91,16 +86,13 @@ public class CentralAfricaFernsFdacImportActivator {
 			myImport.invoke(config);
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}
-
-
 	}
 
 	private Reference getSourceReference(String string) {
 		Reference result = ReferenceFactory.newGeneric();
-		result.setTitleCache(string);
+		result.setTitleCache(string, true);
 		return result;
 	}
-
 
 	//Scratchpads test
 	public static URI dwca_ferns() {
@@ -108,13 +100,8 @@ public class CentralAfricaFernsFdacImportActivator {
 		return sourceUrl;
 	}
 
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		CentralAfricaFernsFdacImportActivator me = new CentralAfricaFernsFdacImportActivator();
 		me.doImport(cdmDestination);
 	}
-
 }

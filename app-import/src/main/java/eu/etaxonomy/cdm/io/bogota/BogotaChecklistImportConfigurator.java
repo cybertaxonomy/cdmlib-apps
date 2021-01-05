@@ -1,4 +1,3 @@
-// $Id$
 /**
 * Copyright (C) 2017 EDIT
 * European Distributed Institute of Taxonomy
@@ -20,9 +19,9 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 /**
  * @author a.mueller
  * @since 21.04.2017
- *
  */
 public class BogotaChecklistImportConfigurator extends ExcelImportConfiguratorBase{
+
     private static final long serialVersionUID = 5988430626932820343L;
 
     private Reference secReference;

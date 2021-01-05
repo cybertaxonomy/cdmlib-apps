@@ -27,7 +27,6 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
- *
  * Import for Flora of Uzbekistan habitats.
  *
  * https://dev.e-taxonomy.eu/redmine/issues/9049
@@ -77,7 +76,6 @@ public class UzbekistanHabitatActivator {
         ImportResult result = myImport.invoke(config);
         System.out.println(result.createReport());
     }
-
 
     private URI fileName(){
         return URI.create("file:////BGBM-PESIHPC/Uzbekistan/" + fileName);

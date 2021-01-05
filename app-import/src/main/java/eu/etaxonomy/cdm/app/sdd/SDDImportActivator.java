@@ -6,7 +6,6 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.app.sdd;
 
 import java.net.URI;
@@ -31,7 +30,6 @@ import eu.etaxonomy.cdm.io.sdd.in.SDDImportConfigurator;
  * @author h.fradin
  * @author l.morris
  * @since 24.10.2008
- * @version 1.0
  */
 public class SDDImportActivator {
 	@SuppressWarnings("unused")
@@ -86,9 +84,7 @@ public class SDDImportActivator {
        //return loadedDataSource;
        return dataSource;
    }
-	/**
-	 * @param args
-	 */
+
 	public static void main(String[] args) {
 		//String sddSource = SDDSources.SDDImport_local(args[0]+args[1]);
 		//System.out.println("Start import from SDD("+ sddSource.toString() + ") ...");
@@ -126,8 +122,5 @@ public class SDDImportActivator {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-
 	}
-
-
 }

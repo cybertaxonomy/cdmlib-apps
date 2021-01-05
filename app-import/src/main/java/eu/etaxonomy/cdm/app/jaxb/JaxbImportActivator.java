@@ -1,12 +1,11 @@
 /**
  * Copyright (C) 2008 EDIT
- * European Distributed Institute of Taxonomy 
+ * European Distributed Institute of Taxonomy
  * http://www.e-taxonomy.eu
- * 
+ *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.app.jaxb;
 
 import java.io.File;
@@ -26,8 +25,8 @@ import eu.etaxonomy.cdm.io.jaxb.JaxbImportConfigurator;
 /**
  * @author a.babadshanjan
  * @since 25.09.2008
- * 
- * NOTE: the result may go into 
+ *
+ * NOTE: the result may go into
  * cdmlib-persistence\target\test-classes\eu\etaxonomy\cdm\h2\LocalH2
  */
 public class JaxbImportActivator {
@@ -36,10 +35,9 @@ public class JaxbImportActivator {
 //	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	//if you run from IDE it may run into {cdmlib-folder}\cdmlib-persistence\target\test-classes\eu\etaxonomy\cdm\h2\LocalH2\
 	private static final ICdmDataSource cdmDestination = CdmDestinations.localH2Armeria();
-	
-	
+
 	// Import:
-	private static String importFileNameString = 
+	private static String importFileNameString =
 		//"C:\\workspace\\cdmlib_2.2\\cdmlib-io\\src\\test\\resources\\eu\\etaxonomy\\cdm\\io\\jaxb\\export_test_app_import.xml";
 //		"file:/C:/export_test_app_import.xml";
 //	"file:/C:/opt/data/rl/201406041541-jaxb_export-Regenwuermer.xml";
@@ -48,14 +46,10 @@ public class JaxbImportActivator {
 //	"//PESIIMPORT3/redlist/standardliste/standardliste_jaxb.xml";
 	"//PESIIMPORT3/redlist/201411261506-jaxb_export-armeria_demo_local.xml";
 
-	
-	
-
-	
 
 	/** NUMBER_ROWS_TO_RETRIEVE = 0 is the default case to retrieve all rows.
-	 * For testing purposes: If NUMBER_ROWS_TO_RETRIEVE >0 then retrieve 
-	 *  as many rows as specified for agents, references, etc. 
+	 * For testing purposes: If NUMBER_ROWS_TO_RETRIEVE >0 then retrieve
+	 *  as many rows as specified for agents, references, etc.
 	 *  Only root taxa and no synonyms and relationships are retrieved. */
 	private static final int NUMBER_ROWS_TO_RETRIEVE = 0;
 
@@ -67,7 +61,7 @@ public class JaxbImportActivator {
 			if (importFileParamString !=null && destination != null){
 				URI importFileParam = new URI(importFileParamString);
 				jaxbImportConfigurator = JaxbImportConfigurator.NewInstance(importFileParam, destination);
-			}else if (destination != null){			
+			}else if (destination != null){
 				URI importFileName = new URI(importFileNameString);
 				jaxbImportConfigurator = JaxbImportConfigurator.NewInstance(importFileName, destination);
 			} else if (importFileParamString !=null ){
@@ -77,14 +71,14 @@ public class JaxbImportActivator {
 				URI importFileName = new URI(importFileNameString);
 				jaxbImportConfigurator = JaxbImportConfigurator.NewInstance(importFileName, cdmDestination);
 			}
-			
-			CdmDefaultImport<JaxbImportConfigurator> jaxbImport = 
+
+			CdmDefaultImport<JaxbImportConfigurator> jaxbImport =
 				new CdmDefaultImport<JaxbImportConfigurator>();
-	
-	
+
+
 			// invoke import
 			logger.debug("Invoking Jaxb import");
-	
+
 			jaxbImport.invoke(jaxbImportConfigurator, destination, true);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
@@ -98,39 +92,33 @@ public class JaxbImportActivator {
 		}else {
 			jaxbImportConfigurator = JaxbImportConfigurator.NewInstance(importUri, cdmDestination);
 		}
-		
-		CdmDefaultImport<JaxbImportConfigurator> jaxbImport = 
-			new CdmDefaultImport<JaxbImportConfigurator>();
 
+		CdmDefaultImport<JaxbImportConfigurator> jaxbImport =
+			new CdmDefaultImport<JaxbImportConfigurator>();
 
 		// invoke import
 		logger.debug("Invoking Jaxb import");
 
 		jaxbImport.invoke(jaxbImportConfigurator, destination, true);
-
 	}
 
-	
 	private CdmApplicationController initDb(ICdmDataSource db) {
-
 		// Init source DB
 		CdmApplicationController appCtrInit = null;
-
 		appCtrInit = TestDatabase.initDb(db, DbSchemaValidation.CREATE, false);
-
 		return appCtrInit;
 	}
 
-	
 	// Load test data to DB
 	private void loadTestData(CdmApplicationController appCtrInit) {
 
 		TestDatabase.loadTestData("", appCtrInit);
 	}
-	
+
 	public static String chooseFile(String[] args) {
-		if(args == null)
-			return null;
+		if(args == null) {
+            return null;
+        }
 		for (String dest: args){
 			if (dest.endsWith(".xml")){
 				return args[0];
@@ -139,9 +127,6 @@ public class JaxbImportActivator {
 		return null;
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 
 		JaxbImportActivator jia = new JaxbImportActivator();
@@ -157,5 +142,4 @@ public class JaxbImportActivator {
 		}
 		jia.invokeImport(uri, destination);
 	}
-
 }

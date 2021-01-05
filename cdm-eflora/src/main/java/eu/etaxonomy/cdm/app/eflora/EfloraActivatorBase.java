@@ -1,6 +1,11 @@
 /**
- *
- */
+* Copyright (C) 2009 EDIT
+* European Distributed Institute of Taxonomy
+* http://www.e-taxonomy.eu
+*
+* The contents of this file are subject to the Mozilla Public License Version 1.1
+* See LICENSE.TXT at the top of this package for the full license terms.
+*/
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URI;
@@ -31,7 +36,6 @@ import eu.etaxonomy.cdm.model.term.TermTree;
 
 /**
  * @author a.mueller
- *
  */
 public class EfloraActivatorBase {
 	private static final Logger logger = Logger.getLogger(EfloraActivatorBase.class);
@@ -39,7 +43,7 @@ public class EfloraActivatorBase {
 	protected MarkupImportConfigurator config;
 	protected CdmDefaultImport<MarkupImportConfigurator> myImport;
 	protected IIoObserver observer = new LoggingIoObserver();
-	protected Set<IIoObserver> observerList = new HashSet<IIoObserver>();
+	protected Set<IIoObserver> observerList = new HashSet<>();
 
 	protected MarkupImportConfigurator doImport(URI source, ICdmDataSource cdmDestination, CHECK check, boolean h2ForCheck){
 		observerList.add(observer);
@@ -94,7 +98,7 @@ public class EfloraActivatorBase {
 		}
 
 		//save tree
-		app.getFeatureTreeService().saveOrUpdate(tree);
+		app.getTermTreeService().saveOrUpdate(tree);
 
 		System.out.println("End creating automated Feature Tree");
 
@@ -102,22 +106,17 @@ public class EfloraActivatorBase {
 	}
 
 	private Map<UUID,Feature> makeUuidMap(Collection<UUID> uuids, ITermService termService){
-		HashSet<UUID> uuidSet = new HashSet<UUID>();
+		HashSet<UUID> uuidSet = new HashSet<>();
 		uuidSet.addAll(uuids);
 		List<Feature> featureSet = (List)termService.find(uuidSet);
 
-		Map<UUID,Feature> result = new HashMap<UUID, Feature>();
+		Map<UUID,Feature> result = new HashMap<>();
 		for (Feature feature : featureSet){
 			result.put(feature.getUuid(), feature);
 		}
 		return result;
 	}
 
-
-	/**
-	 * @param markupConfig
-	 * @param myImport
-	 */
 	protected void executeVolume(URI source, boolean include) {
 		if (include){
 			System.out.println("\nStart import from ("+ source.toString() + ") ...");

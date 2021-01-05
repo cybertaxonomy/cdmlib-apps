@@ -28,7 +28,6 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
- *
  * Import for Flora of Uzbekistan taxa.
  *
  * https://dev.e-taxonomy.eu/redmine/issues/8996
@@ -80,7 +79,6 @@ public class UzbekistanTaxonActivator {
         ImportResult result = myImport.invoke(config);
         System.out.println(result.createReport());
     }
-
 
     private URI uzbekistanChecklist(){
         return URI.create("file:////BGBM-PESIHPC/Uzbekistan/" + fileName);

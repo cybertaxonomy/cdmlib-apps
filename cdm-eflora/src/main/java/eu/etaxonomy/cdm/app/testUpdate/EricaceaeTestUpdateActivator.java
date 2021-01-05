@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.testUpdate;
 
 import java.net.URI;
@@ -37,9 +36,9 @@ import eu.etaxonomy.cdm.model.term.TermTree;
 /**
  * @author a.mueller
  * @since 20.06.2008
- * @version 1.0
  */
 public class EricaceaeTestUpdateActivator {
+
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(EricaceaeTestUpdateActivator.class);
 
@@ -89,11 +88,9 @@ public class EricaceaeTestUpdateActivator {
 		config.setDoPrintKeys(doPrintKeys);
 		config.setDbSchemaValidation(hbm2dll);
 
-
 		CdmDefaultImport<EfloraImportConfigurator> myImport = new CdmDefaultImport<EfloraImportConfigurator>();
 
 		ICdmRepository app = myImport.getCdmAppController();
-
 
 		//
 		if (includeEricaceae){
@@ -113,22 +110,15 @@ public class EricaceaeTestUpdateActivator {
 			}
 		}
 		app.commitTransaction(tx);
-
-
-
 	}
 
-	/**
-	 * @param app
-	 * @param tree
-	 */
 	private void moveChild(ICdmRepository app, TermTree<Feature> tree) {
 		TermNode<Feature> root = tree.getRoot();
 		int count = root.getChildCount();
 		TermNode<Feature> lastChild = root.getChildAt(count - 1);
 		root.removeChild(lastChild);
 		root.addChild(lastChild, 1);
-		app.getFeatureTreeService().saveOrUpdate(tree);
+		app.getTermTreeService().saveOrUpdate(tree);
 	}
 
 	private Reference getSourceReference(String string) {
@@ -137,14 +127,8 @@ public class EricaceaeTestUpdateActivator {
 		return result;
 	}
 
-
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		EricaceaeTestUpdateActivator me = new EricaceaeTestUpdateActivator();
 		me.doImport(cdmDestination);
 	}
-
 }

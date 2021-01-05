@@ -6,7 +6,6 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.app.jaxb;
 
 import java.io.File;
@@ -54,8 +53,6 @@ public class JaxbExportActivator {
 //		String username = "edit";
 //		sourceParam = CdmDataSource.NewMySqlInstance(server, database, username, AccountStore.readOrStorePassword(server, database, username, null));
 
-
-
 		JaxbExportConfigurator jaxbExportConfigurator;
 		if (file !=null && sourceParam != null){
 			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(sourceParam, file);
@@ -67,10 +64,8 @@ public class JaxbExportActivator {
 			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(cdmSource, new File(exportFileName));
 		}
 
-
 		CdmDefaultExport<JaxbExportConfigurator> jaxbExport =
 			new CdmDefaultExport<JaxbExportConfigurator>();
-
 
 		// invoke export
 		logger.debug("Invoking Jaxb export");
@@ -89,27 +84,17 @@ public class JaxbExportActivator {
 		return null;
 	}
 
-
-
-
 	private CdmApplicationController initDb(ICdmDataSource db) {
-
 		// Init source DB
 		CdmApplicationController appCtrInit = TestDatabase.initDb(db, DbSchemaValidation.VALIDATE, false);
-
 		return appCtrInit;
 	}
-
 
 	// Load test data to DB
 	private void loadTestData(CdmApplicationController appCtrInit) {
 		TestDatabase.loadTestData("", appCtrInit);
 	}
 
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 
 		JaxbExportActivator sc = new JaxbExportActivator();
@@ -132,7 +117,5 @@ public class JaxbExportActivator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
-
 }

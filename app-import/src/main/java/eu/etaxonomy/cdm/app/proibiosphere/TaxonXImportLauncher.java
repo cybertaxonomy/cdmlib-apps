@@ -264,9 +264,7 @@ public class TaxonXImportLauncher {
                 }
                 documentMap.put(docId, uritmp);
             }
-
         return documentMap;
-
     }
 
 	private static void checkTreatmentAvailable(Map<String, List<String>> documents, Map<String, List<String>> docs)

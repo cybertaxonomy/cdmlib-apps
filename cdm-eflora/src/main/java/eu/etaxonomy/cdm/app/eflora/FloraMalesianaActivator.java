@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URI;
@@ -45,8 +44,6 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-
-
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_malesiana_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_malesiana_production();
@@ -437,12 +434,10 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		"Chromosomes",
 	};
 
-
 	private static String [] habitatEcologyList = new String[]{
 		"Habitat",
 		"Habitat & Ecology"
 	};
-
 
 	private static String [] generellDescriptionsUpToAnatomyList = new String[]{
 		"Fossils",
@@ -450,7 +445,6 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		"Morphology",
 		"Vegetative morphology and anatomy",
 	};
-
 
 	private static String [] anatomySubfeatureList = new String[]{
 		"Leaf anatomy",
@@ -471,7 +465,6 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		"Phytochemistry and Chemotaxonomy",
 	};
 
-
 	private static String [] phytoChemoSubFeaturesList = new String[]{
 		"Alkaloids",
 		"Iridoid glucosides",
@@ -481,7 +474,6 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		"Chemotaxonomy",
 	};
 
-
 	private static String [] generellDescriptionsFromPhytoChemoList = new String[]{
 		"Phytochemistry",
 		"Taxonomy",
@@ -489,7 +481,6 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		"cultivation",
 		"Notes"
 	};
-
 
 	private static String [] descriptionFeatureList = new String[]{
 		"lifeform",
@@ -577,9 +568,6 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		"figure",
 		"fig",
 		"figs",
-
-
-
 	};
 
 	public TermNode<Feature> addFeatureNodesByStringList(String[] featureStringList,
@@ -601,15 +589,9 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		return lastChild;
 	}
 
-
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		FloraMalesianaActivator me = new FloraMalesianaActivator();
 		me.doImport(cdmDestination);
 		System.exit(0);
 	}
-
 }

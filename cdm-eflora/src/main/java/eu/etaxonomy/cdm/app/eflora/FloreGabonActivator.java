@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URI;
@@ -89,14 +88,10 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	static final URI fdg44 = EfloraSources.fdg_44();
 	static final URI fdg45 = EfloraSources.fdg_45();
 
-
-
-
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_production();
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-
 
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("ee688973-2595-4d4d-b11e-6df71e96a5c2");
@@ -112,14 +107,12 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 
 	static boolean doPrintKeys = false;
 
-
 	private boolean replaceStandardKeyTitles = true;
 
 	//taxa
 	static final boolean doTaxa = true;
 
 	static final boolean reuseState = true;
-
 
 	//if true, use inverse include information
 	private boolean inverseInclude = true;
@@ -540,9 +533,6 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 		"figure",
 		"fig",
 		"figs",
-
-
-
 	};
 
 	public TermNode<Feature> addFeatureNodesByStringList(String[] featureStringList,
@@ -565,11 +555,6 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 		return lastChild;
 	}
 
-
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		FloreGabonActivator me = new FloreGabonActivator();
 		me.doImport(cdmDestination);

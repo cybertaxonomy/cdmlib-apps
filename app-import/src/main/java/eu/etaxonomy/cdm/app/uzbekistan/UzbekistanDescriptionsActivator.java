@@ -77,7 +77,6 @@ public class UzbekistanDescriptionsActivator {
         System.out.println(result.createReport());
     }
 
-
     private URI fileName(){
         return URI.create("file:////BGBM-PESIHPC/Uzbekistan/" + fileName);
     }

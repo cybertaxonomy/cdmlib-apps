@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.phycobank;
 
 import java.io.File;
@@ -28,11 +27,9 @@ import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
-
 /**
  * @author a.kohlbecker
  * @since Jul 26, 2016
- *
  */
 public class IAPTActivator {
     private static final Logger logger = Logger.getLogger(IAPTActivator.class);
@@ -112,14 +109,8 @@ public class IAPTActivator {
         doSingleSource(fileURI(), config, myImport);
 
         System.exit(0);
-
     }
 
-    /**
-     * @param source
-     * @param config
-     * @param myImport
-     */
     private void doSingleSource(URI source, IAPTImportConfigurator config, CdmDefaultImport<IAPTImportConfigurator> myImport) {
         config.setSource(source);
         String fileName = source.toString();
@@ -150,9 +141,6 @@ public class IAPTActivator {
         return f.toURI();
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         if(args.length == 0){
             logger.warn("Missing argument, valid values are: 'import' , 'createRegistrations'");
@@ -160,5 +148,4 @@ public class IAPTActivator {
         IAPTActivator me = new IAPTActivator();
         me.doImport(cdmDestination);
     }
-
 }

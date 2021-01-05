@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.floraMalesiana;
 
 import java.net.URI;
@@ -39,17 +38,12 @@ public class FloraMalesianaImportConfigurator extends EfloraImportConfigurator  
 		ioClassList = new Class[]{
 			EfloraTaxonImport.class
 		};
-	};
-
+	}
 
 	private FloraMalesianaImportConfigurator() {
 		super();
 	}
 
-	/**
-	 * @param url
-	 * @param destination
-	 */
 	private FloraMalesianaImportConfigurator(URI uri, ICdmDataSource destination) {
 		super(uri, destination, defaultTransformer);
 		this.setClassificationTitle(classificationTitle);
@@ -60,5 +54,4 @@ public class FloraMalesianaImportConfigurator extends EfloraImportConfigurator  
 	public FloraMalesianaImportState getNewState() {
 		return new FloraMalesianaImportState(this);
 	}
-
 }

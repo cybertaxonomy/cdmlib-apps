@@ -33,7 +33,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author a.mueller
  * @since 27.02.2017
- *
  */
 public class NepenthaceIpniActivator {
 
@@ -91,8 +90,6 @@ public class NepenthaceIpniActivator {
 
       app.commitTransaction(txStatus);
 
-
-
 ////      CSVReader csvReader = new CSVReader(reader);
 //
 //      List<String[]> allLines = csvReader.readAll();
@@ -102,47 +99,33 @@ public class NepenthaceIpniActivator {
 //      }
    }
 
-/**
- * @param app
- * @param ipniSec
- * @param classification
- * @param ipniService
- * @param rank
- * @param namesConfig
- */
-private void doSingleImport(CdmApplicationController app, Reference ipniSec, Classification classification,
+    private void doSingleImport(CdmApplicationController app, Reference ipniSec, Classification classification,
         IpniServiceNamesConfigurator namesConfig, ImportDeduplicationHelper<?> deduplicationHelper) {
 
-    IpniService ipniService = new IpniService();//(IpniService)app.getBean("ipniService");
+        IpniService ipniService = new IpniService();//(IpniService)app.getBean("ipniService");
 
-    Rank rank = null;
-      List<IBotanicalName> names = ipniService.getNamesAdvanced(null, "Nepenthes", null, null, null, null,
+        Rank rank = null;
+        List<IBotanicalName> names = ipniService.getNamesAdvanced(null, "Nepenthes", null, null, null, null,
               null, null, rank, namesConfig, app);
 
-      System.out.println(names.size());
+        System.out.println(names.size());
 
-      List<TaxonBase> taxaToSave  = new ArrayList<>();
-      for (IBotanicalName name : names){
+        List<TaxonBase> taxaToSave  = new ArrayList<>();
+        for (IBotanicalName name : names){
 //          System.out.println(name.getTitleCache());
-          deduplicationHelper.replaceAuthorNamesAndNomRef(null, name);
-          Taxon taxon = Taxon.NewInstance(name, ipniSec);
-          classification.addChildTaxon(taxon, null, null);
+            deduplicationHelper.replaceAuthorNamesAndNomRef(null, name);
+            Taxon taxon = Taxon.NewInstance(name, ipniSec);
+            classification.addChildTaxon(taxon, null, null);
 //          app.getTaxonService().saveOrUpdate(taxon);
-          taxaToSave.add(taxon);
-      }
-      app.getTaxonService().saveOrUpdate(taxaToSave);
-      app.getClassificationService().saveOrUpdate(classification);
-}
+            taxaToSave.add(taxon);
+        }
+        app.getTaxonService().saveOrUpdate(taxaToSave);
+        app.getClassificationService().saveOrUpdate(classification);
+    }
 
-
-  /**
-   * @param args
-   */
-  public static void main(String[] args) {
-      NepenthaceIpniActivator me = new NepenthaceIpniActivator();
-      me.doImport(cdmDestination);
-      System.exit(0);
-  }
-
-
+    public static void main(String[] args) {
+        NepenthaceIpniActivator me = new NepenthaceIpniActivator();
+        me.doImport(cdmDestination);
+        System.exit(0);
+    }
 }

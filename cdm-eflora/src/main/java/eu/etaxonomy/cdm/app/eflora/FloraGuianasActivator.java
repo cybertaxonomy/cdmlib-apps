@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URI;
@@ -64,7 +63,6 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	static final URI fotg29 = EfloraSources.fotg_29();
 	static final URI fotg30 = EfloraSources.fotg_30();
 
-
 	private boolean inverseInclude = false;
 
 	private boolean includeFotg1 = false;
@@ -115,8 +113,6 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	static final boolean doTaxa = true;
 
 	static final boolean reuseState = true;
-
-
 
 	private boolean replaceStandardKeyTitles = true;
 
@@ -427,11 +423,6 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 		return lastChild;
 	}
 
-
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		FloraGuianasActivator me = new FloraGuianasActivator();
 		me.doImport(cdmDestination);

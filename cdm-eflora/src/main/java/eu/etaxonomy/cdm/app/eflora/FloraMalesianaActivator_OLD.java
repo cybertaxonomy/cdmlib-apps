@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URI;
@@ -35,7 +34,6 @@ import eu.etaxonomy.cdm.model.term.TermTree;
 /**
  * @author a.mueller
  * @since 20.06.2008
- * @version 1.0
  */
 public class FloraMalesianaActivator_OLD {
 	private static final Logger logger = Logger.getLogger(FloraMalesianaActivator_OLD.class);
@@ -47,13 +45,11 @@ public class FloraMalesianaActivator_OLD {
 	static final URI fmSource13_1 = EfloraSources.fm_13_1_local();
 	static final URI fmSource13_2 = EfloraSources.fm_13_2_local();
 
-
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM3();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_malesiana_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_malesiana_production();
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-
 
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("168df0c6-6429-484c-b26f-ded1f7e44bd9");
@@ -287,35 +283,25 @@ public class FloraMalesianaActivator_OLD {
 		"figure",
 		"fig",
 		"figs",
-
-
-
-
 	};
 
 	public void addFeatureNodesByStringList(String[] featureStringList, TermNode<Feature> root, IInputTransformer transformer, ITermService termService){
 		try {
 			for (String featureString : featureStringList){
-			UUID featureUuid;
-			featureUuid = transformer.getFeatureUuid(featureString);
-			Feature feature = (Feature)termService.find(featureUuid);
-			if (feature != null){
-				root.addChild(feature);
-			}
-		}
+    			UUID featureUuid;
+    			featureUuid = transformer.getFeatureUuid(featureString);
+    			Feature feature = (Feature)termService.find(featureUuid);
+    			if (feature != null){
+    				root.addChild(feature);
+    			}
+    		}
 		} catch (UndefinedTransformerMethodException e) {
 			logger.error("getFeatureUuid is not implemented in transformer. Features could not be added");
 		}
 	}
 
-
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		FloraMalesianaActivator_OLD me = new FloraMalesianaActivator_OLD();
 		me.doImport(cdmDestination);
 	}
-
 }

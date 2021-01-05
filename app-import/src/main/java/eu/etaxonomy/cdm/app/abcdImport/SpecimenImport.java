@@ -6,8 +6,8 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.app.abcdImport;
+
 import java.io.File;
 import java.net.URI;
 
@@ -31,16 +31,11 @@ public class SpecimenImport {
 
     final static String xmlSource = "/home/pkelbert/Documents/Proibiosphere/Presentations/Demo/ABCD/calvum.xml";
 
-
     static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.makeDestination(DatabaseTypeEnum.H2, "localhost", "abcd_import_test", 8082, "root", "root");
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
-
 
         URI source;
         try {
@@ -50,7 +45,7 @@ public class SpecimenImport {
             System.out.println("Start import from  ABCD Specimen data("+ source.toString() + ") ...");
 
             ICdmDataSource destination = cdmDestination;
-            Abcd206ImportConfigurator specimenImportConfigurator = Abcd206ImportConfigurator.NewInstance(source,  destination);
+            Abcd206ImportConfigurator specimenImportConfigurator = Abcd206ImportConfigurator.NewInstance(source, destination);
 
 ////            specimenImportConfigurator.setClassificationName(specimenImportConfigurator.getSourceReferenceTitle());
             specimenImportConfigurator.setSourceSecId("specimen");
@@ -76,7 +71,5 @@ public class SpecimenImport {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
 }

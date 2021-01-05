@@ -6,7 +6,6 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.app.proibiosphere;
 import java.io.File;
 import java.net.URI;
@@ -35,15 +34,10 @@ public class SpecimenImportActivator {
 
     //	final static String xmlSource = "C:\\localCopy\\eclipse\\cdmlib\\app-import\\src\\main\\resources\\specimenABCD\\CDMtabular9c04a474e2_23_09_08.xls";
 
-
-
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_proibiosphere_chenopodium();
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         URI source;
         try {
@@ -87,7 +81,5 @@ public class SpecimenImportActivator {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-
     }
-
 }

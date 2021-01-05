@@ -165,8 +165,6 @@ public class PalmaeImageImport extends AbstractImageImporter {
 		return result;
 	}
 
-
-
 	@Override
     protected void invokeImageImport (ImageImportState state){
 
@@ -324,7 +322,6 @@ public class PalmaeImageImport extends AbstractImageImporter {
 		if (artist.contains(",")){
 			String [] artistSplits = artist.split(",");
 			artist = artistSplits[0];
-
 		}
 
 		try{
@@ -356,5 +353,4 @@ public class PalmaeImageImport extends AbstractImageImporter {
 	protected void doCount(int count, int modCount, String pluralString){
 		if ((count % modCount ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}
-
 }

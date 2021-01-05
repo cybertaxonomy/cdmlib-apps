@@ -6,7 +6,6 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.app.wp6.palmae;
 
 import java.io.File;
@@ -26,7 +25,6 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  *
  * @author a.mueller
  * @since 18.07.2011
- *
  */
 public class UseSummaryActivator {
 	private static final Logger logger = Logger.getLogger(UseSummaryActivator.class);
@@ -59,6 +57,5 @@ public class UseSummaryActivator {
 //		} catch (URISyntaxException e) {
 //			e.printStackTrace();
 //		}
-
     }
 }

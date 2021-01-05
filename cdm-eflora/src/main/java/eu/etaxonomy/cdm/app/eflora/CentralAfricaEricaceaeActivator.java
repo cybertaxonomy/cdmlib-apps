@@ -48,7 +48,6 @@ import eu.etaxonomy.cdm.model.term.TermType;
 /**
  * @author a.mueller
  * @since 20.06.2008
- * @version 1.0
  */
 public class CentralAfricaEricaceaeActivator {
 	private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeActivator.class);

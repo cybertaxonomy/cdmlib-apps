@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.caryophyllales;
 
 import java.io.File;
@@ -24,8 +23,8 @@ import eu.etaxonomy.cdm.app.sdd.SDDSources;
  * @since May 2014
  */
 public class TcsSources {
-	private static final Logger logger = Logger.getLogger(TcsSources.class);
 
+	private static final Logger logger = Logger.getLogger(TcsSources.class);
 
 	public static URI normalExplicit(){
 		try {
@@ -50,7 +49,6 @@ public class TcsSources {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	public static String arecaceae(){
@@ -99,10 +97,7 @@ public class TcsSources {
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
-
 	}
-
-
 
 	public static String tcsXml_localPath(){
 		File file = new File("C:\\localCopy\\Data\\tdwg\\Cichorium_tcs.xml");
@@ -114,7 +109,6 @@ public class TcsSources {
 			throw new RuntimeException(e);
 		}
 		return sourceUrl;
-
 	}
 
 	public static String tcsXmlTest_local2(){
@@ -131,9 +125,5 @@ public class TcsSources {
 		URL resourceUrl = new TcsSources().getClass().getResource(sourceUrl);
 		logger.debug("TcsRdfSource " +  resourceUrl.toString());
 		return resourceUrl.toString();
-
 	}
-
-
-
 }

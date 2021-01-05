@@ -1,4 +1,3 @@
-// $Id$
 /**
 * Copyright (C) 2017 EDIT
 * European Distributed Institute of Taxonomy
@@ -19,7 +18,6 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 /**
  * @author a.mueller
  * @since 21.04.2017
- *
  */
 public class BogotaSpecimenImportConfigurator extends ExcelImportConfiguratorBase{
 
@@ -31,34 +29,19 @@ public class BogotaSpecimenImportConfigurator extends ExcelImportConfiguratorBas
     private Reference secReference;
     private boolean onlyNonCdmTaxa;
 
-    /**
-     * @param source
-     * @param cdmDestination
-     * @return
-     */
     public static BogotaSpecimenImportConfigurator NewInstance(URI source, ICdmDataSource destination) {
         return new BogotaSpecimenImportConfigurator(source, destination);
     }
 
-    /**
-     * @param uri
-     * @param destination
-     */
     private BogotaSpecimenImportConfigurator(URI uri, ICdmDataSource destination) {
         super(uri, destination);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ImportStateBase getNewState() {
         return new SimpleExcelSpecimenImportState<>(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
@@ -96,5 +79,4 @@ public class BogotaSpecimenImportConfigurator extends ExcelImportConfiguratorBas
     public void setOnlyNonCdmTaxa(boolean onlyNonCdmTaxa) {
         this.onlyNonCdmTaxa = onlyNonCdmTaxa;
     }
-
 }

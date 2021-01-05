@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 /**
  * @author a.mueller
  * @since 09.06.2010
- *
  */
 public class EfloraSources {
 	@SuppressWarnings("unused")
