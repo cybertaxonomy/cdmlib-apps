@@ -49,7 +49,7 @@ public class CentaureaCloneActivator {
                 centaureaTaxonNodeUuid, newClassificationTitle);
         cloneConfig.setReuseNames(false);
 
-        UpdateResult result = app.getClassificationService().cloneClassification(cloneConfig);
+        UpdateResult result = app.getTaxonNodeService().cloneSubtree(cloneConfig);
         result.getCdmEntity();
     }
 
