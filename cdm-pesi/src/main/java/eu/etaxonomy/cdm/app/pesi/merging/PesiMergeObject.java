@@ -1,5 +1,8 @@
 package eu.etaxonomy.cdm.app.pesi.merging;
 
+import java.util.List;
+
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.persistence.dto.TaxonNodeDto;
 
 public class PesiMergeObject {
@@ -11,8 +14,6 @@ public class PesiMergeObject {
 	private String uuidTaxon;
 
 	private String idTaxon;
-
-	private String uuidTaxonNode;
 
 	private String idInSource;
 
@@ -30,7 +31,13 @@ public class PesiMergeObject {
 
 	private TaxonNodeDto kingdom;
 
-	private TaxonNodeDto family;
+	private TaxonNodeDto tclass;
+
+	private TaxonNodeDto order;
+
+    private TaxonNodeDto family;
+
+	private List<TaxonNodeDto> higherClassification;
 
 	private String parentString;
 
@@ -127,6 +134,29 @@ public class PesiMergeObject {
         this.phylum = phylum;
     }
 
+    //class and getClass are part of java core therefore use other name
+    public TaxonNodeDto getTClass() {
+        return tclass;
+    }
+    public String getClassCache() {
+        return tclass == null? null : tclass.getNameCache();
+    }
+    public void setTClass(TaxonNodeDto tclass) {
+        this.tclass = tclass;
+    }
+
+    //order
+    public TaxonNodeDto getOrder() {
+        return order;
+    }
+    public String getOrderCache() {
+        return order == null? null : order.getNameCache();
+    }
+    public void setOrder(TaxonNodeDto order) {
+        this.order = order;
+    }
+
+    //family
     public TaxonNodeDto getFamily() {
         return family;
     }
@@ -137,30 +167,50 @@ public class PesiMergeObject {
         this.family = family;
     }
 
+    //classification
+    public List<TaxonNodeDto> getHigherClassification() {
+        return higherClassification;
+    }
+    public String getClassificationCache() {
+        return higherClassification == null? null : classificationCache();
+    }
+    public void setHigherClassification(List<TaxonNodeDto> higherClassification) {
+        this.higherClassification = higherClassification;
+    }
+
+    private String classificationCache() {
+        String result = "";
+        for (TaxonNodeDto dto : this.higherClassification){
+            result = CdmUtils.concat("-", result, dto.getNameCache());
+        }
+        return result;
+    }
+
+    //taxon uuid
     public String getUuidTaxon() {
         return uuidTaxon;
     }
-
     public void setUuidTaxon(String uuidTaxon) {
         this.uuidTaxon = uuidTaxon;
     }
 
+    //taxon id
     public String getIdTaxon() {
         return idTaxon;
     }
-
     public void setIdTaxon(String idTaxon) {
         this.idTaxon = idTaxon;
     }
 
+    //source uuid
     public String getUuidSource() {
         return uuidSource;
     }
-
     public void setUuidSource(String uuidSource) {
         this.uuidSource = uuidSource;
     }
 
+    //nom.ref.
     public String getNomenclaturalReference() {
         return nomenclaturalReference;
     }

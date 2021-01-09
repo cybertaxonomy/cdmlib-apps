@@ -111,7 +111,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         }
         if (commit){
             app.commitTransaction(tx);
-            if (taxonInformation.taxonToUse == 1 && taxonInformation.nameToUse == 1){
+            if (isAutomatedAnswer(taxonInformation)){
                 removeTaxon(taxonInformation.taxon2);
             }else if (booleanAnswer("Information moved. Delete old taxon")){
                 removeTaxon(taxonInformation.taxonToUse == 2 ? taxonInformation.taxon1 : taxonInformation.taxon2);
@@ -120,6 +120,10 @@ public class PesiCommandLineMerge extends PesiMergeBase {
             app.rollbackTransaction(tx);
         }
         return commit;
+    }
+
+    private boolean isAutomatedAnswer(TaxonInformation taxonInformation) {
+        return taxonInformation.taxonToUse == 2 && taxonInformation.nameToUse == 2 && false;
     }
 
     private class TaxonInformation{
@@ -206,6 +210,10 @@ public class PesiCommandLineMerge extends PesiMergeBase {
     private boolean compareTaxa(TaxonInformation taxonInformation) {
         TaxonBase<?> removeTaxon = taxonInformation.taxon2;
         TaxonBase<?> stayTaxon = taxonInformation.taxon1;
+        if(removeTaxon.getId() == stayTaxon.getId()){
+            logger.warn("Same taxon: "+  removeTaxon.getTitleCache());
+            return false;
+        }
         String nc1 = removeTaxon.getName().getNameCache();
         String nc2 = stayTaxon.getName().getNameCache();
 
@@ -213,7 +221,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         String ft2 = stayTaxon.getName().getFullTitleCache();
         System.out.println("Remove " + getStatusStr(removeTaxon) + ft1);
         System.out.println("Stay   " + getStatusStr(stayTaxon) + ft2);
-        boolean isStandard = taxonInformation.taxonToUse == 1 && taxonInformation.nameToUse == 1;
+        boolean isStandard = isAutomatedAnswer(taxonInformation);
         if (!nc1.equals(nc2)){
             return booleanAnswer("Name Cache differs!!! Do you really want to merge???");
         }else if (!ft1.equals(ft2)){
@@ -307,7 +315,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
             mergeHybridRelationships(removeName, stayName);
             mergeNameDescriptions(removeName, stayName);
 
-            if(taxonInformation.taxonToUse == 1 && taxonInformation.nameToUse == 1){
+            if(isAutomatedAnswer(taxonInformation)){
                 return true;
             }else{
                 return booleanAnswer("Commit moved information");
@@ -393,6 +401,11 @@ public class PesiCommandLineMerge extends PesiMergeBase {
             }
         }
         TaxonNode removeNode = removeTaxon.getTaxonNodes().iterator().next();
+        if(removeNode.getChildNodes().isEmpty()){
+            return true;
+        }
+
+        stayTaxon = reallyAccTaxon(stayTaxon);
         TaxonNode stayNode = stayTaxon.getTaxonNodes().iterator().next();
         Set<UUID> removeNodeChildrenUuids = removeNode.getChildNodes()
                 .stream().map(tn->tn.getUuid()).collect(Collectors.toSet());
@@ -405,6 +418,17 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         return true;
     }
 
+    private Taxon reallyAccTaxon(Taxon stayTaxon) {
+        if (isTaxonSynonym(stayTaxon)){
+            for (TaxonRelationship rel: stayTaxon.getRelationsFromThisTaxon()){
+                boolean isPseudo = TaxonRelationshipType.pseudoTaxonUuids().contains(rel.getType().getUuid());
+                if (isPseudo){
+                    return rel.getToTaxon();
+                }
+            }
+        }
+        return stayTaxon;
+    }
     private boolean mergeSynonyms(Taxon removeTaxon, Taxon stayTaxon, boolean isTaxonSynonym) {
         if (isTaxonSynonym){
             if (!removeTaxon.getSynonyms().isEmpty()){
@@ -467,7 +491,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         }
     }
 
-    private IdentifiableEntity<?> selectStay(IdentifiableEntity<?> removeEntity, IdentifiableEntity<?> stayEntity, String type) {
+    private <T extends IdentifiableEntity<?>> T selectStay(T removeEntity, T stayEntity, String type) {
         if(removeEntity.isInstanceOf(Taxon.class) && stayEntity.isInstanceOf(Synonym.class)){
             String answer = "";
             while(!(answer.matches("[sSaAcC]"))){
@@ -476,7 +500,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
             if (answer.equalsIgnoreCase("c")){
                 return null;
             }else if (answer.equalsIgnoreCase("a")){
-               return accTaxon(CdmBase.deproxy(stayEntity, Synonym.class));
+               return (T)accTaxon(CdmBase.deproxy(stayEntity, Synonym.class));
             }else{
                 return stayEntity;
             }
@@ -525,7 +549,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
             IdentifiableEntity<?> stayEntity) throws CloneNotSupportedException {
         String className = removeEntity.getClass().getSimpleName();
         for (IdentifiableSource source: removeEntity.getSources()){
-            System.out.println("Move "+className+" source: " + source.getType().getMessage() + ": " + source.getCitation().getTitleCache() + "; " + source.getIdInSource() + "/" + source.getIdNamespace());
+            System.out.println("Move "+className+" source: " + source.getType().getLabel() + ": " + source.getCitation().getTitleCache() + "; " + source.getIdInSource() + "/" + source.getIdNamespace());
             stayEntity.addSource((IdentifiableSource)source.clone());
         }
     }
