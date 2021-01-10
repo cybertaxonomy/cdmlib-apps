@@ -29,6 +29,7 @@ import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.NomenclaturalSource;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -58,6 +59,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private PesiExportMapping mapping;
 	private PesiExportMapping synonymMapping;
 	private PesiExportMapping taxonNodeMapping;
+	private PesiExportMapping originalSpellingMapping;
 
 	public PesiRelTaxonExport() {
 		super();
@@ -96,7 +98,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
             // Get specific mappings: (CDM) Synonym -> (PESI) RelTaxon
             taxonNodeMapping = getTaxonNodeMapping();
             taxonNodeMapping.initialize(state);
-
 
 			//Export taxon relations
 			success &= doPhase01(state, mapping);
@@ -247,6 +248,13 @@ public class PesiRelTaxonExport extends PesiExportBase {
         while ((hybridList = getNextNameRelationshipPartition(HybridRelationship.class, limit, partitionCount++, null)) != null   ) {
             txStatus = handleNameRelationList(state, txStatus, hybridList);
         }
+        //original spellings
+        List<NomenclaturalSource> originalSpellingList;
+        partitionCount = 0;
+        while ((originalSpellingList = getNextOriginalSpellingPartition(limit, partitionCount++, null)) != null   ) {
+            txStatus = handleOriginalSpellingList(state, txStatus, originalSpellingList);
+        }
+
         commitTransaction(txStatus);
 		logger.info("End PHASE 2: Name Relationships ...");
 		state.setCurrentFromObject(null);
@@ -285,9 +293,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
         				mapping.invoke(rel);
         			}
         		}
-        		fromList = null;
-        		toList = null;
-
         	} catch (Exception e) {
         		logger.error(e.getMessage() + ". Relationship: " +  rel.getUuid());
         		e.printStackTrace();
@@ -298,11 +303,41 @@ public class PesiRelTaxonExport extends PesiExportBase {
         return txStatus;
     }
 
+    private TransactionStatus handleOriginalSpellingList(PesiExportState state, TransactionStatus txStatus,
+            List<NomenclaturalSource> list) {
+        for (NomenclaturalSource nomSource : list){
+            try {
+                TaxonName name1 = nomSource.getNameUsedInSource();
+                TaxonName name2 = nomSource.getSourcedName();
+                List<IdentifiableEntity> fromList = new ArrayList<>();
+                List<IdentifiableEntity> toList = new ArrayList<>();
+                makeList(name1, fromList);
+                makeList(name2, toList);
+
+                for (IdentifiableEntity<?> fromEntity : fromList){
+                    for (IdentifiableEntity<?> toEntity : toList){
+                        //TODO set entities to state
+                        state.setCurrentFromObject(fromEntity);
+                        state.setCurrentToObject(toEntity);
+                        originalSpellingMapping.invoke(nomSource);
+                    }
+                }
+            } catch (Exception e) {
+                logger.error(e.getMessage() + ". NomenclaturalSource: " +  nomSource.getUuid());
+                e.printStackTrace();
+            }
+        }
+        commitTransaction(txStatus);
+        txStatus = startTransaction();
+        return txStatus;
+    }
+
+
 	private void makeList(TaxonName name, List<IdentifiableEntity> list) {
 		if (! hasPesiTaxon(name)){
 			list.add(name);
 		}else{
-			for (TaxonBase<?> taxon:  getPesiTaxa(name)){
+			for (TaxonBase<?> taxon: getPesiTaxa(name)){
 				list.add(taxon);
 			}
 		}
@@ -371,6 +406,23 @@ public class PesiRelTaxonExport extends PesiExportBase {
         TaxonNode parent = taxonNode == null? null : taxonNode.getParent();
         Taxon parentTaxon = parent == null? null: parent.getTaxon();
         return state.getDbId(parentTaxon);
+    }
+
+    /**
+     * Returns the id of the previously defined fromObject.
+     * @see MethodMapper
+     */
+    @SuppressWarnings("unused")
+    private static Integer getFromObject(PesiExportState state) {
+        return state.getDbId(state.getCurrentFromObject());
+    }
+    /**
+     * Returns the id of the previously defined fromObject.
+     * @see MethodMapper
+     */
+    @SuppressWarnings("unused")
+    private static Integer getToObject(PesiExportState state) {
+        return state.getDbId(state.getCurrentToObject());
     }
 
 	/**
@@ -448,7 +500,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		if (relationship.isInstanceOf(TaxonRelationship.class)) {
 			TaxonRelationship tr = (TaxonRelationship)relationship;
 			taxonBase = (isFrom) ? tr.getFromTaxon():  tr.getToTaxon();
-		} else if (relationship.isInstanceOf(NameRelationship.class) ||  relationship.isInstanceOf(HybridRelationship.class)) {
+		} else if (relationship.isInstanceOf(NameRelationship.class)
+		        || relationship.isInstanceOf(HybridRelationship.class)) {
 			if (isFrom){
 				return state.getDbId(state.getCurrentFromObject());
 			}else{
@@ -467,6 +520,14 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		logger.warn("No taxon found in state for relationship: " + relationship.toString());
 		return null;
 	}
+
+   private static Integer getObjectFk(NomenclaturalSource nomSource, PesiExportState state, boolean isFrom) {
+        if (isFrom){
+            return state.getDbId(state.getCurrentFromObject());
+        }else{
+            return state.getDbId(state.getCurrentToObject());
+        }
+    }
 
     @SuppressWarnings("unused")  //for synonym mapping
     private static String getSynonymTypeCache(Synonym synonym, PesiExportState state) {
@@ -498,7 +559,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		return mapping;
 	}
 
-	   /**
+	/**
      * Returns the CDM to PESI specific export mappings.
      * @return The {@link PesiExportMapping PesiExportMapping}.
      */
@@ -519,14 +580,24 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
         mapping.addMapper(MethodMapper.NewInstance("TaxonFk2", this.getClass(), "getParent", TaxonNode.class, PesiExportState.class));
         mapping.addMapper(DbObjectMapper.NewInstance("taxon", "TaxonFk1"));
-        mapping.addMapper(DbFixedIntegerMapper.NewInstance(101, "RelTaxonQualifierFk"));
+        mapping.addMapper(DbFixedIntegerMapper.NewInstance(PesiTransformer.IS_TAXONOMICALLY_INCLUDED_IN, "RelTaxonQualifierFk"));
         mapping.addMapper(DbFixedStringMapper.NewInstance("is taxonomically included in", "RelQualifierCache"));
 //        mapping.addMapper(DbAnnotationMapper.NewExludedInstance(getLastActionAnnotationTypes(), "Notes"));
 
         return mapping;
     }
 
+    PesiExportMapping getOriginalSpellingMapping() {
+        PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 
+        mapping.addMapper(MethodMapper.NewInstance("TaxonFk1", this.getClass(), "getFromObject", PesiExportState.class));
+        mapping.addMapper(MethodMapper.NewInstance("TaxonFk2", this.getClass(), "getToObject", PesiExportState.class));
+        mapping.addMapper(DbFixedIntegerMapper.NewInstance(PesiTransformer.IS_ORIGINAL_SPELLING_FOR, "RelTaxonQualifierFk"));
+        mapping.addMapper(DbFixedStringMapper.NewInstance("is original spelling for", "RelQualifierCache"));
+//        mapping.addMapper(DbAnnotationMapper.NewExludedInstance(getLastActionAnnotationTypes(), "Notes"));
+
+        return mapping;
+    }
 
     @Override
     protected boolean doCheck(PesiExportState state) {

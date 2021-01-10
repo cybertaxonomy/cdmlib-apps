@@ -194,7 +194,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int IS_ORTHOGRAPHIC_VARIANT_OF = 16;
 	private static int IS_ALTERNATIVE_NAME_FOR = 17;
 	private static int HAS_SAME_TYPE_AS = 18;
-	private static int IS_ORIGINAL_SPELLING_FOR = 19;
+	public static int IS_ORIGINAL_SPELLING_FOR = 19;
 	private static int IS_BLOCKING_NAME_FOR = 20;
 	private static int IS_LECTOTYPE_OF = 61;
 	private static int TYPE_NOT_DESIGNATED = 62;
@@ -2184,8 +2184,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return IS_TREATED_AS_LATER_HOMONYM_OF;
 		} else if (type.equals(NameRelationshipType.ORTHOGRAPHIC_VARIANT())) {
 			return IS_ORTHOGRAPHIC_VARIANT_OF;
-	    } else if (type.equals(NameRelationshipType.ORIGINAL_SPELLING())) {
-	        return IS_ORIGINAL_SPELLING_FOR;
+//	    } else if (type.equals(NameRelationshipType.ORIGINAL_SPELLING())) {
+//	        return IS_ORIGINAL_SPELLING_FOR;
         } else if (type.equals(NameRelationshipType.BLOCKING_NAME_FOR())) {
             return IS_BLOCKING_NAME_FOR;
 		} else if (type.equals(NameRelationshipType.ALTERNATIVE_NAME())) {

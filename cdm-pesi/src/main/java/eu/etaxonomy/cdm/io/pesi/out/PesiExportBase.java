@@ -37,6 +37,7 @@ import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
+import eu.etaxonomy.cdm.model.name.NomenclaturalSource;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -150,6 +151,25 @@ public abstract class PesiExportBase
 		return list;
 	}
 
+	protected List<NomenclaturalSource> getNextOriginalSpellingPartition(
+	        int pageSize, int partitionCount, List<String> propertyPaths) {
+
+       List<NomenclaturalSource> result = new ArrayList<>();
+       List<OrderHint> orderHints = null;
+       List<NomenclaturalSource> list;
+       list = getNameService().listOriginalSpellings(pageSize, partitionCount, orderHints, propertyPaths);
+
+       if (list.isEmpty()){
+           return null;
+       }
+       for (NomenclaturalSource rel : list){
+           if (isPesiOriginalSpelling(rel)){
+               result.add(rel);
+           }
+       }
+       return result;
+    }
+
 	protected <CLASS extends RelationshipBase> List<CLASS> getNextNameRelationshipPartition(
 	                Class<CLASS> clazz, int pageSize, int partitionCount, List<String> propertyPaths) {
 
@@ -242,6 +262,12 @@ public abstract class PesiExportBase
 		}
 		return (isPesiName(name1) && isPesiName(name2));
 	}
+
+	protected boolean isPesiOriginalSpelling(NomenclaturalSource nomSource){
+        TaxonName name1 = nomSource.getNameUsedInSource();
+        TaxonName name2 = nomSource.getSourcedName();
+        return (isPesiName(name1) && isPesiName(name2));
+    }
 
 	private boolean isPesiName(TaxonName name) {
 		return hasPesiTaxon(name) || isPurePesiName(name);
