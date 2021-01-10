@@ -109,8 +109,6 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	private static ExtensionType lastActionExtensionType;
 	private static ExtensionType lastActionDateExtensionType;
-	private static ExtensionType expertNameExtensionType;
-	private static ExtensionType speciesExpertNameExtensionType;
 	private static ExtensionType cacheCitationExtensionType;
 
 	public static TaxonNameDefaultCacheStrategy zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
@@ -160,8 +158,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			// Find extensionTypes
 			lastActionExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtLastAction);
 			lastActionDateExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtLastActionDate);
-			expertNameExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtExpertName);
-			speciesExpertNameExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtSpeciesExpertName);
 			cacheCitationExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtCacheCitation);
 
 			//Export Taxa..
@@ -695,7 +691,7 @@ public class PesiTaxonExport extends PesiExportBase {
             logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
         }
 
-		List<TaxonBase> taxonList = null;
+		List<Taxon> taxonList = null;
 		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber, null)).size() > 0) {
 
 		    Map<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
@@ -775,108 +771,103 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	private Map<Integer, TaxonName> createInferredSynonymsForTaxonList(PesiExportState state,
-			PesiExportMapping mapping, PesiExportMapping synRelMapping,	 List<TaxonBase> taxonList) {
+			PesiExportMapping mapping, PesiExportMapping synRelMapping,	 List<Taxon> taxonList) {
 
-		Taxon acceptedTaxon;
 		Classification classification = null;
 		List<Synonym> inferredSynonyms = null;
 		boolean localSuccess = true;
 
 		Map<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
-		for (TaxonBase<?> taxonBase : taxonList) {
+		for (Taxon acceptedTaxon : taxonList) {
 
-			if (taxonBase.isInstanceOf(Taxon.class)) { // this should always be the case since we should have fetched accepted taxon only, but you never know...
-				acceptedTaxon = CdmBase.deproxy(taxonBase, Taxon.class);
-				TaxonName taxonName = acceptedTaxon.getName();
+			TaxonName taxonName = acceptedTaxon.getName();
 
-				if (taxonName.isZoological()) {
-					kingdomFk = findKingdomIdFromTreeIndex(taxonBase, state);
+			if (taxonName.isZoological()) {
+				kingdomFk = findKingdomIdFromTreeIndex(acceptedTaxon, state);
 
-					Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
-					TaxonNode singleNode = null;
+				Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
+				TaxonNode singleNode = null;
 
-					if (taxonNodes.size() > 0) {
-						// Determine the classification of the current TaxonNode
+				if (taxonNodes.size() > 0) {
+					// Determine the classification of the current TaxonNode
 
-						singleNode = taxonNodes.iterator().next();
-						if (singleNode != null) {
-							classification = singleNode.getClassification();
-						} else {
-							logger.error("A TaxonNode belonging to this accepted Taxon is NULL: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() +")");
-						}
+					singleNode = taxonNodes.iterator().next();
+					if (singleNode != null) {
+						classification = singleNode.getClassification();
 					} else {
-						// Classification could not be determined directly from this TaxonNode
-						// The stored classification from another TaxonNode is used. It's a simple, but not a failsafe fallback solution.
-						if (taxonNodes.size() == 0) {
-							//logger.error("Classification could not be determined directly from this Taxon: " + acceptedTaxon.getUuid() + " is misapplication? "+acceptedTaxon.isMisapplication()+ "). The classification of the last taxon is used");
-						}
-					}
-
-					if (classification != null) {
-						try{
-						    TaxonName name = acceptedTaxon.getName();
-							//if (name.isSpecies() || name.isInfraSpecific()){
-								inferredSynonyms  = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true);
-							//}
-//								inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymType.INFERRED_GENUS_OF());
-							if (inferredSynonyms != null) {
-								for (Synonym synonym : inferredSynonyms) {
-//									TaxonName synonymName = synonym.getName();
-									MarkerType markerType =getUuidMarkerType(PesiTransformer.uuidMarkerGuidIsMissing, state);
-									synonym.addMarker(Marker.NewInstance(markerType, true));
-									// Both Synonym and its TaxonName have no valid Id yet
-									synonym.setId(currentTaxonId++);
-
-
-									localSuccess &= mapping.invoke(synonym);
-									//get SynonymRelationship and export
-									if (synonym.getAcceptedTaxon() == null ){
-										IdentifiableSource source = synonym.getSources().iterator().next();
-										if (source.getIdNamespace().contains("Potential combination")){
-											acceptedTaxon.addSynonym(synonym, SynonymType.POTENTIAL_COMBINATION_OF());
-											logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
-										} else if (source.getIdNamespace().contains("Inferred Genus")){
-											acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_GENUS_OF());
-											logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
-										} else if (source.getIdNamespace().contains("Inferred Epithet")){
-											acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_EPITHET_OF());
-											logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
-										} else{
-											acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_SYNONYM_OF());
-											logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
-										}
-
-										localSuccess &= synRelMapping.invoke(synonym);
-										if (!localSuccess) {
-											logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
-										}
-									} else {
-										localSuccess &= synRelMapping.invoke(synonym);
-										if (!localSuccess) {
-											logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
-										} else {
-											logger.info("Synonym relationship successfully exported: " + synonym.getTitleCache() + "  " +acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
-										}
-									}
-
-									inferredSynonymsDataToBeSaved.put(synonym.getId(), synonym.getName());
-								}
-							}
-						}catch(Exception e){
-							logger.error(e.getMessage());
-							e.printStackTrace();
-						}
-					} else {
-						logger.error("Classification is NULL. Inferred Synonyms could not be created for this Taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() + ")");
+						logger.error("A TaxonNode belonging to this accepted Taxon is NULL: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() +")");
 					}
 				} else {
-//							logger.error("TaxonName is not a ZoologicalName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+					// Classification could not be determined directly from this TaxonNode
+					// The stored classification from another TaxonNode is used. It's a simple, but not a failsafe fallback solution.
+					if (taxonNodes.size() == 0) {
+						//logger.error("Classification could not be determined directly from this Taxon: " + acceptedTaxon.getUuid() + " is misapplication? "+acceptedTaxon.isMisapplication()+ "). The classification of the last taxon is used");
+					}
+				}
+
+				if (classification != null) {
+					try{
+					    TaxonName name = acceptedTaxon.getName();
+						//if (name.isSpecies() || name.isInfraSpecific()){
+							inferredSynonyms  = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true);
+						//}
+//								inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymType.INFERRED_GENUS_OF());
+						if (inferredSynonyms != null) {
+							for (Synonym synonym : inferredSynonyms) {
+//									TaxonName synonymName = synonym.getName();
+								MarkerType markerType =getUuidMarkerType(PesiTransformer.uuidMarkerGuidIsMissing, state);
+								synonym.addMarker(Marker.NewInstance(markerType, true));
+								// Both Synonym and its TaxonName have no valid Id yet
+								synonym.setId(currentTaxonId++);
+
+
+								localSuccess &= mapping.invoke(synonym);
+								//get SynonymRelationship and export
+								if (synonym.getAcceptedTaxon() == null ){
+									IdentifiableSource source = synonym.getSources().iterator().next();
+									if (source.getIdNamespace().contains("Potential combination")){
+										acceptedTaxon.addSynonym(synonym, SynonymType.POTENTIAL_COMBINATION_OF());
+										logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
+									} else if (source.getIdNamespace().contains("Inferred Genus")){
+										acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_GENUS_OF());
+										logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
+									} else if (source.getIdNamespace().contains("Inferred Epithet")){
+										acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_EPITHET_OF());
+										logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
+									} else{
+										acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_SYNONYM_OF());
+										logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
+									}
+
+									localSuccess &= synRelMapping.invoke(synonym);
+									if (!localSuccess) {
+										logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+									}
+								} else {
+									localSuccess &= synRelMapping.invoke(synonym);
+									if (!localSuccess) {
+										logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+									} else {
+										logger.info("Synonym relationship successfully exported: " + synonym.getTitleCache() + "  " +acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+									}
+								}
+
+								inferredSynonymsDataToBeSaved.put(synonym.getId(), synonym.getName());
+							}
+						}
+					}catch(Exception e){
+						logger.error(e.getMessage());
+						e.printStackTrace();
+					}
+				} else {
+					logger.error("Classification is NULL. Inferred Synonyms could not be created for this Taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() + ")");
 				}
 			} else {
-				logger.error("This TaxonBase is not a Taxon even though it should be: " + taxonBase.getUuid() + " (" + taxonBase.getTitleCache() + ")");
+//							logger.error("TaxonName is not a ZoologicalName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 			}
 		}
+
 		return inferredSynonymsDataToBeSaved;
 	}
 
@@ -2143,27 +2134,48 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	/**
-	 * Returns the <code>ExpertName</code> attribute.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
+	 * Returns the <code>ExpertName</code> attribute. For ERMS this is
+	 * the last action editor, for E+M the former last scrutiny, now sec.-reference,
+	 * for FauEu it still needs to be investigated and for IF it does not exist.<BR>
+	 * For merged taxa the result might be pipe separated.
+	 *
+	 * @param taxon The {@link TaxonBase taxonBase}.
 	 * @return The <code>ExpertName</code> attribute.
 	 * @see MethodMapper
 	 */
 	//@SuppressWarnings("unused")  //for some reason it is also called by getCacheCitation
 	private static String getExpertName(TaxonBase<?> taxon) {
 		try {
-		    String result = null;
-    		if(expertNameExtensionType!=null){  //some databases do not have this extension type
-    		    Set<Extension> extensions = taxon.getExtensions();
-    		    for (Extension extension : extensions) {
-    		        if (extension.getType().equals(expertNameExtensionType)) {
-    		            result = extension.getValue();
-    		        }
+		    List<String> result = new ArrayList<>();
+    		EnumSet<PesiSource> sources = getSources(taxon);
+
+    		//EM
+    		if (sources.contains(PesiSource.EM)){
+    		    String expertName = getEuroMedExport(taxon.getSec());
+    		    //TODO handle misapplications
+    		    //TODO think about using the author only
+    		    if (isNotBlank(expertName) && !result.contains(expertName)) {
+    		        result.add(expertName);
     		    }
     		}
-    		if (getPesiSources(taxon).contains(PesiSource.EM)){
-                return taxon.getSec().getTitleCache();
+    		//ERMS
+    		if (sources.contains(PesiSource.ERMS)){}  //nothing to do, ERMS does not have expert names
+
+    		//FauEu
+            if (sources.contains(PesiSource.FE)){
+                //TODO handle FauEu, not sure if the below is correct
+
+                Set<String> expertNamesExtensions = taxon.getExtensions(PesiTransformer.uuidExtExpertName);
+                for (String extension : expertNamesExtensions) {
+                    if (isNotBlank(extension) && !result.contains(extension)) {
+                        result.add(extension);
+                    }
+                }
             }
-            return null;
+    		//IF
+    		if (sources.contains(PesiSource.IF)){} //nothing to do, IF does not have expert name
+
+            return CdmUtils.concat(" | ", result.toArray(new String[0]));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -2177,7 +2189,11 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	/**
-	 * Returns the <code>SpeciesExpertName</code> attribute.
+     * Returns the <code>SpeciesExpertName</code> attribute. For ERMS this is
+     * the last action editor, for E+M the former last scrutiny, now sec.-reference,
+     * for FauEu it still needs to be investigated and for IF it does not exist.<BR>
+     * For merged taxa the result might be pipe separated.
+     *
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @return The <code>SpeciesExpertName</code> attribute.
 	 * @see MethodMapper
@@ -2185,18 +2201,42 @@ public class PesiTaxonExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getSpeciesExpertName(TaxonBase<?> taxon) {
 		try {
-    		Set<Extension> extensions = taxon.getExtensions();
-    		if(speciesExpertNameExtensionType != null){  //some databases do not have this extension type
-                for (Extension extension : extensions) {
-        			if (extension.getType().equals(speciesExpertNameExtensionType)) {
-        				return extension.getValue();
-        			}
-        		}
-    		}
-    		if (getPesiSources(taxon).contains(PesiSource.EM)){
-    		    return taxon.getSec().getTitleCache();
+		    List<String> result = new ArrayList<>();
+            EnumSet<PesiSource> sources = getSources(taxon);
+
+            //EM
+            if (sources.contains(PesiSource.EM)){
+                String expertName = getEuroMedExport(taxon.getSec());
+                //TODO handle misapplications
+                //TODO think about using the author only
+                if (isNotBlank(expertName) && !result.contains(expertName)) {
+                    result.add(expertName);
+                }
             }
-    		return null;
+            //ERMS
+            if (sources.contains(PesiSource.ERMS)){
+                Set<String> expertNamesExtensions = taxon.getExtensions(PesiTransformer.uuidExtSpeciesExpertName);
+                for (String extension : expertNamesExtensions) {
+                    if (isNotBlank(extension) && !result.contains(extension)) {
+                        result.add(extension);
+                    }
+                }
+            }
+            //FauEu
+            if (sources.contains(PesiSource.FE)){
+                //TODO handle FauEu, not sure if the below is correct
+
+                Set<String> expertNamesExtensions = taxon.getExtensions(PesiTransformer.uuidExtSpeciesExpertName);
+                for (String extension : expertNamesExtensions) {
+                    if (isNotBlank(extension) && !result.contains(extension)) {
+                        result.add(extension);
+                    }
+                }
+            }
+            //IF
+            if (sources.contains(PesiSource.IF)){} //nothing to do, IF does not have expert name
+
+            return CdmUtils.concat(" | ", result.toArray(new String[0]));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -2204,6 +2244,21 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	/**
+     * Computes the expert or species expert string for an Euro+Med
+     * taxon by it's sec reference by either using the references
+     * author or, if not available, using the reference titlecache
+     */
+    private static String getEuroMedExport(Reference sec) {
+        if (sec == null){
+            return null;
+        }else if (sec.getAuthorship() != null && isNotBlank(sec.getAuthorship().getTitleCache())){
+            return sec.getAuthorship().getTitleCache();
+        }else{
+            return sec.getTitleCache();
+        }
+    }
+
+    /**
 	 * Returns the <code>SpeciesExpertFk</code> attribute.
 	 * @param reference The {@link Reference Reference}.
 	 * @param state The {@link PesiExportState PesiExportState}.
