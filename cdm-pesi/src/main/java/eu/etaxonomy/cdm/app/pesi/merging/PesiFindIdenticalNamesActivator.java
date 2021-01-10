@@ -75,7 +75,12 @@ public class PesiFindIdenticalNamesActivator {
 	private static Map<UUID,String> sourcesLabels = new HashMap<>();
 
     static {
-        sourceRefUuids.addAll(Arrays.asList(new UUID[]{emSourceUuid, ermsSourceUuid, faunaEuSourceUuid, ifSourceUuid}));
+        sourceRefUuids.addAll(Arrays.asList(new UUID[]{
+//                emSourceUuid,
+                ermsSourceUuid
+                ,faunaEuSourceUuid
+//              ,  ifSourceUuid
+        }));
         sourcesLabels.put(emSourceUuid, "E+M");
         sourcesLabels.put(ermsSourceUuid, "ERMS");
         sourcesLabels.put(faunaEuSourceUuid, "FauEu");
@@ -201,10 +206,11 @@ public class PesiFindIdenticalNamesActivator {
                                 differenceExists |= isDifferent(merge1, merge2, method);
                             }
                         }
+                        int combinations = mergeList1.size() * mergeList2.size();
                         if (differenceExists){
                             for (PesiMergeObject merge1 : mergeList1){
                                 for (PesiMergeObject merge2 : mergeList2){
-                                    writeCsvLine(writer, merge1, merge2, method, isNextNameCache);
+                                    writeCsvLine(writer, merge1, merge2, method, isNextNameCache, combinations);
                                     isNextNameCache = false;
                                 }
                             }
@@ -225,7 +231,7 @@ public class PesiFindIdenticalNamesActivator {
 
         try {
             if (method == null){
-                return true;
+                return !merge1.getIdTaxon().equals(merge2.getIdTaxon());
             }
             Object value1 = method.invoke(merge1);
             Object value2 = method.invoke(merge2);
@@ -243,7 +249,7 @@ public class PesiFindIdenticalNamesActivator {
             writeHeaderPair(writer, "tid");
             writer.append("use;");
             writer.append("nameUse;");
-            writer.append("next;");
+            writer.append("combinations;");
             writer.append("diff;");
             writeHeaderPair(writer, "src");
 //            writeHeaderPair(writer, "nuuid");
@@ -252,13 +258,25 @@ public class PesiFindIdenticalNamesActivator {
             writeHeaderPair(writer, "author");
             writeHeaderPair(writer, "nom.ref.");
             writeHeaderPair(writer, "rank");
+            writeHeaderPair(writer, "classification");
             writeHeaderPair(writer, "kingdom");
             writeHeaderPair(writer, "phylum");
+            writeHeaderPair(writer, "class");
+            writeHeaderPair(writer, "order");
             writeHeaderPair(writer, "family");
             writeHeaderPair(writer, "parentString");
             writeHeaderPair(writer, "parentRankString");
             writeHeaderPair(writer, "status");
             writeHeaderPair(writer, "tuuid");
+            writer.append("firstAuthor;");
+            writer.append("firstRank;");
+            writer.append("firstClassification;");
+            writer.append("firstKingdom;");
+            writer.append("firstPhylum;");
+            writer.append("firstClass;");
+            writer.append("firstOrder;");
+            writer.append("firstFamily;");
+            writer.append("firstStatus;");
 
             writer.append('\n');
         } catch (IOException e) {
@@ -271,14 +289,16 @@ public class PesiFindIdenticalNamesActivator {
         writer.append(header+"2").append(';');
     }
 
+    //needs to be synchronized with writeHeader()
     private void writeCsvLine(Writer writer,
            PesiMergeObject merge1, PesiMergeObject merge2,
-           Method method, boolean isNextNameCache){
+           Method method, boolean isNextNameCache, int combinations){  //isNextNameCache probably not needed anymore
 
         writePair(writer, merge1, merge2, "IdTaxon", Compare.NO);
         writeSingleValue(writer, "");
         writeSingleValue(writer, "");
-        writeSingleValue(writer, isNextNameCache?"1":"0");
+//        writeSingleValue(writer, isNextNameCache?"1":"0");
+        writeSingleValue(writer, String.valueOf(combinations));
         boolean different = isDifferent(merge1,  merge2, method);
         writeSingleValue(writer, different?"1":"0");
         writeSingleValue(writer, sourcesLabels.get(UUID.fromString(merge1.getUuidSource())));
@@ -290,13 +310,26 @@ public class PesiFindIdenticalNamesActivator {
         writePair(writer, merge1, merge2, "Author", Compare.YES);
         writePair(writer, merge1, merge2, "NomenclaturalReference", Compare.YES);
         writePair(writer, merge1, merge2, "Rank", Compare.YES);
-        writePair(writer, merge1, merge2, "KingdomCache", Compare.KEEP_FIRST);
+        writePair(writer, merge1, merge2, "ClassificationCache", Compare.YES);
+        writePair(writer, merge1, merge2, "KingdomCache", Compare.YES);
         writePair(writer, merge1, merge2, "PhylumCache", Compare.YES);
+        writePair(writer, merge1, merge2, "ClassCache", Compare.YES);
+        writePair(writer, merge1, merge2, "OrderCache", Compare.YES);
         writePair(writer, merge1, merge2, "FamilyCache", Compare.YES);
         writePair(writer, merge1, merge2, "ParentString", Compare.YES);
         writePair(writer, merge1, merge2, "ParentRankString", Compare.YES);
         writePair(writer, merge1, merge2, "StatusStr", Compare.YES);
         writePair(writer, merge1, merge2, "UuidTaxon", Compare.YES);
+        writeSingleValue(writer, merge1.getAuthor());
+        writeSingleValue(writer, merge1.getRank());
+        writeSingleValue(writer, merge1.getClassificationCache());
+        writeSingleValue(writer, merge1.getKingdomCache());
+        writeSingleValue(writer, merge1.getPhylumCache());
+        writeSingleValue(writer, merge1.getClassCache());
+        writeSingleValue(writer, merge1.getOrderCache());
+        writeSingleValue(writer, merge1.getFamilyCache());
+        writeSingleValue(writer, merge1.getStatusStr());
+
 
         try {
             writer.append('\n');
@@ -319,7 +352,7 @@ public class PesiFindIdenticalNamesActivator {
         KEEP_FIRST;
 
         boolean isAnyCompare(){
-            return this == NO;
+            return this != NO;
         }
     }
 
@@ -342,7 +375,7 @@ public class PesiFindIdenticalNamesActivator {
     }
 
     private String normalize(String val) {
-        return CdmUtils.Nz(val).replace(";", "@");
+        return Nz(val).replace(";", "@");
     }
 
     private List<Map<UUID,List<PesiMergeObject>>> createMergeObjects(
@@ -403,6 +436,10 @@ public class PesiFindIdenticalNamesActivator {
                     //rank
                     mergeObject.setRank(name.getRank().getLabel());
 
+                    //higherTaxa
+                    List<TaxonNodeDto> higherTaxa = getHigherTaxa(appCtr, name);
+                    mergeObject.setHigherClassification(higherTaxa);
+
                     //Kingdom
                     TaxonNodeDto kingdom = getHigherTaxon(appCtr, name, Rank.KINGDOM());
                     mergeObject.setKingdom(kingdom);
@@ -413,6 +450,14 @@ public class PesiFindIdenticalNamesActivator {
                         phylum = getHigherTaxon(appCtr, name, Rank.DIVISION());
                     }
                     mergeObject.setPhylum(phylum);
+
+                    //Class
+                    TaxonNodeDto tclass = getHigherTaxon(appCtr, name, Rank.CLASS());
+                    mergeObject.setTClass(tclass);
+
+                    //Class
+                    TaxonNodeDto order = getHigherTaxon(appCtr, name, Rank.ORDER());
+                    mergeObject.setOrder(order);
 
                     //Family
                     TaxonNodeDto family = getHigherTaxon(appCtr, name, Rank.FAMILY());
@@ -502,6 +547,29 @@ public class PesiFindIdenticalNamesActivator {
                 mergeObject.setParentRankString(parentName.getRank().getLabel());
             }
         }
+    }
+
+    private List<TaxonNodeDto> getHigherTaxa(CdmApplicationController appCtr, TaxonName name) {
+        List<TaxonNodeDto> result = new ArrayList<>();
+        Taxon taxon = getAcceptedTaxon(name);
+        if (taxon.getTaxonNodes().isEmpty()){
+            return null;  //probably MAN
+        }
+        if (taxon.getTaxonNodes().size()>1){
+            logger.warn("More than 1 node not yet handled for getHigherTaxon. Take arbitrary one.");
+        }
+        TaxonNode node = taxon.getTaxonNodes().iterator().next();
+        TaxonNodeDto nodeDto = new TaxonNodeDto(node);
+        if (!taxon.getName().equals(name)){
+            result.add(nodeDto);  //for synonyms add accepted taxon as first node
+        }
+        while (nodeDto.getTaxonUuid()!= null){
+            nodeDto = appCtr.getTaxonNodeService().parentDto(nodeDto.getUuid());
+            if (nodeDto.getTaxonUuid()!= null){
+                result.add(0, nodeDto);  //for synonyms add accepted taxon as first node
+            }
+        }
+        return result;
     }
 
     private TaxonNodeDto getHigherTaxon(CdmApplicationController appCtr, TaxonName name, Rank rank) {
@@ -607,7 +675,7 @@ public class PesiFindIdenticalNamesActivator {
         return result;
     }
 
-    private CharSequence Nz(String str) {
+    private String Nz(String str) {
         return CdmUtils.Nz(str);
     }
 

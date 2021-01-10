@@ -41,8 +41,8 @@ public class PesiEuroMedValidator extends PesiValidatorBase {
 
     private static final ICdmDataSource defaultSource = CdmDestinations.cdm_test_local_mysql_euromed();
 //    private static final ICdmDataSource defaultSource = CdmDestinations.cdm_pesi2019_final();
-//    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
-    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI_2();
+    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
+//    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI_2();
 
     boolean doReferences = false;
     boolean doTaxa = true;
@@ -321,7 +321,7 @@ public class PesiEuroMedValidator extends PesiValidatorBase {
         boolean success = true;
         ResultSet srcRS = source.getResultSet("SELECT CAST(tn.id as char(20)) tid, tb.uuid as GUID, pt.id parentId, "
                 + "      tn.rank_id, rank.titleCache rank_name, "
-                + "      sec.titleCache secTitle, "
+                + "      sec.titleCache secTitle, secAut.titleCache secAutTitle, "
                 + "      tn.genusOrUninomial, tn.infraGenericEpithet, tn.specificEpithet, tn.infraSpecificEpithet, "
                 + "      tn.nameCache, tn.authorshipCache, tn.titleCache nameTitleCache, tn.fullTitleCache nameFullTitleCache, "
                 + "      tb.DTYPE taxStatus, tb.titleCache, tb.appendedPhrase tbAppendedPhrase, tb.sec_id secId, "
@@ -334,6 +334,7 @@ public class PesiEuroMedValidator extends PesiValidatorBase {
                 + "     LEFT JOIN TaxonName tn on tb.name_id = tn.id "
                 + "     LEFT JOIN DefinedTermBase rank ON rank.id = tn.rank_id "
                 + "     LEFT JOIN Reference sec ON sec.id = tb.sec_id "
+                + "     LEFT JOIN AgentBase secAut ON secAut.id = sec.authorship_id "
                 + "     LEFT JOIN TaxonName_NomenclaturalStatus nsMN ON tn.id = nsMN.TaxonName_id "
                 + "     LEFT JOIN NomenclaturalStatus ns ON ns.id = nsMN.status_id "
                 + "     LEFT JOIN DefinedTermBase nsType ON nsType.id = ns.type_id "
@@ -413,9 +414,10 @@ public class PesiEuroMedValidator extends PesiValidatorBase {
         success &= equals("Taxon GUID", srcRS.getString("GUID"), destRS.getString("GUID"), id);
         success &= equals("Taxon DerivedFromGuid", srcRS.getString("GUID"), destRS.getString("DerivedFromGuid"), id); //according to SQL script GUID and DerivedFromGuid are always the same, according to 2014DB this is even true for all databases
         success &= isNull("ExpertGUID", destRS, id);  //according to SQL + PESI2014
-//FIXME        success &= equals("Taxon ExpertName", srcRS.getString("secTitle"), destRS.getString("ExpertName"), id);
-//FIXME        success &= isNull("SpeciesExpertGUID", destRS);
-//FIXME        success &= equals("Taxon SpeciesExpertName", srcRS.getString("secTitle"), destRS.getString("SpeciesExpertName"), id);
+        success &= isNull("SpeciesExpertGUID", destRS, id);
+        //ExpertName = SpeciesExpertName in E+M according to SQL script, 4689x NULL
+        success &= equals("Taxon ExpertName", makeExpertName(srcRS), destRS.getString("ExpertName"), id);
+        success &= equals("Taxon SpeciesExpertName", makeExpertName(srcRS), destRS.getString("SpeciesExpertName"), id);
 //FIXME !!        success &= equals("Taxon cache citation", srcRS.getString("secTitle"), destRS.getString("CacheCitation"), id);
         success &= equals("Taxon Last Action", srcRS.getString("lastAction"),  destRS.getString("LastAction"), id);
         success &= equals("Taxon Last Action Date", srcRS.getTimestamp("lastActionDate"),  destRS.getTimestamp("LastActionDate"), id);
@@ -423,6 +425,15 @@ public class PesiEuroMedValidator extends PesiValidatorBase {
         success &= isNull("GUID2", destRS, id);  //only relevant after merge
         success &= isNull("DerivedFromGuid2", destRS, id);  //only relevant after merge
         return success;
+    }
+
+    private String makeExpertName(ResultSet srcRs) throws SQLException {
+        String autStr = srcRs.getString("secAutTitle");
+        if (autStr != null){
+            return autStr;
+        }else{
+            return srcRs.getString("secTitle");
+        }
     }
 
     private String makeSource(ResultSet srcRs) throws SQLException {
@@ -867,9 +878,9 @@ public class PesiEuroMedValidator extends PesiValidatorBase {
         success &= equals("CommonName name ", srcRs.getString("vername"), destRs.getString("CommonName"), id);
         success &= equals("Common name languageFk ", srcRs.getString("iso"), getLanguageIso(destRs), id);
         success = equals("CommonName LanguageCache ", normalizeLang(srcRs.getString("LanName")), destRs.getString("LanguageCache"), id);
-        //TODO needed? success = equals("CommonName language code ", srcRs.getString("lan_id"), destRs.getString("LanguageFk"), id);
+        //TODO cn lan_id needed? success = equals("CommonName language code ", srcRs.getString("lan_id"), destRs.getString("LanguageFk"), id);
         success &= isNull("Region", destRs, id);  //region does not seem to exist in ERMS
-        //TODO see comments
+        //TODO cn sources, see comments
 //        success &= isNull("SourceFk", destRs);  //sources should be moved to extra table, check with PESI 2014
 //        success &= isNull("SourceNameCache", destRs);  //sources should be moved to extra table, check with PESI 2014
         success &= isNull("SpeciesExpertGUID", destRs, id);  //SpeciesExpertGUID does not exist in ERMS
@@ -927,13 +938,13 @@ public class PesiEuroMedValidator extends PesiValidatorBase {
         success &= equals("Reference abstract ", srcRS.getString("referenceAbstract"), destRS.getString("Abstract"), id);
         success &= equals("Reference title ", srcRS.getString("title"), destRS.getString("Title"), id);
         success &= equals("Reference author string ", srcRS.getString("author"), destRS.getString("AuthorString"), id);
-        //TODO
+        //TODO reference year
         success &= equals("Reference year ", normalizeYear(srcRS), destRS.getString("RefYear"), id);
-        //FIXME
+        //FIXME reference nomrefcache
 //        success &= equals("Reference NomRefCache ", srcRS.getString("abbrevTitleCache"), destRS.getString("NomRefCache"), id);
         success &= equals("Reference DOI ", srcRS.getString("doi"), destRS.getString("Doi"), id);
         success &= equals("Reference link ", srcRS.getString("uri"), destRS.getString("Link"), id);
-        //TODO Notes
+        //TODO reference Notes
 //        success &= equals("Reference note ", srcRS.getString("source_note"), destRS.getString("Notes"), id);
         //complete
         return success;
