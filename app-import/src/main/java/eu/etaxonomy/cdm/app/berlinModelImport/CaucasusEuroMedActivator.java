@@ -502,7 +502,7 @@ public class CaucasusEuroMedActivator {
                 app.getGroupService().saveOrUpdate(groupProjectManager);
 
                 String[] publishRoles = new String[]{Role.ROLE_PUBLISH.toString()};
-                Group groupPublisher = checkGroup(app.getGroupService(), Group.GROUP_PUBLISHER_UUID, "Publisher", publishRoles);
+                Group groupPublisher = checkGroup(app.getGroupService(), Group.GROUP_PUBLISH_UUID, "Publisher", publishRoles);
                 groupPublisher.addMember(userEraabStraube);
                 app.getGroupService().saveOrUpdate(groupPublisher);
 
