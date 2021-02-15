@@ -9,7 +9,6 @@
 package eu.etaxonomy.cdm.io.greece;
 
 import java.net.MalformedURLException;
-import eu.etaxonomy.cdm.common.URI;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,7 @@ import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeNotSupportedException;
 import eu.etaxonomy.cdm.api.service.config.MatchingTaxonConfigurator;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
@@ -72,10 +72,6 @@ public class GreeceWillingImport
 
     private int count = 1;
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state) {
         try {
@@ -243,10 +239,6 @@ public class GreeceWillingImport
 
     }
 
-    /**
-     * @param state
-     * @param record
-     */
     private void verifyTaxon(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state,
             Taxon taxon, Map<String, String> record) {
 
@@ -280,10 +272,7 @@ public class GreeceWillingImport
     }
 
     private Collection bgbm;
-    /**
-     * @param state
-     * @return
-     */
+
     private Collection getCollection(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state, String collectionCode, String institutionCode) {
         if (bgbm == null){
             List<Collection> results = getCollectionService().searchByCode(collectionCode);
@@ -306,11 +295,6 @@ public class GreeceWillingImport
         return bgbm;
     }
 
-    /**
-     * @param state
-     * @param string
-     * @param string2
-     */
     private void validate(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state, String attr,
             String expectedValue) {
         Map<String, String> record = state.getOriginalRecord();
@@ -320,15 +304,6 @@ public class GreeceWillingImport
         }
     }
 
-    /**
-     * @param state
-     * @param title
-     * @param titleDescription
-     * @param date
-     * @param image
-     * @return
-     * @throws MalformedURLException
-     */
     private Media getMedia(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state, String title,
             String titleDescription, String imageUrl, TimePeriod date) throws MalformedURLException {
 
@@ -359,13 +334,8 @@ public class GreeceWillingImport
         return media;
     }
 
+    private Team willingCollector;
 
-    Team willingCollector;
-    /**
-     * @param state
-     * @param collector
-     * @return
-     */
     private Team getCollector(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state,
             String collector) {
 
@@ -383,7 +353,7 @@ public class GreeceWillingImport
         return willingCollector;
     }
 
-    Person willingArtist;
+    private Person willingArtist;
     private Person getArtist(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state) {
 
         if (willingArtist == null){
@@ -397,11 +367,6 @@ public class GreeceWillingImport
         return willingArtist;
     }
 
-    /**
-     * @param state
-     * @param scientificName
-     * @return
-     */
     private Taxon getTaxonByName(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state,
             String scientificName) {
 
@@ -412,10 +377,6 @@ public class GreeceWillingImport
         return result;
     }
 
-    /**
-     * @param state
-     * @return
-     */
     private ImportDeduplicationHelper<SimpleExcelTaxonImportState> getDedupHelper(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state) {
         if (this.dedupHelper == null){
             dedupHelper = ImportDeduplicationHelper.NewInstance(this, state);

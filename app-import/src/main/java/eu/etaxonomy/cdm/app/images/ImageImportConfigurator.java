@@ -1,22 +1,19 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.images;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import eu.etaxonomy.cdm.common.URI;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -25,50 +22,37 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author n.hoffmann
  * @since 11.11.2008
- * @version 1.0
  */
-public class ImageImportConfigurator extends ImportConfiguratorBase<ImageImportState, URI> implements IImportConfigurator {
-	private static final Logger logger = Logger.getLogger(ImageImportConfigurator.class);
+public class ImageImportConfigurator
+        extends ImportConfiguratorBase<ImageImportState, URI> {
 
+    private static final long serialVersionUID = -3177654877920655720L;
+    private static final Logger logger = Logger.getLogger(ImageImportConfigurator.class);
 
 	public static ImageImportConfigurator NewInstance(URI source, ICdmDataSource destination, String mediaUrlString, Class<? extends AbstractImageImporter> importerClass){
-		return new ImageImportConfigurator(source, destination, mediaUrlString, importerClass);		
+		return new ImageImportConfigurator(source, destination, mediaUrlString, importerClass);
 	}
-	
-	
+
 	//TODO
 	private static IInputTransformer defaultTransformer = null;
 
-	
-	/**
-	 * @param source
-	 * @param destination
-	 * @param importerClass
-	 * @return
-	 */
-	 
 	public static ImageImportConfigurator NewInstance(URI source, ICdmDataSource destination, Class<? extends AbstractImageImporter> importerClass){
-		return new ImageImportConfigurator(source, destination, null, importerClass);		
+		return new ImageImportConfigurator(source, destination, null, importerClass);
 	}
-	
+
 	private ImageImportConfigurator(URI source, ICdmDataSource destination, String mediaUrlString, Class<? extends AbstractImageImporter> importerClass){
 		super(defaultTransformer);
 		FileNotFoundException e;
 		setSource(source);
 		setDestination(destination);
 		setMediaUrlString(mediaUrlString);
-		ioClassList = new Class[] {importerClass};
+		ioClassList = new Class[]{importerClass};
 	}
-	
+
 	private String mediaUrlString = null;
-	
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSourceReference()
-	 */
-//	@Override
-	public Reference getSourceReference() {
+	@Override
+    public Reference getSourceReference() {
 	//TODO
 		if (this.sourceReference == null){
 			logger.warn("getSource Reference not yet fully implemented");
@@ -77,22 +61,16 @@ public class ImageImportConfigurator extends ImportConfiguratorBase<ImageImportS
 		}
 		return sourceReference;
 	}
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#makeIoClassList()
-	 */
-	@Override
+
+	@SuppressWarnings("unchecked")
+    @Override
 	//NOT used, component class is injected via constructor
 	protected void makeIoClassList() {
 		ioClassList = new Class[] {
 				AbstractImageImporter.class
 		};
 	}
-	
-	
-	/**
-	 * @return the mediaUrlString
-	 */
+
 	public String getMediaUrlString() {
 		if(mediaUrlString == null){
 			throw new NullPointerException("mediaUrlString has not been set");
@@ -100,25 +78,18 @@ public class ImageImportConfigurator extends ImportConfiguratorBase<ImageImportS
 		return mediaUrlString;
 	}
 
-	/**
-	 * @param mediaUrlString the mediaUrlString to set
-	 */
 	public void setMediaUrlString(String mediaUrlString) {
 		this.mediaUrlString = mediaUrlString;
 	}
-	
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getSourceNameString()
-	 */
-	public String getSourceNameString() {
+	@Override
+    public String getSourceNameString() {
 		return "Image file " + getSource();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
-	 */
-	public ImageImportState getNewState() {
+	@SuppressWarnings("unchecked")
+    @Override
+    public ImageImportState getNewState() {
 		return new ImageImportState(this);
 	}
 }

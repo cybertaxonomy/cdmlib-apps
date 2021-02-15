@@ -28,7 +28,6 @@ import eu.etaxonomy.cdm.model.term.DefinedTerm;
 /**
  * @author a.mueller
  * @since 18.10.2017
- *
  */
 public class PlumbaginaceaeIdentifierActivator {
 
@@ -59,7 +58,6 @@ public class PlumbaginaceaeIdentifierActivator {
 
         CdmDefaultImport<IdentifierImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
-
     }
 
     private InputStreamReader getPlumbaginaceaeIdentifier() {
@@ -101,10 +99,6 @@ public class PlumbaginaceaeIdentifierActivator {
         }
     }
 
-
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         PlumbaginaceaeIdentifierActivator me = new PlumbaginaceaeIdentifierActivator();
         me.doImport(cdmDestination);

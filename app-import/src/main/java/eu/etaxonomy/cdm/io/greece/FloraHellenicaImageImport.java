@@ -10,7 +10,6 @@ package eu.etaxonomy.cdm.io.greece;
 
 import java.io.File;
 import java.io.IOException;
-import eu.etaxonomy.cdm.common.URI;
 import java.util.List;
 
 import org.apache.commons.imaging.ImageReadException;
@@ -27,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.config.MatchingTaxonConfigurator;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
@@ -50,7 +50,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * @author a.mueller
  * @since 03.04.2017
  */
-
 @Component
 public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfigurator>
         extends CdmImportBase<CONFIG,SimpleExcelTaxonImportState<CONFIG>>{
@@ -181,15 +180,12 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
                 makeTextData(fileStr, media, taxon2);
             }
 
-
             if (taxonNameStr2 == null){
                 media.putTitle(Language.LATIN(), taxon == null ? taxonNameStr :
                     taxon.getName().getTitleCache());
             }else{
                 media.putTitle(Language.LATIN(), "Ramonda serbica(L) + R. nathaliae(R)");
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -211,7 +207,6 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
         }
         return secReference;
     }
-
 
     /**
      * Gets the image gallery, creates
@@ -235,10 +230,6 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
         textData.addMedia(media);
     }
 
-    /**
-     * @param taxonNameStr
-     * @return
-     */
     private Taxon getAcceptedTaxon(String taxonNameStr) {
 
         MatchingTaxonConfigurator config = new MatchingTaxonConfigurator();
@@ -264,10 +255,6 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
         }
     }
 
-    /**
-     * @param taxonNameStr
-     * @return
-     */
     private String adaptName(String taxonNameStr) {
         if (taxonNameStr.equals("Hypericum cerastoides")){
             taxonNameStr = "Hypericum cerastioides";
@@ -275,10 +262,6 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
         return taxonNameStr;
     }
 
-    /**
-     * @param fileStr
-     * @return
-     */
     private String[] getTaxonName(String fileStr) {
         String[] result = new String[2];
         fileStr = fileStr.split("\\.")[0];
@@ -300,31 +283,22 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
     //from http://stackoverflow.com/questions/2559759/how-do-i-convert-camelcase-into-human-readable-names-in-java
     static String splitCamelCase(String s) {
         return s.replaceAll(
-           String.format("%s",
+            String.format("%s",
 //              "(?<=[A-Z])(?=[A-Z][a-z])",
-              "(?<=[^A-Z])(?=[A-Z])"
+                "(?<=[^A-Z])(?=[A-Z])"
 //              "(?<=[A-Za-z])(?=[^A-Za-z])"
-           ),
-           " "
+            ),
+            " "
         );
-     }
+    }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean doCheck(SimpleExcelTaxonImportState<CONFIG> state) {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isIgnore(SimpleExcelTaxonImportState<CONFIG> state) {
         return ! state.getConfig().isDoImages();
     }
-
-
-
 }
