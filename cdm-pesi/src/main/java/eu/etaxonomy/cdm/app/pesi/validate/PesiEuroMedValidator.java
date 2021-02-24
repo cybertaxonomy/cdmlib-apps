@@ -803,7 +803,7 @@ public class PesiEuroMedValidator extends PesiValidatorBase {
         UUID uuid = UUID.fromString(uuidStr);
         if (uuid.equals(PresenceAbsenceTerm.uuidNativeError) ){  //native, reported in error
             return PesiTransformer.STATUS_ABSENT;
-        }else if (uuid.equals(PresenceAbsenceTerm.uuidIntroducesAdventitious)  //casual, introduced adventitious
+        }else if (uuid.equals(PresenceAbsenceTerm.uuidIntroducedAdventitious)  //casual, introduced adventitious
                 || uuid.equals(PresenceAbsenceTerm.uuidIntroducedUncertainDegreeNaturalisation)//introduced: uncertain degree of naturalisation
                 || uuid.equals(PresenceAbsenceTerm.uuidIntroduced)){
             return PesiTransformer.STATUS_INTRODUCED;
