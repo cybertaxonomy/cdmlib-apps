@@ -2074,8 +2074,8 @@ public class PesiTaxonExport extends PesiExportBase {
 			    String author = sec == null? "" : sec.getTitleCache();
 			    String webShowName = isMisapplied? getDisplayName(taxon):getWebShowName(taxonName);  //for misapplied we need also the sensu and non author part, for ordinary names name + author is enough
 			    String accessed = ". Accessed through: Euro+Med PlantBase at https://www.europlusmed.org/cdm_dataportal/taxon/";
-			    result = CdmUtils.removeTrailingDot(author)
-			            + ". " + CdmUtils.removeTrailingDot(webShowName)
+			    result = CdmUtils.removeTrailingDots(author)
+			            + ". " + CdmUtils.removeTrailingDots(webShowName)
 			            + accessed + taxon.getUuid();
 			} else {
 				//TODO check for IF + FE

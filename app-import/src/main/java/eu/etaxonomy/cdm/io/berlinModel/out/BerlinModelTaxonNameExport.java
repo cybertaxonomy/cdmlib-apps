@@ -147,7 +147,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonName>
 		String tableName = "NomStatusRel";
 		String collectionAttribute = "status";
 		IdMapper parentMapper = IdMapper.NewInstance("NameFk");
-		CollectionExportMapping mapping = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
+		CollectionExportMapping<?,?,?> mapping = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
 		mapping.addMapper(MethodMapper.NewInstance("NomStatusFk", this.getClass(), "getNomStatusFk", NomenclaturalStatus.class));
 		mapping.addMapper(DbObjectMapper.NewInstance("citation", "NomStatusRefFk"));
 		mapping.addMapper(RefDetailMapper.NewInstance("citationMicroReference","citation", "NomStatusRefDetailFk"));

@@ -27,7 +27,6 @@ import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 /**
  * @author a.mueller
  * @since 08.07.2017
- *
  */
 public class TestSalvadorAreaMapping {
     @SuppressWarnings("unused")
@@ -40,7 +39,6 @@ public class TestSalvadorAreaMapping {
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_preview();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_salvador();
 
-
     protected void doTest(ICdmDataSource cdmDestination){
 
         CdmIoApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, hbm2dll);
@@ -51,11 +49,6 @@ public class TestSalvadorAreaMapping {
         }
     }
 
-
-    /**
-     * @param app
-     * @throws Exception
-     */
     private void doTest2(CdmIoApplicationController app)  {
         UUID taxonUuid = UUID.fromString("eae896f0-3194-4b7b-a502-ad1d54ec36e6");
 //      Taxon taxon = (Taxon)app.getTaxonService().find(taxonUuid);
@@ -69,7 +62,9 @@ public class TestSalvadorAreaMapping {
           partSet.add(InfoPart.mapUriParams);
 
           EnumSet<InfoPart> parts = EnumSet.copyOf(partSet);
-          geoService.composeDistributionInfoFor(parts, taxonUuid, false, false, null, null, null, null, null, null, null);
+          geoService.composeDistributionInfoFor(parts, taxonUuid, false, false, null, true,
+                  null, null,
+                  null, null, null, null, false);
         } catch (Exception e) {
             e.printStackTrace();
         }
