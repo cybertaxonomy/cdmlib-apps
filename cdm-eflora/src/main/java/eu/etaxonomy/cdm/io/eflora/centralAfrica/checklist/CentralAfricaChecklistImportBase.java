@@ -212,7 +212,7 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 
 
 		//notes
-		if (CdmUtils.isNotEmpty(notes)){
+		if (isNotBlank(notes)){
 			String notesString = String.valueOf(notes);
 			if (notesString.length() > 65530 ){
 				notesString = notesString.substring(0, 65530) + "...";

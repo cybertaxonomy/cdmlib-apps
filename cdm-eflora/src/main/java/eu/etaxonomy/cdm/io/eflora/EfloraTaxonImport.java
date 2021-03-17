@@ -46,6 +46,7 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Feature;
@@ -441,7 +442,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 */
 	private void handleKeychoiceNum(UnmatchedLeads openKeys, PolytomousKey key, Element elKeychoice, List<PolytomousKeyNode> childNodes) {
 		Attribute numAttr = elKeychoice.getAttribute("num");
-		String num = CdmUtils.removeTrailingDot(numAttr == null? "":numAttr.getValue());
+		String num = CdmUtils.removeTrailingDots(numAttr == null? "":numAttr.getValue());
 		UnmatchedLeadsKey okk = UnmatchedLeadsKey.NewInstance(key, num);
 		Set<PolytomousKeyNode> matchingNodes = openKeys.getNodes(okk);
 		for (PolytomousKeyNode matchingNode : matchingNodes){
@@ -2218,13 +2219,13 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 				startMonth = getMonth(strPeriod.substring(0, end));
 			}
 
-			TimePeriod datePublished = TimePeriodParser.parseString(strPeriod);
+			VerbatimTimePeriod datePublished = TimePeriodParser.parseStringVerbatim(strPeriod);
 			if (startMonth != null){
 				datePublished.setStartMonth(startMonth);
 			}
 			ref.setDatePublished(datePublished);
 			ref.setTitle(title);
-			detailResult = CdmUtils.removeTrailingDot(detail);
+			detailResult = CdmUtils.removeTrailingDots(detail);
 			if (detailResult.endsWith(".") || detailResult.endsWith(";") || detailResult.endsWith(",")  ){
 				detailResult = detailResult.substring(0, detailResult.length() -1);
 			}
