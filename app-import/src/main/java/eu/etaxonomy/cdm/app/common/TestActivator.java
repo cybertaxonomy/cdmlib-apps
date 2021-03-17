@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.common;
 
 import java.awt.Color;
@@ -21,14 +20,14 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.service.DistributionTree;
 import eu.etaxonomy.cdm.api.service.dto.DistributionInfoDTO;
 import eu.etaxonomy.cdm.api.service.dto.DistributionInfoDTO.InfoPart;
-import eu.etaxonomy.cdm.api.utility.DistributionOrder;
+import eu.etaxonomy.cdm.api.util.DistributionOrder;
+import eu.etaxonomy.cdm.api.util.DistributionTree;
 import eu.etaxonomy.cdm.common.TreeNode;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.ext.geo.CondensedDistributionRecipe;
+import eu.etaxonomy.cdm.ext.geo.CondensedDistributionConfiguration;
 import eu.etaxonomy.cdm.ext.geo.IEditGeoService;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
@@ -50,8 +49,8 @@ public class TestActivator {
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_test1();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
 
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
@@ -75,28 +74,7 @@ public class TestActivator {
 	        app = CdmIoApplicationController.NewInstance(destination, dbSchemaValidation);
 
 
-	        IEditGeoService geoService = (IEditGeoService)app.getBean("editGeoService");
-
-	        Set<InfoPart> partSet = new HashSet<InfoPart>(Arrays.asList(InfoPart.values()));
-	        EnumSet<InfoPart> parts = EnumSet.copyOf(partSet);
-	        CondensedDistributionRecipe recipe = CondensedDistributionRecipe.EuroPlusMed;
-	        DistributionOrder distributionOrder = DistributionOrder.LABEL;
-	        List<String> propertyPaths = new ArrayList<>();
-	        boolean statusOrderPreference = true;
-	        boolean subAreaPreference = true;
-	        Set<MarkerType> hiddenAreaMarkerTypes = new HashSet<>(); //yy
-	        Map<PresenceAbsenceTerm, Color> presenceAbsenceTermColors = null;
-	        Set<NamedAreaLevel> omitLevels = new HashSet<>();
-	        List<Language> languages = new ArrayList<>();
-
-	        UUID taxonUuid = UUID.fromString("3e6b5448-4e42-40fa-b13c-a69381b95b13");
-	        DistributionInfoDTO dto = geoService.composeDistributionInfoFor(parts, taxonUuid, subAreaPreference,
-	                statusOrderPreference, hiddenAreaMarkerTypes, omitLevels,
-	                presenceAbsenceTermColors, languages, propertyPaths, recipe, distributionOrder);
-
-           DistributionTree tree = dto.getTree();
-           List<TreeNode<Set<Distribution>, NamedArea>> list = tree.toList();
-           System.out.println(list);
+	        doDistributionInfo(app);
 
 //	        URI uri = URI.create("file:///C:/localCopy/Data/xper/Cichorieae-DA2.sdd.xml");
 //	        SDDImportConfigurator configurator = SDDImportConfigurator.NewInstance(uri, destination);
@@ -108,6 +86,38 @@ public class TestActivator {
 //	        System.out.println(result.toString());
 
 	}
+
+
+    /**
+     * @param app
+     */
+    private void doDistributionInfo(CdmIoApplicationController app) {
+        IEditGeoService geoService = (IEditGeoService)app.getBean("editGeoService");
+
+        Set<InfoPart> partSet = new HashSet<>(Arrays.asList(InfoPart.values()));
+        EnumSet<InfoPart> parts = EnumSet.copyOf(partSet);
+        CondensedDistributionConfiguration config = CondensedDistributionConfiguration.NewDefaultInstance();
+        DistributionOrder distributionOrder = DistributionOrder.LABEL;
+        List<String> propertyPaths = new ArrayList<>();
+        boolean statusOrderPreference = true;
+        boolean subAreaPreference = true;
+        Set<MarkerType> hiddenMarker = new HashSet<MarkerType>((List)app.getTermService().find(new HashSet<>(Arrays.asList(
+                new UUID[]{UUID.fromString("0318c67d-e323-4e9c-bffb-bc0c7f8f9f40"),UUID.fromString("e2b42891-aa85-4a09-981b-b7d8f5749c54")}
+                ))));
+        boolean fallbackAsParent = true;
+        Map<PresenceAbsenceTerm, Color> presenceAbsenceTermColors = null;
+        Set<NamedAreaLevel> omitLevels = new HashSet<>();
+        List<Language> languages = new ArrayList<>();
+
+        UUID taxonUuid = UUID.fromString("70b157e2-b96d-44e8-8430-c4c2b6353244");
+        DistributionInfoDTO dto = geoService.composeDistributionInfoFor(parts, taxonUuid, subAreaPreference,
+                statusOrderPreference, hiddenMarker, fallbackAsParent, omitLevels,
+                presenceAbsenceTermColors, languages, propertyPaths, config, distributionOrder, true);
+
+         DistributionTree tree = dto.getTree();
+         List<TreeNode<Set<Distribution>, NamedArea>> list = tree.toList();
+         System.out.println(list);
+    }
 
 
     public static void main(String[] args) {
