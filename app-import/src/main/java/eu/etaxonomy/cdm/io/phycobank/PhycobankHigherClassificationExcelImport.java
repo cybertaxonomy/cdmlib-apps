@@ -270,7 +270,7 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
         List<Classification> classifications = getClassificationService().list(null, null, null, null, null);
         Reference sec = getSecReference(state, line);
         for (Classification classification: classifications){
-            if (classification.getCitation() != null && classification.getCitation().equals(sec)){
+            if (classification.getReference() != null && classification.getReference().equals(sec)){
                 result = classification;
             }
         }
