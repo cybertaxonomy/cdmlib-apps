@@ -225,7 +225,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
             UUID uuid = DefinedTerm.uuidTropicosNameIdentifier;
             TermVocabulary<DefinedTerm> voc = null;  //for now it goes to user defined voc
             DefinedTerm identifierType = this.getIdentiferType(state, uuid, tropicosIdTypeLabel, tropicosIdTypeLabel, null, voc);
-            Identifier<Taxon> identifier = Identifier.NewInstance(tropicosId, identifierType);
+            Identifier identifier = Identifier.NewInstance(tropicosId, identifierType);
             name.addIdentifier(identifier);
         }
 
