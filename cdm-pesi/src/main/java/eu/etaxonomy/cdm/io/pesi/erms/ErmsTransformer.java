@@ -284,9 +284,9 @@ public final class ErmsTransformer extends InputTransformerBase {
 			case 3: return NomenclaturalCode.ICNAFP;  //Plantae
 			case 4: return NomenclaturalCode.ICNAFP;  //Fungi
 			case 5: return NomenclaturalCode.ICNAFP ;  //Protozoa, not sure if correct, they have "subsp."
-			case 6: return NomenclaturalCode.ICNB ;  //Bacteria
+			case 6: return NomenclaturalCode.ICNP ;  //Bacteria
 			case 7: return NomenclaturalCode.ICNAFP;  //Chromista??, not sure if correct, they have "subsp."
-			case 147415: return NomenclaturalCode.ICNB;  //Monera, it is only an alternative name for Bacteria and should not be handled as separate kingdom
+			case 147415: return NomenclaturalCode.ICNP;  //Monera, it is only an alternative name for Bacteria and should not be handled as separate kingdom
 			//-> formatting of infrageneric taxa and available ranks (rank table) let me assume that ICZN is most suitable
 			//at the same time formatting of subsp. (with marker!) behaves like ICNAFP so this is unclear
 			default: return null;

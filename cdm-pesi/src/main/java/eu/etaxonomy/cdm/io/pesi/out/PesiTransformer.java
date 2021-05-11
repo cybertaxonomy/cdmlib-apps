@@ -1672,7 +1672,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			result = KINGDOM_ANIMALIA;
 		} else if (nomenclaturalCode.equals(NomenclaturalCode.ICNAFP)) {
 			result = KINGDOM_PLANTAE;
-		} else if (nomenclaturalCode.equals(NomenclaturalCode.ICNB)) {
+		} else if (nomenclaturalCode.equals(NomenclaturalCode.ICNP)) {
 			result = KINGDOM_BACTERIA;
 //		} else if (nomenclaturalCode.equals(NomenclaturalCode.)) { // Biota
 //			result =
