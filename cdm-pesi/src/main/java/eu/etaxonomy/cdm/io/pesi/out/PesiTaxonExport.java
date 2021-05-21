@@ -30,6 +30,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.TaxonServiceImpl;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.format.reference.NomenclaturalSourceFormatter;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbConstantMapper;
@@ -52,10 +53,10 @@ import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.NomenclaturalSource;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
-import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -1557,23 +1558,23 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")
 	private static String getNomRefString(TaxonName taxonName) {
-		INomenclaturalReference ref = taxonName.getNomenclaturalReference();
-		if (ref == null){
+		NomenclaturalSource nomSource = taxonName.getNomenclaturalSource();
+		if (nomSource == null || nomSource.getCitation() == null){
 			return null;
 		}
 		String result = null;
 		EnumSet<PesiSource> sources = getSources(taxonName);
 		if(sources.contains(PesiSource.EM)){
-		    if (! ref.isProtectedAbbrevTitleCache()){
-		        ref.setAbbrevTitleCache(null, false);  //to remove a false cache
+		    if (! nomSource.getCitation().isProtectedAbbrevTitleCache()){
+		        nomSource.getCitation().setAbbrevTitleCache(null, false);  //to remove a false cache
 		    }
-		    result = ref.getNomenclaturalCitation(taxonName.getNomenclaturalMicroReference());
+		    result = NomenclaturalSourceFormatter.INSTANCE().format(nomSource);
 		}else if(sources.contains(PesiSource.FE)||sources.contains(PesiSource.IF) ){
             //TODO still need to check if correct for FE + IF
-		    if (! ref.isProtectedAbbrevTitleCache()){
-                ref.setAbbrevTitleCache(null, false);  //to remove a false cache
+		    if (! nomSource.getCitation().isProtectedAbbrevTitleCache()){
+		        nomSource.getCitation().setAbbrevTitleCache(null, false);  //to remove a false cache
             }
-            result = ref.getNomenclaturalCitation(taxonName.getNomenclaturalMicroReference());
+            result = NomenclaturalSourceFormatter.INSTANCE().format(nomSource);
             return result;   // according to SQL script
 		}else if(sources.contains(PesiSource.ERMS)) {
             //result = null; //according to SQL script

@@ -24,7 +24,6 @@ import static eu.etaxonomy.cdm.io.common.ImportHelper.NO_OVERWRITE;
 import static eu.etaxonomy.cdm.io.common.ImportHelper.OBLIGATORY;
 import static eu.etaxonomy.cdm.io.common.ImportHelper.OVERWRITE;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,6 +43,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.common.DOI;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelReferenceImportValidator;
 import eu.etaxonomy.cdm.io.common.ICdmImport;
@@ -1225,14 +1225,9 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
         return result;
     }
 
-    /**
-     * @param team
-     * @param refAuthorString
-     * @param refId
-     */
     private static void checkTeam(Team team, String refAuthorString, Integer refId) {
         TeamDefaultCacheStrategy formatter = (TeamDefaultCacheStrategy) team.getCacheStrategy();
-        formatter.setEtAlPosition(100);
+
         if (formatter.getTitleCache(team).equals(refAuthorString)){
             team.setProtectedTitleCache(false);
         }else if(formatter.getTitleCache(team).replace(" & ", ", ").equals(refAuthorString.replace(" & ", ", ").replace(" ,", ","))){
@@ -1248,14 +1243,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
             team.setTitleCache(refAuthorString, true);
             logger.warn("Creation of titleCache for team with members did not (fully) work: " + refAuthorString + " <-> " + formatter.getTitleCache(team)+ " : " + refId);
         }
-
     }
 
-    /**
-     * @param hasDedupMember
-     * @param result
-     * @return
-     */
     private static void checkPerson(Person person, String refAuthorString, boolean hasDedupMember, Integer refId) {
         PersonDefaultCacheStrategy formatter = (PersonDefaultCacheStrategy) person.getCacheStrategy();
 
@@ -1294,10 +1283,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
         }
     }
 
-    /**
-     * @param refAuthorString
-     * @return
-     */
     private static boolean containsEdOrColon(String str) {
         if (str.contains(" ed.") || str.contains(" Ed.") || str.contains("(ed.")
                 || str.contains("[ed.") || str.contains("(Eds)") || str.contains("(Eds.)") ||
