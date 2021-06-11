@@ -188,27 +188,19 @@ public class BerlinModelAuthorTeamExport extends BerlinModelExportBase<Team> {
 	@SuppressWarnings("unused")
 	private static String getFullAuthorTeamCache(Team team){
 		if (team.isProtectedTitleCache()){
-			return team.getNomenclaturalTitle();
+			return team.getNomenclaturalTitleCache();
 		}else{
 			return null;
 		}
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(BerlinModelExportState state){
 		return ! state.getConfig().isDoAuthors();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportBase#getStandardMethodParameter()
-	 */
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
 	}
-
 }

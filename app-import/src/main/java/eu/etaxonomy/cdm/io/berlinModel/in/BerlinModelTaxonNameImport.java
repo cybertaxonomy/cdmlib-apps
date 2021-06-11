@@ -832,8 +832,8 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
                 if (Objects.equals(dedupAuthor, combAuthor)){
                     taxonName.setNomenclaturalReference(dedupCandidate);
                     candidateMatches = true;
-                }else if (Objects.equals(dedupAuthor.getNomenclaturalTitle(), combAuthor.getNomenclaturalTitle())){
-                    logger.warn("Year nomAuthor equal in nomTitle but not same: " + dedupAuthor.getNomenclaturalTitle() + "; " + fullNomRefCache + "; nameId " + nameId);
+                }else if (Objects.equals(dedupAuthor.getNomenclaturalTitleCache(), combAuthor.getNomenclaturalTitleCache())){
+                    logger.warn("Year nomAuthor equal in nomTitle but not same: " + dedupAuthor.getNomenclaturalTitleCache() + "; " + fullNomRefCache + "; nameId " + nameId);
                     taxonName.setNomenclaturalReference(dedupCandidate);
                     candidateMatches = true;
                 }
@@ -1476,7 +1476,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
                     if (cand.matchResult.isFailed() && exemplar.ref.getInReference() != null ){
                         FinalCandidate candInRef = matchSingle(finalInRefCandidates, dedupCandidate, new ReferenceCandidate(exemplar.ref.getInReference(), null), nameTitleCache);
                         if(candInRef.matchResult.isSuccessful()){
-                            Reference clone = (Reference)exemplar.ref.clone();
+                            Reference clone = exemplar.ref.clone();
                             clone.setInReference(dedupCandidate);
                             FinalCandidate inRefCand = new FinalCandidate(new ReferenceCandidate(clone, exemplar.detail),
                                     exemplar, candInRef.matchResult);
@@ -1515,9 +1515,9 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
                 String cabbrevCache = dedupCandidate.getAbbrevTitleCache();
                 if (exemplarAuthor != null && candidateAuthor != null){
                     exemplarAuthor.getTitleCache();
-                    String exemplarAuthorStr = exemplarAuthor.getNomenclaturalTitle();
+                    String exemplarAuthorStr = exemplarAuthor.getNomenclaturalTitleCache();
 //                    System.out.println(exemplarAuthor.getTitleCache());
-                    String candidateAuthorStr = candidateAuthor.getNomenclaturalTitle();
+                    String candidateAuthorStr = candidateAuthor.getNomenclaturalTitleCache();
 //                    System.out.println(candidateAuthor.getTitleCache());
                     if (!exemplarAuthorStr.equals(candidateAuthorStr)){
                         match = MatchResult.NewInstance(":authorship", MatchMode.EQUAL, exemplarAuthorStr, candidateAuthorStr);

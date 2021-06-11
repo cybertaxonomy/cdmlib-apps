@@ -568,7 +568,7 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
             return authorMap.get(authorsStr);
         }else{
             TeamOrPersonBase<?> example = parser.author(authorsStr);
-            String testStr = example.getNomenclaturalTitle();
+            String testStr = example.getNomenclaturalTitleCache();
             if(!authorsStr.equals(testStr)){
                logger.warn("nom title is not equal");
             }
@@ -610,7 +610,7 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
     }
 
     private Person getExistingPerson(SimpleExcelTaxonImportState<CONFIG> state, String line, Person newPerson) {
-        String authorsStr = newPerson.getNomenclaturalTitle();
+        String authorsStr = newPerson.getNomenclaturalTitleCache();
         if (authorMap.get(authorsStr)!= null){
             return (Person)authorMap.get(authorsStr);
         }else{

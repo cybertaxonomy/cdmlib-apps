@@ -1095,8 +1095,6 @@ public class CentralAfricaFernsTaxonRelationImport
 		authorsAreSame &= getNomTitleNz(existingName.getBasionymAuthorship()).equals(getNomTitleNz(newName.getBasionymAuthorship()));
 		authorsAreSame &= getNomTitleNz(existingName.getExBasionymAuthorship()).equals(getNomTitleNz(newName.getExBasionymAuthorship()));
 		return authorsAreSame;
-
-
 	}
 
 	/**
@@ -1107,7 +1105,7 @@ public class CentralAfricaFernsTaxonRelationImport
 	 */
 	private String getNomTitleNz(INomenclaturalAuthor author) {
 		if (author != null){
-			return CdmUtils.Nz(author.getNomenclaturalTitle());
+			return CdmUtils.Nz(author.getNomenclaturalTitleCache());
 		}else{
 			return "";
 		}

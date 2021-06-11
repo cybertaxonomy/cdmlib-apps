@@ -178,7 +178,7 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 					success &= makeSequence(state, team, teamId, rsSequence, personMap);
 
 					team.setTitleCache(fullAuthorTeamCache, preliminaryFlag);
-					team.setNomenclaturalTitle(authorTeamCache, preliminaryFlag);
+					team.setNomenclaturalTitleCache(authorTeamCache, preliminaryFlag);
 					//not yet supported by model
 //	                team.setOriginalNomenclaturalTitle(authorTeamCache);
 
@@ -299,14 +299,14 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
     }
 
     protected void checkTeamNomenclaturalTitle(Team team, String authorTeamCache, int authorTeamId) {
-        if (team.getCacheStrategy().getNomenclaturalTitle(team).equals(authorTeamCache)){
+        if (team.getCacheStrategy().getNomenclaturalTitleCache(team).equals(authorTeamCache)){
             team.setProtectedNomenclaturalTitleCache(false);
-        }else if(team.getCacheStrategy().getNomenclaturalTitle(team).replace(" ,", ",").equals(authorTeamCache)){
+        }else if(team.getCacheStrategy().getNomenclaturalTitleCache(team).replace(" ,", ",").equals(authorTeamCache)){
             //also accept teams with ' , ' as separator as not protected
             team.setProtectedNomenclaturalTitleCache(false);
         }else{
-            team.setNomenclaturalTitle(authorTeamCache, true);
-            logger.warn("Creation of nomTitle for team with members did not work: " + authorTeamCache + " <-> " + team.getCacheStrategy().getNomenclaturalTitle(team)+ " : " + authorTeamId);
+            team.setNomenclaturalTitleCache(authorTeamCache, true);
+            logger.warn("Creation of nomTitle for team with members did not work: " + authorTeamCache + " <-> " + team.getCacheStrategy().getNomenclaturalTitleCache(team)+ " : " + authorTeamId);
         }
     }
 
@@ -340,7 +340,7 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
     }
 
     protected static boolean isEtAl(Person member) {
-        if (member != null && isEtAl(member.getTitleCache()) && isEtAl(member.getNomenclaturalTitle())){
+        if (member != null && isEtAl(member.getTitleCache()) && isEtAl(member.getNomenclaturalTitleCache())){
             return true;
         }
         return false;

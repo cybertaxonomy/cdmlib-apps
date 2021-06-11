@@ -865,7 +865,7 @@ public class CubaExcelImport
         if (author1 == null || author2 == null){
             return false;
         }else {
-            return author1.getNomenclaturalTitle().equals(author2.getNomenclaturalTitle());
+            return author1.getNomenclaturalTitleCache().equals(author2.getNomenclaturalTitleCache());
         }
     }
 
@@ -1007,7 +1007,7 @@ public class CubaExcelImport
     }
 
     private Person normalizePerson(Person person) {
-        String title = person.getNomenclaturalTitle();
+        String title = person.getNomenclaturalTitleCache();
         title = title.replaceAll("(?<=[a-zA-Z])\\.(?=[a-zA-Z])", ". ");
         person.setNomenclaturalTitle(title);
         boolean isFilius = title.endsWith(" f.");

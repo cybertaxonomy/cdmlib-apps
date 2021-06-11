@@ -1358,17 +1358,11 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
         }
     }
 
-    /**
-     * @param state
-     * @param refAuthorString
-     * @param nomAuthor
-     * @return
-     */
     private static boolean handleSimilarAuthors(BerlinModelImportState state, String refAuthorString,
             TeamOrPersonBase<?> nomAuthor, int refId) {
         String nomTitle = nomAuthor.getTitleCache();
 
-        if (refAuthorString.equals(nomAuthor.getNomenclaturalTitle())){
+        if (refAuthorString.equals(nomAuthor.getNomenclaturalTitleCache())){
             //nomTitle equal
             return true;
         }else{

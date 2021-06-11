@@ -40,19 +40,17 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
-
 /**
  * @author a.mueller
- *
  */
 @Component
 public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
+
     private static final long serialVersionUID = 6442665916458420942L;
     private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeTaxonImport.class);
 
-
 	@Override
-	protected TeamOrPersonBase handleNomenclaturalReference(TaxonName name, String value) {
+	protected TeamOrPersonBase<?> handleNomenclaturalReference(TaxonName name, String value) {
 		Reference nomRef = ReferenceFactory.newGeneric();
 		nomRef.setTitleCache(value, true);
 		parseNomStatus(nomRef, name);
@@ -71,7 +69,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		}else if (refTeam == null ){
 			logger.warn("Name has nom. ref. but no nom.ref. author. Name: " + name.getTitleCache() + ", Nom.Ref.: " + value);
 		}else if (! authorTeamsMatch(refTeam, nameTeam)){
-			logger.warn("Nom.Ref. author and comb. author do not match: " + nomRef.getTitleCache() + " <-> " + nameTeam.getNomenclaturalTitle());
+			logger.warn("Nom.Ref. author and comb. author do not match: " + nomRef.getTitleCache() + " <-> " + nameTeam.getNomenclaturalTitleCache());
 		}else {
 			nomRef.setAuthorship(nameTeam);
 			nomRef.setTitle(CdmUtils.Nz(nomRef.getTitle()) + " - no title given yet -");
@@ -268,8 +266,8 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	 * @param nameTeam
 	 * @return
 	 */
-	private boolean authorTeamsMatch(TeamOrPersonBase refAuthorTeam, TeamOrPersonBase nameTeam) {
-		String nameTeamString = nameTeam.getNomenclaturalTitle();
+	private boolean authorTeamsMatch(TeamOrPersonBase<?> refAuthorTeam, TeamOrPersonBase<?> nameTeam) {
+		String nameTeamString = nameTeam.getNomenclaturalTitleCache();
 		String refAuthorTeamString = refAuthorTeam.getTitleCache();
 		if (nameTeamString.equalsIgnoreCase(refAuthorTeamString)){
 			return true;
@@ -321,7 +319,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 			}
 			return true;
 		}
-		boolean result = checkIpniAuthor(nameTeam.getNomenclaturalTitle(), refAuthorTeam);
+		boolean result = checkIpniAuthor(nameTeam.getNomenclaturalTitleCache(), refAuthorTeam);
 		return result;
 	}
 
@@ -341,19 +339,13 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		return false;
 	}
 
-	/**
-	 * @param state
-	 * @param elNom
-	 * @param taxon
-	 * @param homotypicalGroup
-	 */
 	@Override
 	protected void handleTypeRef(EfloraImportState state, Element elNom, Taxon taxon, HomotypicalGroup homotypicalGroup) {
 		verifyNoChildren(elNom);
 		String typeRef = elNom.getTextNormalize();
 		typeRef = removeStartingTypeRefMinus(typeRef);
 		typeRef = removeTypePrefix(typeRef);
-		TypeDesignationBase typeDesignation = SpecimenTypeDesignation.NewInstance();
+		TypeDesignationBase<?> typeDesignation = SpecimenTypeDesignation.NewInstance();
 		makeSpecimenTypeDesignation(new StringBuffer("Type"), typeRef, typeDesignation);
 		for (TaxonName name : homotypicalGroup.getTypifiedNames()){
 			name.addTypeDesignation(typeDesignation, true);
@@ -369,7 +361,4 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
     protected void handleGenus(String value, INonViralName taxonName) {
 		// do nothing
 	}
-
-
-
 }

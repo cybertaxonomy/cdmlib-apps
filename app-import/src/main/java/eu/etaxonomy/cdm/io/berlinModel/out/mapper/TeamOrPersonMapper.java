@@ -76,7 +76,7 @@ public class TeamOrPersonMapper extends DbObjectMapper {
 //				System.out.println(teamFk);
 				stmtInsertTeam.setInt(1, teamFk);
 				stmtInsertTeam.setString(2, agent.getTitleCache());
-				stmtInsertTeam.setString(3, agent.getNomenclaturalTitle());
+				stmtInsertTeam.setString(3, agent.getNomenclaturalTitleCache());
 				stmtInsertTeam.executeUpdate();
 
 				stmtInsertSequence.setInt(1, teamFk);

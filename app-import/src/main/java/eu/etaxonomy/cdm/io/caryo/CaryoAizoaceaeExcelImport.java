@@ -505,8 +505,8 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
     }
 
     private String authorTitle(TeamOrPersonBase<?> author, TeamOrPersonBase<?> exAuthor) {
-        String authorStr = author == null? null: author.getNomenclaturalTitle();
-        String exAuthorStr = exAuthor == null? null: exAuthor.getNomenclaturalTitle();
+        String authorStr = author == null? null: author.getNomenclaturalTitleCache();
+        String exAuthorStr = exAuthor == null? null: exAuthor.getNomenclaturalTitleCache();
         return CdmUtils.concat(" ex ", exAuthorStr, authorStr);
     }
 

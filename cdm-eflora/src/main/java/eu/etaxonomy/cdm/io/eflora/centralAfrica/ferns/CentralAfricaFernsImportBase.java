@@ -249,7 +249,7 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 			parser.handleAuthors(taxonName, taxonName.getNameCache().trim() + " " + authorString, authorString);
 		}
 		if (! isHigherTaxon){
-			String combinationAuthor = taxonName.getCombinationAuthorship()==null ? "" :taxonName.getCombinationAuthorship().getNomenclaturalTitle();
+			String combinationAuthor = taxonName.getCombinationAuthorship()==null ? "" :taxonName.getCombinationAuthorship().getNomenclaturalTitleCache();
 			if (StringUtils.isNotBlank(authorsAbbrev) && ! authorsAbbrev.equalsIgnoreCase(combinationAuthor)){
 				//it is expected that the fullAuthor and the abbrevAuthor are the combination authors but very often it is not
 				logger.warn(taxonNumber + ": Rank author and abbrev author are not equal: " + authorString + "\t<-> " + combinationAuthor + "\t<-> " + authorsAbbrev);
