@@ -46,7 +46,7 @@ private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_caryop
 //      String username = "edit";
 //      sourceParam = CdmDataSource.NewMySqlInstance(server, database, username, AccountStore.readOrStorePassword(server, database, username, null));
 
-        CdmLightExportConfigurator cdmlightExportConfigurator = new CdmLightExportConfigurator(null);
+        CdmLightExportConfigurator cdmlightExportConfigurator = CdmLightExportConfigurator.NewInstance();
 
         CdmDefaultExport<CdmLightExportConfigurator> cdmLightExport = new CdmDefaultExport<>();
 

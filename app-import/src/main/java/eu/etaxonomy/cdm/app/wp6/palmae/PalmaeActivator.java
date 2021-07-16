@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.app.wp6.palmae;
 
 import java.io.File;
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
@@ -21,6 +20,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.images.ImageImportConfigurator;
 import eu.etaxonomy.cdm.app.tcs.TcsSources;
 import eu.etaxonomy.cdm.app.wp6.palmae.config.PalmaeProtologueImportConfigurator;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.PalmaeImageImport;
@@ -95,7 +95,7 @@ public class PalmaeActivator {
 		try {
 			source = new URI(tcsSource);
 
-			TcsRdfImportConfigurator tcsImportConfigurator = TcsRdfImportConfigurator.NewInstance(source,  destination);
+			TcsRdfImportConfigurator tcsImportConfigurator = TcsRdfImportConfigurator.NewInstance(source, destination);
 
 			tcsImportConfigurator.setClassificationUuid(treeUuid);
 			tcsImportConfigurator.setSecUuid(secUuid);

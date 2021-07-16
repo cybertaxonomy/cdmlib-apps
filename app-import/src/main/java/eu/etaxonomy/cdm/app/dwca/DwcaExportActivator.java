@@ -6,11 +6,9 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.dwca;
 
 import java.io.File;
-import eu.etaxonomy.cdm.common.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -33,11 +32,10 @@ import eu.etaxonomy.cdm.model.agent.Person;
 
 
 /**
- *
  * @author a.mueller
- *
  */
 public class DwcaExportActivator {
+
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(DwcaExportActivator.class);
 
@@ -171,18 +169,9 @@ public class DwcaExportActivator {
 		return emlRecord;
 	}
 
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		DwcaExportActivator ex = new DwcaExportActivator();
 		ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
-
 		ex.doExport(source);
 	}
-
-
-
-
 }

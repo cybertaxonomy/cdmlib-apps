@@ -24,18 +24,18 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @since 23.06.2009
- * @version 1.0
  */
 public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<DefaultImportState, File> {
-	@SuppressWarnings("unused")
+
+    private static final long serialVersionUID = 803256639557697105L;
+
+    @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PalmaeProtologueImportConfigurator.class);
 
 	private String urlString = null;
 
-
 	//TODO
 	private static IInputTransformer defaultTransformer = null;
-
 
 	public static PalmaeProtologueImportConfigurator NewInstance(File source, ICdmDataSource datasource, String urlString){
 		PalmaeProtologueImportConfigurator result = new PalmaeProtologueImportConfigurator();
@@ -53,28 +53,19 @@ public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<D
 		super(defaultTransformer);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#makeIoClassList()
-	 */
-	@Override
+	@SuppressWarnings({ "unchecked" })
+    @Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
 				ProtologueImport.class
 		};
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
-	 */
 	@Override
     public DefaultImportState getNewState() {
 		return new DefaultImportState(this);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSourceReference()
-	 */
 	@Override
 	public Reference getSourceReference() {
 		//TODO
@@ -84,9 +75,6 @@ public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<D
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IIoConfigurator#getSourceNameString()
-	 */
 	@Override
     public String getSourceNameString() {
 		if (this.getSource() == null){
@@ -104,21 +92,11 @@ public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<D
 		this.originalSourceTaxonNamespace = originalSourceTaxonNamespace;
 	}
 
-	/**
-	 * @return the urlString
-	 */
 	public String getUrlString() {
 		return urlString;
 	}
 
-	/**
-	 * @param urlString the urlString to set
-	 */
 	public void setUrlString(String urlString) {
 		this.urlString = urlString;
 	}
-
-
-
-
 }

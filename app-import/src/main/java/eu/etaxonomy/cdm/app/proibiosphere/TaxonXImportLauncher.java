@@ -84,10 +84,7 @@ public class TaxonXImportLauncher {
 
         boolean useOldUnparsedSynonymExtraction = false;
 
-
-
-
-        Map<String,List<URI>>documentMap = new HashMap<String, List<URI>>();
+        Map<String,List<URI>>documentMap = new HashMap<>();
 
         /*HOW TO HANDLE SECUNDUM REFERENCE*/
         boolean reuseSecundum = askIfReuseSecundum();
@@ -99,7 +96,7 @@ public class TaxonXImportLauncher {
         loadTreatmentIfPresent(filterType,taxonList, documentMap);
 //        loadTreatmentIfPresent(FilterType.MODS, modsList, documents,documentMap);
 
-        CdmDefaultImport<TaxonXImportConfigurator> taxonImport = new CdmDefaultImport<TaxonXImportConfigurator>();
+        CdmDefaultImport<TaxonXImportConfigurator> taxonImport = new CdmDefaultImport<>();
 
         ICdmDataSource destination = cdmDestination;
         TaxonXImportConfigurator config = prepareTaxonXImport(destination,reuseSecundum, secundum, tnomenclature, alwaysUseDefaultClassification);
@@ -142,6 +139,7 @@ public class TaxonXImportLauncher {
         Scanner scan = new Scanner(System.in);
         System.out.println(question);
         String index = scan.nextLine();
+        scan.close();
         return index;
     }
 
@@ -154,7 +152,7 @@ public class TaxonXImportLauncher {
         Reference reference = ReferenceFactory.newGeneric();
         //            String tref = askQuestion("Import source? (ie Plazi document ID)");
         String tref="PLAZI - "+source.getPath().split("/")[source.getPath().split("/").length-1];
-        reference.setTitleCache(tref,true);
+        reference.setTitleCache(tref, true);
         reference.setTitle(tref);
 
         taxonxImportConfigurator.setSourceReference(reference);
@@ -170,14 +168,6 @@ public class TaxonXImportLauncher {
         taxonxImportConfigurator.setSource(source);
     }
 
-    /**
-     * @param destination
-     * @param reuseSecundum
-     * @param secundum
-     * @param tnomenclature
-     * @param alwaysUseDefaultClassification
-     * @return
-     */
     private static TaxonXImportConfigurator prepareTaxonXImport(ICdmDataSource destination, boolean reuseSecundum, Reference secundum, NomenclaturalCode tnomenclature, boolean alwaysUseDefaultClassification) {
         TaxonXImportConfigurator taxonxImportConfigurator = TaxonXImportConfigurator.NewInstance(destination);
 
@@ -201,16 +191,9 @@ public class TaxonXImportLauncher {
         return taxonxImportConfigurator;
     }
 
-    /**
-     * @param filterType
-     * @param modsList
-     * @param documents
-     * @param documentMap
-     * @return
-     */
     private static Map<String, List<URI>> loadTreatmentIfPresent(FilterType filterType, String[] filterList, Map<String, List<URI>> documentMap) {
 
-    	Map<String, List<String>> docs = new HashMap<String, List<String>>();
+    	Map<String, List<String>> docs = new HashMap<>();
         try {
             List<String> docList;
             String inputLine;

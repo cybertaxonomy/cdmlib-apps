@@ -27,42 +27,47 @@ import eu.etaxonomy.cdm.model.term.DefinedTerm;
 
 /**
  * @author a.mueller
- * @since 18.10.2017
  */
-public class CaryoSppIdentifierActivator {
+public class AizoaceaeIdentifierActivator {
 
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(CaryoSppIdentifierActivator.class);
+    private static final Logger logger = Logger.getLogger(AizoaceaeIdentifierActivator.class);
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
 
-    private static final UUID idTypeUuid = DefinedTerm.uuidWfoNameIdentifier;
-//    private static final UUID idTypeUuid = DefinedTerm.uuidIpniNameIdentifier;
+    static final UUID identifierUuid = DefinedTerm.uuidWfoNameIdentifier;
+    String filename = "Aizoaceae_SpeciesAndBelowWithoutWFO-ID.txt";
+//    String filename = "Aizoaceae_IPNI_IDs.txt";
+    boolean warnAndDoNotOverrideIfExists = true;
+
+//    static final UUID identifierUuid = DefinedTerm.uuidWfoNameIdentifier;
+//    String filename = "WFO2CDM_Cactaceae_WFO-ID.txt";
+
+//    static final UUID identifierUuid = DefinedTerm.uuidIpniNameIdentifier;
+//    String filename = "WFO2CDM_Cactaceae_IPNI-ID.txt";
 
     //check - import
     static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
     private void doImport(ICdmDataSource cdmDestination){
 
-        InputStreamReader source = getIdentifierStream();
+        InputStreamReader source = getNepenthesIdentifier();
         IdentifierImportConfigurator config= IdentifierImportConfigurator.NewInstance(source, cdmDestination);
+        config.setWarnAndDoNotOverrideIfExists(warnAndDoNotOverrideIfExists);
         config.setDbSchemaValidation(dbSchemaValidation);
-        config.setIdentifierTypeUuid(idTypeUuid);
+        config.setIdentifierTypeUuid(identifierUuid);
         config.setCdmClass(TaxonName.class);
         config.setCheck(check);
-        config.setIgnoreEmptyIdentifier(true);
 
         CdmDefaultImport<IdentifierImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
-
     }
 
-    private InputStreamReader getIdentifierStream() {
-        String filename = "Cactaceae-SpeciesAndBelowWithoutWFO-ID3.csv";
+    private InputStreamReader getNepenthesIdentifier() {
 
 //        URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol14_final2.xml")
         String path = "C://opt//data//Caryophyllales";
@@ -81,11 +86,8 @@ public class CaryoSppIdentifierActivator {
         }
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
-        CaryoSppIdentifierActivator me = new CaryoSppIdentifierActivator();
+        AizoaceaeIdentifierActivator me = new AizoaceaeIdentifierActivator();
         me.doImport(cdmDestination);
         System.exit(0);
     }
