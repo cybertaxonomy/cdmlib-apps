@@ -70,8 +70,9 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
             String langStr = getValueNd(record, "Lengua");
             Language language = languagesMap.get(langStr);
             if (language == null && langStr != null){
-                logger.warn("Language not found: " + langStr);
+                addNewLanguage(state, langStr);
             }
+            logger.warn("Common names for the same taxon using the same common name but differing in source are currently not yet deduplicated. Needs to be fixed for next import");
 
             String refStr = getValue(record, "ReferenciasNombreComun");
             CommonTaxonName commonName = CommonTaxonName.NewInstance(nomComunStr,
@@ -87,6 +88,46 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
 
             getTaxonService().save(taxon);
         }
+    }
+
+    private Language addNewLanguage(SimpleExcelTaxonImportState<CONFIG> state, String langStr) {
+        UUID uuid = getNewLanguageUuid(langStr);
+        if (uuid != null){
+            Language newLanguage = addLanguage(state, langStr, uuid);
+            getTermService().saveOrUpdate(newLanguage);
+            logger.warn("New language added: " + langStr + "("+ uuid + ")");
+            return newLanguage;
+        }else{
+            logger.warn("Language not recognized: " + langStr);
+            return null;
+        }
+    }
+
+    private UUID getNewLanguageUuid(String langStr) {
+        if (langStr.equals("Mixteco")){return MexicoConabioTransformer.uuidMixteco;}
+        else if (langStr.equals("Náhuatl-Español")){return MexicoConabioTransformer.uuidNahuatlEspanol;}
+        else if (langStr.equals("Español-Náhuatl")){return MexicoConabioTransformer.uuidEspanolNahuatl;}
+        else if (langStr.equals("Tzotzil")){return MexicoConabioTransformer.uuidTzotzil;}
+        else if (langStr.equals("Tetzal")){return MexicoConabioTransformer.uuidTetzal;}
+        else if (langStr.equals("Tzeltal")){return MexicoConabioTransformer.uuidTzeltal;}
+        else if (langStr.equals("Mazateco")){return MexicoConabioTransformer.uuidMazateco;}
+        else if (langStr.equals("Tepehua")){return MexicoConabioTransformer.uuidTepehua;}
+
+        else if (langStr.equals("Cuicateco")){return MexicoConabioTransformer.uuidCuicateco;}
+        else if (langStr.equals("Zoque")){return MexicoConabioTransformer.uuidZoque;}
+        else if (langStr.equals("Tepehuano")){return MexicoConabioTransformer.uuidTepehuano;}
+        else if (langStr.equals("Popoloca")){return MexicoConabioTransformer.uuidPopoloca;}
+        else if (langStr.equals("Tojolabal")){return MexicoConabioTransformer.uuidTojolabal;}
+
+        else if (langStr.equals("Mayo")){return MexicoConabioTransformer.uuidMayo;}
+        else if (langStr.equals("Huichol")){return MexicoConabioTransformer.uuidHuichol;}
+        else if (langStr.equals("Cora")){return MexicoConabioTransformer.uuidCora;}
+        else if (langStr.equals("Seri")){return MexicoConabioTransformer.uuidSeri;}
+
+
+
+
+        return null;
     }
 
     private void initTaxa() {
@@ -106,14 +147,19 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
             languagesVoc = this.getVocabularyService().find(MexicoConabioTransformer.uuidMexicanLanguagesVoc);
             if (languagesVoc == null){
                 createLanguagesVoc(state);
+            }else{
+                fillLanguageMap();
             }
         }
     }
 
-    /**
-     * @param state
-     * @return
-     */
+    private void fillLanguageMap() {
+        for (Language language: languagesVoc.getTerms()){
+            String label = language.getLabel();
+            languagesMap.put(label, language);
+        }
+    }
+
     private void createLanguagesVoc(SimpleExcelTaxonImportState<CONFIG> state) {
         URI termSourceUri = null;
         String label = "Mexican States";
@@ -148,27 +194,18 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
         return;
     }
 
-    /**
-     * @param state
-     * @param string
-     * @param uuidaguascalientes
-     */
-    private void addLanguage(SimpleExcelTaxonImportState<CONFIG> state, String label, UUID uuid) {
+    private Language addLanguage(SimpleExcelTaxonImportState<CONFIG> state, String label, UUID uuid) {
         String abbrev = null;
         Language language = Language.NewInstance(
                 label, label, abbrev);
         language.setUuid(uuid);
         languagesVoc.addTerm(language);
         languagesMap.put(label, language);
+        return language;
     }
 
-    /**
-     * @param state
-     * @param refStr
-     * @return
-     */
     private Reference getReference(SimpleExcelTaxonImportState<CONFIG> state, String refStr) {
-        if (StringUtils.isNoneBlank(refStr)){
+        if (StringUtils.isBlank(refStr)){
             return null;
         }
         Reference ref = state.getReference(refStr);

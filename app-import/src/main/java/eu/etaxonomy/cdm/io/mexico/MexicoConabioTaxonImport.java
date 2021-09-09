@@ -48,6 +48,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
+import eu.etaxonomy.cdm.model.term.DefinedTerm;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
@@ -96,7 +97,15 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
             "FamAceptada","GenAceptado","CategoriaTaxAceptada","NombreAceptado","AutorNombreAceptado","AutorSinAnioAceptado","AnioAceptado",
             "TipoRelacion","ReferenciaSinonimia","ComentariosRevisor",
             "CompareID","IdCAT_OLD","Nombre_OLD","AutorSinAnio_OLD",
-            "CitaNomenclatural_OLD","ReferenceType","IsUpdated"
+            "CitaNomenclatural_OLD","ReferenceType","IsUpdated",
+
+            "Hibrido","ReferenciaNombreHibrido","AutorHibrido","EstatusHibrido",
+            "Subgenero","ReferenciaNombreSubgenero","EstatusSubgenero","AutorSubgenero",
+            "Subtribu","ReferenciaClasificacionSubtribu","AutorSubtribu","EstatusSubtribu",
+            "Subfamilia","ReferenciaClasificacionSubfamilia","AutorSubfamilia","EstatusSubfamilia",
+            "ReferenciaClasificacionTribu",
+            "Supertribu","ReferenciaClasificacionSupertribu","AutorSupertribu","EstatusSupertribu",
+
         });
 
 
@@ -115,19 +124,26 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
 
         //Name
-        IBotanicalName speciesName = makeName(line, record, state);
+        IBotanicalName name = makeName(line, record, state);
 
         //sec
-        String secRefStr = getValueNd(record, "ReferenciaNombre");
-        Reference sec = getSecRef(state, secRefStr, line);
+        String referenciaNombre = getValueNd(record, "ReferenciaNombre");
 
         //status
         String statusStr = getValue(record, "EstatusNombre");
+        String originalInfo = null;
         TaxonBase<?> taxonBase;
         if ("aceptado".equals(statusStr)){
-            taxonBase = Taxon.NewInstance(speciesName, sec);
+            Reference sec = getSecRef(state, referenciaNombre, line);
+            taxonBase = Taxon.NewInstance(name, sec);
         }else if (statusStr.startsWith("sin")){
-            taxonBase = Synonym.NewInstance(speciesName, sec);
+            String secRefStr = getValue(record, "ReferenciaSinonimia");
+
+            Reference sec = getSynSec(state, secRefStr, referenciaNombre, line);
+            taxonBase = Synonym.NewInstance(name, sec);
+            if (isNotBlank(secRefStr)){
+                originalInfo = "referenciaNombre: " + referenciaNombre;
+            }
         }else{
             throw new RuntimeException(line + " Status not recognized: " + statusStr);
         }
@@ -140,15 +156,48 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
 
         //id
         String idCat = getValue(record, "IdCAT");
-        this.addOriginalSource(taxonBase, idCat, TAXON_NAMESPACE, state.getConfig().getSourceReference());
+        this.addOriginalSource(taxonBase, idCat, TAXON_NAMESPACE, state.getConfig().getSourceReference(), originalInfo);
+        name.addIdentifier(idCat, getConabioIdIdentifierType(state));
+
+//        checkSame(record, "EstatusHibrido", statusStr, line);
+//        checkSame(record, "AutorHibrido", "AutorNombre", line);
+//        checkSame(record, "ReferenciaNombreHibrido", "ReferenciaNombre", line);
+//        checkSame(record, "Hibrido", "AutorNombre", line);
 
         //save
         getTaxonService().save(taxonBase);
         taxonIdMap.put(idCat, taxonBase);
-
     }
 
+    private DefinedTerm getConabioIdIdentifierType(SimpleExcelTaxonImportState<CONFIG> state) {
+        DefinedTerm conabioIdIdentifierType = getIdentiferType(state, MexicoConabioTransformer.uuidConabioIdIdentifierType, "Conabio name identifier", "Conabio name identifier", "CONABIO ID", null);
+        return conabioIdIdentifierType;
+    }
 
+    private void checkSame(Map<String, String> record, String key, String compareValue, String line) {
+        String value = getValue(record, key);
+        if (value != null && !value.equals(compareValue)){
+            logger.warn(line+ ": Value differs for "+ key +": " + value + "<->" + compareValue );
+        }
+    }
+
+    private Reference getSynSec(SimpleExcelTaxonImportState<CONFIG> state, String secRefStr,
+            String referenciaNombre, String line) {
+        if (isBlank(secRefStr)){
+            secRefStr = referenciaNombre;
+        }
+        if (isNotBlank(secRefStr)){
+            Reference result = state.getReference(secRefStr);
+            if (result == null){
+                result = ReferenceFactory.newBook();
+                result.setTitleCache(secRefStr, true);
+                state.putReference(secRefStr, result);
+            }
+            return result;
+        }else{
+            return null;
+        }
+    }
 
     /**
      * @param state
@@ -233,7 +282,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         Rank rank = null;
         try {
             rank = state.getTransformer().getRankByKey(rankStr);
-            if (Rank.SUBSPECIES().equals(rank) || Rank.VARIETY().equals(rank)){
+            if (Rank.SUBSPECIES().equals(rank) || Rank.VARIETY().equals(rank) || Rank.FORM().equals(rank) || Rank.RACE().equals(rank)){
                 int i = nameStr.lastIndexOf(" ");
                 nameStr = nameStr.substring(0, i) + " " + rank.getAbbreviation() + nameStr.substring(i);
             }
@@ -293,6 +342,10 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
 
         this.addOriginalSource(result, idCat, TAXON_NAMESPACE + "_Name", state.getConfig().getSourceReference());
 
+        if(result.getNomenclaturalReference()!=null && result.getNomenclaturalReference().getTitleCache().equals("null")){
+            logger.warn("null");
+        }
+
         return result;
     }
 
@@ -351,7 +404,9 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
     private String getRefNameStr(String nomRefStr, String refTypeStr, String fullNameStr) {
         String refNameStr = fullNameStr;
         ReferenceType refType = refTypeByRefTypeStr(refTypeStr);
-        if (refType == ReferenceType.Article){
+        if (nomRefStr == null){
+            //do nothing
+        }else if (refType == ReferenceType.Article){
             refNameStr = fullNameStr + " in " + nomRefStr;
         }else if (refType == ReferenceType.Book){
             refNameStr = fullNameStr + ", " + nomRefStr;
@@ -441,7 +496,9 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         String idCat = getValue(record, "IdCAT");
         TaxonBase<?> taxonBase = taxonIdMap.get(idCat);
         Taxon parent;
-        if ("aceptado".equals(statusStr)){
+        if(statusStr == null){
+            logger.warn("No statusStr in line " +line);
+        }else if ("aceptado".equals(statusStr)){
             parent = (Taxon)taxonIdMap.get(parentStr);
             if (parent == null){
                 logger.warn(line + "Parent is missing: "+ parentStr);
@@ -449,8 +506,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
                 Taxon taxon = (Taxon)taxonBase;
                 Reference relRef = null;  //TODO
                 classification.addParentChild(parent, taxon, relRef, null);
-                makeConceptRelation(line, taxon.getName());
-
+//                makeConceptRelation(line, taxon.getName());
             }
         }else if (statusStr.startsWith("sin")){
             parent = (Taxon)taxonIdMap.get(relStr);
@@ -459,8 +515,10 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
             }else{
                 Synonym synonym = (Synonym)taxonBase;
                 parent.addSynonym(synonym, SynonymType.SYNONYM_OF());
-                makeConceptRelation(line, synonym.getName());
+//                makeConceptRelation(line, synonym.getName());
             }
+        }else{
+            logger.warn("Unhandled statusStr in line " + line);
         }
     }
 
@@ -502,18 +560,16 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
     }
 
-
-
-    /**
-     * @return
-     */
     private Classification getClassification(SimpleExcelTaxonImportState<CONFIG> state) {
         if (classification == null){
             MexicoConabioImportConfigurator config = state.getConfig();
-            classification = Classification.NewInstance(config.getClassificationName());
-            classification.setUuid(config.getClassificationUuid());
-            classification.setReference(config.getSecReference());
-            getClassificationService().save(classification);
+            classification = getClassificationService().find(config.getClassificationUuid());
+            if (classification == null){
+                classification = Classification.NewInstance(config.getClassificationName());
+                classification.setUuid(config.getClassificationUuid());
+                classification.setReference(config.getSecReference());
+                getClassificationService().save(classification);
+            }
         }
         return classification;
     }

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.ext.geo.GeoServiceArea;
 import eu.etaxonomy.cdm.ext.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
@@ -92,7 +93,8 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
                                 distrStatusStr, distrStatusStr, null, false);
                     }
                     if (mexicanDistributionStatus != null){
-                        Distribution mexicanDistribution = Distribution.NewInstance(mexico, mexicanDistributionStatus);
+                        NamedArea mexicoCountry = getMexico();
+                        Distribution mexicanDistribution = Distribution.NewInstance(mexicoCountry, mexicanDistributionStatus);
                         desc.addElement(mexicanDistribution);
                         String refStr = getValue(record, "ReferenciaTipoDistribucion");
                         Reference ref = getReference(state, refStr);
@@ -139,8 +141,16 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
 
             getTaxonService().save(taxon);
         }
+    }
 
-
+    private NamedArea getMexico() {
+        if (mexico == null){
+            mexico = CdmBase.deproxy(getTermService().find(MexicoConabioTransformer.uuidMexicoCountry), NamedArea.class);
+            if (mexico == null){
+                logger.warn("Mexico country not found");
+            }
+        }
+        return mexico;
     }
 
     /**
@@ -149,7 +159,7 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
      * @return
      */
     private Reference getReference(SimpleExcelTaxonImportState<CONFIG> state, String refStr) {
-        if (StringUtils.isNoneBlank(refStr)){
+        if (StringUtils.isBlank(refStr)){
             return null;
         }
         Reference ref = state.getReference(refStr);

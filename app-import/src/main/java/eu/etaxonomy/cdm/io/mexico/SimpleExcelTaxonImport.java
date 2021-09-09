@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportBase;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
+import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
@@ -176,9 +177,11 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
     private void initAgentMap(SimpleExcelTaxonImportState<CONFIG> state) {
         if (!agentMapIsInitialized){
             List<String> propertyPaths = Arrays.asList("");
-            List<TeamOrPersonBase> existingAgents = this.getAgentService().list(null, null, null, null, propertyPaths);
-            for (TeamOrPersonBase agent : existingAgents){
-                state.putAgentBase(agent.getTitleCache(), agent);
+            List<AgentBase<?>> existingAgents = this.getAgentService().list(null, null, null, null, propertyPaths);
+            for (AgentBase<?> agent : existingAgents){
+                if (agent.isInstanceOf(TeamOrPersonBase.class)){
+                    state.putAgentBase(agent.getTitleCache(), (TeamOrPersonBase)agent);
+                }
             }
             agentMapIsInitialized = true;
         }

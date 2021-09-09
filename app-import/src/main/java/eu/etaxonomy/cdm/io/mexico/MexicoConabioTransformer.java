@@ -30,7 +30,10 @@ public class MexicoConabioTransformer extends InputTransformerBase{
     private static final Logger logger = Logger.getLogger(MexicoConabioTransformer.class);
 
     public static UUID uuidReferenceBorhidi = UUID.fromString("f76a535b-a1fd-437c-a09d-f94eddae2b5e");
-    public static UUID uuidReferenceConabio = UUID.fromString("7183652f-d7ca-45a7-9383-265996d3d10f");
+//    public static UUID uuidReferenceConabio = UUID.fromString("7183652f-d7ca-45a7-9383-265996d3d10f");
+    public static UUID uuidReferenceConabio2 = UUID.fromString("292d0470-74b1-4419-84c5-0315a3bfe643");
+
+    public static final UUID uuidConabioIdIdentifierType = UUID.fromString("025fb8fe-e8e8-4136-bf37-93367a268889");
 
     public static final UUID uuidNomRefExtension = UUID.fromString("0a7e2f5f-c62d-43e1-874a-07cb1dbb9fa0");
 
@@ -97,6 +100,26 @@ public class MexicoConabioTransformer extends InputTransformerBase{
     public static final UUID uuidTotonaco = UUID.fromString("2eae8d72-a45c-48be-b9a4-aaf96d21df0a");
     public static final UUID uuidTarasco = UUID.fromString("cf597916-0422-495f-bf0b-ea0841e32a52");
 
+    public static final UUID uuidMixteco = UUID.fromString("a1e4ad97-9ae0-43a7-993b-8ed9df1837b9");
+    public static final UUID uuidNahuatlEspanol = UUID.fromString("e3014862-bdfc-4f3b-a3c9-f453c0997de1");
+    public static final UUID uuidEspanolNahuatl = UUID.fromString("6c70e207-ccb7-420e-9d4b-86013b5ac105");
+    public static final UUID uuidTzotzil = UUID.fromString("f2c46f9b-9580-4342-b35c-1a356b832424");
+    public static final UUID uuidTetzal = UUID.fromString("99f0a31c-d0ef-439f-bf16-be7d2f40a5f3");
+    public static final UUID uuidTzeltal = UUID.fromString("18c3db8d-aae6-4da8-a1a7-2034454e4631");
+    public static final UUID uuidMazateco = UUID.fromString("150b5f4b-afcd-435a-8c36-82398162bb55");
+    public static final UUID uuidTepehua = UUID.fromString("8b17f444-8581-4dd7-8fbb-099a8e4f2a5b");
+
+    public static final UUID uuidCuicateco = UUID.fromString("5bd309ac-3677-4742-8c0a-18e552f9334f");
+    public static final UUID uuidZoque = UUID.fromString("86e84d38-e3ce-4b8e-9e4c-23fcf6aaf575");
+    public static final UUID uuidTepehuano = UUID.fromString("f404d3a5-759c-424f-935b-5be2a9d4da77");
+    public static final UUID uuidPopoloca = UUID.fromString("458eb628-9721-4bd4-ab7d-331dc2efdc13");
+    public static final UUID uuidTojolabal = UUID.fromString("9ec79d06-0501-41c9-8f56-698bb03a5958");
+
+    public static final UUID uuidMayo = UUID.fromString("19a3d783-9910-4d8f-a755-fc74130b14e3");
+    public static final UUID uuidHuichol = UUID.fromString("35898e28-bb27-4254-b6e3-372fb53cb60b");
+    public static final UUID uuidCora = UUID.fromString("f48c1852-6875-4db2-b104-1b99ca6556ab");
+    public static final UUID uuidSeri = UUID.fromString("6d153f30-daed-4225-bb41-4367f78a608c");
+
 
     @Override
     public Rank getRankByKey(String key) throws UndefinedTransformerMethodException {
@@ -106,20 +129,25 @@ public class MexicoConabioTransformer extends InputTransformerBase{
         }else if (key.equals("subclase")){return Rank.SUBCLASS();
         }else if (key.equals("clase")){return Rank.CLASS();
         }else if (key.equals("familia")){return Rank.FAMILY();
+        }else if (key.equals("subfamilia")){return Rank.SUBFAMILY();
+
         }else if (key.equals("tribu")){return Rank.TRIBE();
+        }else if (key.equals("subtribu")){return Rank.SUBTRIBE();
         }else if (key.equals("superorden")){return Rank.SUPERORDER();
         }else if (key.equals("división")){return Rank.DIVISION();
 
         }else if (key.equals("género")){return Rank.GENUS();
+        }else if (key.equals("subgénero")){return Rank.SUBGENUS();
         }else if (key.equals("especie")){return Rank.SPECIES();
         }else if (key.equals("subespecie")){return Rank.SUBSPECIES();
         }else if (key.equals("variedad")){return Rank.VARIETY();
+        }else if (key.equals("forma")){return Rank.FORM();
+        }else if (key.equals("raza")){return Rank.RACE();
         }else{
             logger.warn("Rank not defined: " + key);
             return null;
         }
     }
-
 
     @Override
     public PresenceAbsenceTerm getPresenceTermByKey(String key) throws UndefinedTransformerMethodException {
