@@ -25,7 +25,6 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 /**
  * @author a.mueller
  * @since 16.06.2016
- *
  */
 public class SimpleExcelTaxonImportState<CONFIG extends ExcelImportConfiguratorBase>
         extends ExcelImportState<CONFIG, ExcelRowBase>{
@@ -45,9 +44,7 @@ public class SimpleExcelTaxonImportState<CONFIG extends ExcelImportConfiguratorB
     private final Map<String, Taxon> taxonMap = new HashMap<>();
 
 // ************************* CONSTRUCTUR *******************************/
-    /**
-     * @param config
-     */
+
     public SimpleExcelTaxonImportState(CONFIG config) {
         super(config);
     }
@@ -103,5 +100,4 @@ public class SimpleExcelTaxonImportState<CONFIG extends ExcelImportConfiguratorB
     public boolean containsTaxon(String key) {
         return taxonMap.containsKey(key);
     }
-
 }

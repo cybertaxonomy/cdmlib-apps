@@ -9,7 +9,6 @@
 package eu.etaxonomy.cdm.io.mexico;
 
 import eu.etaxonomy.cdm.common.URI;
-
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
@@ -86,5 +85,4 @@ public class MexicoConabioImportConfigurator extends ExcelImportConfiguratorBase
     public void setSecReference(Reference secReference) {
         this.secReference = secReference;
     }
-
 }

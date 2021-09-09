@@ -21,7 +21,6 @@ import eu.etaxonomy.cdm.model.name.Rank;
 /**
  * @author a.mueller
  * @since 16.06.2016
- *
  */
 public class MexicoConabioTransformer extends InputTransformerBase{
 
@@ -75,7 +74,6 @@ public class MexicoConabioTransformer extends InputTransformerBase{
     public static final UUID uuidVeracruz_de_ignacio_de_la_llave = UUID.fromString("0f98fcb1-7345-49f5-af6f-5f781a525a3a");
     public static final UUID uuidYucatan = UUID.fromString("5dd5d5fa-77f0-42f6-a45c-384130e5f16d");
     public static final UUID uuidZacatecas = UUID.fromString("0e9bc1f2-0154-4424-85c7-1bfc8cf3696c");
-
 
     public static final UUID uuidMexicanLanguagesVoc = UUID.fromString("d37d043e-94af-4cb0-b702-e6f45318b039");
 
@@ -160,7 +158,6 @@ public class MexicoConabioTransformer extends InputTransformerBase{
         }
     }
 
-
     @Override
     public UUID getPresenceTermUuid(String key) throws UndefinedTransformerMethodException {
         if (StringUtils.isBlank(key)){
@@ -174,7 +171,4 @@ public class MexicoConabioTransformer extends InputTransformerBase{
             return null;
         }
     }
-
-
-
 }

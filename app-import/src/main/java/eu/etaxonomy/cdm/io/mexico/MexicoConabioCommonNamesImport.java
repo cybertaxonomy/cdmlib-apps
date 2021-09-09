@@ -8,7 +8,6 @@
 */
 package eu.etaxonomy.cdm.io.mexico;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
@@ -31,7 +31,6 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 /**
  * @author a.mueller
  * @since 16.06.2016
- *
  */
 @Component
 public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportConfigurator>
@@ -45,7 +44,6 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
     private Map<String, Language> languagesMap = new HashMap<>();
 
     private Map<String, Taxon> taxonIdMap;
-
 
     @Override
     protected String getWorksheetName(CONFIG config) {
@@ -84,7 +82,6 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
                 commonName.addSource(OriginalSourceType.PrimaryTaxonomicSource,
                         null, null, ref, null);
             }
-
 
             getTaxonService().save(taxon);
         }
@@ -138,9 +135,7 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
         }
     }
 
-    /**
-     * @param state
-     */
+
     @SuppressWarnings("unchecked")
     private void initLanguageVocabulary(SimpleExcelTaxonImportState<CONFIG> state) {
         if (languagesVoc == null){
@@ -217,10 +212,6 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
         return ref;
     }
 
-    /**
-     * @param taxon
-     * @return
-     */
     private TaxonDescription getTaxonDescription(Taxon taxon) {
         if (!taxon.getDescriptions().isEmpty()){
             return taxon.getDescriptions().iterator().next();

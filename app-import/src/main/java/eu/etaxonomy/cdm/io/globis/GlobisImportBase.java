@@ -31,7 +31,6 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.model.agent.INomenclaturalAuthor;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
@@ -168,8 +167,8 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		zooName.setExBasionymAuthorship(getExistingAuthor(zooName.getExBasionymAuthorship(), state));
 	}
 
-	private TeamOrPersonBase<?> getExistingAuthor(INomenclaturalAuthor nomAuthor, GlobisImportState state) {
-		TeamOrPersonBase<?> author = (TeamOrPersonBase<?>)nomAuthor;
+	private TeamOrPersonBase<?> getExistingAuthor(TeamOrPersonBase<?> nomAuthor, GlobisImportState state) {
+		TeamOrPersonBase<?> author = nomAuthor;
 		if (author == null){
 			return null;
 		}

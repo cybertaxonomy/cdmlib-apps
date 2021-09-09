@@ -55,7 +55,6 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 /**
  * @author a.mueller
  * @since 16.06.2016
- *
  */
 @Component
 public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigurator>
@@ -199,11 +198,6 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
     }
 
-    /**
-     * @param state
-     * @param secRefStr
-     * @return
-     */
     private Reference getSecRef(SimpleExcelTaxonImportState<CONFIG> state, String secRefStr, String line) {
         Reference result = state.getReference(secRefStr);
         if (result == null && secRefStr != null){
@@ -247,12 +241,6 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         return result;
     }
 
-
-
-    /**
-     * @param team
-     * @param author
-     */
     private void addTeamMember(Team team, String author) {
         if (StringUtils.isNotBlank(author)){
             Person person = Person.NewInstance();
@@ -261,13 +249,6 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
     }
 
-
-
-    /**
-     * @param record
-     * @param state
-     * @return
-     */
     private IBotanicalName makeName(String line, Map<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
 
         String authorStr = getValueNd(record, "AutorSinAnio");
@@ -349,12 +330,6 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         return result;
     }
 
-
-
-    /**
-     * @param name
-     * @param state
-     */
     private void addSourcesToReferences(IBotanicalName name, SimpleExcelTaxonImportState<CONFIG> state) {
         Reference nomRef = name.getNomenclaturalReference();
         if (nomRef != null){
@@ -365,12 +340,6 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
     }
 
-
-
-    /**
-     * @param referencedName
-     * @param refType
-     */
     private void adaptRefTypeForGeneric(IBotanicalName referencedName, String refTypeStr) {
         INomenclaturalReference ref = referencedName.getNomenclaturalReference();
         if (ref == null){
@@ -381,7 +350,6 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
             ref.setType(refType);
         }
     }
-
 
     private ReferenceType refTypeByRefTypeStr(String refType){
         if ("A".equals(refType)){  //Article
@@ -395,12 +363,6 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
     }
 
-    /**
-     * @param nomRefStr
-     * @param refType
-     * @param fullNameStr
-     * @return
-     */
     private String getRefNameStr(String nomRefStr, String refTypeStr, String fullNameStr) {
         String refNameStr = fullNameStr;
         ReferenceType refType = refTypeByRefTypeStr(refTypeStr);
@@ -416,11 +378,6 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         return refNameStr;
     }
 
-    /**
-     * @param state
-     * @param equal
-     * @param referencedName
-     */
     private void addNomRefExtension(SimpleExcelTaxonImportState<CONFIG> state, IBotanicalName name, Boolean equal) {
         String equalStr = equal == null ? "" : equal == true ? "EQUAL\n" : "NOT EQUAL\n";
         name.setFullTitleCache(null, false);
@@ -439,20 +396,11 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
     }
 
     boolean nameMapIsInitialized = false;
-    /**
-     * @param state
-     * @param fullName
-     * @return
-     */
     private IBotanicalName getExistingName(SimpleExcelTaxonImportState<CONFIG> state, IBotanicalName fullName) {
         initExistinNames(state);
         return (IBotanicalName)state.getName(fullName.getTitleCache());
     }
 
-    /**
-     * @param state
-     */
-    @SuppressWarnings("rawtypes")
     private void initExistinNames(SimpleExcelTaxonImportState<CONFIG> state) {
         if (!nameMapIsInitialized){
             List<String> propertyPaths = Arrays.asList("");
@@ -464,12 +412,9 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
     }
 
-
-
     /**
-     * @param record
-     * @param string
-     * @return
+     * Same as {@link #getValue(eu.etaxonomy.cdm.io.excel.common.ExcelImportState, String)}
+     * but "ND" return null.
      */
     private String getValueNd(Map<String, String> record, String string) {
         String value = getValue(record, string);
@@ -479,7 +424,6 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
             return value;
         }
     }
-
 
     @Override
     protected void secondPass(SimpleExcelTaxonImportState<CONFIG> state) {
@@ -522,10 +466,6 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
     }
 
-     /**
-     * @param line
-     * @param name
-     */
     private void makeConceptRelation(String line, TaxonName name) {
         if (name.getTaxonBases().size()==2){
             Iterator<TaxonBase> it = name.getTaxonBases().iterator();
@@ -544,13 +484,8 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }else if (name.getTaxonBases().size()>2){
             logger.warn(line + "Names with more than 2 taxa not yet handled");
         }
-
     }
 
-    /**
-     * @param next
-     * @return
-     */
     private Taxon getAccepted(TaxonBase<?> taxonBase) {
         if (taxonBase.isInstanceOf(Taxon.class)){
             return CdmBase.deproxy(taxonBase, Taxon.class);
@@ -573,7 +508,6 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
         return classification;
     }
-
 
     @Override
     protected boolean isIgnore(SimpleExcelTaxonImportState<CONFIG> state) {

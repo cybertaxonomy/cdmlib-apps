@@ -70,13 +70,6 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
         return IdentifiableSource.NewDataImportInstance("line: " + state.getCurrentLine(), null, state.getConfig().getSourceReference());
     }
 
-    /**
-     * @param state
-     * @param speciesName
-     * @param sec
-     * @param taxon
-     * @param familyNode
-     */
     protected void makeGenus(SimpleExcelTaxonImportState<CONFIG> state,
             IBotanicalName speciesName,
             Reference sec,

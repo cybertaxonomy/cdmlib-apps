@@ -8,7 +8,6 @@
 */
 package eu.etaxonomy.cdm.io.mexico;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -17,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.ext.geo.GeoServiceArea;
 import eu.etaxonomy.cdm.ext.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -39,7 +39,6 @@ import eu.etaxonomy.cdm.model.term.TermType;
 /**
  * @author a.mueller
  * @since 16.06.2016
- *
  */
 @Component
 public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportConfigurator>
@@ -153,11 +152,6 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
         return mexico;
     }
 
-    /**
-     * @param state
-     * @param refStr
-     * @return
-     */
     private Reference getReference(SimpleExcelTaxonImportState<CONFIG> state, String refStr) {
         if (StringUtils.isBlank(refStr)){
             return null;
@@ -171,11 +165,6 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
         return ref;
     }
 
-    /**
-     * @param desc
-     * @param string
-     * @param uuidUserDefinedAnnotationTypeVocabulary
-     */
     private void handleDistribution(SimpleExcelTaxonImportState<CONFIG> state, TaxonDescription desc, String key,
             UUID uuid, String line) {
         Map<String, String> record = state.getOriginalRecord();
@@ -189,10 +178,6 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
         }
     }
 
-    /**
-     * @param taxon
-     * @return
-     */
     private TaxonDescription getTaxonDescription(Taxon taxon) {
         if (!taxon.getDescriptions().isEmpty()){
             return taxon.getDescriptions().iterator().next();
@@ -202,9 +187,6 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
         }
     }
 
-    /**
-     * @param state
-     */
     @SuppressWarnings("unchecked")
     private void initAreaVocabulary(SimpleExcelTaxonImportState<CONFIG> state) {
         if (stateAreasVoc == null){
@@ -215,10 +197,6 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
         }
     }
 
-    /**
-     * @param state
-     * @return
-     */
     @SuppressWarnings("unchecked")
     private void createStateAreasVoc(SimpleExcelTaxonImportState<CONFIG> state) {
         //voc

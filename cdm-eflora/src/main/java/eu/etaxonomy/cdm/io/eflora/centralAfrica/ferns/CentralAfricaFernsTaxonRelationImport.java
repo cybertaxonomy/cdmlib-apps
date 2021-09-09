@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportTaxIncludedInMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.validation.CentralAfricaFernsTaxonImportValidator;
-import eu.etaxonomy.cdm.model.agent.INomenclaturalAuthor;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
@@ -1103,7 +1103,7 @@ public class CentralAfricaFernsTaxonRelationImport
 	 * @param author
 	 * @return
 	 */
-	private String getNomTitleNz(INomenclaturalAuthor author) {
+	private String getNomTitleNz(TeamOrPersonBase<?> author) {
 		if (author != null){
 			return CdmUtils.Nz(author.getNomenclaturalTitleCache());
 		}else{
