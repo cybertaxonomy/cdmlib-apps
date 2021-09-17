@@ -626,6 +626,13 @@ public class CdmDestinations {
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
+    public static ICdmDataSource cdm_mexico_flora(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "132.248.13.83";
+        String cdmDB = "cdm_flora_mexico";
+        String cdmUserName = "bgbm-developer";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
 
 
 	public static ICdmDataSource localH2(){
