@@ -346,7 +346,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             ICultivarPlantName cultivar = TaxonNameFactory.NewCultivarInstance(rank);
             cultivar.setGenusOrUninomial(ep1String);
             cultivar.setSpecificEpithet(ep2String);
-            cultivar.setCultivarName(ep3String);
+            cultivar.setCultivarEpithet(ep3String);
             name = cultivar;
         }
         //botanical names

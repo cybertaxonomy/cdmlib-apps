@@ -667,7 +667,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 				if (isNotBlank(strCultivarGroupName) && isNotBlank(strCultivarName)){
 					logger.warn("CDM does not support cultivarGroupName and CultivarName together: " + concatCultivarName);
 				}
-				cultivarName.setCultivarName(strCultivarGroupName);
+				cultivarName.setCultivarEpithet(strCultivarGroupName);
 			}
 		} catch (SQLException e) {
 			throw e;
