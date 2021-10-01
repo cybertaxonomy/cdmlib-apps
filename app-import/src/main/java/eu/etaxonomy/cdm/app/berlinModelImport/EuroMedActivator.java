@@ -475,7 +475,7 @@ public class EuroMedActivator {
 
                 DistributionAggregationConfiguration aggregationConfig = DistributionAggregationConfiguration
                         .NewInstance(
-                        AggregationMode.byAreasAndRanks(),
+                        AggregationMode.byWithinTaxonAndToParent(),
                         areaPager.getRecords().stream().map(area->area.getUuid()).collect(Collectors.toList()),
                         filter,
                         DefaultProgressMonitor.NewInstance());

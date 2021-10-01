@@ -66,7 +66,7 @@ public class EuroMedDistributionAggregationActivator {
                 null, Rank.uuidGenus);
         DistributionAggregationConfiguration aggregationConfig =
                 DistributionAggregationConfiguration.NewInstance(
-                AggregationMode.byRanks(),
+                AggregationMode.byToParent(),
                 null,
                 filter,
                 DefaultProgressMonitor.NewInstance());
