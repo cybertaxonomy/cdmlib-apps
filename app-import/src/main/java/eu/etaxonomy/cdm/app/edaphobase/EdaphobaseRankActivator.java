@@ -28,6 +28,7 @@ import eu.etaxonomy.cdm.model.common.Language;
  * @since 04.12.2015
  */
 public class EdaphobaseRankActivator {
+
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(EdaphobaseRankActivator.class);
 
