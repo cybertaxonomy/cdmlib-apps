@@ -1769,7 +1769,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 				logger.warn("Rank Species Group not yet implemented");
 				result = null;
 			} else if (rank.getUuid().equals(Rank.uuidCollSpecies)) {result = Coll_Species;
-			} else if (rank.equals(Rank.GREX())) {result = Grex;
+			} else if (rank.equals(Rank.GREX_INFRASPEC())) {logger.warn("Unclear which grex is meant here"); result = Grex;
 			} else if (rank.getUuid().equals(Rank.uuidProles) ) {result = Proles;
 			} else if (rank.getUuid().equals(Rank.uuidRace)) {result = Race;
 			} else if (rank.equals(Rank.CONVAR())) {result = Convarietas;

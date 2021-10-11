@@ -294,7 +294,7 @@ public class IopiActivator {
 		}else if (rank.equals(Rank.FAMILY())){ return "family";
 		}else if (rank.equals(Rank.FORM())){ return "forma";
 		}else if (rank.equals(Rank.GENUS())){ return "genus";
-		}else if (rank.equals(Rank.GREX())){ return "grex";
+		}else if (rank.equals(Rank.GREX_INFRASPEC())){ return "grex";
 		}else if (rank.equals(Rank.SPECIESGROUP())){ return "group";
 		}else if (rank.equals(Rank.ORDER())){ return "Order";
 //		}else if (rank.equals(Rank.PROL())){ return "proles";
