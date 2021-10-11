@@ -21,7 +21,6 @@ import eu.etaxonomy.cdm.api.service.description.AggregationMode;
 import eu.etaxonomy.cdm.api.service.description.DistributionAggregation;
 import eu.etaxonomy.cdm.api.service.description.DistributionAggregationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.common.JvmLimitsException;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -70,18 +69,13 @@ public class EuroMedDistributionAggregationActivator {
                 null,
                 filter,
                 DefaultProgressMonitor.NewInstance());
-        try {
-            UpdateResult result = distributionAggregation.invoke(aggregationConfig, app);
-            System.out.println("Status: " + result.getStatus());
-            System.out.println("Exceptions: " + result.getExceptions());
-            for (Exception ex: result.getExceptions()){
-                ex.printStackTrace();
-            }
-            System.out.println("Size: " + result.getUpdatedCdmIds().size());
-
-        } catch (JvmLimitsException e) {
-            e.printStackTrace();
+        UpdateResult result = distributionAggregation.invoke(aggregationConfig, app);
+        System.out.println("Status: " + result.getStatus());
+        System.out.println("Exceptions: " + result.getExceptions());
+        for (Exception ex: result.getExceptions()){
+            ex.printStackTrace();
         }
+        System.out.println("Size: " + result.getUpdatedCdmIds().size());
     }
 
     public static void main(String[] args) {
