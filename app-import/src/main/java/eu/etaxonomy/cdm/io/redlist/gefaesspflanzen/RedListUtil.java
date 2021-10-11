@@ -45,9 +45,7 @@ public class RedListUtil {
     public static final UUID uuidClassificationS = UUID.fromString("53e81162-5c2d-425b-bbe6-6e8d12e85790");
 
     public static final UUID uuidRankCollectionSpecies = UUID.fromString("6056e143-4efe-4632-b532-27699ed62884");
-    public static final UUID uuidRankSubproles = UUID.fromString("47bd1439-c2ba-4c4e-994f-9c60853258f8");
     public static final UUID uuidRankModification = UUID.fromString("1c6e16f5-f7a5-41a5-9cc4-53c1438478c9");
-    public static final UUID uuidRankLusus = UUID.fromString("4c8e12f6-2c16-4eda-a7d9-2fd247dcce789");
     public static final UUID uuidRankSubspeciesPrincipes = UUID.fromString("b6b9351b-6beb-431d-8c7a-d30fe0cf3a90");
     public static final UUID uuidRankCombination = UUID.fromString("ec2c580e-416a-4ecf-85df-d03641f3bd64");
     public static final UUID uuidRankForme = UUID.fromString("05b4f66f-5559-4e44-bbb8-70744a5ea64a");

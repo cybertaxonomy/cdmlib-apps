@@ -602,14 +602,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             else if(rankStr.equals("SAM")){
                 return getRank(state, RedListUtil.uuidRankCollectionSpecies, "Collective Species", "Collective Species", "\"Coll. Species\"", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.SpeciesGroup);
             }
-            else if(rankStr.equals("SPR")){
-                return getRank(state, RedListUtil.uuidRankSubproles, "Subproles", "Subproles", "subproles", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.Infraspecific);
-            }
             else if(rankStr.equals("MOD")){
                 return getRank(state, RedListUtil.uuidRankModification, "Modification", "Modification", "modificatio", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.Infraspecific);
-            }
-            else if(rankStr.equals("LUS")){
-                return getRank(state, RedListUtil.uuidRankLusus, "Lusus", "Lusus", "lusus", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.Infraspecific);
             }
             else if(rankStr.equals("SPI")){
                 return getRank(state, RedListUtil.uuidRankSubspeciesPrincipes, "Subspecies principes", "Subspecies principes", "subsp. princ.", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.Infraspecific);

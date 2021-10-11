@@ -53,6 +53,7 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
         else if (key.equals("SVA")){return Rank.SUBVARIETY();}
         else if (key.equals("CV")){return Rank.CULTIVAR();}
         else if (key.equals("PRO")){return Rank.PROLES();}
+        else if (key.equals("SPR")){return Rank.SUBPROLES();}
         else if (key.equals("SER")){return Rank.SERIES();}
         else if (key.equals("GRE")){
             logger.warn("Unclear which grex is meant here");
@@ -60,6 +61,7 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
         else if (key.equals("AGG")){return Rank.SPECIESAGGREGATE();}
         else if (key.equals("SFO")){return Rank.SUBFORM();}
         else if (key.equals("FAM")){return Rank.FAMILY();}
+        else if (key.equals("LUS")){return Rank.LUSUS();}
         else if (key.equals("SLU")){return Rank.SUBLUSUS();}
         else if (key.equals("SPI")){return Rank.SUBSPECIES();}
         else if (key.equals("GRO") || key.equals("GRU")){return Rank.SPECIESGROUP();}
