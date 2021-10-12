@@ -24,6 +24,7 @@ public class BgbmInstancesUpdater {
 	private static String productionServer = "160.45.63.171";
 //	private static String testServer = "160.45.63.175";
 	private static String testServer = "edit-test.bgbm.fu-berlin.de";  //preliminary
+    private static String mexicoServer = "132.248.13.83";
 
 	private static String[] integrationDatabases = new String[]{
 	    "cdm_integration_cichorieae",
@@ -64,6 +65,14 @@ public class BgbmInstancesUpdater {
 		"cdm_caryo_caryophyllales","cdm_flora_malesiana_prospective","cdm_pesi_all",
 	};
 
+	private static String[] phycobankDatabase = new String[]{
+	        "cdm_production_phycobank"
+	};
+
+	private static String[] mexicoDatabase = new String[]{
+            "cdm_flora_mexico"
+    };
+
 	private static String[] productionDatabases = new String[]{
 	    "cdm_production_col",
 	    "cdm_production_algaterra",
@@ -99,7 +108,6 @@ public class BgbmInstancesUpdater {
 	    "cdm_production_myristicaceae",
 	    "cdm_production_oxalis",
 	    "cdm_production_palmae",
-	    "cdm_production_phycobank",
 	    "cdm_production_piB_ants_pilot",
 	    "cdm_production_piB_campylopus_pilot",
 	    "cdm_production_piB_chenopodium_pilot",
@@ -197,9 +205,11 @@ public class BgbmInstancesUpdater {
 
     private enum BgbmServer{
 		INTEGRATION (integrationServer, integrationDatabases),
-		TEST(testServer,testDatabases),
-		PRODUCTION(productionServer,productionDatabases);
-		private final String server;
+		TEST(testServer, testDatabases),
+		PRODUCTION(productionServer, productionDatabases),
+        PHYCOBANK(productionServer, phycobankDatabase),
+        MEXICO(mexicoServer, mexicoDatabase);
+        private final String server;
 		private final String[] databases;
 		private BgbmServer(String server, String[] databases){
 			this.server = server;
