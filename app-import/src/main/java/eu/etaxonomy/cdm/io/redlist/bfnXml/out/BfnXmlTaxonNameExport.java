@@ -247,7 +247,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
 
     private String getIdentifier(Taxon taxon, UUID identifierUuid) {
         DefinedTerm identifierType = HibernateProxyHelper.deproxy(getTermService().load(identifierUuid), DefinedTerm.class);
-        Set<String> identfiers = taxon.getIdentifiers(identifierType);
+        Set<String> identfiers = taxon.getIdentifierStrings(identifierType);
         if(identfiers.size()==1){
             return identfiers.iterator().next();
         }

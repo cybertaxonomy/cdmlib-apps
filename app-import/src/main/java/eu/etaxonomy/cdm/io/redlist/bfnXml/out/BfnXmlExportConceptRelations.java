@@ -107,7 +107,7 @@ public class BfnXmlExportConceptRelations extends BfnXmlExportBase {
 
     private String getTaxNr(Taxon taxon, DefinedTerm taxNrIdentifierType) {
         String taxNr = null;
-        Set<String> identifiers = taxon.getIdentifiers(taxNrIdentifierType);
+        Set<String> identifiers = taxon.getIdentifierStrings(taxNrIdentifierType);
         if(identifiers.size()==1){
             taxNr = identifiers.iterator().next();
         }
