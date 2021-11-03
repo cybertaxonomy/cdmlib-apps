@@ -47,6 +47,7 @@ public class MexicoSpanishCountriesActivator {
         RepresentationCsvImportConfigurator config= RepresentationCsvImportConfigurator.NewInstance(source, cdmDestination);
         config.setDbSchemaValidation(dbSchemaValidation);
         config.setLanguageUuid(Language.uuidSpanish_Castilian);
+        config.setCheck(check);
 
         CdmDefaultImport<RepresentationCsvImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
