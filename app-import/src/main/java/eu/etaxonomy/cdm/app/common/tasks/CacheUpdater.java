@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.service.UpdateResult;
 import eu.etaxonomy.cdm.api.service.config.CacheUpdaterConfigurator;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.monitor.IRemotingProgressMonitor;
@@ -23,40 +24,29 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 import eu.etaxonomy.cdm.io.common.ImportResult;
-import eu.etaxonomy.cdm.model.name.TaxonName;
-import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.agent.AgentBase;
 
 
 /**
- * TODO add the following to a wiki page:
- * HINT: If you are about to import into a mysql data base running under windows and if you wish to dump and restore the resulting data base under another operation systen
- * you must set the mysql system variable lower_case_table_names = 0 in order to create data base with table compatible names.
- *
- *
  * @author a.mueller
- *
  */
 public class CacheUpdater {
 	private static final Logger logger = Logger.getLogger(CacheUpdater.class);
 
 	//database validation status (create, update, validate ...)
-//	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview_direct();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cichorieae();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed3();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_flora_deutschland();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_genus();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_genus();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_int_flora_malesiana();
 
 
 	static final List<String> classListStrings =  Arrays.asList(new String[]{
 			//IdentifiableEntity.class.getName(),
 //			IdentifiableEntity.class.getName(),
-//			AgentBase.class.getName(),
-			Reference.class.getName(),
-			TaxonName.class.getName(),
-			TaxonBase.class.getName()
+			AgentBase.class.getName(),
+//			Reference.class.getName(),
+//			TaxonName.class.getName(),
+//			TaxonBase.class.getName()
 	});
 	//new ArrayList<Class<? extends IdentifiableEntity>>();
 
@@ -67,13 +57,17 @@ public class CacheUpdater {
 
 		CacheUpdaterConfigurator config;
 		try {
-			config = CacheUpdaterConfigurator.NewInstance(classListStrings);
 
-			// invoke import
-			CdmApplicationController appCtrInit = CdmIoApplicationController.NewInstance(destination, DbSchemaValidation.VALIDATE, false);
-			appCtrInit.authenticate("admin", "xxx");
-			UUID monitUuid = appCtrInit.getLongRunningTasksService().monitLongRunningTask(config);
-			IRemotingProgressMonitor monitor = appCtrInit.getProgressMonitorService().getRemotingMonitor(monitUuid);
+			CdmApplicationController appCtr = CdmIoApplicationController.NewInstance(destination, DbSchemaValidation.VALIDATE, false);
+			@SuppressWarnings("unused")
+            UpdateResult result2 = appCtr.getOccurrenceService().updateCaches();
+//			@SuppressWarnings("unused")
+//			UpdateResult result3 = appCtr.getTaxonService().updateCaches();
+
+			config = CacheUpdaterConfigurator.NewInstance(classListStrings);
+			//			appCtrInit.authenticate("admin", "xxx");
+			UUID monitUuid = appCtr.getLongRunningTasksService().monitLongRunningTask(config);
+			IRemotingProgressMonitor monitor = appCtr.getProgressMonitorService().getRemotingMonitor(monitUuid);
 			while(monitor != null && (!monitor.isCanceled() || !monitor.isDone() || !monitor.isFailed())) {
 				try {
 					Thread.sleep(10);
@@ -81,8 +75,8 @@ public class CacheUpdater {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-                logger.info("Waiting for monitered work to start ..");
-                monitor = appCtrInit.getProgressMonitorService().getRemotingMonitor(monitUuid);
+                logger.info("Waiting for monitored work to start ..");
+                monitor = appCtr.getProgressMonitorService().getRemotingMonitor(monitUuid);
 			}
 			//String successString = success ? "successful" : " with errors ";
 			//System.out.println("End updating caches for "+ destination.getDatabase() + "..." +  successString);

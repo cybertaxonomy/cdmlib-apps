@@ -15,7 +15,7 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.ImportResult;
-import eu.etaxonomy.cdm.io.operation.config.NonReferencedObjectsDeleterConfigurator;
+import eu.etaxonomy.cdm.io.operation.NonReferencedObjectsDeleterConfigurator;
 
 /**
  * @author k.luther
