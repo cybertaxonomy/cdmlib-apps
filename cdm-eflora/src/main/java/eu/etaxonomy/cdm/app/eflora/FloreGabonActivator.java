@@ -310,14 +310,11 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 		//Vol45
 		executeVolume(fdg45, includeFdg45 ^ inverseInclude);
 
-
-
 		TermTree<Feature> tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
-		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+		myImport.getCdmAppController().getTermTreeService().saveOrUpdate(tree);
 
 		makeAutomatedFeatureTree(myImport.getCdmAppController(), config.getState(),
 				featureTreeUuid, featureTreeTitle);
-
 
 		//check keys
 		if (doPrintKeys){

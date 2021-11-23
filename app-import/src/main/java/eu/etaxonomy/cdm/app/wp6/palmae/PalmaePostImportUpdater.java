@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -51,12 +52,12 @@ public class PalmaePostImportUpdater {
 		try{
 			int count = 0;
 			UUID featureTreeUuid = PalmaeActivator.featureTreeUuid;
-			CdmApplicationController cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
+			ICdmRepository cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
 
 			TransactionStatus tx = cdmApp.startTransaction();
 
 			@SuppressWarnings("unchecked")
-            TermTree<Feature> tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
+            TermTree<Feature> tree = cdmApp.getTermTreeService().find(featureTreeUuid);
 			TermNode<Feature> root = tree.getRoot();
 
 			List<Feature> featureList = cdmApp.getTermService().list(Feature.class, null, null, null, null);
@@ -91,7 +92,7 @@ public class PalmaePostImportUpdater {
 	public boolean updateNameUsage(ICdmDataSource dataSource) {
 		try{
 			boolean result = true;
-			CdmApplicationController cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
+			ICdmRepository cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
 
 			TransactionStatus tx = cdmApp.startTransaction();
 
@@ -131,7 +132,7 @@ public class PalmaePostImportUpdater {
 			//add citation feature to feature tree
 			UUID featureTreeUuid = PalmaeActivator.featureTreeUuid;
 			@SuppressWarnings("unchecked")
-            TermTree<Feature> tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
+            TermTree<Feature> tree = cdmApp.getTermTreeService().find(featureTreeUuid);
 			TermNode<Feature> root = tree.getRoot();
 			List<Feature> featureList = cdmApp.getTermService().list(Feature.class, null, null, null, null);
 			count = 0;

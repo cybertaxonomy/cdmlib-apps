@@ -155,7 +155,7 @@ public class MTStandardlisteActivator {
 				TermTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
 				tree.getRoot().addChild(Feature.IMAGE());
 				tree.getRoot().addChild(Feature.DISTRIBUTION(), 2);
-				app.getFeatureTreeService().saveOrUpdate(tree);
+				app.getTermTreeService().saveOrUpdate(tree);
 			}
 
 

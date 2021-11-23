@@ -177,7 +177,7 @@ public class CampanulaceaeActivator {
 			//make feature tree
 			TermTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
 			tree.getRoot().addChild(Feature.DISTRIBUTION(), 1);
-			app.getFeatureTreeService().saveOrUpdate(tree);
+			app.getTermTreeService().saveOrUpdate(tree);
 		}
 
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");

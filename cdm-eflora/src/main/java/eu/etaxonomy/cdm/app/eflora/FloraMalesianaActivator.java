@@ -363,7 +363,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 //		makeGeoService();
 
 		TermTree<Feature> tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
-		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+		myImport.getCdmAppController().getTermTreeService().saveOrUpdate(tree);
 
 		//check keys
 		if (doPrintKeys){

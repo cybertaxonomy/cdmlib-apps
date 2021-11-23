@@ -11,7 +11,6 @@ package eu.etaxonomy.cdm.io.berlinModel.in;
 
 import java.io.File;
 import java.io.IOException;
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import au.com.bytecode.opencsv.CSVReader;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.UTF8;
 import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.database.update.DatabaseTypeNotSupportedException;
@@ -179,7 +179,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 			if (createFeatureTree){
 			    featureTree.getRoot().addChild(Feature.DISTRIBUTION(),2);
                 featureTree.getRoot().addChild(Feature.NOTES(), featureTree.getRoot().getChildCount()-1);
-			    getFeatureTreeService().save(featureTree);
+                getTermTreeService().save(featureTree);
 			}
 			return result;
 		} catch (SQLException e) {

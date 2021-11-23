@@ -236,7 +236,7 @@ public class EuroMedVibrantActivator {
 			TermTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
 			tree.getRoot().addChild(Feature.IMAGE());
 			tree.getRoot().addChild(Feature.DISTRIBUTION(), 2);
-			app.getFeatureTreeService().saveOrUpdate(tree);
+			app.getTermTreeService().saveOrUpdate(tree);
 		}
 
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");

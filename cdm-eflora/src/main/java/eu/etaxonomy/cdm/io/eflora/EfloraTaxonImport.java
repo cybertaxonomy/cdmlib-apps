@@ -184,7 +184,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		//invokeRelations(source, cdmApp, deleteAll, taxonMap, referenceMap);
 		logger.info(i + " taxa handled. Saving ...");
 		getTaxonService().saveOrUpdate(taxaToSave);
-		getFeatureTreeService().saveOrUpdateFeatureNodesAll((Set)state.getFeatureNodesToSave());
+		getTermNodeService().saveOrUpdate(state.getFeatureNodesToSave());
 		state.getFeatureNodesToSave().clear();
 		commitTransaction(tx);
 

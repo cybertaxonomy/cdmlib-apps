@@ -123,7 +123,7 @@ public class PalmaeActivator {
 			ICdmRepository app = tcsImport.getCdmAppController();
 
 			TermTree<Feature> tree = getFeatureTree();
-			app.getFeatureTreeService().saveOrUpdate(tree);
+			app.getTermTreeService().saveOrUpdate(tree);
 			System.out.println("End import from TCS ("+ source.toString() + ")...");
 
 			return success;

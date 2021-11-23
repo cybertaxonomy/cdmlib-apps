@@ -67,8 +67,8 @@ public class EfloraImportState extends ImportStateBase<EfloraImportConfigurator,
 		this.featureNodesToSave = featureNodesToSave;
 	}
 
-	public Set<TermNode<Feature>> getFeatureNodesToSave() {
-		return featureNodesToSave;
+	public Set<TermNode> getFeatureNodesToSave() {
+		return (Set)featureNodesToSave;
 	}
 
 	public Set<PolytomousKeyNode> getPolytomousKeyNodesToSave() {

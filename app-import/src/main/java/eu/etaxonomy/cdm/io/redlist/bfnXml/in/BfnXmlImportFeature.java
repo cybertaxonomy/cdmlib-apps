@@ -148,10 +148,10 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 	}
 
 	private void createFeatureTree(List<Feature> featureList) {
-	    TermTree<Feature> featureTree = TermTree.NewInstance(featureList);
+	    TermTree<Feature> featureTree = TermTree.NewFeatureInstance(featureList);
 		String featureTreeName = "RedListFeatureTree";
 		featureTree.setTitleCache(featureTreeName, true);
-		getFeatureTreeService().save(featureTree);
+		getTermTreeService().save(featureTree);
 	}
 
 	private void makeFeature(IVocabularyService vocabularyService,

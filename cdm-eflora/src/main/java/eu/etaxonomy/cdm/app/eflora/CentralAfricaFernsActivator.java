@@ -20,7 +20,6 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportConfigurator;
-import eu.etaxonomy.cdm.io.eflora.floraMalesiana.FloraMalesianaTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -94,15 +93,13 @@ public class CentralAfricaFernsActivator {
 			System.out.println("End import from ("+ source.toString() + ")...");
 //		}
 
-
-
 		TermTree<Feature> tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
-		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+		myImport.getCdmAppController().getTermTreeService().saveOrUpdate(tree);
 
 		//check keys
 //		if (doPrintKeys){
 //			TransactionStatus tx = myImport.getCdmAppController().startTransaction();
-//			List<FeatureTree> keys = myImport.getCdmAppController().getFeatureTreeService().list(PolytomousKey.class, null, null, null, null);
+//			List<FeatureTree> keys = myImport.getCdmAppController().getTermTreeService().list(PolytomousKey.class, null, null, null, null);
 //			for(FeatureTree key : keys){
 //				((PolytomousKey)key).print(System.out);
 //				System.out.println();
@@ -119,7 +116,6 @@ public class CentralAfricaFernsActivator {
 	}
 
 	private TermTree<Feature> makeFeatureNode(ITermService service){
-		FloraMalesianaTransformer transformer = new FloraMalesianaTransformer();
 
 		TermTree<Feature> result = TermTree.NewFeatureInstance(featureTreeUuid);
 		result.setTitleCache("Flora Malesiana Presentation Feature Tree", true);
@@ -131,11 +127,6 @@ public class CentralAfricaFernsActivator {
 		return result;
 	}
 
-
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		CentralAfricaFernsActivator me = new CentralAfricaFernsActivator();
 		me.doImport(cdmDestination);

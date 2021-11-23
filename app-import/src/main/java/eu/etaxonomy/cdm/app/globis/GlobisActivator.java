@@ -140,7 +140,7 @@ public class GlobisActivator {
 //			//make feature tree
 //			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, ermsImportConfigurator.getFeatureMap(), featureKeyList);
 //			app = ermsImport.getCdmAppController();
-//			app.getFeatureTreeService().saveOrUpdate(tree);
+//			app.getTermTreeService().saveOrUpdate(tree);
 		}
 		System.out.println("End import from ("+ source.getDatabase() + ")...");
 	}

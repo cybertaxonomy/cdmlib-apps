@@ -8,7 +8,6 @@
 */
 package eu.etaxonomy.cdm.io.greece;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.text.ParseException;
 import java.util.UUID;
 
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.ITermService;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.ext.geo.GeoServiceArea;
 import eu.etaxonomy.cdm.ext.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
@@ -431,7 +431,7 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         if (hasFeatureTree  ){
             return;
         }
-        if (getFeatureTreeService().find(state.getConfig().getUuidFeatureTree()) != null){
+        if (getTermTreeService().find(state.getConfig().getUuidFeatureTree()) != null){
             hasFeatureTree = true;
             return;
         }
@@ -477,11 +477,9 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         newFeature = (Feature)service.find(Feature.NOTES().getUuid());
         root.addChild(newFeature);
 
-        getFeatureTreeService().saveOrUpdate(result);
+        getTermTreeService().saveOrUpdate(result);
         hasFeatureTree = true;
-
     }
-
 
     private State addState(SimpleExcelTaxonImportState<FloraHellenicaImportConfigurator> state,
             String abbrev, String stateLabel, String description, UUID uuid, OrderedTermVocabulary<State> voc) {

@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.app.wp6.cichorieae;
 
 import java.io.File;
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
@@ -21,6 +20,7 @@ import eu.etaxonomy.cdm.app.berlinModelImport.BerlinModelSources;
 import eu.etaxonomy.cdm.app.berlinModelImport.TreeCreator;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.images.ImageImportConfigurator;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
@@ -225,7 +225,7 @@ public class CichorieaeActivator {
 			TermTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
 			tree.getRoot().addChild(Feature.IMAGE());
 			tree.getRoot().addChild(Feature.DISTRIBUTION(), 2);
-			app.getFeatureTreeService().saveOrUpdate(tree);
+			app.getTermTreeService().saveOrUpdate(tree);
 		}
 
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");

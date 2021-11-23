@@ -133,7 +133,7 @@ public class CentralAfricaEricaceaeActivator {
 
 		if (doFeatureTree){
 			TermTree<Feature> tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
-			myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+			myImport.getCdmAppController().getTermTreeService().saveOrUpdate(tree);
 		}
 
 		//check keys

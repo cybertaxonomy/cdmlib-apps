@@ -9,7 +9,6 @@
 
 package eu.etaxonomy.cdm.app.cyprus;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
@@ -18,6 +17,7 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -88,7 +88,7 @@ public class CyprusActivator {
 			myImport.invoke(config);
 			if (doTaxa){
 				TermTree<Feature> tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
-				myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+				myImport.getCdmAppController().getTermTreeService().saveOrUpdate(tree);
 			}
 
 			System.out.println("End import from ("+ source.toString() + ")...");

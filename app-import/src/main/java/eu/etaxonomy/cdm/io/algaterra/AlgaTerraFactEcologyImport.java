@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
-import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeCacheStrategy;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeNotSupportedException;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraSpecimenImportValidator;
@@ -45,6 +44,7 @@ import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.strategy.cache.occurrence.DerivedUnitDefaultCacheStrategy;
 
 
 /**
@@ -138,7 +138,7 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 
 							this.doIdCreatedUpdatedNotes(state, identifiedSpecimen, rs, factId, getDerivedUnitNameSpace());
 
-							identifiedSpecimen.setCacheStrategy(new DerivedUnitFacadeCacheStrategy());
+							identifiedSpecimen.setCacheStrategy(DerivedUnitDefaultCacheStrategy.NewInstance());
 							taxaToSave.add(taxon);
 						}
 					}else{

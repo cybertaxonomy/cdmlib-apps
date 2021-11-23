@@ -32,6 +32,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.term.TermNode;
 import eu.etaxonomy.cdm.model.term.TermTree;
+import eu.etaxonomy.cdm.model.term.TermType;
 
 /**
  * @author a.mueller
@@ -103,7 +104,7 @@ public class EricaceaeTestUpdateActivator {
 		app = myImport.getCdmAppController();
 
 		TransactionStatus tx = app.startTransaction();
-		List<TermTree<Feature>> featureTrees = app.getFeatureTreeService().list(null, null, null, null, null);
+		List<TermTree> featureTrees = app.getTermTreeService().list(TermType.Feature, null, null, null, null);
 		for (TermTree<Feature> tree :featureTrees){
 			if (tree.getClass().getSimpleName().equalsIgnoreCase("FeatureTree")){
 				moveChild(app, tree);

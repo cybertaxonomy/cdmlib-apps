@@ -199,7 +199,7 @@ public class DipteraActivator {
 			tree.getRoot().addChild(Feature.IMAGE());
 			// add distribution
 			tree.getRoot().addChild(Feature.DISTRIBUTION());
-			app.getFeatureTreeService().saveOrUpdate(tree);
+			app.getTermTreeService().saveOrUpdate(tree);
 		}
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 		return success;

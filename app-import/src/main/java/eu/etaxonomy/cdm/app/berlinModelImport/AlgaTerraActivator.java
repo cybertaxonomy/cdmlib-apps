@@ -225,7 +225,7 @@ public class AlgaTerraActivator {
 //		//needed ??
 //		tree.getRoot().addChild(Feature.IMAGE());
 
-		app.getFeatureTreeService().saveOrUpdate(tree);
+		app.getTermTreeService().saveOrUpdate(tree);
 	}
 
 
@@ -269,7 +269,7 @@ public class AlgaTerraActivator {
 		addFeatureNodeByUuid(root, termService, AlgaTerraImportTransformer.uuidFeatureCl);
 		addFeatureNodeByUuid(root, termService, AlgaTerraImportTransformer.uuidFeatureSecchiDepth);
 		addFeatureNodeByUuid(root, termService, AlgaTerraImportTransformer.uuidFeatureCommunity);
-		app.getFeatureTreeService().saveOrUpdate(specimenTree);
+		app.getTermTreeService().saveOrUpdate(specimenTree);
 	}
 
 	private TermNode<Feature> makeNitrogenNode(TermNode<Feature> root, ITermService termService) {

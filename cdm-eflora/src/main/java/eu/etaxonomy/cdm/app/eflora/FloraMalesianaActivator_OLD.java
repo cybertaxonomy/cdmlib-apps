@@ -123,7 +123,7 @@ public class FloraMalesianaActivator_OLD {
 		}
 
 		TermTree<Feature> tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
-		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+		myImport.getCdmAppController().getTermTreeService().saveOrUpdate(tree);
 
 		//check keys
 		if (doPrintKeys){
@@ -140,7 +140,7 @@ public class FloraMalesianaActivator_OLD {
 
 	private Reference getSourceReference(String string) {
 		Reference result = ReferenceFactory.newGeneric();
-		result.setTitleCache(string);
+		result.setTitleCache(string, true);
 		return result;
 	}
 

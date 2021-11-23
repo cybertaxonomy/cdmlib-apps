@@ -414,7 +414,7 @@ public class EuroMedActivator {
                 tree.getRoot().addChild(Feature.IMAGE());
                 tree.getRoot().addChild(Feature.DISTRIBUTION(), 1);
                 tree.getRoot().addChild(Feature.COMMON_NAME(), 2);
-                app.getFeatureTreeService().saveOrUpdate(tree);
+                app.getTermTreeService().saveOrUpdate(tree);
 
                 app.commitTransaction(tx);
             } catch (Exception e) {

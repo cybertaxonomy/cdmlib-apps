@@ -184,7 +184,7 @@ public class TaraxacumActivator {
 //			FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
 //			FeatureNode featureNode = tree.getRoot();
 //			tree.getRoot().addChild(distributionNode, featureNode.getChildCount() + 1);
-//			app.getFeatureTreeService().saveOrUpdate(tree);
+//			app.getTermTreeService().saveOrUpdate(tree);
 			mergeIntoCichorieae(app);
 			app.commitTransaction(tx);
 		}
