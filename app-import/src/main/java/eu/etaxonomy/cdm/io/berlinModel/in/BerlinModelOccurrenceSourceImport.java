@@ -167,7 +167,6 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 		}
 	}
 
-
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 

@@ -8,7 +8,6 @@
 */
 package eu.etaxonomy.cdm.io.salvador;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +24,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.csv.in.CsvImportBase;
 import eu.etaxonomy.cdm.model.agent.Person;

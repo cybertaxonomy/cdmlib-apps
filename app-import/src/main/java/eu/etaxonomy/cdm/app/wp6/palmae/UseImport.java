@@ -13,7 +13,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,6 +39,7 @@ import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.api.service.ITermTreeService;
 import eu.etaxonomy.cdm.api.service.IVocabularyService;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.config.AccountStore;
 import eu.etaxonomy.cdm.database.CdmDataSource;
 import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
@@ -102,7 +102,7 @@ public class UseImport {
 		return destination;
 	}
 
-	public boolean importFromExcelSS(String xlsPath) throws InvalidFormatException {
+	public boolean importFromExcelSS(String xlsPath) {
 		boolean success = true;
 
 		CdmApplicationController applicationController = CdmApplicationController.NewInstance(dataSource());
@@ -111,8 +111,6 @@ public class UseImport {
 
 		ITaxonService service = applicationController.getTaxonService();
 		ITermService termService = applicationController.getTermService();
-		IDescriptionService descService = applicationController.getDescriptionService();
-		IReferenceService referenceService = applicationController.getReferenceService();
 		InputStream inputStream = null;
 
 		try {
@@ -168,7 +166,7 @@ public class UseImport {
 			}
 
 			List<TaxonBase> taxa = service.findTaxaByID(lstTaxonIDs);
-			for(TaxonBase idTaxa : taxa) {
+			for(TaxonBase<?> idTaxa : taxa) {
 				//System.out.println(idTaxa.getUuid().toString());
 				System.out.println(idTaxa.getName());
 			}
@@ -181,10 +179,10 @@ public class UseImport {
 				String idTaxonToUpdate = lstUpdate.get(1);
 				TaxonDescription newUseDescription = TaxonDescription.NewInstance();
 				newUseDescription.addMarker(useMarker);
-				newUseDescription.setTitleCache(lstUpdate.get(2));
+				newUseDescription.setTitleCache(lstUpdate.get(2), true);
 				Reference citation = ReferenceFactory.newGeneric();
 				Team authorTeam = Team.NewInstance();
-				authorTeam.setTitleCache(lstUpdate.get(3));
+				authorTeam.setTitleCache(lstUpdate.get(3), true);
 				citation.setAuthorship(authorTeam);
 				citation.setTitle(lstUpdate.get(4));
 
@@ -193,7 +191,7 @@ public class UseImport {
 				citation.setDatePublished(year);
 				citation.setTitleCache(lstUpdate.get(6), true);
 				//citation.
-				for(TaxonBase taxon : taxa) {
+				for(TaxonBase<?> taxon : taxa) {
 					String taxonUUID = taxon.getUuid().toString();
 					//System.out.println(idTaxonToUpdate + "|" + taxonUUID);
 					if(idTaxonToUpdate.equals(taxonUUID)) {
@@ -432,8 +430,6 @@ public class UseImport {
 						}
 					}
 
-
-
 					if (taxon.isInstanceOf(Synonym.class)){
 						Taxon bestCandidate = null;
 						Synonym synonym = CdmBase.deproxy(taxon, Synonym.class);
@@ -467,7 +463,7 @@ public class UseImport {
 	}
 
 	//Completed and tested!
-	private boolean loadTerms() throws InvalidFormatException {
+	private boolean loadTerms() {
 		boolean success = true;
 
 		//String xslPathString = "C://workspace//terms.xls";
@@ -477,17 +473,14 @@ public class UseImport {
 		ConversationHolder conversation = applicationController.NewConversation();
 		conversation.startTransaction();
 
-		ITaxonService service = applicationController.getTaxonService();
 		ITermService termService = applicationController.getTermService();
 		IVocabularyService vocabularyService = applicationController.getVocabularyService();
-		IReferenceService referenceService = applicationController.getReferenceService();
 
 		TermVocabulary<State> stateVocabulary =  vocabularyService.find(UUID.fromString("67430d7c-fd43-4e9d-af5e-d0dca3f74931"));
 		TermVocabulary<DefinedTermBase<?>> countryVocabulary = vocabularyService.find(UUID.fromString("116c51f1-e63a-46f7-a258-e1149a42868b"));
 		TermVocabulary<DefinedTerm> plantPartVocabulary = vocabularyService.find(UUID.fromString("369914fe-d54b-4063-99ce-abc81d30ad35"));
 		TermVocabulary<DefinedTerm> humanGroupVocabulary =  vocabularyService.find(UUID.fromString("ca46cea5-bdf7-438d-9cd8-e2793d2178dc"));
 
-		IDescriptionService descService = applicationController.getDescriptionService();
 		InputStream inputStream = null;
 
 		try {
@@ -510,14 +503,14 @@ public class UseImport {
 			Sheet sheet = workBook.getSheetAt(0);
 			Iterator<Row> rows = sheet.rowIterator();
 
-			ArrayList<ArrayList<String>> lstUpdates = new ArrayList<ArrayList<String>>();
+			ArrayList<ArrayList<String>> lstUpdates = new ArrayList<>();
 
 			while (rows.hasNext()) {
 
 				Row row = rows.next();
 				System.out.println("Row No.: " + row.getRowNum());
 				Iterator<Cell> cells = row.cellIterator();
-				ArrayList<String> lstTerms = new ArrayList<String>();
+				ArrayList<String> lstTerms = new ArrayList<>();
 				while (cells.hasNext()) {
 					Cell cell = cells.next();
 
@@ -587,7 +580,7 @@ public class UseImport {
 				//case 2: = Country
 				case 2:
 					Pager<DefinedTerm> countryPager = termService.findByRepresentationText(lstUpdate.get(1), DefinedTerm.class, null, null);
-					DefinedTermBase country = null;
+					DefinedTermBase<?> country = null;
 
 					if(countryPager.getCount()>0) {
 						country = countryPager.getRecords().get(0);
@@ -631,8 +624,8 @@ public class UseImport {
 
 	}
 
-	private ArrayList<ArrayList<String>> loadSpreadsheet(String xslPathString) throws InvalidFormatException {
-		ArrayList<ArrayList<String>> lstUpdates = new ArrayList<ArrayList<String>>();
+	private ArrayList<ArrayList<String>> loadSpreadsheet(String xslPathString) {
+		ArrayList<ArrayList<String>> lstUpdates = new ArrayList<>();
 		InputStream inputStream = null;
 
 		try {
@@ -649,12 +642,10 @@ public class UseImport {
 
 			Workbook workBook = WorkbookFactory.create(inputStream);
 
-
 			Sheet sheet = workBook.getSheetAt(0);
 			Iterator<Row> rows = sheet.rowIterator();
 			// Iterator rows = sheet.rowIterator();
 			//Set<Integer> lstTaxonIDs;
-
 
 			while (rows.hasNext()) {
 
@@ -694,10 +685,9 @@ public class UseImport {
 		ConversationHolder conversation = applicationController.NewConversation();
 
 
-		ITaxonService service = applicationController.getTaxonService();
 		ITermService termService = applicationController.getTermService();
 		IVocabularyService vocabularyService = applicationController.getVocabularyService();
-		ITermTreeService featureTreeService = applicationController.getTermTreeService();
+		ITermTreeService termTreeServcie = applicationController.getTermTreeService();
 
 		MarkerType existingMarkertype = (MarkerType)termService.find(UUID.fromString("2e6e42d9-e92a-41f4-899b-03c0ac64f039"));
 		Feature featureUseRecord = (Feature) termService.find(UUID.fromString("8125a59d-b4d5-4485-89ea-67306297b599"));
@@ -774,8 +764,8 @@ public class UseImport {
 		}
 		if(featureUseRecord == null|| featureUseSummary == null) {
 			TermVocabulary<Feature> featureVocabulary = vocabularyService.find((UUID.fromString("b187d555-f06f-4d65-9e53-da7c93f8eaa8")));
-			TermTree<Feature> palmWebFeatureTree = featureTreeService.find(UUID.fromString("72ccce05-7cc8-4dab-8e47-bf3f5fd848a0"));
-			//List<FeatureTree> featureTrees = CdmStore.getService(IFeatureTreeService.class).list(FeatureTree.class, null, null, null, null);
+			TermTree<Feature> palmWebFeatureTree = termTreeServcie.find(UUID.fromString("72ccce05-7cc8-4dab-8e47-bf3f5fd848a0"));
+			//List<FeatureTree> featureTrees = CdmStore.getService(ITermTreeService.class).list(FeatureTree.class, null, null, null, null);
 
 			if (featureUseRecord == null ) {
 				featureUseRecord = Feature.NewInstance("Use Record", "Use Record", null);
@@ -796,7 +786,7 @@ public class UseImport {
 			}
 
 			vocabularyService.saveOrUpdate(featureVocabulary);
-			featureTreeService.saveOrUpdate(palmWebFeatureTree);
+			termTreeServcie.saveOrUpdate(palmWebFeatureTree);
 			conversation.commit(true);
 
 		}
@@ -818,11 +808,11 @@ public class UseImport {
 			featureUseRecord.setSupportsCategoricalData(true);
 			//TermVocabulary<Feature> featureVocabulary = (TermVocabulary<Feature>)vocabularyService.find((UUID.fromString("b187d555-f06f-4d65-9e53-da7c93f8eaa8")));
 			featureVocabulary.addTerm(featureUseRecord);
-			FeatureTree palmWebFeatureTree = featureTreeService.find(UUID.fromString("72ccce05-7cc8-4dab-8e47-bf3f5fd848a0"));
+			FeatureTree palmWebFeatureTree = termTreeServcie.find(UUID.fromString("72ccce05-7cc8-4dab-8e47-bf3f5fd848a0"));
 			FeatureNode useRecFeatureNode = FeatureNode.NewInstance(featureUseRecord);
 			palmWebFeatureTree.getRoot().addChild(useRecFeatureNode);
 			vocabularyService.saveOrUpdate(featureVocabulary);
-			featureTreeService.saveOrUpdate(palmWebFeatureTree);
+			termTreeServcie.saveOrUpdate(palmWebFeatureTree);
 			conversation.commit(true);
 
 		}
@@ -833,11 +823,11 @@ public class UseImport {
 			featureUseSummary.setSupportsTextData(true);
 			//TermVocabulary<Feature> featureVocabulary = (TermVocabulary<Feature>)vocabularyService.find((UUID.fromString("b187d555-f06f-4d65-9e53-da7c93f8eaa8")));
 			featureVocabulary.addTerm(featureUseSummary);
-			FeatureTree palmWebFeatureTree = featureTreeService.find(UUID.fromString("72ccce05-7cc8-4dab-8e47-bf3f5fd848a0"));
+			FeatureTree palmWebFeatureTree = termTreeServcie.find(UUID.fromString("72ccce05-7cc8-4dab-8e47-bf3f5fd848a0"));
 			FeatureNode useRecFeatureNode = FeatureNode.NewInstance(featureUseSummary);
 			palmWebFeatureTree.getRoot().addChild(useRecFeatureNode);
 			vocabularyService.saveOrUpdate(featureVocabulary);
-			featureTreeService.saveOrUpdate(palmWebFeatureTree);
+			termTreeServcie.saveOrUpdate(palmWebFeatureTree);
 			conversation.commit(true);
 		}*/
 

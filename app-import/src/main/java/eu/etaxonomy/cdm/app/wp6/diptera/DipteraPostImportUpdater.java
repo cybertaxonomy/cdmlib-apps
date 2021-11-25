@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.wp6.diptera;
 
 import java.util.HashMap;
@@ -39,7 +38,6 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 /**
  * @author a.mueller
  * @since 01.10.2009
- * @version 1.0
  */
 public class DipteraPostImportUpdater {
 	private static final Logger logger = Logger.getLogger(DipteraPostImportUpdater.class);
@@ -59,7 +57,7 @@ public class DipteraPostImportUpdater {
 			ImportResult result = new ImportResult();
 			try{
 			CdmApplicationController cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
-			Set<DescriptionElementBase> citationsToSave = new HashSet<DescriptionElementBase>();
+			Set<DescriptionElementBase> citationsToSave = new HashSet<>();
 			TransactionStatus tx = cdmApp.startTransaction();
 
 			logger.warn("start updating citations ... application context started");
