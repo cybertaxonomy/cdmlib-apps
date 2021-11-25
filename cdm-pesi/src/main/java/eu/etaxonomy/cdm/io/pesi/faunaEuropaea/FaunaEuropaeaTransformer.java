@@ -140,7 +140,7 @@ public final class FaunaEuropaeaTransformer {
 			}
 
 			try {
-				result = Rank.getRankByNameOrIdInVoc(rankName);
+				result = Rank.getRankByLatinNameOrIdInVoc(rankName);
 			} catch (UnknownCdmTypeException e1) {
 
 				switch (rankId) {

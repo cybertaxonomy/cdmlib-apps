@@ -873,7 +873,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		Rank rank = null;
 		if (isNotBlank(rankStr)){
 			try {
-				rank = Rank.getRankByNameOrIdInVoc(rankStr, NomenclaturalCode.ICZN, true);
+				rank = Rank.getRankByLatinNameOrIdInVoc(rankStr, NomenclaturalCode.ICZN, true);
 			} catch (UnknownCdmTypeException e) {
 				e.printStackTrace();
 			}

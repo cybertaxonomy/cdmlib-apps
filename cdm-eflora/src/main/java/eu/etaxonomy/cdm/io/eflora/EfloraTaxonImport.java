@@ -1606,10 +1606,10 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		if (elInfraRank.size() == 1){
 			String strRank = elInfraRank.get(0).getTextNormalize();
 			try {
-				infraRank = Rank.getRankByNameOrIdInVoc(strRank);
+				infraRank = Rank.getRankByLatinNameOrIdInVoc(strRank);
 			} catch (UnknownCdmTypeException e) {
 				try{
-					infraRank = Rank.getRankByNameOrIdInVoc(strRank + ".");
+					infraRank = Rank.getRankByLatinNameOrIdInVoc(strRank + ".");
 				} catch (UnknownCdmTypeException e2) {
 					logger.warn("Unknown infrank " + strRank + ". Set infraRank to (null).");
 				}
@@ -1910,7 +1910,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 				try {
 					Rank rank;
 					try {
-						rank = Rank.getRankByNameOrIdInVoc(classValue);
+						rank = Rank.getRankByLatinNameOrIdInVoc(classValue);
 					} catch (Exception e) {
 						//TODO nc
 						rank = Rank.getRankByEnglishName(classValue, NomenclaturalCode.ICNAFP, false);
