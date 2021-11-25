@@ -104,7 +104,7 @@ public class DipteraPostImportUpdater {
 				}
 			}
 
-			cdmApp.getDescriptionService().saveDescriptionElement(citationsToSave);
+			cdmApp.getDescriptionElementService().save(citationsToSave);
 			//commit
 			cdmApp.commitTransaction(tx);
 			logger.warn("Citations updated!");

@@ -155,7 +155,7 @@ public class SalvadorSpecimenImport
         Map<String, String> record = state.getCurrentRecord();
         UUID factUuid = UUID.fromString(record.get("specimenFactUuid"));
 
-        TextData textSpecimen = (TextData)getDescriptionService().getDescriptionElementByUuid(factUuid);
+        TextData textSpecimen = (TextData)getDescriptionElementService().find(factUuid);
         textSpecimen.setFeature(getTexSpecimenFeature());
 
         FieldUnit fieldUnit = FieldUnit.NewInstance();

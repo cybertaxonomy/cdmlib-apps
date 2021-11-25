@@ -158,7 +158,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
             }
 			logger.info("Distributions to save: " + objectsToSave.size());
-			getDescriptionService().saveDescriptionElement(objectsToSave);
+			getDescriptionElementService().save(objectsToSave);
 
 			return success;
 		} catch (SQLException e) {

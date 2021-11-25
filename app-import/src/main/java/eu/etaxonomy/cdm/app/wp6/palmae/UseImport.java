@@ -32,7 +32,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.conversation.ConversationHolder;
-import eu.etaxonomy.cdm.api.service.IDescriptionService;
+import eu.etaxonomy.cdm.api.service.IDescriptionElementService;
 import eu.etaxonomy.cdm.api.service.IReferenceService;
 import eu.etaxonomy.cdm.api.service.ITaxonService;
 import eu.etaxonomy.cdm.api.service.ITermService;
@@ -263,8 +263,8 @@ public class UseImport {
 
 		ITaxonService taxonService = applicationController.getTaxonService();
 		ITermService termService = applicationController.getTermService();
-		IDescriptionService descService = applicationController.getDescriptionService();
-		IReferenceService referenceService = applicationController.getReferenceService();
+		IDescriptionElementService descElementService = applicationController.getDescriptionElementService();
+        IReferenceService referenceService = applicationController.getReferenceService();
 
 
 		ArrayList<ArrayList<String>> lstUseSummaries = loadSpreadsheet(xslUseSummaryPathString);
@@ -302,7 +302,7 @@ public class UseImport {
 					TextData useSummary = TextData.NewInstance(featureUseSummary);
 					LanguageString languageString = LanguageString.NewInstance(lstUseSummary.get(1), Language.ENGLISH());
 					useSummary.putText(languageString);
-					descService.saveDescriptionElement(useSummary);
+					descElementService.save(useSummary);
 					newUseDescription.addElement(useSummary);
 					for (ArrayList<String> lstUseRecord : lstUseRecords) {
 						j++;
@@ -425,7 +425,7 @@ public class UseImport {
 								useRecord.addModifier(ethnicGroup);
 							}
 							useRecord.putModifyingText(Language.ENGLISH(), modifyingText);
-							descService.saveDescriptionElement(useRecord);
+							descElementService.save(useRecord);
 							newUseDescription.addElement(useRecord);
 						}
 					}
