@@ -415,5 +415,4 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
     	String noStr = getValue(state.getOriginalRecord(), "SORT");
         return IdentifiableSource.NewDataImportInstance(noStr, "SORT", state.getConfig().getSourceReference());
     }
-
 }

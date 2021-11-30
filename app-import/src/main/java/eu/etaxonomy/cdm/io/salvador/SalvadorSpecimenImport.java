@@ -269,11 +269,6 @@ public class SalvadorSpecimenImport
         return collectionMap.get(code);
     }
 
-    /**
-     * @param config
-     * @param facade
-     * @param importResult
-     */
     private void makeFieldUnitData(SalvadorSpecimenImportState state, DerivedUnitFacade facade) {
 
         Map<String, String> record = state.getCurrentRecord();

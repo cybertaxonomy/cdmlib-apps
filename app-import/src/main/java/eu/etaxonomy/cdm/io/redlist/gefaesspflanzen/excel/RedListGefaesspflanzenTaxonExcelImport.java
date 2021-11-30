@@ -77,9 +77,6 @@ public class RedListGefaesspflanzenTaxonExcelImport<CONFIG extends RedListGefaes
     private boolean isFirst = true;
     private TransactionStatus tx = null;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
         if (isFirst){

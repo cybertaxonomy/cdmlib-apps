@@ -25,10 +25,8 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 import eu.etaxonomy.cdm.persistence.dto.UuidAndTitleCache;
 
 /**
- *
  * @author pplitzner
  * @since Jan 25, 2019
- *
  */
 public class KewPlantGlossaryCsvImportState extends CsvImportState<KewPlantGlossaryCsvImportConfigurator> {
 
