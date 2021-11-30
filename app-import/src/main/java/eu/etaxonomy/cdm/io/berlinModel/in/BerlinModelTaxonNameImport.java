@@ -160,11 +160,6 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
             wrap.add(ref, detail);
 	    }
 
-
-        /**
-         * @param nomRef
-         * @return
-         */
         public Set<ReferenceCandidate> getCandidates(Reference exemplar) {
             String hash = refHash(exemplar);
             ReferenceMapping.ReferenceWrapper wrap = abbrevMapping.get(hash);
@@ -1209,20 +1204,10 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 //        return i;
 //    }
 
-    /**
-     * @param fullNomRefCache
-     * @param taxonName
-     * @return
-     */
     private String unparsedAndName(String fullNomRefCache, TaxonName taxonName) {
         return fullNomRefCache +" | " + taxonName.getFullTitleCache();
     }
 
-
-    /**
-     * @param noMatch
-     * @param fullTitleCache
-     */
     private void printResult(MatchType type, String text) {
         List<String> list = matchResults.get(type);
         if (list == null){

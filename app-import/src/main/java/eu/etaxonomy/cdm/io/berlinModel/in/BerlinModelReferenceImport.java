@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.berlinModel.in;
 
 import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.REF_ARTICLE;
@@ -93,7 +92,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	public static final String REFERENCE_NAMESPACE = "Reference";
 	private static final String REF_AUTHOR_NAMESPACE = "Reference.refAuthorString";
 
-
 	public static final UUID REF_DEPOSITED_AT_UUID = UUID.fromString("23ca88c7-ce73-41b2-8ca3-2cb22f013beb");
 	public static final UUID REF_SOURCE_UUID = UUID.fromString("d6432582-2216-4b08-b0db-76f6c1013141");
 	public static final UUID DATE_STRING_UUID = UUID.fromString("e4130eae-606e-4b0c-be4f-e93dc161be7d");
@@ -102,7 +100,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	private final int modCount = 1000;
 	private static final String pluralString = "references";
 	private static final String dbTableName = "reference";
-
 
 	public BerlinModelReferenceImport(){
 		super(dbTableName, pluralString);
@@ -153,7 +150,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
         ,new CdmStringMapper("refAuthorString", "refAuthorString"),
 	};
 
-
 	protected static String[] operationalAttributes = new String[]{
 		"refId", "refCache", "nomRefCache", "preliminaryFlag", "inRefFk", "title", "nomTitleAbbrev",
 		"refAuthorString", "nomAuthorTeamFk",
@@ -170,8 +166,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 	//TODO isPaper
 	//
-
-
 
 	//type to count the references nomReferences that have been created and saved
 	private class RefCounter{
@@ -256,7 +250,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
-			return;
+	        return;
 		}
 		logger.info("end make " + getPluralString() + " ... " + getSuccessString(success));
 		if (! success){
@@ -264,7 +258,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		}
 		return;
 	}
-
 
     @Override
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {

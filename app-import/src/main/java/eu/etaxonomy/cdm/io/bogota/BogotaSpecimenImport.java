@@ -425,14 +425,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         }
     }
 
-
-    /**
-     * @param facade
-     * @param state
-     * @param line
-     * @param record
-     * @param voucherId
-     */
     private void makeLocationFields(DerivedUnitFacade facade, SimpleExcelSpecimenImportState<CONFIG> state, String line,
             Map<String, String> record) {
         //Altitude
@@ -498,14 +490,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         }
     }
 
-
-    /**
-     * @param strAltitudeFrom
-     * @param strAltitudeTo
-     * @param state
-     * @param line
-     * @param colAltitudeTo
-     */
     private void checkNoToIfNoFrom(String strFrom, String strTo,
             SimpleExcelSpecimenImportState<CONFIG> state,
             String line, String toAttributeName) {
@@ -519,12 +503,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
 
     private ReferenceSystem defaultGeocodeMethod;
 
-    /**
-     * @param state
-     * @param record
-     * @param line
-     * @return
-     */
     private ReferenceSystem makeReferenceSystem(SimpleExcelSpecimenImportState<CONFIG> state,
             Map<String, String> record, String line) {
         String defaultStrRefSys = "Wieczorek, J., Guo, Q., & Hijmans, R. (2004). The point-radius method for georeferencing locality descriptions and calculating associated uncertainty. International journal of geographical information science, 18(8), 745-767.; Escobar D, Díaz SR, Jojoa LM, Rudas E, Albarracín RD, Ramírez C, Gómez JY, López CR, Saavedra J (2015). Georreferenciación de localidades: Una guía de referencia para colecciones biológicas. Instituto de Investigación de Recursos Biológicos Alexander von Humboldt – Instituto de Ciencias Naturales, Universidad Nacional de Colombia. Bogotá D.C., Colombia. 95 p.";
@@ -547,11 +525,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
     }
 
     private NamedArea bogota;
-    /**
-     * @param state
-     * @param line
-     * @return
-     */
     private NamedArea makeBogota(SimpleExcelSpecimenImportState<CONFIG> state, String line) {
         if (bogota != null){
             return bogota;
@@ -565,13 +538,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         }
     }
 
-
-    /**
-     * @param facade
-     * @param state
-     * @param line
-     * @param record
-     */
     private void makeCollectorFields(DerivedUnitFacade facade, SimpleExcelSpecimenImportState<CONFIG> state, String line,
             Map<String, String> record) {
 
@@ -629,11 +595,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         facade.setCollector(collector);
     }
 
-
-    /**
-     * @param string
-     * @return
-     */
     private String unknownToNull(String string) {
         if (string == null || string.equalsIgnoreCase("unknown")){
             return null;
@@ -656,14 +617,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         return anonymous;
     }
 
-
-    /**
-     * @param facade
-     * @param state
-     * @param line
-     * @param record
-     * @param taxonBase
-     */
     private void makeDetermination(DerivedUnit specimen, SimpleExcelSpecimenImportState<CONFIG> state, String line,
             Map<String, String> record, TaxonName taxonName) {
 
@@ -693,13 +646,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         }
     }
 
-
-    /**
-     * @param state
-     * @param record
-     * @param line
-     * @return
-     */
     private TeamOrPersonBase<?> makeDeterminer(SimpleExcelSpecimenImportState<CONFIG> state,
             Map<String, String> record, String line) {
         String identifier = record.get(COL_IDENTIFIER);
@@ -733,13 +679,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         }
     }
 
-
-    /**
-     * @param state
-     * @param record
-     * @param line
-     * @return
-     */
     private TimePeriod makeIdentificationDate(SimpleExcelSpecimenImportState<CONFIG> state,
             Map<String, String> record, String line) {
         String strDate = record.get(COL_IDENTIFICATION_DATE);
@@ -758,13 +697,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         return TimePeriod.NewInstance(start);
     }
 
-
-    /**
-     * @param state
-     * @param record
-     * @param line
-     * @return
-     */
     private DefinedTerm makeDeterminationQualifier(SimpleExcelSpecimenImportState<CONFIG> state,
             Map<String, String> record, String line) {
         String qualifier = record.get(COL_IDENTIFICATION_QUALIFIER);
@@ -791,11 +723,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         }
     }
 
-
-    /**
-     * @param taxonBase
-     * @return
-     */
     private Taxon getTaxon(TaxonBase<?> taxonBase) {
         if (taxonBase.isInstanceOf(Synonym.class)){
             return CdmBase.deproxy(taxonBase, Synonym.class).getAcceptedTaxon();
@@ -804,14 +731,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         }
     }
 
-
-    /**
-     * @param state
-     * @param line
-     * @param record
-     * @param noStr
-     * @return
-     */
     private TaxonBase<?> getTaxonByCdmId(SimpleExcelSpecimenImportState<CONFIG> state, String line,
             Map<String, String> record, String noStr) {
 
@@ -841,10 +760,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         return IdentifiableSource.NewDataImportInstance(getValue(state.getOriginalRecord(), COL_VOUCHER_ID), COL_VOUCHER_ID, getSourceCitation(state));
     }
 
-    /**
-     * @param state
-     * @return
-     */
     protected Reference getSourceCitation(SimpleExcelSpecimenImportState<CONFIG> state) {
         Reference source = state.getConfig().getSourceReference();
         if (source.getId() == 0){
