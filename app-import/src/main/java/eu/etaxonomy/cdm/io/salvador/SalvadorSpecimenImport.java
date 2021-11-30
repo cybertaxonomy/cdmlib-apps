@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.common.URI;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.csv.in.CsvImportBase;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
@@ -63,15 +62,9 @@ public class SalvadorSpecimenImport
 
     private static final long serialVersionUID = -2165916187195347780L;
 
-    private ImportDeduplicationHelper<?> dedupHelper;
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void handleSingleLine(SalvadorSpecimenImportState state) {
 
-        initDedupHelper();
         try {
             UUID factUuid = UUID.fromString(state.getCurrentRecord().get("specimenFactUuid"));
 
@@ -101,22 +94,6 @@ public class SalvadorSpecimenImport
         }
     }
 
-
-    /**
-     *
-     */
-    private void initDedupHelper() {
-        if (dedupHelper == null){
-            dedupHelper = ImportDeduplicationHelper.NewStandaloneInstance();
-        }
-    }
-
-
-    /**
-     * @param config
-     * @param facade
-     * @param importResult
-     */
     private void makeSpecimenDuplicate(SalvadorSpecimenImportState state,
             DerivedUnitFacade facade) {
 
@@ -285,7 +262,7 @@ public class SalvadorSpecimenImport
         //collector
         TeamOrPersonBase<?> collector = makeCollectorTeam(state, record, row);
         if (collector != null){
-            collector = dedupHelper.getExistingAuthor(null, collector);
+            collector = state.getDeduplicationHelper().getExistingAuthor(null, collector);
             facade.setCollector(collector);
         }
 
@@ -592,7 +569,7 @@ public class SalvadorSpecimenImport
             state.getResult().addWarning(message, row);
             result.setTitleCache(str, true);
         }
-        result = dedupHelper.getExistingAuthor(null, result);
+        result = state.getDeduplicationHelper().getExistingAuthor(null, result);
 
         team.addTeamMember(result);
         return ;
@@ -605,7 +582,7 @@ public class SalvadorSpecimenImport
         collectionMap = new HashMap<>();
         fieldUnitMap = new HashMap<>();
         taxonDescMap = new HashMap<>();
-        dedupHelper.restartSession(this, state.getResult());
+        state.getDeduplicationHelper().restartSession(this, state.getResult());
     }
 
 

@@ -15,7 +15,6 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
@@ -44,15 +43,6 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
     private Reference secReference;
     private Reference secReference2;
 
-    @SuppressWarnings("unchecked")
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewInstance(this);
-
-
-
-    /**
-     * @param taxon
-     * @return
-     */
     protected TaxonDescription getTaxonDescription(Taxon taxon) {
         if (!taxon.getDescriptions().isEmpty()){
             return taxon.getDescriptions().iterator().next();
@@ -161,8 +151,8 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
     }
 
     protected <NAME extends INonViralName> NAME replaceNameAuthorsAndReferences(SimpleExcelTaxonImportState<CONFIG> state, NAME name) {
-        NAME result = deduplicationHelper.getExistingName(state, name);
-        deduplicationHelper.replaceAuthorNamesAndNomRef(state, result);
+        NAME result = state.getDeduplicationHelper().getExistingName(state, name);
+        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, result);
         return result;
     }
 

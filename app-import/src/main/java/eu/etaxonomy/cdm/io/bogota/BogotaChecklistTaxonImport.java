@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
@@ -56,10 +55,6 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
 
     private static UUID rootUuid = UUID.fromString("d66eda18-4c11-4472-bfe8-f6cd5ed95c9f");
     private static UUID plantaeUuid = UUID.fromString("032fc183-eb4f-4f19-a290-28597a849096");
-
-    @SuppressWarnings("unchecked")
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper
-           = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewStandaloneInstance();
 
     private String lastGenus;
     private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
@@ -174,11 +169,11 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         }
         IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
-        name = deduplicationHelper.getExistingName(state, name);
+        name = state.getDeduplicationHelper().getExistingName(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Misapplied name could not be parsed: " + nameStr);
         }
-        deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
+        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, name);
 
         Taxon misApp = Taxon.NewInstance(name, null);
         if (auctRequired){
@@ -211,11 +206,11 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         Rank rank = Rank.SPECIES();
         IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
-        name = deduplicationHelper.getExistingName(state, name);
+        name = state.getDeduplicationHelper().getExistingName(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Synonym could not be parsed: " + nameStr);
         }
-        deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
+        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, name);
 
         Synonym synonym = Synonym.NewInstance(name, getSecReference(state));
         synonym.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
@@ -242,11 +237,11 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
                 Rank rank = Rank.SUBSPECIES();
                 IBotanicalName name = (IBotanicalName)parser.parseFullName(split.trim(), state.getConfig().getNomenclaturalCode(), rank);
                 name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
-                name = deduplicationHelper.getExistingName(state, name);
+                name = state.getDeduplicationHelper().getExistingName(state, name);
                 if (name.isProtectedTitleCache()){
                     logger.warn(line + "Infraspecific taxon could not be parsed: " + split.trim());
                 }
-                deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
+                state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, name);
 
                 Taxon subSpecies = Taxon.NewInstance(name, getSecReference(state));
                 subSpecies.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
@@ -279,11 +274,11 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         Rank rank = Rank.SPECIES();
         IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
-        name = deduplicationHelper.getExistingName(state, name);
+        name = state.getDeduplicationHelper().getExistingName(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + nameStr);
         }
-        deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
+        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, name);
 
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
 

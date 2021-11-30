@@ -17,7 +17,6 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -464,17 +463,9 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
     }
 
     private void replaceNameAuthorsAndReferences(SimpleExcelTaxonImportState<CONFIG> state, INonViralName name) {
-        dedupHelper().replaceAuthorNamesAndNomRef(state, name);
+        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, name);
     }
 
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<CONFIG>> dedupHelper;
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<CONFIG>> dedupHelper() {
-    	if (dedupHelper == null) {
-    		dedupHelper = (ImportDeduplicationHelper)ImportDeduplicationHelper.NewInstance(this);
-    	}
-    	return dedupHelper;
-    }
 
     @Override
     protected IdentifiableSource makeOriginalSource(SimpleExcelTaxonImportState<CONFIG> state) {

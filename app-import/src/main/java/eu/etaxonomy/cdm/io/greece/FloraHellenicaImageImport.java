@@ -28,7 +28,6 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.api.service.config.MatchingTaxonConfigurator;
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -59,9 +58,6 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
 
     private static final String BASE_URL = "https://media.e-taxonomy.eu/flora-greece/";
     private static final String IMAGE_FOLDER = "////BGBM-PESIHPC/Greece/thumbs/";
-
-    @SuppressWarnings("unchecked")
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewInstance(this);
 
     @Override
     protected void doInvoke(SimpleExcelTaxonImportState<CONFIG> state) {
@@ -158,14 +154,14 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
                 }else{
                     person.setTitleCache("artistStr", true);
                 }
-                person = deduplicationHelper.getExistingAuthor(state, person);
+                person = state.getDeduplicationHelper().getExistingAuthor(state, person);
 
                 media.setArtist(person);
                 //copyright
                 Rights right = Rights.NewInstance();
                 right.setType(RightsType.COPYRIGHT());
                 right.setAgent(person);
-                right = deduplicationHelper.getExistingCopyright(state, right);
+                right = state.getDeduplicationHelper().getExistingCopyright(state, right);
                 media.addRights(right);
             }
 

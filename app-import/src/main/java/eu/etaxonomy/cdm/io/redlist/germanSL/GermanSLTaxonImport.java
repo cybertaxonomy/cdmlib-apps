@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -76,13 +75,7 @@ public class GermanSLTaxonImport
 
     private static final String UUID_ = "UUID";
 
-
     public static final String TAXON_NAMESPACE = "1.3.4";
-
-    @SuppressWarnings("unchecked")
-    protected ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper
-           = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewStandaloneInstance();
-
 
     @Override
     protected String getWorksheetName(GermanSLImportConfigurator config) {
@@ -283,7 +276,7 @@ public class GermanSLTaxonImport
         if (fullName.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + fullNameStr );
         }else{
-            getDeduplicationHelper(state).replaceAuthorNamesAndNomRef(state, fullName);
+            state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, fullName);
 //            replaceAuthorNamesAndNomRef(state, fullName);
         }
 //        BotanicalName existingName = getExistingName(state, fullName);
@@ -296,25 +289,6 @@ public class GermanSLTaxonImport
         return result;
     }
 
-    /**
-     * @param state
-     * @return
-     */
-    protected ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> getDeduplicationHelper(SimpleExcelTaxonImportState<?> state) {
-        if (deduplicationHelper == null){
-            deduplicationHelper = ImportDeduplicationHelper.NewInstance(this, state);
-        }
-        return deduplicationHelper;
-    }
-
-
-
-    /**
-     * @param line
-     * @param state
-     * @param rankStr
-     * @return
-     */
     private Rank makeRank(String line, SimpleExcelTaxonImportState<GermanSLImportConfigurator> state, String rankStr) {
         Rank rank = null;
         try {

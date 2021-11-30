@@ -100,7 +100,7 @@ public class CyprusImagesActivator {
 		CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, DbSchemaValidation.VALIDATE);
 		TransactionStatus tx = app.startTransaction();
 
-		deduplicationHelper = (ImportDeduplicationHelper)ImportDeduplicationHelper.NewInstance(app);
+		deduplicationHelper = (ImportDeduplicationHelper)ImportDeduplicationHelper.NewInstance(app, null);
 
         File file = new File(path);
         String[] fileList = file.list();
@@ -635,7 +635,7 @@ public class CyprusImagesActivator {
         CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, DbSchemaValidation.VALIDATE);
         TransactionStatus tx = app.startTransaction();
 
-        deduplicationHelper = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewInstance(app);
+        deduplicationHelper = (ImportDeduplicationHelper)ImportDeduplicationHelper.NewInstance(app, null);
 
         List<Media> list = app.getMediaService().list(Media.class, null, null, null, null);
         for (Media media : list){

@@ -18,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.Annotation;
@@ -399,15 +398,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
     }
 
     private void replaceNameAuthorsAndReferences(SimpleExcelTaxonImportState<CONFIG> state, INonViralName name) {
-        dedupHelper().replaceAuthorNamesAndNomRef(state, name);
-    }
-
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<CONFIG>> dedupHelper;
-	private ImportDeduplicationHelper<SimpleExcelTaxonImportState<CONFIG>> dedupHelper() {
-    	if (dedupHelper == null) {
-    		dedupHelper = (ImportDeduplicationHelper)ImportDeduplicationHelper.NewStandaloneInstance();
-    	}
-    	return dedupHelper;
+        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, name);
     }
 
     @Override

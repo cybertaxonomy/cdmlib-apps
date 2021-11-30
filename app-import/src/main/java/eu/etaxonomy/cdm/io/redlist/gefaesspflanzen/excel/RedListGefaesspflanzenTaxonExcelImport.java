@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
@@ -60,10 +59,6 @@ public class RedListGefaesspflanzenTaxonExcelImport<CONFIG extends RedListGefaes
 
     private static UUID rootUuid = UUID.fromString("235ae474-227f-438a-b132-4508053fcb1c");
     private static UUID plantaeUuid = UUID.fromString("31bd1b7c-245a-416d-b076-aa090c7469ce");
-
-    @SuppressWarnings("unchecked")
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper
-           = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewStandaloneInstance();
 
     private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
     private BasionymRelationCreator basionymCreator = new BasionymRelationCreator();
@@ -161,12 +156,12 @@ public class RedListGefaesspflanzenTaxonExcelImport<CONFIG extends RedListGefaes
         Rank rank = Rank.SPECIES();
         IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
-        name = deduplicationHelper.getExistingName(state, name);
+        name = state.getDeduplicationHelper().getExistingName(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + nameStr);
         }
 
-        deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
+        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, name);
 
         TaxonBase<?> taxon;
         if ("1".equals(synFlag) || isAuct){
