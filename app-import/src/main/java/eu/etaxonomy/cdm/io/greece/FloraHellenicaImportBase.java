@@ -151,8 +151,8 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
     }
 
     protected <NAME extends INonViralName> NAME replaceNameAuthorsAndReferences(SimpleExcelTaxonImportState<CONFIG> state, NAME name) {
-        NAME result = state.getDeduplicationHelper().getExistingName(state, name);
-        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, result);
+        NAME result = state.getDeduplicationHelper().getExistingName(name);
+        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(result);
         return result;
     }
 

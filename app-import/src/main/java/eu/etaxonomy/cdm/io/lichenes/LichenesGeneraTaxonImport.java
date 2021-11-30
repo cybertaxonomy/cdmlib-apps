@@ -398,7 +398,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
     }
 
     private void replaceNameAuthorsAndReferences(SimpleExcelTaxonImportState<CONFIG> state, INonViralName name) {
-        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, name);
+        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(name);
     }
 
     @Override

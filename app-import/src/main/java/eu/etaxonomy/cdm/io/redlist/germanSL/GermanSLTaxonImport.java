@@ -276,7 +276,7 @@ public class GermanSLTaxonImport
         if (fullName.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + fullNameStr );
         }else{
-            state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, fullName);
+            state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(fullName);
 //            replaceAuthorNamesAndNomRef(state, fullName);
         }
 //        BotanicalName existingName = getExistingName(state, fullName);

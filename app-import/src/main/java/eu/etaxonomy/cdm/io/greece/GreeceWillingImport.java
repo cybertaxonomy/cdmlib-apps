@@ -22,7 +22,6 @@ import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeNotSupportedException;
 import eu.etaxonomy.cdm.api.service.config.MatchingTaxonConfigurator;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.common.URI;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.Person;
@@ -61,8 +60,6 @@ public class GreeceWillingImport
     private static final long serialVersionUID = 8258914747643501550L;
 
     private static final Logger logger = Logger.getLogger(GreeceWillingImport.class);
-
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState> dedupHelper;
 
     private String lastCollectorNumber;
     private UUID lastDerivedUnitUuid;
@@ -321,7 +318,7 @@ public class GreeceWillingImport
         Rights right = Rights.NewInstance();
         right.setType(RightsType.COPYRIGHT());
         right.setAgent(artist);
-        right = getDedupHelper(state).getExistingCopyright(state, right);
+        right = state.getDeduplicationHelper().getExistingCopyright(right);
         media.addRights(right);
 
         if (isNotBlank(title)){
@@ -375,12 +372,5 @@ public class GreeceWillingImport
         config.setIncludeSynonyms(false);
         Taxon result = getTaxonService().findBestMatchingTaxon(config);
         return result;
-    }
-
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState> getDedupHelper(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state) {
-        if (this.dedupHelper == null){
-            dedupHelper = ImportDeduplicationHelper.NewInstance(this, state);
-        }
-        return this.dedupHelper;
     }
 }

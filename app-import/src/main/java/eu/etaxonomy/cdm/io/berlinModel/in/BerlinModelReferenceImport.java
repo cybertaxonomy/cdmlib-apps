@@ -60,7 +60,6 @@ import eu.etaxonomy.cdm.io.common.mapping.DbSingleAttributeImportMapperBase;
 import eu.etaxonomy.cdm.io.common.mapping.berlinModel.CdmOneToManyMapper;
 import eu.etaxonomy.cdm.io.common.mapping.berlinModel.CdmStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.berlinModel.CdmUriMapper;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
@@ -99,8 +98,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	public static final UUID REF_SOURCE_UUID = UUID.fromString("d6432582-2216-4b08-b0db-76f6c1013141");
 	public static final UUID DATE_STRING_UUID = UUID.fromString("e4130eae-606e-4b0c-be4f-e93dc161be7d");
 	public static final UUID IS_PAPER_UUID = UUID.fromString("8a326129-d0d0-4f9d-bbdf-8d86b037c65e");
-
-	private static ImportDeduplicationHelper<BerlinModelImportState> deduplicationHelper;
 
 	private final int modCount = 1000;
 	private static final String pluralString = "references";
@@ -194,7 +191,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	@Override
 	protected void doInvoke(BerlinModelImportState state){
 		logger.info("start make " + getPluralString() + " ...");
-		deduplicationHelper = ImportDeduplicationHelper.NewInstance(this, state);
 
 		boolean success = true;
 		initializeMappers(state);
@@ -266,14 +262,13 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		if (! success){
 			state.setUnsuccessfull();
 		}
-	    deduplicationHelper = null;
 		return;
 	}
 
 
     @Override
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
-        deduplicationHelper.restartSession();
+        state.getDeduplicationHelper().restartSession();
 
 	    if (state.isReferenceSecondPath()){
 			return doPartitionSecondPath(partitioner, state);
@@ -1309,12 +1304,12 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
     }
 
     private <T extends TeamOrPersonBase<?>> T deduplicatePersonOrTeam(BerlinModelImportState state,T author) {
-        T result = deduplicationHelper.getExistingAuthor(state, author);
+        T result = state.getDeduplicationHelper().getExistingAuthor(author);
         return result;
     }
 
     private Reference deduplicateReference(BerlinModelImportState state,Reference ref) {
-        Reference result = deduplicationHelper.getExistingReference(state, ref);
+        Reference result = state.getDeduplicationHelper().getExistingReference(ref);
         return result;
     }
 

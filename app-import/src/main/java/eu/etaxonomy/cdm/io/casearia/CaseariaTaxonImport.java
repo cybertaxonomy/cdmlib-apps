@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.api.service.config.SynonymDeletionConfigurator;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
@@ -87,7 +86,6 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
     private Set<UUID> createdNames = new HashSet<>();
 
     private SimpleExcelTaxonImportState<CaseariaImportConfigurator> state;
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> dedupHelper = null;
     private NonViralNameParserImpl parser = new NonViralNameParserImpl();
 
 
@@ -177,16 +175,9 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
 
     private TaxonName dedupliateNameParts(TaxonName name) {
         if (state.getConfig().isDoDeduplicate()){
-            getDedupHelper().replaceAuthorNamesAndNomRef(state, name);
+            state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(name);
         }
         return name;
-    }
-
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> getDedupHelper() {
-        if (dedupHelper == null){
-            dedupHelper = ImportDeduplicationHelper.NewInstance(this, state);
-        }
-        return dedupHelper;
     }
 
     private Class<? extends CdmBase> makeStatus(String status, String sourceId,
@@ -271,7 +262,7 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
     private void newTransaction(SimpleExcelTaxonImportState<CaseariaImportConfigurator> state) {
         commitTransaction(state.getTransactionStatus());
         secRef = null;
-        dedupHelper = null;
+        state.getDeduplicationHelper().reset();
         state.setSourceReference(null);
         System.gc();
         state.setTransactionStatus(startTransaction());

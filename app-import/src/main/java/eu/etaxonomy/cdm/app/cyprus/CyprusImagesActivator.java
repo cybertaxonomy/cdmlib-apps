@@ -43,7 +43,6 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
-import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
@@ -93,14 +92,14 @@ public class CyprusImagesActivator {
     private static final String mediumPostfix ="&mo=fit&dw=400&dh=400&uvfix=1";
     private static final String smallPostfix ="&mo=fit&dw=200&dh=200&uvfix=1";
 
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper;
+    private ImportDeduplicationHelper deduplicationHelper;
 
     private void doImport(ICdmDataSource cdmDestination){
 
 		CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, DbSchemaValidation.VALIDATE);
 		TransactionStatus tx = app.startTransaction();
 
-		deduplicationHelper = (ImportDeduplicationHelper)ImportDeduplicationHelper.NewInstance(app, null);
+		deduplicationHelper = ImportDeduplicationHelper.NewInstance(app, null);
 
         File file = new File(path);
         String[] fileList = file.list();
@@ -316,7 +315,7 @@ public class CyprusImagesActivator {
             }
             right = Rights.NewInstance(null, null, RightsType.COPYRIGHT());
             right.setAgent(agent);
-            right = deduplicationHelper.getExistingCopyright(null, right);
+            right = deduplicationHelper.getExistingCopyright(right);
         }
 
         //created
@@ -359,7 +358,7 @@ public class CyprusImagesActivator {
             logger.warn("Person could not be parsed: " + artist + " for file " + fileName);
         }
 
-        person = deduplicationHelper.getExistingAuthor(null, person);
+        person = deduplicationHelper.getExistingAuthor(person);
         return person;
     }
 
@@ -635,7 +634,7 @@ public class CyprusImagesActivator {
         CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, DbSchemaValidation.VALIDATE);
         TransactionStatus tx = app.startTransaction();
 
-        deduplicationHelper = (ImportDeduplicationHelper)ImportDeduplicationHelper.NewInstance(app, null);
+        deduplicationHelper = ImportDeduplicationHelper.NewInstance(app, null);
 
         List<Media> list = app.getMediaService().list(Media.class, null, null, null, null);
         for (Media media : list){

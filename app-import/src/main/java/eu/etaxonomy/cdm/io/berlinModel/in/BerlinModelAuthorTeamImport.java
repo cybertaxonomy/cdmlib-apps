@@ -27,7 +27,6 @@ import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelAuthorTeamImport
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
@@ -53,19 +52,14 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 	private ResultSet rsSequence;
 	private Source source;
 
-    private ImportDeduplicationHelper<BerlinModelImportState> deduplicationHelper;
-
-
 	public BerlinModelAuthorTeamImport(){
 		super(dbTableName, pluralString);
 	}
-
 
 	@Override
     protected void doInvoke(BerlinModelImportState state){
 		BerlinModelImportConfigurator config = state.getConfig();
 		source = config.getSource();
-		this.deduplicationHelper = ImportDeduplicationHelper.NewInstance(this, state);
 
 		logger.info("start make " + pluralString + " ...");
 
@@ -98,7 +92,6 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 		}
 
 		logger.info("end make " + pluralString + " ... " + getSuccessString(true));
-		this.deduplicationHelper = null;
 		return;
 	}
 
@@ -137,7 +130,7 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 	@Override
     public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
-		deduplicationHelper.restartSession();
+		state.getDeduplicationHelper().restartSession();
 		BerlinModelImportConfigurator config = state.getConfig();
 		Set<TeamOrPersonBase<?>> authorsToSave = new HashSet<>();
 		@SuppressWarnings("unchecked")
@@ -330,12 +323,12 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
     }
 
     private Person deduplicatePerson(BerlinModelImportState state, Person person) {
-        Person result = deduplicationHelper.getExistingAuthor(state, person);
+        Person result = state.getDeduplicationHelper().getExistingAuthor(person);
         return result;
     }
 
     private Team deduplicateTeam(BerlinModelImportState state, Team team) {
-        Team result = deduplicationHelper.getExistingAuthor(state, team);
+        Team result = state.getDeduplicationHelper().getExistingAuthor(team);
         return result;
     }
 

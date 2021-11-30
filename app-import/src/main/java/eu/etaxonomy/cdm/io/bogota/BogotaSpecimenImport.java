@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
@@ -117,9 +116,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
     private static final UUID uuidDefaultGeocodMethod = UUID.fromString("0983e680-b0ca-4e46-8df7-0f1d757a2e01");
     private static final UUID uuidExtTypeIdentificationHistory = UUID.fromString("7cee5c29-e16b-4e6f-ad57-bf7044259375");
     private static final UUID uuidDetQualVelAff = UUID.fromString("511a0c23-2646-4035-b570-36bdc2eb5557");
-
-//    @SuppressWarnings("unchecked")
-    private ImportDeduplicationHelper<SimpleExcelSpecimenImportState<?>> deduplicationHelper;
 
     private final Map<String, TaxonNode> taxonNodeMap = new HashMap<>();
     private Reference secRef;
@@ -258,7 +254,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
             state.getResult().addWarning("Name not parsable: " +  fullName);
         }
         if (taxonNodeMap.get(titleCache)== null){
-            getDeduplicationHelper(state).replaceAuthorNamesAndNomRef(state, newName);
+            state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(newName);
             newName.addSource(makeOriginalSource(state));
         }
 
@@ -417,29 +413,10 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         Collection collection = Collection.NewInstance();
         collection.setName(collectionName);
         collection.setCode(collectionCode);
-        collection = getDeduplicationHelper(state).getExistingCollection(state, collection);
+        collection = state.getDeduplicationHelper().getExistingCollection(collection);
         facade.setCollection(collection);
     }
 
-
-    /**
-     * @param state
-     * @return
-     */
-    private ImportDeduplicationHelper<SimpleExcelSpecimenImportState<?>> getDeduplicationHelper(SimpleExcelSpecimenImportState<CONFIG> state) {
-        if (deduplicationHelper == null){
-            deduplicationHelper = ImportDeduplicationHelper.NewInstance(this, state);
-        }
-        return deduplicationHelper;
-    }
-
-
-    /**
-     * @param facade
-     * @param state
-     * @param line
-     * @param record
-     */
     private void makeHabitus(DerivedUnitFacade facade, SimpleExcelSpecimenImportState<CONFIG> state, String line,
             Map<String, String> record) {
         String habitus = record.get(COL_HABITUS);
@@ -648,7 +625,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
             state.getResult().addError(message, null, line);
             collector = null;
         }
-        collector = getDeduplicationHelper(state).getExistingAgent(state, collector);
+        collector = state.getDeduplicationHelper().getExistingAgent(collector);
         facade.setCollector(collector);
     }
 
@@ -751,7 +728,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
             }
             person.setFamilyName(familyName);
             person.setInitials(initials);
-            TeamOrPersonBase<?> result = getDeduplicationHelper(state).getExistingAuthor(state, person);
+            TeamOrPersonBase<?> result = state.getDeduplicationHelper().getExistingAuthor(person);
             return result;
         }
     }

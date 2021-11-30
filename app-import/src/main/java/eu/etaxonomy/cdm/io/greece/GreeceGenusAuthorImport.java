@@ -13,7 +13,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.name.TaxonName;
@@ -32,7 +31,6 @@ public class GreeceGenusAuthorImport
 	private static final long serialVersionUID = 1173327042682886814L;
     private static final Logger logger = Logger.getLogger(GreeceGenusAuthorImport.class);
 
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> dedupHelper;
     private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 
     @Override
@@ -48,18 +46,11 @@ public class GreeceGenusAuthorImport
 //            name.setGenusOrUninomial("Genus");
             try {
                 parser.parseAuthors(name, author);
-                getDedupHelper(state).replaceAuthorNamesAndNomRef(state, name);
+                state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(name);
                 name.addImportSource(null, null, state.getConfig().getSourceReference(), String.valueOf(state.getCurrentLine()));
             } catch (StringNotParsableException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> getDedupHelper(SimpleExcelTaxonImportState<GreeceGenusAuthorImportConfigurator> state) {
-        if (this.dedupHelper == null){
-            dedupHelper = ImportDeduplicationHelper.NewInstance(this, state);
-        }
-        return this.dedupHelper;
     }
 }

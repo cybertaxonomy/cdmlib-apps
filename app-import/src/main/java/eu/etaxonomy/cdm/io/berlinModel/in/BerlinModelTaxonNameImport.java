@@ -32,7 +32,6 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.Annotation;
@@ -257,7 +256,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		@SuppressWarnings("unchecked")
         Map<String, Team> teamMap = partitioner.getObjectMap(BerlinModelAuthorTeamImport.NAMESPACE);
 		//to dedup preliminary refDetail references
-		dedupHelper.restartSession(this, null);
+		state.getDeduplicationHelper().restartSession(this, null);
 
 
 		ResultSet rs = partitioner.getResultSet();
@@ -1182,7 +1181,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 //            getReferenceService().save(refCand.ref);
 //        }
 
-        Reference nomRef = dedupHelper.getExistingReference(state, refCand.ref);
+        Reference nomRef = state.getDeduplicationHelper().getExistingReference(refCand.ref);
         if (nomRef != refCand.ref){
             System.out.println("Ref deduplicated: " + nomRef.getTitleCache() + "(RefDetId: " + refDetailId + ")");
             if (nomRef.isPersited() && !getSession().contains(nomRef)){
@@ -1194,11 +1193,6 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
         taxonName.setNomenclaturalReference(nomRef);
         taxonName.setNomenclaturalMicroReference(refCand.detail);
     }
-
-    private ImportDeduplicationHelper<BerlinModelImportState> dedupHelper = ImportDeduplicationHelper.NewInstance(null, null);
-
-
-
 
 //
 //    /**

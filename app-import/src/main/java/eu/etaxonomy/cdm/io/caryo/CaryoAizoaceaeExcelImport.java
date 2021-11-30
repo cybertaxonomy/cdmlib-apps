@@ -233,7 +233,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
 
     private TaxonName dedupliateNameParts(TaxonName name) {
         if (state.getConfig().isDoDeduplicate()){
-            state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, name);
+            state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(name);
         }
         return name;
     }

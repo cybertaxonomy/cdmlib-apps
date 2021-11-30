@@ -463,7 +463,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
     }
 
     private void replaceNameAuthorsAndReferences(SimpleExcelTaxonImportState<CONFIG> state, INonViralName name) {
-        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(state, name);
+        state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(name);
     }
 
 

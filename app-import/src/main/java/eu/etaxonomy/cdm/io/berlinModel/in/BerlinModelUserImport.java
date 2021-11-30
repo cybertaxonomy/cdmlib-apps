@@ -26,7 +26,6 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.permission.User;
@@ -48,9 +47,6 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 	private static final String dbTableName = "webAuthorisation";
 	private static final String pluralString = "Users";
 
-	private ImportDeduplicationHelper<BerlinModelImportState> deduplicationHelper;
-
-
 	public BerlinModelUserImport(){
 		super(dbTableName, pluralString);
 	}
@@ -64,7 +60,6 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 	@Override
 	protected void doInvoke(BerlinModelImportState state){
 		boolean success = true;
-	    this.deduplicationHelper = ImportDeduplicationHelper.NewInstance(this, state);
 
 		BerlinModelImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
@@ -159,10 +154,9 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 
 
     private Person deduplicatePerson(BerlinModelImportState state, Person person) {
-        Person result = deduplicationHelper.getExistingAuthor(state, person);
+        Person result = state.getDeduplicationHelper().getExistingAuthor(person);
         return result;
     }
-
 
 	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
