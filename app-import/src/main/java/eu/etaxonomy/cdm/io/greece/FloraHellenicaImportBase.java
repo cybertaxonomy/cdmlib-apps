@@ -19,8 +19,6 @@ import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.name.IBotanicalName;
-import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
@@ -141,7 +139,7 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
     }
 
 
-    protected IBotanicalName makeFamilyName(SimpleExcelTaxonImportState<CONFIG> state,
+    protected TaxonName makeFamilyName(SimpleExcelTaxonImportState<CONFIG> state,
             String famStr) {
         TaxonName name = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
         famStr = famStr.substring(0,1).toUpperCase() + famStr.substring(1).toLowerCase();
@@ -150,8 +148,8 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
         return name;
     }
 
-    protected <NAME extends INonViralName> NAME replaceNameAuthorsAndReferences(SimpleExcelTaxonImportState<CONFIG> state, NAME name) {
-        NAME result = state.getDeduplicationHelper().getExistingName(name);
+    protected TaxonName replaceNameAuthorsAndReferences(SimpleExcelTaxonImportState<CONFIG> state, TaxonName name) {
+        TaxonName result = state.getDeduplicationHelper().getExistingName(name);
         state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(result);
         return result;
     }

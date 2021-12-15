@@ -23,6 +23,7 @@ import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -167,7 +168,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         }else{
             nameStr = nameStr.replace(auctStr, "").trim();
         }
-        IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
+        TaxonName name = (TaxonName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
         name = state.getDeduplicationHelper().getExistingName(name);
         if (name.isProtectedTitleCache()){
@@ -184,27 +185,14 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         taxon.addMisappliedName(misApp, state.getConfig().getSecReference(), null);
     }
 
-
-    /**
-     * @param col
-     * @return
-     */
     private String getNamespace(CONFIG config) {
         return getWorksheetName(config)+"."+ ID_COL;
     }
 
-
-    /**
-     * @param state
-     * @param record
-     * @param line
-     * @param taxon
-     * @param noStr
-     */
     private void handleSingleSynonym(SimpleExcelTaxonImportState<CONFIG> state, String nameStr,
             String line, Taxon taxon, String noStr) {
         Rank rank = Rank.SPECIES();
-        IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
+        TaxonName name = (TaxonName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
         name = state.getDeduplicationHelper().getExistingName(name);
         if (name.isProtectedTitleCache()){
@@ -217,14 +205,6 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
     }
 
-
-    /**
-     * @param state
-     * @param line
-     * @param record
-     * @param taxon
-     * @param noStr
-     */
     private void makeInfraSpecific(SimpleExcelTaxonImportState<CONFIG> state, Map<String, String> record, String line,
             TaxonNode speciesNode, String noStr) {
         String subSpeciesStr = getValue(record, INFRASPECIFIC);
@@ -235,7 +215,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
                     split = split.replace(" None", "").trim();
                 }
                 Rank rank = Rank.SUBSPECIES();
-                IBotanicalName name = (IBotanicalName)parser.parseFullName(split.trim(), state.getConfig().getNomenclaturalCode(), rank);
+                TaxonName name = (TaxonName)parser.parseFullName(split.trim(), state.getConfig().getNomenclaturalCode(), rank);
                 name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
                 name = state.getDeduplicationHelper().getExistingName(name);
                 if (name.isProtectedTitleCache()){
@@ -251,13 +231,6 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         }
     }
 
-    /**
-     * @param state
-     * @param line
-     * @param record
-     * @param noStr
-     * @return
-     */
     private TaxonNode makeTaxon(SimpleExcelTaxonImportState<CONFIG> state, String line, Map<String, String> record,
             String noStr) {
 
@@ -272,7 +245,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
 
         nameStr = CdmUtils.concat(" ", nameStr, speciesAuthorStr);
         Rank rank = Rank.SPECIES();
-        IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
+        TaxonName name = (TaxonName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
         name = state.getDeduplicationHelper().getExistingName(name);
         if (name.isProtectedTitleCache()){

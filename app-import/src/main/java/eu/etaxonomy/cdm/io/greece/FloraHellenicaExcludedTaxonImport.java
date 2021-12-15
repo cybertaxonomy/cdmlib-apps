@@ -19,8 +19,6 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
-import eu.etaxonomy.cdm.model.name.IBotanicalName;
-import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
@@ -114,7 +112,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
             isSensuStrictu = true;
             taxonStr = taxonStr.substring(0, taxonStr.length() - "s.str.".length() ).trim();
         }
-        INonViralName name = parser.parseFullName(taxonStr, NomenclaturalCode.ICNAFP, null);
+        TaxonName name = (TaxonName)parser.parseFullName(taxonStr, NomenclaturalCode.ICNAFP, null);
         name = replaceNameAuthorsAndReferences(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + taxonStr);
@@ -155,7 +153,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         if (family != null){
             familyNode = family.getTaxonNodes().iterator().next();
         }else{
-            IBotanicalName name = makeFamilyName(state, familyStr);
+            TaxonName name = makeFamilyName(state, familyStr);
             name = replaceNameAuthorsAndReferences(state, name);
 
             Reference sec = getSecReference(state);

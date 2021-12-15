@@ -154,7 +154,7 @@ public class RedListGefaesspflanzenTaxonExcelImport<CONFIG extends RedListGefaes
         nameStr = normalizeNameStr(nameStr);
 
         Rank rank = Rank.SPECIES();
-        IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
+        TaxonName name = (TaxonName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
         name = state.getDeduplicationHelper().getExistingName(name);
         if (name.isProtectedTitleCache()){
