@@ -35,6 +35,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.config.MatchingTaxonConfigurator;
+import eu.etaxonomy.cdm.api.service.media.MediaInfoFileReader;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.UTF8;
@@ -465,7 +466,10 @@ public class CyprusImagesActivator {
                     try {
                         if (readMediaData){
                             logger.info("Read media data from: " + uriThumb);
-                            imageInfoThumb = CdmImageInfo.NewInstance(uriThumb, 0);
+//                          //imageInfoThumb = CdmImageInfo.NewInstance(uriThumb, 0);
+                            imageInfoThumb = MediaInfoFileReader.legacyFactoryMethod(uriThumb)
+                                    .readBaseInfo()
+                                    .getCdmImageInfo();
                         }
                     } catch (Exception e) {
                         String message = "An error occurred when trying to read image meta data for " + uriThumb.toString() + ": " +  e.getMessage();
@@ -505,12 +509,18 @@ public class CyprusImagesActivator {
         try {
             if (readMediaData){
                 logger.info("Read media data from: " + uri);
-                imageInfo = CdmImageInfo.NewInstance(uri, 0);
+                //imageInfo = CdmImageInfo.NewInstance(uri, 0);
+                imageInfo = MediaInfoFileReader.legacyFactoryMethod(uri)
+                        .readBaseInfo()
+                        .getCdmImageInfo();
             }
         } catch (Exception e) {
             try {
                 //try again
-                imageInfo = CdmImageInfo.NewInstance(uri, 0);
+                //imageInfo = CdmImageInfo.NewInstance(uri, 0);
+                imageInfo = MediaInfoFileReader.legacyFactoryMethod(uri)
+                        .readBaseInfo()
+                        .getCdmImageInfo();
             } catch (Exception e1) {
                 String message = "An error occurred when trying to read image meta data for " + uri.toString() + ": " +  e1.getMessage();
                 e1.printStackTrace();

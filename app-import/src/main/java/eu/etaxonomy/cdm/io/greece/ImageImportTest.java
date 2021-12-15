@@ -10,7 +10,6 @@ package eu.etaxonomy.cdm.io.greece;
 
 import java.io.File;
 import java.io.IOException;
-import eu.etaxonomy.cdm.common.URI;
 import java.util.List;
 
 import org.apache.commons.imaging.ImageReadException;
@@ -25,6 +24,8 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import eu.etaxonomy.cdm.api.service.media.MediaInfoFileReader;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
@@ -102,7 +103,10 @@ public class ImageImportTest {
 
                 CdmImageInfo imageMetaData;
                 try {
-                    imageMetaData = CdmImageInfo.NewInstance(uri, 0);
+                    //imageMetaData = CdmImageInfo.NewInstance(uri, 0);
+                    imageMetaData = MediaInfoFileReader.legacyFactoryMethod(uri)
+                            .readBaseInfo()
+                            .getCdmImageInfo();
 
                     String mimeType = imageMetaData.getMimeType();
                     String suffix = null;

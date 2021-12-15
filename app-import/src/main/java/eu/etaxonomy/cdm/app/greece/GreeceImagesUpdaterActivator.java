@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.app.greece;
 
 import java.io.IOException;
-import eu.etaxonomy.cdm.common.URI;
 import java.util.List;
 
 import org.apache.http.HttpException;
@@ -18,7 +17,9 @@ import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.service.media.MediaInfoFileReader;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -61,7 +62,10 @@ public class GreeceImagesUpdaterActivator {
                             }
                             CdmImageInfo imageInfo;
                             try {
-                                imageInfo = CdmImageInfo.NewInstance(uri, 0);
+                                //imageInfo = CdmImageInfo.NewInstance(uri, 0);
+                                imageInfo = MediaInfoFileReader.legacyFactoryMethod(uri)
+                                        .readBaseInfo()
+                                        .getCdmImageInfo();
                                 image.setWidth(imageInfo.getWidth());
                                 image.setHeight(imageInfo.getHeight());
                                 image.setSize((int)imageInfo.getLength());

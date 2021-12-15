@@ -9,7 +9,6 @@
 
 package eu.etaxonomy.cdm.app.greece;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +17,9 @@ import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.service.media.MediaInfoFileReader;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -164,7 +165,10 @@ public class GreeceLargeImagesAdderActivator {
         CdmImageInfo imageInfo = null;
         URI uri = part.getUri();
         try {
-            imageInfo = CdmImageInfo.NewInstance(uri, 0);
+            //imageInfo = CdmImageInfo.NewInstance(uri, 0);
+            imageInfo = MediaInfoFileReader.legacyFactoryMethod(uri)
+                    .readBaseInfo()
+                    .getCdmImageInfo();
         } catch (Exception e) {
             String message = "An error occurred when trying to read image meta data for %s.";
             message = String.format(message, uri.toString());
@@ -177,18 +181,16 @@ public class GreeceLargeImagesAdderActivator {
         MediaRepresentation representation = part.getMediaRepresentation();
         representation.setMimeType(imageInfo.getMimeType());
         representation.setSuffix(imageInfo.getSuffix());
-
     }
 
-    /**
-     * @param reps
-     * @param uri
-     */
     private void handleUri(Media media, String uriStr) {
         URI uri = URI.create(uriStr);
         CdmImageInfo imageInfo = null;
         try {
-            imageInfo = CdmImageInfo.NewInstance(uri, 0);
+            //imageInfo = CdmImageInfo.NewInstance(uri, 0);
+            imageInfo = MediaInfoFileReader.legacyFactoryMethod(uri)
+                    .readBaseInfo()
+                    .getCdmImageInfo();
         } catch (Exception e) {
             String message = "An error occurred when trying to read image meta data for %s.";
             message = String.format(message, uri.toString());

@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import au.com.bytecode.opencsv.CSVReader;
+import eu.etaxonomy.cdm.api.service.media.MediaInfoFileReader;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.UTF8;
@@ -998,18 +999,14 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         return;
     }
 
-
-    /**
-     * @param media
-     * @param uri
-     * @param imageInfo
-     * @param size
-     */
     private void makeMediaRepresentation(Media media, URI uri) {
         CdmImageInfo imageInfo = null;
         Integer size = null;
         try {
-            imageInfo = CdmImageInfo.NewInstance(uri, 30);
+            //imageInfo = CdmImageInfo.NewInstance(uri, 30);
+            imageInfo = MediaInfoFileReader.legacyFactoryMethod(uri)
+                    .readBaseInfo()
+                    .getCdmImageInfo();
         } catch (IOException | HttpException e) {
             logger.error("Error when reading image meta: " + e + ", "+ uri.toString());
         }

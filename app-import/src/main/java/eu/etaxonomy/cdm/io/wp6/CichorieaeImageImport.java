@@ -20,6 +20,7 @@ import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.api.service.media.MediaInfoFileReader;
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
 import eu.etaxonomy.cdm.app.images.ImageImportState;
 import eu.etaxonomy.cdm.common.URI;
@@ -148,7 +149,10 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 		String urlString = urlPrefix + fileName;
 		logger.info(urlString);
 		URI uri = new URI(urlString);
-		CdmImageInfo imageMetaData = CdmImageInfo.NewInstance(uri, 0);
+		//CdmImageInfo imageMetaData = CdmImageInfo.NewInstance(uri, 0);
+		CdmImageInfo imageMetaData = MediaInfoFileReader.legacyFactoryMethod(uri)
+                .readBaseInfo()
+                .getCdmImageInfo();
 
 		String mimeType = imageMetaData.getMimeType();
 		String suffix = null;

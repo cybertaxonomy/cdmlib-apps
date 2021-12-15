@@ -16,7 +16,6 @@ import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.NAME_FACT_P
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -31,7 +30,9 @@ import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.api.service.media.MediaInfoFileReader;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelNameFactsImportValidator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
@@ -371,7 +372,10 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 		try {
 			uri = new URI(imageUri);
 			try {
-				imageMetaData = CdmImageInfo.NewInstance(uri, 0);
+			    //imageMetaData = CdmImageInfo.NewInstance(uri, 0);
+				imageMetaData = MediaInfoFileReader.legacyFactoryMethod(uri)
+	                    .readBaseInfo()
+	                    .getCdmImageInfo();
 			} catch (IOException e) {
 				logger.error("IOError reading image metadata." , e);
 			} catch (HttpException e) {
