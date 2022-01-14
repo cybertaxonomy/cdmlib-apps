@@ -46,6 +46,7 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 @Component
 public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigurator>
         extends SimpleExcelTaxonImport<CONFIG>{
+
     private static final Logger logger = Logger.getLogger(MexicoBorhidiExcelImport.class);
     private static final long serialVersionUID = -3607776356577606657L;
 

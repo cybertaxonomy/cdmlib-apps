@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.caryophyllales;
 
 import java.util.UUID;
@@ -31,16 +30,14 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @since 16.10.2012
  */
 public class CaryoActivator extends SourceBase{
+
 	private static final Logger logger = Logger.getLogger(CaryoActivator.class);
 
 	//database validation status (create, update, validate ...)
 	static final DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source source = caryo_len61();
 
-
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 
 	static final String classificationName = "Caryophyllales";
 
@@ -54,7 +51,6 @@ public class CaryoActivator extends SourceBase{
 	static final boolean doTaxa = true;
 	static final boolean doDeduplicate = true;
 
-
 	private void doImport(ICdmDataSource cdmDestination){
 
 		//make Source
@@ -66,8 +62,7 @@ public class CaryoActivator extends SourceBase{
 		config.setSourceReferenceTitle("NCU - Caryophyllales, v0.4");
 		config.setClassificationName(classificationName);
 
-		CdmDefaultImport<CaryoImportConfigurator> myImport = new CdmDefaultImport<CaryoImportConfigurator>();
-
+		CdmDefaultImport<CaryoImportConfigurator> myImport = new CdmDefaultImport<>();
 
 		//...
 		if (true){
@@ -76,8 +71,6 @@ public class CaryoActivator extends SourceBase{
 			myImport.invoke(config);
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}
-
-
 
 		//deduplicate
 		if (doDeduplicate){
@@ -89,7 +82,6 @@ public class CaryoActivator extends SourceBase{
 			count = app.getReferenceService().deduplicate(Reference.class, null, null);
 			logger.warn("Deduplicated " + count + " references.");
 		}
-
 	}
 
 	private Reference getSourceReference(String string) {
@@ -97,7 +89,6 @@ public class CaryoActivator extends SourceBase{
 		result.setTitleCache(string, true);
 		return result;
 	}
-
 
 	public static Source caryo_len61(){
 		//	Cyryophyllales source
@@ -109,14 +100,9 @@ public class CaryoActivator extends SourceBase{
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		CaryoActivator me = new CaryoActivator();
 		me.doImport(cdmDestination);
+	    System.exit(0);
 	}
-
 }

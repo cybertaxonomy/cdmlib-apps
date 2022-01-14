@@ -48,7 +48,6 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
 
     protected static INonViralNameParser<?> nameParser = NonViralNameParserImpl.NewInstance();
 
-
     @Override
     protected void analyzeRecord(Map<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
         //override only if needed
