@@ -53,7 +53,7 @@ public class NepenthaceIpniActivator {
       CdmApplicationController app = CdmApplicationController.NewInstance(cdmDestination, hbm2dll);
 
       ICdmRepository repository = null  ; //app  for now we do not want to deduplicate against repository
-      ImportDeduplicationHelper<?> deduplicationHelper = new ImportDeduplicationHelper<>(repository);
+      ImportDeduplicationHelper deduplicationHelper = ImportDeduplicationHelper.NewInstance(repository, null);
 
       TransactionStatus txStatus = app.startTransaction();
       Reference ipniSec = app.getReferenceService().find(UUID.fromString("17ffcbc7-7f80-42cd-a95e-25d0289c9f71"));
@@ -100,7 +100,7 @@ public class NepenthaceIpniActivator {
    }
 
     private void doSingleImport(CdmApplicationController app, Reference ipniSec, Classification classification,
-        IpniServiceNamesConfigurator namesConfig, ImportDeduplicationHelper<?> deduplicationHelper) {
+        IpniServiceNamesConfigurator namesConfig, ImportDeduplicationHelper deduplicationHelper) {
 
         IpniService ipniService = new IpniService();//(IpniService)app.getBean("ipniService");
 
@@ -113,7 +113,7 @@ public class NepenthaceIpniActivator {
         List<TaxonBase> taxaToSave  = new ArrayList<>();
         for (IBotanicalName name : names){
 //          System.out.println(name.getTitleCache());
-            deduplicationHelper.replaceAuthorNamesAndNomRef(null, name);
+            deduplicationHelper.replaceAuthorNamesAndNomRef(name);
             Taxon taxon = Taxon.NewInstance(name, ipniSec);
             classification.addChildTaxon(taxon, null, null);
 //          app.getTaxonService().saveOrUpdate(taxon);
