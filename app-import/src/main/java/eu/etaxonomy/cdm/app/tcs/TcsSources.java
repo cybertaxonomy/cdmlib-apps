@@ -53,7 +53,7 @@ public class TcsSources {
 
 	public static String arecaceae(){
 		//	Monocots rdf
-		String sourceUrl = "http://dev.e-taxonomy.eu/trac/attachment/wiki/SampleDataConversion/Monocotyledonae/arecaceae.rdf?format=raw";
+		String sourceUrl = "https://dev.e-taxonomy.eu/redmine/attachments/download/865/arecaceae.rdf";
 		logger.debug("TcsSource " +  sourceUrl);
 		return sourceUrl;
 	}

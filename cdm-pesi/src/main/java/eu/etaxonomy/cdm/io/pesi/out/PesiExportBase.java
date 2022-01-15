@@ -400,7 +400,7 @@ public abstract class PesiExportBase
 	 * Checks if this taxon base is a taxon that is to be exported to PESI. This is generally the case
 	 * but not for taxa that are marked as "unpublish". Synonyms and misapplied names are exported if they are
 	 * related at least to one accepted taxon that is also exported, except for those misapplied names
-	 * marked as misapplied names created by Euro+Med common names ({@linkplain http://dev.e-taxonomy.eu/trac/ticket/2786} ).
+	 * marked as misapplied names created by Euro+Med common names ({@linkplain https://dev.e-taxonomy.eu/redmine/issues/2786} ).
 	 * The list of conditions may change in future.
 	 * @param taxonBase
 	 * @return
