@@ -45,6 +45,7 @@ import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
@@ -459,6 +460,7 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
             this.classification = null;
             this.secReference = null;
             this.sourceReference = null;
+            this.orphanedSynonymTaxon = null;
             TransactionStatus tx = this.startTransaction();
             state.setTransactionStatus(tx);
             logger.info(line + "New transaction started.");
@@ -477,11 +479,10 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         }else if (taxonBase.isInstanceOf(Synonym.class)){
             Taxon taxon = getAcceptedTaxon(record, line, kewId);
             if (taxon == null){
-                logger.warn(kewId + "Accepted taxon not found: " + getValue(record, Kew_Rel_Acc_Name_ID) + line);
                 taxon = getOrphanedSynonymTaxon(state);
-            }else{
-                taxon.addSynonym(CdmBase.deproxy(taxonBase, Synonym.class), SynonymType.SYNONYM_OF());
+                logger.warn(kewId + "Accepted taxon not found. Added synonym to 'orphaned synonym taxon': " + getValue(record, Kew_Rel_Acc_Name_ID) + line);
             }
+            taxon.addSynonym(CdmBase.deproxy(taxonBase, Synonym.class), SynonymType.SYNONYM_OF());
         }else{
             logger.warn("Unhandled");
         }
@@ -502,17 +503,23 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
 
     }
 
+    Taxon orphanedSynonymTaxon;
     private Taxon getOrphanedSynonymTaxon(SimpleExcelTaxonImportState<CONFIG> state) {
-        UUID uuid = UUID.fromString(KEW_ORPHANED_PLACEHOLDER_TAXON);
-        Taxon placeholderTaxon = CdmBase.deproxy(getTaxonService().find(uuid), Taxon.class);
-        if (placeholderTaxon == null){
+        if (orphanedSynonymTaxon != null) {
+            return orphanedSynonymTaxon;
+        }
+        UUID orphanedTaxonUuid = UUID.fromString(KEW_ORPHANED_PLACEHOLDER_TAXON);
+        orphanedSynonymTaxon = CdmBase.deproxy(getTaxonService().find(orphanedTaxonUuid), Taxon.class);
+        if (orphanedSynonymTaxon == null){
             TaxonName placeholderName = TaxonNameFactory.NewBacterialInstance(Rank.SUBFAMILY());
             placeholderName.setTitleCache("Orphaned_Synonyms_KEW", true);
-            placeholderTaxon = Taxon.NewInstance(placeholderName, getSecReference(state, state.getOriginalRecord()));
+            orphanedSynonymTaxon = Taxon.NewInstance(placeholderName, getSecReference(state, state.getOriginalRecord()));
+            orphanedSynonymTaxon.setUuid(orphanedTaxonUuid);
             Taxon unplacedTaxon = CdmBase.deproxy(getTaxonService().find(UUID.fromString(KEW_UNPLACED_NODE)), Taxon.class);
-            getClassification(state).addParentChild(unplacedTaxon, placeholderTaxon, null, null);
+            TaxonNode orphandNode = getClassification(state).addParentChild(unplacedTaxon, orphanedSynonymTaxon, null, null);
+            getTaxonNodeService().save(orphandNode);
         }
-        return placeholderTaxon;
+        return orphanedSynonymTaxon;
     }
 
     private Classification classification;
