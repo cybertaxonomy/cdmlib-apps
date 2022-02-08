@@ -28,8 +28,11 @@ public class MexicoConabioTransformer extends InputTransformerBase{
 
     private static final Logger logger = Logger.getLogger(MexicoConabioTransformer.class);
 
+    public static UUID uuidReferenceEflora = UUID.fromString("0a04f189-b014-41b3-8a59-40f2f56a3087");
+
+
     public static UUID uuidReferenceBorhidi = UUID.fromString("f76a535b-a1fd-437c-a09d-f94eddae2b5e");
-//    public static UUID uuidReferenceConabio = UUID.fromString("7183652f-d7ca-45a7-9383-265996d3d10f");
+    //    public static UUID uuidReferenceConabio = UUID.fromString("7183652f-d7ca-45a7-9383-265996d3d10f");
     public static UUID uuidReferenceConabio2 = UUID.fromString("292d0470-74b1-4419-84c5-0315a3bfe643");
 
     public static final UUID uuidConabioIdIdentifierType = UUID.fromString("025fb8fe-e8e8-4136-bf37-93367a268889");
