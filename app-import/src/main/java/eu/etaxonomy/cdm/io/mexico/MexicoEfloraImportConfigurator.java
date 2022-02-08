@@ -14,9 +14,6 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelAuthorImport;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelUserImport;
-import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelGeneralImportValidator;
 import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
@@ -69,12 +66,11 @@ public class MexicoEfloraImportConfigurator
 
     private Reference secReference;
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
-			BerlinModelGeneralImportValidator.class
-			, BerlinModelUserImport.class
-			, BerlinModelAuthorImport.class
+		        MexicoEfloraTaxonImport.class
 		};
 	}
 

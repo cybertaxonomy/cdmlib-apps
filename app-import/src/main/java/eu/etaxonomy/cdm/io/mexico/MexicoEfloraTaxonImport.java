@@ -52,7 +52,7 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 	public static final String NAMESPACE = "Taxon";
 
 	private static final String pluralString = "Taxa";
-	private static final String dbTableName = "Efloa_Taxonomia4CDM2 ";
+	private static final String dbTableName = "EFlora_Taxonomia4CDM2";
 
 
 	/**
@@ -133,7 +133,7 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 //			    String type = rs.getString("NomPublicationType");
 			    String year = rs.getString("Anio");
 				int secFk = rs.getInt("IdBibliografiaSec");
-			    int nameId = rs.getInt("idNombre");
+//			    int nameId = rs.getInt("idNombre");
 
 
 				//IdCATRel => Accepted Taxon => TaxonRel
@@ -223,8 +223,8 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 			Set<String> nameIdSet = new HashSet<>();
 			Set<String> referenceIdSet = new HashSet<>();
 			while (rs.next()){
-				handleForeignKey(rs, nameIdSet, "PTNameFk");
-				handleForeignKey(rs, referenceIdSet, "PTRefFk");
+//				handleForeignKey(rs, nameIdSet, "PTNameFk");
+//				handleForeignKey(rs, referenceIdSet, "PTRefFk");
 			}
 
 			//name map

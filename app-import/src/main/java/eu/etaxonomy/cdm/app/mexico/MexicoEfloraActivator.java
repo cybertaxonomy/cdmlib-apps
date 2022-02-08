@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.app.common.CdmImportSources;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -32,13 +33,13 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 public class MexicoEfloraActivator {
 
-    private static final Logger logger = Logger.getLogger(MexicoBorhidiActivator.class);
+    private static final Logger logger = Logger.getLogger(MexicoEfloraActivator.class);
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
     //static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
 
     //feature tree uuid
     public static final UUID featureTreeUuid = UUID.fromString("7cfa2122-043d-4e96-922c-356fc04d68a3");
@@ -56,7 +57,7 @@ public class MexicoEfloraActivator {
 
     protected void doImport(ICdmDataSource cdmDestination){
 
-        Source source = mexicoEfloraDb();
+        Source source = CdmImportSources.MEXICO_EFLORA();
 
         //make Source
         MexicoEfloraImportConfigurator config= MexicoEfloraImportConfigurator.NewInstance(source, cdmDestination);
@@ -85,12 +86,6 @@ public class MexicoEfloraActivator {
     }
 
 
-    //Mexico eflora
-    public static Source mexicoEfloraDb() {
-        return new Source(Source.MYSQL, "localhost", "mexico_eflora", 3306);
-    }
-
-
     private Reference getSourceReference() {
         Reference result = ReferenceFactory.newDatabase();
         result.setTitle("CONABIO Eflora");
@@ -109,7 +104,7 @@ public class MexicoEfloraActivator {
     }
 
     public static void main(String[] args) {
-        MexicoBorhidiActivator me = new MexicoBorhidiActivator();
+        MexicoEfloraActivator me = new MexicoEfloraActivator();
         me.doImport(cdmDestination);
         System.exit(0);
     }

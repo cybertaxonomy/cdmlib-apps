@@ -8,19 +8,18 @@
 */
 package eu.etaxonomy.cdm.app.common;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.berlinModelImport.SourceBase;
 import eu.etaxonomy.cdm.app.tcs.TcsSources;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.common.Source;
 
 /**
  * @author a.mueller
  * @since 21.04.2010
- *
  */
 public class CdmImportSources extends SourceBase{
 	@SuppressWarnings("unused")
@@ -151,6 +150,15 @@ public class CdmImportSources extends SourceBase{
         String strDB = "edaphobase8";
         int port = 5433;
         String userName = "edaphobase";
+        return  makeSource(dbms, strServer, strDB, port, userName, null);
+    }
+
+    public static Source MEXICO_EFLORA(){
+        String dbms = Source.MYSQL;
+        String strServer = "localhost";
+        String strDB = "mexico_eflora";
+        int port = 3306;
+        String userName = "edit";
         return  makeSource(dbms, strServer, strDB, port, userName, null);
     }
 
