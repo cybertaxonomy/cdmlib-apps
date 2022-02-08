@@ -33,12 +33,12 @@ public class CaryophyllaceaeActivator extends SourceBase{
     private static final Logger logger = Logger.getLogger(CaryophyllaceaeActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static final DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
-	static final URI source = caryophyllaceae();
+	private static final DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	private static final URI source = caryophyllaceae();
 
+	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
+//    private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
 
 	//classification
 	static final UUID classificationUuid = UUID.fromString("9edc58b5-de3b-43aa-9f31-1ede7c009c2b");

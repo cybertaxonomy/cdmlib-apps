@@ -116,7 +116,7 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
 
         String line = getLine(state, 50);
-        System.out.println(line);
+//        System.out.println(line);
         Map<String, String> record = state.getOriginalRecord();
 
         Set<String> keys = record.keySet();
@@ -156,7 +156,7 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         String fullTitle = getValue(state, Kew_Name_Citation);
         String kewNameId = getValue(state, Kew_Name_ID);
 
-        fullTitle = replaceBookSectionAuthor(state, fullTitle);
+//        fullTitle = replaceBookSectionAuthor(state, fullTitle);
 
         TaxonName newName = parser.parseReferencedName(fullTitle, NomenclaturalCode.ICNAFP, Rank.SPECIES());
         handleBookSectionAuthor(newName, state, line);
