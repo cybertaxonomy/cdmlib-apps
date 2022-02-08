@@ -8,12 +8,12 @@
 */
 package eu.etaxonomy.cdm.app.mexico;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -27,9 +27,9 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
  * Activator for import of Borhidi Rubiaceae (Mexico)
+ *
  * @author a.mueller
  * @since 16.06.2016
- *
  */
 public class MexicoBorhidiActivator {
     private static final Logger logger = Logger.getLogger(MexicoBorhidiActivator.class);
