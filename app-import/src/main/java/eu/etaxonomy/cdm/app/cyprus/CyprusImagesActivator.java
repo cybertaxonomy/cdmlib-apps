@@ -359,7 +359,7 @@ public class CyprusImagesActivator {
             logger.warn("Person could not be parsed: " + artist + " for file " + fileName);
         }
 
-        person = deduplicationHelper.getExistingAuthor(person);
+        person = deduplicationHelper.getExistingAuthor(person, false);
         return person;
     }
 

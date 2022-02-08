@@ -1176,7 +1176,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 //            getReferenceService().save(refCand.ref);
 //        }
 
-        Reference nomRef = state.getDeduplicationHelper().getExistingReference(refCand.ref);
+        Reference nomRef = state.getDeduplicationHelper().getExistingReference(refCand.ref, true);
         if (nomRef != refCand.ref){
             System.out.println("Ref deduplicated: " + nomRef.getTitleCache() + "(RefDetId: " + refDetailId + ")");
             if (nomRef.isPersited() && !getSession().contains(nomRef)){

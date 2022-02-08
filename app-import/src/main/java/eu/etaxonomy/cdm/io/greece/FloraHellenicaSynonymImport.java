@@ -140,7 +140,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
                 logger.warn(line + "Nom. status not recognized: " + parsedSynStr[3]);
             }
         }
-        name = replaceNameAuthorsAndReferences(state, name);
+        name = replaceNameAuthorsAndReferences(state, name, true);
 
 
         TaxonBase<?> result;
@@ -193,12 +193,12 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
                     split = split.replace("T.", "Taraxacum");
                 }
                 nonName = TaxonName.castAndDeproxy(this.parser.parseFullName(split));
-                nonName = replaceNameAuthorsAndReferences(state, nonName);
+                nonName = replaceNameAuthorsAndReferences(state, nonName, true);
                 name.addRelationshipFromName(nonName, NameRelationshipType.BLOCKING_NAME_FOR(), null, null);
             }else{
                 String nameStr = name.getNameCache().replace(" hort.", "") + " " + split;
                 nonName = TaxonName.castAndDeproxy(this.parser.parseFullName(nameStr));
-                nonName = replaceNameAuthorsAndReferences(state, nonName);
+                nonName = replaceNameAuthorsAndReferences(state, nonName, true);
                 name.addRelationshipToName(nonName, NameRelationshipType.LATER_HOMONYM(), null, null);
                 if (lastHomonym != null){
                     nonName.addRelationshipToName(lastHomonym, NameRelationshipType.LATER_HOMONYM(), null, null);

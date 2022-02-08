@@ -323,12 +323,12 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
     }
 
     private Person deduplicatePerson(BerlinModelImportState state, Person person) {
-        Person result = state.getDeduplicationHelper().getExistingAuthor(person);
+        Person result = state.getDeduplicationHelper().getExistingAuthor(person, false);
         return result;
     }
 
     private Team deduplicateTeam(BerlinModelImportState state, Team team) {
-        Team result = state.getDeduplicationHelper().getExistingAuthor(team);
+        Team result = state.getDeduplicationHelper().getExistingAuthor(team, false);
         return result;
     }
 

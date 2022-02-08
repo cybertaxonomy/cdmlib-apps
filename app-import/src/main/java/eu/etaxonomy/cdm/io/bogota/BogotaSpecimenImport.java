@@ -591,7 +591,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
             state.getResult().addError(message, null, line);
             collector = null;
         }
-        collector = state.getDeduplicationHelper().getExistingAgent(collector);
+        collector = state.getDeduplicationHelper().getExistingAgent(collector, false);
         facade.setCollector(collector);
     }
 
@@ -674,7 +674,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
             }
             person.setFamilyName(familyName);
             person.setInitials(initials);
-            TeamOrPersonBase<?> result = state.getDeduplicationHelper().getExistingAuthor(person);
+            TeamOrPersonBase<?> result = state.getDeduplicationHelper().getExistingAuthor(person, false);
             return result;
         }
     }

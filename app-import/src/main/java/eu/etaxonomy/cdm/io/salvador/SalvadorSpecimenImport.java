@@ -262,7 +262,7 @@ public class SalvadorSpecimenImport
         //collector
         TeamOrPersonBase<?> collector = makeCollectorTeam(state, record, row);
         if (collector != null){
-            collector = state.getDeduplicationHelper().getExistingAuthor(collector);
+            collector = state.getDeduplicationHelper().getExistingAuthor(collector, false);
             facade.setCollector(collector);
         }
 
@@ -569,7 +569,7 @@ public class SalvadorSpecimenImport
             state.getResult().addWarning(message, row);
             result.setTitleCache(str, true);
         }
-        result = state.getDeduplicationHelper().getExistingAuthor(result);
+        result = state.getDeduplicationHelper().getExistingAuthor(result, false);
 
         team.addTeamMember(result);
         return ;

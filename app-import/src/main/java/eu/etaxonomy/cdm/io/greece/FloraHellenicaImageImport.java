@@ -154,7 +154,7 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
                 }else{
                     person.setTitleCache("artistStr", true);
                 }
-                person = state.getDeduplicationHelper().getExistingAuthor(person);
+                person = state.getDeduplicationHelper().getExistingAuthor(person, false);
 
                 media.setArtist(person);
                 //copyright

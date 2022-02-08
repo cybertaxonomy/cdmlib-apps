@@ -170,7 +170,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         }
         TaxonName name = (TaxonName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
-        name = state.getDeduplicationHelper().getExistingName(name);
+        name = state.getDeduplicationHelper().getExistingName(name, true);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Misapplied name could not be parsed: " + nameStr);
         }
@@ -194,7 +194,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         Rank rank = Rank.SPECIES();
         TaxonName name = (TaxonName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
-        name = state.getDeduplicationHelper().getExistingName(name);
+        name = state.getDeduplicationHelper().getExistingName(name, true);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Synonym could not be parsed: " + nameStr);
         }
@@ -217,7 +217,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
                 Rank rank = Rank.SUBSPECIES();
                 TaxonName name = (TaxonName)parser.parseFullName(split.trim(), state.getConfig().getNomenclaturalCode(), rank);
                 name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
-                name = state.getDeduplicationHelper().getExistingName(name);
+                name = state.getDeduplicationHelper().getExistingName(name, true);
                 if (name.isProtectedTitleCache()){
                     logger.warn(line + "Infraspecific taxon could not be parsed: " + split.trim());
                 }
@@ -247,7 +247,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         Rank rank = Rank.SPECIES();
         TaxonName name = (TaxonName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
-        name = state.getDeduplicationHelper().getExistingName(name);
+        name = state.getDeduplicationHelper().getExistingName(name, true);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + nameStr);
         }

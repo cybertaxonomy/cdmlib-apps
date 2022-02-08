@@ -397,7 +397,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + nameStr);
         }
-        name = replaceNameAuthorsAndReferences(state, name);
+        name = replaceNameAuthorsAndReferences(state, name, true);
 
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
         taxon.addImportSource(noStr, getWorksheetName(state.getConfig()), getSourceCitation(state), null);
@@ -454,7 +454,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
             Map<String, String> record, String genusStr) {
         TaxonName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
         name.setGenusOrUninomial(genusStr);
-        name = replaceNameAuthorsAndReferences(state, name);
+        name = replaceNameAuthorsAndReferences(state, name, false);
         Taxon genus = Taxon.NewInstance(name, getSecReference(state));
         TaxonNode family = getFamilyTaxon(record, state);
         TaxonNode genusNode = family.addChildTaxon(genus, getSecReference(state), null);
@@ -483,7 +483,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
             familyNode = family.getTaxonNodes().iterator().next();
         }else{
             TaxonName name = makeFamilyName(state, familyStr);
-            name = replaceNameAuthorsAndReferences(state, name);
+            name = replaceNameAuthorsAndReferences(state, name, false);
 
             Reference sec = getSecReference(state);
             family = Taxon.NewInstance(name, sec);
@@ -515,7 +515,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
             groupNode = group.getTaxonNodes().iterator().next();
         }else{
             TaxonName name = makeFamilyName(state, groupStr);
-            name = replaceNameAuthorsAndReferences(state, name);
+            name = replaceNameAuthorsAndReferences(state, name, false);
 
             Reference sec = getSecReference(state);
             group = Taxon.NewInstance(name, sec);
@@ -540,7 +540,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
 
             TaxonName plantaeName = TaxonNameFactory.NewBotanicalInstance(Rank.KINGDOM());
             plantaeName.setGenusOrUninomial("Plantae");
-            plantaeName = replaceNameAuthorsAndReferences(state, plantaeName);
+            plantaeName = replaceNameAuthorsAndReferences(state, plantaeName, false);
 
             Taxon plantae = Taxon.NewInstance(plantaeName, sec);
             TaxonNode plantaeNode = classification.addChildTaxon(plantae, null, null);

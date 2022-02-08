@@ -113,7 +113,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
             taxonStr = taxonStr.substring(0, taxonStr.length() - "s.str.".length() ).trim();
         }
         TaxonName name = (TaxonName)parser.parseFullName(taxonStr, NomenclaturalCode.ICNAFP, null);
-        name = replaceNameAuthorsAndReferences(state, name);
+        name = replaceNameAuthorsAndReferences(state, name, true);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + taxonStr);
         }
@@ -154,7 +154,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
             familyNode = family.getTaxonNodes().iterator().next();
         }else{
             TaxonName name = makeFamilyName(state, familyStr);
-            name = replaceNameAuthorsAndReferences(state, name);
+            name = replaceNameAuthorsAndReferences(state, name, false);
 
             Reference sec = getSecReference(state);
             family = Taxon.NewInstance(name, sec);

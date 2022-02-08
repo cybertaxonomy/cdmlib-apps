@@ -1297,12 +1297,12 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
     }
 
     private <T extends TeamOrPersonBase<?>> T deduplicatePersonOrTeam(BerlinModelImportState state,T author) {
-        T result = state.getDeduplicationHelper().getExistingAuthor(author);
+        T result = state.getDeduplicationHelper().getExistingAuthor(author, true);
         return result;
     }
 
     private Reference deduplicateReference(BerlinModelImportState state,Reference ref) {
-        Reference result = state.getDeduplicationHelper().getExistingReference(ref);
+        Reference result = state.getDeduplicationHelper().getExistingReference(ref, true);
         return result;
     }
 

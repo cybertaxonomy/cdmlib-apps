@@ -154,7 +154,7 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 
 
     private Person deduplicatePerson(BerlinModelImportState state, Person person) {
-        Person result = state.getDeduplicationHelper().getExistingAuthor(person);
+        Person result = state.getDeduplicationHelper().getExistingAuthor(person, false);
         return result;
     }
 

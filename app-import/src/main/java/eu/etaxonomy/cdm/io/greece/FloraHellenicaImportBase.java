@@ -148,8 +148,8 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
         return name;
     }
 
-    protected TaxonName replaceNameAuthorsAndReferences(SimpleExcelTaxonImportState<CONFIG> state, TaxonName name) {
-        TaxonName result = state.getDeduplicationHelper().getExistingName(name);
+    protected TaxonName replaceNameAuthorsAndReferences(SimpleExcelTaxonImportState<CONFIG> state, TaxonName name, boolean parsed) {
+        TaxonName result = state.getDeduplicationHelper().getExistingName(name, parsed);
         state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(result);
         return result;
     }
