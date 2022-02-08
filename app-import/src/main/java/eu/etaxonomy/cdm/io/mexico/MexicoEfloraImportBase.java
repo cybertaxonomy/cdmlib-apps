@@ -11,11 +11,9 @@ package eu.etaxonomy.cdm.io.mexico;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
@@ -44,30 +42,15 @@ public abstract class MexicoEfloraImportBase
 	}
 
 	@Override
-    protected String getIdQuery(BerlinModelImportState state){
+    protected String getIdQuery(MexicoEfloraImportState state){
 		String result = " SELECT " + getTableName() + "id FROM " + getTableName();
 		return result;
 	}
 
     //can be overriden
-    protected String getIdInSource(BerlinModelImportState state, ResultSet rs) throws SQLException {
+    protected String getIdInSource(MexicoEfloraImportState state, ResultSet rs) throws SQLException {
         return null;
     }
-
-    private DateTime getDateTime(Object timeString){
-		if (timeString == null){
-			return null;
-		}
-		DateTime dateTime = null;
-		if (timeString instanceof Timestamp){
-			Timestamp timestamp = (Timestamp)timeString;
-			dateTime = new DateTime(timestamp);
-		}else{
-			logger.warn("time ("+timeString+") is not a timestamp. Datetime set to current date. ");
-			dateTime = new DateTime();
-		}
-		return dateTime;
-	}
 
 
 	protected Taxon getTaxon(BerlinModelImportState state, int taxonId, Map<String, TaxonBase> taxonMap, int factId) {
@@ -143,6 +126,4 @@ public abstract class MexicoEfloraImportBase
         }
         return false;
     }
-
-
 }

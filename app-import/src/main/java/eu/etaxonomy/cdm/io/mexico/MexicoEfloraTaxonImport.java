@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.database.update.DatabaseTypeNotSupportedException;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -54,9 +53,8 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 	public static final String NAMESPACE = "Taxon";
 
 	private static final String pluralString = "Taxa";
-	private static final String dbTableName = "Efloa_Taxonomia4CDM ";
+	private static final String dbTableName = "Efloa_Taxonomia4CDM2 ";
 
-	private static final String LAST_SCRUTINY_FK = "lastScrutinyFk";
 
 	/**
 	 * How should the publish flag in table PTaxon be interpreted
@@ -83,7 +81,7 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 	}
 
 	@Override
-	protected String getIdQuery(BerlinModelImportState state) {
+	protected String getIdQuery(MexicoEfloraImportState state) {
 		String sql = " SELECT IdCAT "
 		        + " FROM " + dbTableName
 		        + " ORDER BY IdCAT ";
@@ -161,9 +159,10 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 						synonym = Synonym.NewInstance(taxonName, sec);
 						taxonBase = synonym;
 					}else {
+					    taxonBase = null;
 					    logger.error("Status not yet implemented: " + status);
+					    return false;
 					}
-
 
 					DefinedTerm taxonIdType = DefinedTerm.IDENTIFIER_NAME_IPNI();
 					taxonBase.addIdentifier(taxonId, taxonIdType);
@@ -175,13 +174,13 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 					}
 
 					//Notes
-					boolean excludeNotes = state.getConfig().isTaxonNoteAsFeature() && taxonBase.isInstanceOf(Taxon.class);
-					String notes = rs.getString("Notes");
+//					boolean excludeNotes = state.getConfig().isTaxonNoteAsFeature() && taxonBase.isInstanceOf(Taxon.class);
+//					String notes = rs.getString("Notes");
 
-					doIdCreatedUpdatedNotes(state, taxonBase, rs, taxonId, NAMESPACE, false, excludeNotes || notes == null);
-					if (excludeNotes && notes != null){
-					    makeTaxonomicNote(state, CdmBase.deproxy(taxonBase, Taxon.class), rs.getString("Notes"));
-					}
+//					doIdCreatedUpdatedNotes(state, taxonBase, rs, taxonId, NAMESPACE, false);
+//					if (excludeNotes && notes != null){
+//					    makeTaxonomicNote(state, CdmBase.deproxy(taxonBase, Taxon.class), rs.getString("Notes"));
+//					}
 
 					partitioner.startDoSave();
 					taxaToSave.add(taxonBase);
@@ -202,25 +201,13 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 		return success;
 	}
 
-    private boolean isMclIdentifier(BerlinModelImportState state, ResultSet rs, String idInSource) throws SQLException {
-        if (idInSource.contains("-")){
-            return true;
-        }else if (idInSource.matches("(293|303)")){
-            String created = rs.getString("Created_Who");
-            if (created.endsWith(".xml")){
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
-    protected String getIdInSource(BerlinModelImportState state, ResultSet rs) throws SQLException {
+    protected String getIdInSource(MexicoEfloraImportState state, ResultSet rs) throws SQLException {
         String id = rs.getString("idInSource");
         return id;
     }
 
-    private void makeTaxonomicNote(BerlinModelImportState state, Taxon taxon, String notes) {
+    private void makeTaxonomicNote(MexicoEfloraImportState state, Taxon taxon, String notes) {
         if (isNotBlank(notes)){
             TaxonDescription desc = getTaxonDescription(taxon, false, true);
             desc.setDefault(true);  //hard coded for Salvador, not used elsewhere as far as I can see
@@ -230,7 +217,7 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
     }
 
     @Override
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, MexicoEfloraImportState state) {
 
         String nameSpace;
 		Set<String> idSet;
@@ -242,9 +229,6 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 			while (rs.next()){
 				handleForeignKey(rs, nameIdSet, "PTNameFk");
 				handleForeignKey(rs, referenceIdSet, "PTRefFk");
-				if (state.getConfig().isUseLastScrutinyAsSec() && resultSetHasColumn(rs, LAST_SCRUTINY_FK)){
-				    handleForeignKey(rs, referenceIdSet, LAST_SCRUTINY_FK);
-				}
 			}
 
 			//name map
