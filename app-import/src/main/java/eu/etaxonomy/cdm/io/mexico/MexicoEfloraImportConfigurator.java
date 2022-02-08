@@ -21,6 +21,7 @@ import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * Configurator for Mexico Eflora import.
@@ -64,6 +65,9 @@ public class MexicoEfloraImportConfigurator
 
 	private UUID featureTreeUuid;
 	private String featureTreeTitle;
+
+
+    private Reference secReference;
 
     @Override
     protected void makeIoClassList(){
@@ -213,6 +217,13 @@ public class MexicoEfloraImportConfigurator
     }
     public void setDoNamedAreas(boolean doNamedAreas) {
         this.doNamedAreas = doNamedAreas;
+    }
+
+    public Reference getSecReference() {
+        return secReference;
+    }
+    public void setSecReference(Reference secReference) {
+        this.secReference = secReference;
     }
 
 }

@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.database.update.DatabaseTypeNotSupportedException;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -189,9 +188,6 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 					success = false;
 				}
 			}
-		} catch (DatabaseTypeNotSupportedException e) {
-			logger.error("MethodNotSupportedException:" +  e);
-			return false;
 		} catch (Exception e) {
 			logger.error("SQLException:" +  e);
 			return false;

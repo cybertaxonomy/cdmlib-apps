@@ -14,11 +14,11 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
+import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.mexico.MexicoConabioTransformer;
 import eu.etaxonomy.cdm.io.mexico.MexicoEfloraImportConfigurator;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -56,7 +56,7 @@ public class MexicoEfloraActivator {
 
     protected void doImport(ICdmDataSource cdmDestination){
 
-        URI source = borhidi();
+        Source source = mexicoEfloraDb();
 
         //make Source
         MexicoEfloraImportConfigurator config= MexicoEfloraImportConfigurator.NewInstance(source, cdmDestination);
@@ -86,8 +86,8 @@ public class MexicoEfloraActivator {
 
 
     //Mexico eflora
-    public static URI borhidi() {
-        return URI.create("file:////BGBM-PESIHPC/Mexico/Borhidi_2012.xlsx");
+    public static Source mexicoEfloraDb() {
+        return new Source(Source.MYSQL, "localhost", "mexico_eflora", 3306);
     }
 
 
