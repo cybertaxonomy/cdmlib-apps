@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.mexico;
 
 import java.util.UUID;
@@ -39,26 +38,19 @@ public class MexicoEfloraImportConfigurator
 	}
 
 	//TODO
-	private static IInputTransformer defaultTransformer = null;
+	private static IInputTransformer defaultTransformer = new MexicoConabioTransformer();
 
-	private boolean doNameStatus = true;
 	private boolean doCommonNames = true;
 	private boolean doOccurrence = true;
 	private boolean doOccurrenceSources = true;
-	private boolean doMarker = true;
-	private boolean doUser = true;
 	private boolean doFacts = true;
-	private boolean doNameFacts = true;
 	private boolean doAuthors = true;
-	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
-	private boolean doTaxonNames = true;
-	private boolean doTypes = true;
+	private boolean doReferences = true;
 	private boolean doNamedAreas = true;
 
 	//taxa
 	private boolean doTaxa = true;
 	private boolean doRelTaxa = true;
-
 
 	private UUID featureTreeUuid;
 	private String featureTreeTitle;
@@ -70,7 +62,20 @@ public class MexicoEfloraImportConfigurator
     @Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
-		        MexicoEfloraTaxonImport.class
+//		        MexicoEfloraRefArticlesImport.class,
+//		        MexicoEfloraRefSerialsImport.class,
+//		        MexicoEfloraRefOtherBooksImport.class,
+//		        MexicoEfloraRefWebSitesImport.class,
+		        MexicoEfloraRegionImport.class,
+		        MexicoEfloraTaxonImport.class,
+		        MexicoEfloraTaxonRelationImport.class,
+		        MexicoEfloraCommonNameImport.class,
+//		        MexicoEfloraCommonNameRefImport.class,
+		        MexicoEfloraDistributionImport.class,
+//		        MexicoEfloraDistributionRefImport.class,
+		        MexicoEfloraFactCategoryImport.class,
+		        MexicoEfloraFactImport.class,
+
 		};
 	}
 
@@ -84,22 +89,9 @@ public class MexicoEfloraImportConfigurator
 	}
 
 
-	public boolean isDoNameStatus() {
-		return doNameStatus;
-	}
-	public void setDoNameStatus(boolean doNameStatus) {
-		this.doNameStatus = doNameStatus;
-	}
-
-
 	public boolean isDoCommonNames() {
 		return doCommonNames;
 	}
-
-
-	/**
-	 * @param doCommonNames
-	 */
 	public void setDoCommonNames(boolean doCommonNames) {
 		this.doCommonNames = doCommonNames;
 
@@ -128,27 +120,6 @@ public class MexicoEfloraImportConfigurator
 	}
 
 
-	public boolean isDoMarker() {
-		return doMarker;
-	}
-
-	public void setDoMarker(boolean doMarker) {
-		this.doMarker = doMarker;
-	}
-
-	public boolean isDoUser() {
-		return doUser;
-	}
-	public void setDoUser(boolean doUser) {
-		this.doUser = doUser;
-	}
-
-	public boolean isDoNameFacts() {
-		return doNameFacts;
-	}
-	public void setDoNameFacts(boolean doNameFacts) {
-		this.doNameFacts = doNameFacts;
-	}
 
 	public boolean isDoAuthors() {
 		return doAuthors;
@@ -157,25 +128,11 @@ public class MexicoEfloraImportConfigurator
 		this.doAuthors = doAuthors;
 	}
 
-	public DO_REFERENCES getDoReferences() {
+	public boolean isDoReferences() {
 		return doReferences;
 	}
-	public void setDoReferences(DO_REFERENCES doReferences) {
+	public void setDoReferences(boolean doReferences) {
 		this.doReferences = doReferences;
-	}
-
-	public boolean isDoTaxonNames() {
-		return doTaxonNames;
-	}
-	public void setDoTaxonNames(boolean doTaxonNames) {
-		this.doTaxonNames = doTaxonNames;
-	}
-
-	public boolean isDoTypes() {
-		return doTypes;
-	}
-	public void setDoTypes(boolean doTypes) {
-		this.doTypes = doTypes;
 	}
 
 	public boolean isDoTaxa() {

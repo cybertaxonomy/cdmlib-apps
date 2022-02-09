@@ -15,6 +15,9 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
+import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.State;
+import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 
 /**
@@ -31,6 +34,10 @@ public class MexicoEfloraImportState
 	private static final Logger logger = Logger.getLogger(MexicoEfloraImportState.class);
 
 	private Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<>();
+
+	private Map<Integer,Feature> featureMap = new HashMap<>();
+	private Map<Integer,State> stateMap = new HashMap<>();
+	   private Map<Integer,NamedArea> areaMap = new HashMap<>();
 
 	private boolean isReferenceSecondPath = false;
 
@@ -57,4 +64,16 @@ public class MexicoEfloraImportState
 	public void setReferenceSecondPath(boolean isReferenceSecondPath) {
 		this.isReferenceSecondPath = isReferenceSecondPath;
 	}
+
+    public Map<Integer,Feature> getFeatureMap() {
+        return featureMap;
+    }
+
+    public Map<Integer,State> getStateMap() {
+        return stateMap;
+    }
+
+    public Map<Integer,NamedArea> getAreaMap() {
+        return areaMap;
+    }
 }

@@ -121,9 +121,6 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
         else if (langStr.equals("Cora")){return MexicoConabioTransformer.uuidCora;}
         else if (langStr.equals("Seri")){return MexicoConabioTransformer.uuidSeri;}
 
-
-
-
         return null;
     }
 

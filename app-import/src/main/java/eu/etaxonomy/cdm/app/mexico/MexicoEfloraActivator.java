@@ -38,14 +38,14 @@ public class MexicoEfloraActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-    //static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_test1();
 
     //feature tree uuid
-    public static final UUID featureTreeUuid = UUID.fromString("7cfa2122-043d-4e96-922c-356fc04d68a3");
+    public static final UUID featureTreeUuid = UUID.fromString("dd2070ef-e75b-494b-bc6a-4a370271866b");
 
     //classification
-    static final UUID classificationUuid = UUID.fromString("28abf7da-e0ad-48ca-b26c-9f276dd90267");
+    static final UUID classificationUuid = UUID.fromString("588dd2de-7c95-42ad-8eb1-994460561b5e");
     private static final String classificationName = "Mexico Eflora";
 
     //check - import
@@ -66,6 +66,8 @@ public class MexicoEfloraActivator {
         config.setCheck(check);
         config.setDbSchemaValidation(hbm2dll);
         config.setSecReference(getSecReference());
+        config.setFeatureTreeUuid(featureTreeUuid);
+        config.setRecordsPerTransaction(5000);
 
         config.setSource(source);
         String fileName = source.toString();

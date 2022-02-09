@@ -15,32 +15,33 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
+import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.term.DefinedTerm;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
-
+import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
  * @author a.mueller
- * @since 20.03.2008
+ * @since 08.02.2022
  */
 @Component
 public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
@@ -52,28 +53,8 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 	public static final String NAMESPACE = "Taxon";
 
 	private static final String pluralString = "Taxa";
-	private static final String dbTableName = "EFlora_Taxonomia4CDM2";
+	protected static final String dbTableName = "EFlora_Taxonomia4CDM2";
 
-
-	/**
-	 * How should the publish flag in table PTaxon be interpreted
-	 * NO_MARKER: No marker is set
-	 * ONLY_FALSE:
-	 */
-	public enum PublishMarkerChooser{
-		NO_MARKER,
-		ONLY_FALSE,
-		ONLY_TRUE,
-		ALL;
-
-		boolean doMark(boolean value){
-			if (value == true){
-				return this == ALL || this == ONLY_TRUE;
-			}else{
-				return this == ALL || this == ONLY_FALSE;
-			}
-		}
-	}
 
 	public MexicoEfloraTaxonImport(){
 		super(dbTableName, pluralString);
@@ -98,22 +79,13 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 	}
 
 	@Override
-	protected boolean doCheck(MexicoEfloraImportState state){
-		//IOValidator<BerlinModelImportState> validator = new BerlinModelTaxonImportValidator();
-		//return validator.validate(state);
-	    return true;
-	}
-
-	@Override
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, MexicoEfloraImportState state) {
 
 	    boolean success = true ;
-	    MexicoEfloraImportConfigurator config = state.getConfig();
-		@SuppressWarnings("rawtypes")
+	    @SuppressWarnings("rawtypes")
         Set<TaxonBase> taxaToSave = new HashSet<>();
-//		@SuppressWarnings("unchecked")
-//        Map<String, TaxonName> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
-		@SuppressWarnings("unchecked")
+
+	    @SuppressWarnings("unchecked")
         Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
@@ -122,27 +94,29 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 
 			//	if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("PTaxa handled: " + (i-1));}
 
-				//create TaxonName element
+				//create Taxon element
 				String taxonId = rs.getString("IdCAT");
 				String status = rs.getString("EstatusNombre");
 				String rankStr = rs.getString("CategoriaTaxonomica");
 				String nameStr = rs.getString("Nombre");
 				String autorStr = rs.getString("AutorSinAnio");
 				String fullNameStr = nameStr + " " + autorStr;
+				String citaNomenclaturStr = rs.getString("CitaNomenclatural");
 			    String annotationStr = rs.getString("AnotacionTaxon");
-//			    String type = rs.getString("NomPublicationType");
+			    String type = rs.getString("NomPublicationType");
 			    String year = rs.getString("Anio");
+			    String uuidStr = rs.getString("uuid");
+			    UUID uuid = UUID.fromString(uuidStr);
 				int secFk = rs.getInt("IdBibliografiaSec");
-//			    int nameId = rs.getInt("idNombre");
 
-
-				//IdCATRel => Accepted Taxon => TaxonRel
-				//IdCAT_AscendenteHerarquico4CDM => Parent => TaxonRel
-				//IdCAT_BasNomOrig => Basionyme der akzeptierten Taxa => TaxonRel
-
-				Rank rank = Rank.GENUS(); //FIXME
+				Rank rank = getRank(rankStr);
 				NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-				TaxonName taxonName = (TaxonName)parser.parseFullName(fullNameStr);
+				TaxonName taxonName = (TaxonName)parser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, rank);
+				//FIXME TODO
+				Reference nomRef = ReferenceFactory.newGeneric();
+				nomRef.setTitleCache(citaNomenclaturStr, true);
+				nomRef.setDatePublished(TimePeriodParser.parseStringVerbatim(year));
+				taxonName.setNomenclaturalReference(nomRef);
 
 				String refFkStr = String.valueOf(secFk);
 				Reference sec = refMap.get(refFkStr);
@@ -162,15 +136,11 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 					    logger.error("Status not yet implemented: " + status);
 					    return false;
 					}
+					taxonBase.setUuid(uuid);
 
+					//TODO
 					DefinedTerm taxonIdType = DefinedTerm.IDENTIFIER_NAME_IPNI();
-					taxonBase.addIdentifier(taxonId, taxonIdType);
-
-					//namePhrase
-					String namePhrase = rs.getString("NamePhrase");
-					if (StringUtils.isNotBlank(namePhrase)){
-						taxonBase.setAppendedPhrase(namePhrase);
-					}
+					taxonName.addIdentifier(taxonId, taxonIdType);
 
 					//Notes
 //					boolean excludeNotes = state.getConfig().isTaxonNoteAsFeature() && taxonBase.isInstanceOf(Taxon.class);
@@ -196,6 +166,45 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 		getTaxonService().save(taxaToSave);
 		return success;
 	}
+
+    private Rank getRank(String rank) {
+        Rank result = null;
+        if ("Reino".equals(rank)){ return Rank.KINGDOM();}
+        else if ("división".equals(rank)){ return Rank.DIVISION();}
+        else if ("clase".equals(rank)){ return Rank.CLASS();}
+        else if ("subclase".equals(rank)){ return Rank.SUBCLASS();}
+        else if ("superorden".equals(rank)){ return Rank.SUPERORDER();}
+        else if ("orden".equals(rank)){ return Rank.ORDER();}
+        else if ("suborden".equals(rank)){ return Rank.SUBORDER();}
+        else if ("familia".equals(rank)){ return Rank.FAMILY();}
+        else if ("subfamilia".equals(rank)){ return Rank.SUBFAMILY();}
+        else if ("tribu".equals(rank)){ return Rank.TRIBE();}
+        else if ("subtribu".equals(rank)){ return Rank.SUBTRIBE();}
+        else if ("género".equals(rank)){ return Rank.GENUS();}
+        else if ("subgénero".equals(rank)){ return Rank.SUBGENUS();}
+        else if ("sección".equals(rank)){ return Rank.SECTION_BOTANY();}
+        else if ("subsección".equals(rank)){ return Rank.SUBSECTION_BOTANY();}
+        else if ("serie".equals(rank)){ return Rank.SERIES();}
+        else if ("grupo".equals(rank)){ return Rank.SPECIESGROUP();}
+        //TODO
+//        else if ("híbrido".equals(rank)){ return Rank.GENUS;}
+        else if ("especie".equals(rank)){ return Rank.SPECIES();}
+        else if ("subespecie".equals(rank)){ return Rank.SUBSPECIES();}
+        //TODO
+        else if ("raza".equals(rank)){ return Rank.RACE();}
+        else if ("variedad".equals(rank)){ return Rank.VARIETY();}
+        else if ("subvariedad".equals(rank)){ return Rank.SUBVARIETY();}
+        else if ("forma".equals(rank)){ return Rank.FORM();}
+        else if ("subforma".equals(rank)){ return Rank.SUBFORM();}
+        //TODO
+        else if ("raza".equals(rank)){ return Rank.RACE();}
+        else {
+            logger.warn("Rank not recognized: "+ rank);
+        }
+
+
+        return result;
+    }
 
     @Override
     protected String getIdInSource(MexicoEfloraImportState state, ResultSet rs) throws SQLException {
@@ -223,15 +232,8 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 			Set<String> nameIdSet = new HashSet<>();
 			Set<String> referenceIdSet = new HashSet<>();
 			while (rs.next()){
-//				handleForeignKey(rs, nameIdSet, "PTNameFk");
 //				handleForeignKey(rs, referenceIdSet, "PTRefFk");
 			}
-
-			//name map
-			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			idSet = nameIdSet;
-			Map<String, TaxonName> nameMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonName.class, idSet, nameSpace);
-			result.put(nameSpace, nameMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
@@ -254,6 +256,11 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 	public String getPluralString() {
 		return pluralString;
 	}
+
+    @Override
+    protected boolean doCheck(MexicoEfloraImportState state){
+        return true;
+    }
 
 	@Override
 	protected boolean isIgnore(MexicoEfloraImportState state){
