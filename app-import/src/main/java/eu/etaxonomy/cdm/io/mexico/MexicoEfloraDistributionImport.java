@@ -121,14 +121,18 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
     				        false, true);
     				description.addElement(distribution);
 
+    				state.getDistributionMap().put(idCombi, distribution);
+
 					partitioner.startDoSave();
 					taxaToSave.add(taxonBase);
 				} catch (Exception e) {
+				    e.printStackTrace();
 					logger.warn("An exception (" +e.getMessage()+") occurred when trying to create common name for id " + idCombi + ".");
 					success = false;
 				}
 			}
 		} catch (Exception e) {
+		    e.printStackTrace();
 			logger.error("SQLException:" +  e);
 			return false;
 		}

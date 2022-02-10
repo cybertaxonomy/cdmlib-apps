@@ -44,7 +44,6 @@ public class MexicoEfloraImportConfigurator
 	private boolean doOccurrence = true;
 	private boolean doOccurrenceSources = true;
 	private boolean doFacts = true;
-	private boolean doAuthors = true;
 	private boolean doReferences = true;
 	private boolean doNamedAreas = true;
 
@@ -62,10 +61,10 @@ public class MexicoEfloraImportConfigurator
     @Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
-//		        MexicoEfloraRefArticlesImport.class,
-//		        MexicoEfloraRefSerialsImport.class,
-//		        MexicoEfloraRefOtherBooksImport.class,
-//		        MexicoEfloraRefWebSitesImport.class,
+		        MexicoEfloraRefArticlesImport.class,
+		        MexicoEfloraRefSerialsImport.class,
+		        MexicoEfloraRefOtherBooksImport.class,
+		        MexicoEfloraRefWebSitesImport.class,
 		        MexicoEfloraRegionImport.class,
 		        MexicoEfloraTaxonImport.class,
 		        MexicoEfloraTaxonRelationImport.class,
@@ -117,15 +116,6 @@ public class MexicoEfloraImportConfigurator
     }
     public void setDoOccurrenceSources(boolean doOccurrenceSources) {
         this.doOccurrenceSources = doOccurrenceSources;
-	}
-
-
-
-	public boolean isDoAuthors() {
-		return doAuthors;
-	}
-	public void setDoAuthors(boolean doAuthors) {
-		this.doAuthors = doAuthors;
 	}
 
 	public boolean isDoReferences() {

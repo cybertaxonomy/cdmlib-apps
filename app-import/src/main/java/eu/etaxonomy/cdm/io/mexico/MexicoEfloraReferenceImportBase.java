@@ -8,9 +8,6 @@
 */
 package eu.etaxonomy.cdm.io.mexico;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +24,8 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  */
 @Component
 public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImportBase {
+
+    public static final String NAMESPACE = "References";
 
     private static final long serialVersionUID = -5161951752826380728L;
     private static final Logger logger = Logger.getLogger(MexicoEfloraReferenceImportBase.class);
@@ -121,10 +120,12 @@ public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImpor
         }
     }
 
-    @Override
-    protected String getIdInSource(MexicoEfloraImportState state, ResultSet rs) throws SQLException {
-        String id = rs.getString("idInSource");
-        return id;
+    protected void handleId(MexicoEfloraImportState state, int refId, Reference ref, String detail) {
+        state.getReferenceUuidMap().put(refId, ref.getUuid());
+        state.getRefDetailMap().put(refId, detail);
+
+        ref.addImportSource(String.valueOf(refId), MexicoEfloraReferenceImportBase.NAMESPACE,
+                ref, null);
     }
 
 	@Override

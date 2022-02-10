@@ -128,7 +128,7 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
 
 				//create TaxonName element
 				String idCombi = rs.getString("IdCombinado");
-			    String idNomComun = rs.getString("IdNomComun");
+//			    String idNomComun = rs.getString("IdNomComun");
 			    String taxonUuid = rs.getString("taxonUuid");
 
 			    String nomComunStr = rs.getString("NomComun");
@@ -157,6 +157,8 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
     				TaxonDescription description = this.getTaxonDescription(taxon, ref,
     				        false, true);
     				description.addElement(commonName);
+
+    				state.getCommonNameMap().put(idCombi, commonName);
 
 					partitioner.startDoSave();
 					taxaToSave.add(taxonBase);

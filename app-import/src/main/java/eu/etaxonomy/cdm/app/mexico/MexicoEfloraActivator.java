@@ -1,4 +1,3 @@
-// $Id$
 /**
 * Copyright (C) 2022 EDIT
 * European Distributed Institute of Taxonomy
@@ -38,8 +37,8 @@ public class MexicoEfloraActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_test1();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_test1();
 
     //feature tree uuid
     public static final UUID featureTreeUuid = UUID.fromString("dd2070ef-e75b-494b-bc6a-4a370271866b");

@@ -73,8 +73,7 @@ public class MexicoEfloraDistributionRefImport extends MexicoEfloraImportBase {
         Map<String, Distribution> distributionMap = partitioner.getObjectMap(MexicoEfloraDistributionImport.NAMESPACE);
 
 	    @SuppressWarnings("unchecked")
-	    //TODO
-        Map<String, Reference> referenceMap = partitioner.getObjectMap(MexicoEfloraRefArticlesImport.NAMESPACE);
+        Map<String, Reference> referenceMap = partitioner.getObjectMap(MexicoEfloraReferenceImportBase.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try{
@@ -84,19 +83,20 @@ public class MexicoEfloraDistributionRefImport extends MexicoEfloraImportBase {
 
 				//create TaxonName element
 				String idCombi = rs.getString("IdDist");
-				String idBibliografia = rs.getString("IdBibliografia");
+				int idBibliografia = rs.getInt("IdBibliografia");
 			    String observaciones = rs.getString("Observaciones");
 
 			    try {
     				Distribution distribution = distributionMap.get(idCombi);
 
-    				Reference ref = referenceMap.get(idBibliografia);
-    				//TODO
-    				String detail = null;
+    				Reference ref = referenceMap.get(String.valueOf(idBibliografia));
+    				String detail = state.getRefDetailMap().get(idBibliografia);
+
     				DescriptionElementSource source = distribution.addPrimaryTaxonomicSource(ref, detail);
     				//TODO
     				TaxonName nameUsedInSource = getNameUsedInSource(state, observaciones);
     				source.setNameUsedInSource(nameUsedInSource);
+
     				//TODO other observaciones
 
 					partitioner.startDoSave();
@@ -111,15 +111,10 @@ public class MexicoEfloraDistributionRefImport extends MexicoEfloraImportBase {
 			return false;
 		}
 
-//		getTaxonService().save(taxaToSave);
+		logger.warn("Partition finished");
 		return success;
 	}
 
-    /**
-     * @param state
-     * @param observaciones
-     * @return
-     */
     private TaxonName getNameUsedInSource(MexicoEfloraImportState state, String observaciones) {
         // TODO Auto-generated method stub
         return null;

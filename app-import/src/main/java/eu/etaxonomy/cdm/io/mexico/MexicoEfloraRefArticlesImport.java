@@ -103,13 +103,14 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
                     }
 
                     //concat
+                    String detail = null;
                     if (isNotBlank(concat)) {
                         //TODO split
                         String[] split = concat.split(":");
                         String volume = split[0];
                         if (split.length > 1) {
                             //TODO
-                            String detail = split[1];
+                            detail = split[1];
                         }
                         ref.setVolume(volume);
                     }else {
@@ -132,6 +133,9 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
                         ref.getInJournal().setIssn(issnStr);
                     }
 
+                    //register id and make import source
+                    handleId(state, refId, ref, detail);
+
 					partitioner.startDoSave();
 					refsToSave.add(ref);
 				} catch (Exception e) {
@@ -147,6 +151,7 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
 		getReferenceService().save(refsToSave);
 		return success;
 	}
+
 
     @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, MexicoEfloraImportState state) {

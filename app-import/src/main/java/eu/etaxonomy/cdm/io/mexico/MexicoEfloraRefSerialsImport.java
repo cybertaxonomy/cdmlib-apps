@@ -113,6 +113,9 @@ public class MexicoEfloraRefSerialsImport extends MexicoEfloraReferenceImportBas
                         ref.setIsbn(isbnStr);
                     }
 
+                    //register id and make import source
+                    handleId(state, refId, ref, null);
+
 					partitioner.startDoSave();
 					refsToSave.add(ref);
 				} catch (Exception e) {

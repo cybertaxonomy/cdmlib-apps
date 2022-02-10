@@ -20,13 +20,8 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
@@ -86,7 +81,7 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
         Set<TaxonBase> taxaToSave = new HashSet<>();
 
 	    @SuppressWarnings("unchecked")
-        Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+        Map<String, Reference> refMap = partitioner.getObjectMap(MexicoEfloraReferenceImportBase.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try{
@@ -107,7 +102,7 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 			    String year = rs.getString("Anio");
 			    String uuidStr = rs.getString("uuid");
 			    UUID uuid = UUID.fromString(uuidStr);
-				int secFk = rs.getInt("IdBibliografiaSec");
+				Integer secFk = nullSafeInt(rs, "IdBibliografiaSec");
 
 				Rank rank = getRank(rankStr);
 				NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
@@ -118,9 +113,17 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 				nomRef.setDatePublished(TimePeriodParser.parseStringVerbatim(year));
 				taxonName.setNomenclaturalReference(nomRef);
 
-				String refFkStr = String.valueOf(secFk);
-				Reference sec = refMap.get(refFkStr);
+				//sec
+				Reference sec = null;
+				if (secFk != null) {
+				    String refFkStr = String.valueOf(secFk);
+				    sec = refMap.get(refFkStr);
+				    if (sec == null) {
+				        logger.warn("Sec not found for taxonId " +  taxonId +" and secId " + refFkStr);
+				    }
+				}
 
+				//taxon
 				TaxonBase<?> taxonBase;
 				Synonym synonym;
 				Taxon taxon;
@@ -207,21 +210,6 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
     }
 
     @Override
-    protected String getIdInSource(MexicoEfloraImportState state, ResultSet rs) throws SQLException {
-        String id = rs.getString("idInSource");
-        return id;
-    }
-
-    private void makeTaxonomicNote(MexicoEfloraImportState state, Taxon taxon, String notes) {
-        if (isNotBlank(notes)){
-            TaxonDescription desc = getTaxonDescription(taxon, false, true);
-            desc.setDefault(true);  //hard coded for Salvador, not used elsewhere as far as I can see
-            TextData textData = TextData.NewInstance(Feature.NOTES() , notes, Language.SPANISH_CASTILIAN(), null);
-            desc.addElement(textData);
-        }
-    }
-
-    @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, MexicoEfloraImportState state) {
 
         String nameSpace;
@@ -229,14 +217,13 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> nameIdSet = new HashSet<>();
 			Set<String> referenceIdSet = new HashSet<>();
 			while (rs.next()){
-//				handleForeignKey(rs, referenceIdSet, "PTRefFk");
+				handleForeignKey(rs, referenceIdSet, "IdBibliografiaSec");
 			}
 
 			//reference map
-			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
+			nameSpace = MexicoEfloraReferenceImportBase.NAMESPACE;
 			idSet = referenceIdSet;
 			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);

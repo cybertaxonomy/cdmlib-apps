@@ -11,10 +11,13 @@ package eu.etaxonomy.cdm.io.mexico;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
+import eu.etaxonomy.cdm.model.description.CommonTaxonName;
+import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.location.NamedArea;
@@ -37,11 +40,16 @@ public class MexicoEfloraImportState
 
 	private Map<Integer,Feature> featureMap = new HashMap<>();
 	private Map<Integer,State> stateMap = new HashMap<>();
-	   private Map<Integer,NamedArea> areaMap = new HashMap<>();
+	private Map<Integer,NamedArea> areaMap = new HashMap<>();
 
-	private boolean isReferenceSecondPath = false;
+	private Map<Integer,UUID> referenceUuidMap = new HashMap<>();
+	private Map<Integer,String> refDetailMap = new HashMap<>();
 
-		public MexicoEfloraImportState(MexicoEfloraImportConfigurator config) {
+	private Map<String,CommonTaxonName> commonNameMap = new HashMap<>();
+    private Map<String,Distribution> distributionMap = new HashMap<>();
+
+
+	public MexicoEfloraImportState(MexicoEfloraImportConfigurator config) {
 		super(config);
 	}
 
@@ -57,14 +65,6 @@ public class MexicoEfloraImportState
 		putDefinedTermToMap(tableName, String.valueOf(id), term);
 	}
 
-	public boolean isReferenceSecondPath() {
-		return isReferenceSecondPath;
-	}
-
-	public void setReferenceSecondPath(boolean isReferenceSecondPath) {
-		this.isReferenceSecondPath = isReferenceSecondPath;
-	}
-
     public Map<Integer,Feature> getFeatureMap() {
         return featureMap;
     }
@@ -76,4 +76,19 @@ public class MexicoEfloraImportState
     public Map<Integer,NamedArea> getAreaMap() {
         return areaMap;
     }
+
+    public Map<Integer,UUID> getReferenceUuidMap() {
+        return referenceUuidMap;
+    }
+    public Map<Integer,String> getRefDetailMap() {
+        return refDetailMap;
+    }
+
+    public Map<String,CommonTaxonName> getCommonNameMap() {
+        return commonNameMap;
+    }
+    public Map<String,Distribution> getDistributionMap() {
+        return distributionMap;
+    }
+
 }

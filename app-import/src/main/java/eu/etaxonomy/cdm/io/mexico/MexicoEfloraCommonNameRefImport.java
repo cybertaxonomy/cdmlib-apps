@@ -70,7 +70,7 @@ public class MexicoEfloraCommonNameRefImport extends MexicoEfloraImportBase {
 	    boolean success = true ;
 
 	    @SuppressWarnings("unchecked")
-        Map<String, CommonTaxonName> distributionMap = partitioner.getObjectMap(MexicoEfloraCommonNameImport.NAMESPACE);
+        Map<String, CommonTaxonName> commonNameMap = partitioner.getObjectMap(MexicoEfloraCommonNameImport.NAMESPACE);
 
 	    @SuppressWarnings("unchecked")
 	    //TODO
@@ -83,28 +83,25 @@ public class MexicoEfloraCommonNameRefImport extends MexicoEfloraImportBase {
 			//	if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("PTaxa handled: " + (i-1));}
 
 				//create TaxonName element
-				String idCombi = rs.getString("IdDist");
-
+				String idCombi = rs.getString("IdCombinado");
+				int idBibliografia = rs.getInt("IdBibliografia");
+				String observaciones = rs.getString("Observaciones");
 				//needed?
-				String idNomComun = rs.getString("IdNomComun");
-
-				String idBibliografia = rs.getString("IdBibliografia");
-			    String observaciones = rs.getString("Observaciones");
+//				String idNomComun = rs.getString("IdNomComun");
 
 			    try {
-			        CommonTaxonName distribution = distributionMap.get(idCombi);
+			        CommonTaxonName commonName = commonNameMap.get(idCombi);
 
-    				Reference ref = referenceMap.get(idBibliografia);
-    				//TODO
-    				String detail = null;
-    				DescriptionElementSource source = distribution.addPrimaryTaxonomicSource(ref, detail);
+    				Reference ref = referenceMap.get(String.valueOf(idBibliografia));
+    				String detail = state.getRefDetailMap().get(idBibliografia);
+
+    				DescriptionElementSource source = commonName.addPrimaryTaxonomicSource(ref, detail);
     				//TODO
     				TaxonName nameUsedInSource = getNameUsedInSource(state, observaciones);
     				source.setNameUsedInSource(nameUsedInSource);
     				//TODO other observaciones
 
 					partitioner.startDoSave();
-//					taxaToSave.add(taxonBase);
 				} catch (Exception e) {
 					logger.warn("An exception (" +e.getMessage()+") occurred when trying to create common name for id " + idCombi + ".");
 					success = false;
@@ -115,7 +112,8 @@ public class MexicoEfloraCommonNameRefImport extends MexicoEfloraImportBase {
 			return false;
 		}
 
-//		getTaxonService().save(taxaToSave);
+		logger.warn("Finished partition");
+
 		return success;
 	}
 

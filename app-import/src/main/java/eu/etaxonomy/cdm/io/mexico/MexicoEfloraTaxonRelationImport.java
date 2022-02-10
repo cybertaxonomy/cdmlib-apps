@@ -54,8 +54,9 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 	@Override
 	protected String getIdQuery(MexicoEfloraImportState state) {
 		String sql = " SELECT IdCAT "
-		        + " FROM " + dbTableName
-		        + " ORDER BY IdCAT ";
+		        + " FROM " + dbTableName + " t "
+		        + " LEFT JOIN cv1_Controlled_vocabulary_for_name_Ranks r ON t.CategoriaTaxonomica = r.NombreCategoriaTaxonomica "
+		        + " ORDER BY r.Nivel1, IdCAT ";
 		return sql;
 	}
 
@@ -66,7 +67,7 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 		        + " LEFT JOIN "+dbTableName+" acc ON acc.IdCat = t.IdCATRel "
 		        + " LEFT JOIN "+dbTableName+" p ON p.IdCat = t.IdCAT_AscendenteHerarquico4CDM "
 		        + " LEFT JOIN "+dbTableName+" bas ON bas.IdCat = t.IdCAT_BasNomOrig "
-                ;
+		        ;
 		String sqlWhere = " WHERE ( t.IdCAT IN (" + ID_LIST_TOKEN + ") )";
 
 		String strRecordQuery =sqlSelect + " " + sqlFrom + " " + sqlWhere ;
