@@ -57,9 +57,9 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
  * @author a.mueller
  * @since 12.2021
  */
-public class CichorieaImageUpdateActivator {
+public class CichorieaeImageUpdateActivator {
 
-	private static final Logger logger = Logger.getLogger(CichorieaImageUpdateActivator.class);
+	private static final Logger logger = Logger.getLogger(CichorieaeImageUpdateActivator.class);
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cichorieae();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_cyprus();
@@ -401,7 +401,7 @@ public class CichorieaImageUpdateActivator {
     }
 
 	public static void main(String[] args) {
-		CichorieaImageUpdateActivator me = new CichorieaImageUpdateActivator();
+		CichorieaeImageUpdateActivator me = new CichorieaeImageUpdateActivator();
 		me.updateMetadata(cdmDestination);
 		System.exit(0);
 	}
