@@ -16,8 +16,6 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
-import eu.etaxonomy.cdm.model.description.CommonTaxonName;
-import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.location.NamedArea;
@@ -45,8 +43,8 @@ public class MexicoEfloraImportState
 	private Map<Integer,UUID> referenceUuidMap = new HashMap<>();
 	private Map<Integer,String> refDetailMap = new HashMap<>();
 
-	private Map<String,CommonTaxonName> commonNameMap = new HashMap<>();
-    private Map<String,Distribution> distributionMap = new HashMap<>();
+	private Map<String,UUID> commonNameMap = new HashMap<>();
+    private Map<String,UUID> distributionMap = new HashMap<>();
 
 
 	public MexicoEfloraImportState(MexicoEfloraImportConfigurator config) {
@@ -84,10 +82,10 @@ public class MexicoEfloraImportState
         return refDetailMap;
     }
 
-    public Map<String,CommonTaxonName> getCommonNameMap() {
+    public Map<String,UUID> getCommonNameMap() {
         return commonNameMap;
     }
-    public Map<String,Distribution> getDistributionMap() {
+    public Map<String,UUID> getDistributionMap() {
         return distributionMap;
     }
 

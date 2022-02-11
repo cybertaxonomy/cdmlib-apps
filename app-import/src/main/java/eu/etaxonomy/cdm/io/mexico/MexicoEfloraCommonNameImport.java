@@ -158,11 +158,12 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
     				        false, true);
     				description.addElement(commonName);
 
-    				state.getCommonNameMap().put(idCombi, commonName);
+    				state.getCommonNameMap().put(idCombi, commonName.getUuid());
 
 					partitioner.startDoSave();
 					taxaToSave.add(taxonBase);
 				} catch (Exception e) {
+				    e.printStackTrace();
 					logger.warn("An exception (" +e.getMessage()+") occurred when trying to create common name for id " + idCombi + ".");
 					success = false;
 				}
@@ -173,6 +174,7 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
 		}
 
 		getTaxonService().save(taxaToSave);
+		logger.warn("Partition finished");
 		return success;
 	}
 

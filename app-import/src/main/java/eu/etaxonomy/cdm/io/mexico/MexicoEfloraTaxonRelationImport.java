@@ -153,6 +153,7 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 		}
 
 		getTaxonService().save(taxaToSave);
+		logger.warn("Partition finished");
 		return success;
 	}
 

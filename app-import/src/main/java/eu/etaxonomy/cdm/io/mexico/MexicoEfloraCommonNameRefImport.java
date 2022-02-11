@@ -12,14 +12,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
@@ -74,7 +74,7 @@ public class MexicoEfloraCommonNameRefImport extends MexicoEfloraImportBase {
 
 	    @SuppressWarnings("unchecked")
 	    //TODO
-        Map<String, Reference> referenceMap = partitioner.getObjectMap(MexicoEfloraRefArticlesImport.NAMESPACE);
+        Map<String, Reference> referenceMap = partitioner.getObjectMap(MexicoEfloraReferenceImportBase.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try{
@@ -95,14 +95,23 @@ public class MexicoEfloraCommonNameRefImport extends MexicoEfloraImportBase {
     				Reference ref = referenceMap.get(String.valueOf(idBibliografia));
     				String detail = state.getRefDetailMap().get(idBibliografia);
 
-    				DescriptionElementSource source = commonName.addPrimaryTaxonomicSource(ref, detail);
-    				//TODO
-    				TaxonName nameUsedInSource = getNameUsedInSource(state, observaciones);
-    				source.setNameUsedInSource(nameUsedInSource);
-    				//TODO other observaciones
+    				if (commonName != null) {
+    				    DescriptionElementSource source = commonName.addPrimaryTaxonomicSource(ref, detail);
+    				    //TODO
+    				    if (source!= null) {
+    				        TaxonName nameUsedInSource = getNameUsedInSource(state, observaciones);
+    				        source.setNameUsedInSource(nameUsedInSource);
+    				        //TODO other observaciones
+    				    } else {
+    				        logger.warn("Source not found for " + idCombi + " and bibID: " + idBibliografia);
+    				    }
+    				}else {
+    				    logger.warn("CommonName not found for " + idCombi);
+    				}
 
 					partitioner.startDoSave();
 				} catch (Exception e) {
+				    e.printStackTrace();
 					logger.warn("An exception (" +e.getMessage()+") occurred when trying to create common name for id " + idCombi + ".");
 					success = false;
 				}
@@ -130,24 +139,28 @@ public class MexicoEfloraCommonNameRefImport extends MexicoEfloraImportBase {
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> nameIdSet = new HashSet<>();
-			Set<String> referenceIdSet = new HashSet<>();
-			while (rs.next()){
-//				handleForeignKey(rs, nameIdSet, "PTNameFk");
-//				handleForeignKey(rs, referenceIdSet, "PTRefFk");
-			}
+			Set<String> commonNameIdSet = new HashSet<>();
+            Set<String> referenceIdSet = new HashSet<>();
+            while (rs.next()){
+                handleForeignKey(rs, referenceIdSet, "IdBibliografia");
+                handleForeignKey(rs, commonNameIdSet, "IdCombinado");
+            }
 
-			//name map
-			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			idSet = nameIdSet;
-			Map<String, TaxonName> nameMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonName.class, idSet, nameSpace);
-			result.put(nameSpace, nameMap);
+			//common name map
+			nameSpace = MexicoEfloraCommonNameImport.NAMESPACE;
+			Map<UUID,String> uuidMap = new HashMap<>();
+			commonNameIdSet.stream().forEach(cnId->uuidMap.put(state.getCommonNameMap().get(cnId),cnId));
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+            List<CommonTaxonName> commonNames = (List)getDescriptionElementService().find(uuidMap.keySet());
+			Map<String, CommonTaxonName> commonNameMap = new HashMap<>();
+			commonNames.stream().forEach(cn->commonNameMap.put(uuidMap.get(cn.getUuid()), cn));
+			result.put(nameSpace, commonNameMap);
 
-			//reference map
-			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
-			result.put(nameSpace, referenceMap);
+            //reference map
+            nameSpace = MexicoEfloraReferenceImportBase.NAMESPACE;
+            idSet = referenceIdSet;
+            Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
+            result.put(nameSpace, referenceMap);
 
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

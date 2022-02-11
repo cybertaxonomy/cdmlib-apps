@@ -37,11 +37,15 @@ public class MexicoEfloraActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_test1();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_test1();
 
     //feature tree uuid
-    public static final UUID featureTreeUuid = UUID.fromString("dd2070ef-e75b-494b-bc6a-4a370271866b");
+    private static final UUID featureTreeUuid = UUID.fromString("dd2070ef-e75b-494b-bc6a-4a370271866b");
+    private static final UUID flatFeatureTreeUuid = UUID.fromString("33896d1f-c3df-4cdb-afb8-bffd35f9d6b0");
+    private static final String featureTreeName = "Catalogo feature tree";
+    private static final String flatFeatureTreeName = "Catalogo flat feature tree";
+
 
     //classification
     static final UUID classificationUuid = UUID.fromString("588dd2de-7c95-42ad-8eb1-994460561b5e");
@@ -66,6 +70,10 @@ public class MexicoEfloraActivator {
         config.setDbSchemaValidation(hbm2dll);
         config.setSecReference(getSecReference());
         config.setFeatureTreeUuid(featureTreeUuid);
+        config.setFlatFeatureTreeUuid(flatFeatureTreeUuid);
+        config.setFeatureTreeTitle(featureTreeName);
+        config.setFlatFeatureTreeTitle(flatFeatureTreeName);
+
         config.setRecordsPerTransaction(5000);
 
         config.setSource(source);

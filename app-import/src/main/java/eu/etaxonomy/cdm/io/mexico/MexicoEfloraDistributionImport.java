@@ -20,7 +20,6 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -89,39 +88,41 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
 
 				//create TaxonName element
 				String idCombi = rs.getString("IdDist");
-				String idCAT = rs.getString("IdCAT");
-			    String nombreStr = rs.getString("Nombre");
-			    String paisStr = rs.getString("Pais");
-			    String estadoStr = rs.getString("Estado");
-			    String abreviaturaEstado = rs.getString("AbreviaturaEstado");
+				String taxonUuid = rs.getString("taxonUuid");
+//			    String nombreStr = rs.getString("Nombre");
+//			    String paisStr = rs.getString("Pais");
+//			    String estadoStr = rs.getString("Estado");
+//			    String abreviaturaEstado = rs.getString("AbreviaturaEstado");
 			    String tipoDistribucion = rs.getString("TipoDistribucion");
 
 			    int idRegion = rs.getInt("IdRegion");
-	            int idTipoDistribucion = rs.getInt("IdTipoDistribucion");
-	            int idTipoRegion = rs.getInt("IdTipoRegion");
+//	            int idTipoDistribucion = rs.getInt("IdTipoDistribucion");
+//	            int idTipoRegiond = rs.getInt("IdTipoRegion");
 
 			    try {
-    				TaxonBase<?> taxonBase = taxonMap.get(idCAT);
+    				TaxonBase<?> taxonBase = taxonMap.get(taxonUuid);
     				Taxon taxon;
-    				if (taxonBase.isInstanceOf(Taxon.class)) {
+    				if (taxonBase == null) {
+    				    logger.warn("Taxon "+taxonUuid+" not found for distribution " + idCombi);
+    				    continue;
+    				}else if (taxonBase.isInstanceOf(Taxon.class)) {
     				    taxon = CdmBase.deproxy(taxonBase, Taxon.class);
     				}else {
-    				    logger.warn(idCombi + ": Taxon is not accepted: " + idCAT);
+    				    logger.warn(idCombi + ": Taxon is not accepted: " + taxonUuid);
     				    continue;
     				}
 
-    				NamedArea area = getArea(state, idTipoRegion);
+    				NamedArea area = getArea(state, idRegion);
     				PresenceAbsenceTerm status = getStatus(state, tipoDistribucion);
 
     				Distribution distribution = Distribution.NewInstance(area, status);
 
     				//TODO
     				Reference ref = null;
-    				TaxonDescription description = this.getTaxonDescription(taxon, ref,
-    				        false, true);
+    				TaxonDescription description = this.getTaxonDescription(taxon, ref, false, true);
     				description.addElement(distribution);
 
-    				state.getDistributionMap().put(idCombi, distribution);
+    				state.getDistributionMap().put(idCombi, distribution.getUuid());
 
 					partitioner.startDoSave();
 					taxaToSave.add(taxonBase);
@@ -170,15 +171,12 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, MexicoEfloraImportState state) {
 
         String nameSpace;
-		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
 		    Set<UUID> taxonIdSet = new HashSet<>();
-            Set<String> referenceIdSet = new HashSet<>();
             while (rs.next()){
                 handleForeignUuidKey(rs, taxonIdSet, "taxonUuid");
-//	              handleForeignKey(rs, referenceIdSet, "PTRefFk");
             }
 
             //taxon map
@@ -189,12 +187,6 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
             List<TaxonBase> taxa = getTaxonService().find(taxonIdSet);
             taxa.stream().forEach(t->taxonMap.put(t.getUuid().toString(), t));
             result.put(nameSpace, taxonMap);
-
-			//reference map
-			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
-			result.put(nameSpace, referenceMap);
 
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

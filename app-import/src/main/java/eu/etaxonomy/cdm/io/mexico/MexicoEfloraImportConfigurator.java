@@ -52,7 +52,10 @@ public class MexicoEfloraImportConfigurator
 	private boolean doRelTaxa = true;
 
 	private UUID featureTreeUuid;
+	private UUID flatFeatureTreeUuid;
+
 	private String featureTreeTitle;
+	private String flatFeatureTreeTitle;
 
 
     private Reference secReference;
@@ -67,18 +70,19 @@ public class MexicoEfloraImportConfigurator
 		        MexicoEfloraRefWebSitesImport.class,
 		        MexicoEfloraRegionImport.class,
 		        MexicoEfloraTaxonImport.class,
-		        MexicoEfloraTaxonRelationImport.class,
 		        MexicoEfloraCommonNameImport.class,
-//		        MexicoEfloraCommonNameRefImport.class,
+		        MexicoEfloraCommonNameRefImport.class,
 		        MexicoEfloraDistributionImport.class,
-//		        MexicoEfloraDistributionRefImport.class,
+		        MexicoEfloraDistributionRefImport.class,
 		        MexicoEfloraFactCategoryImport.class,
 		        MexicoEfloraFactImport.class,
+		        MexicoEfloraTaxonRelationImport.class,
 
 		};
 	}
 
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
     public MexicoEfloraImportState getNewState() {
 		return new MexicoEfloraImportState(this);
 	}
@@ -146,6 +150,13 @@ public class MexicoEfloraImportConfigurator
         this.featureTreeUuid = featureTreeUuid;
     }
 
+    public UUID getFlatFeatureTreeUuid() {
+        return flatFeatureTreeUuid;
+    }
+    public void setFlatFeatureTreeUuid(UUID flatFeatureTreeUuid) {
+        this.flatFeatureTreeUuid = flatFeatureTreeUuid;
+    }
+
     @Override
     public String getFeatureTreeTitle() {
         return featureTreeTitle;
@@ -153,6 +164,13 @@ public class MexicoEfloraImportConfigurator
     @Override
     public void setFeatureTreeTitle(String featureTreeTitle) {
         this.featureTreeTitle = featureTreeTitle;
+    }
+
+    public String getFlatFeatureTreeTitle() {
+        return flatFeatureTreeTitle;
+    }
+    public void setFlatFeatureTreeTitle(String flatFeatureTreeTitle) {
+        this.flatFeatureTreeTitle = flatFeatureTreeTitle;
     }
 
     public boolean isDoNamedAreas() {

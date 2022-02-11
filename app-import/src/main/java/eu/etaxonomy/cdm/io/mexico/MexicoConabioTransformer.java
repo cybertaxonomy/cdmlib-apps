@@ -156,6 +156,8 @@ public class MexicoConabioTransformer extends InputTransformerBase{
             return null;
         }else if (key.equals("Endémica")){
             return PresenceAbsenceTerm.ENDEMIC_FOR_THE_RELEVANT_AREA();
+        }else if (key.equals("Nativa")){
+            return PresenceAbsenceTerm.NATIVE();
         }else{
             return null;
         }

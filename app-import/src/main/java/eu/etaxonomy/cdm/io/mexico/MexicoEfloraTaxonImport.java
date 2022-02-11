@@ -96,7 +96,7 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 				String nameStr = rs.getString("Nombre");
 				String autorStr = rs.getString("AutorSinAnio");
 				String fullNameStr = nameStr + " " + autorStr;
-				String citaNomenclaturStr = rs.getString("CitaNomenclatural");
+				String citaNomenclaturalStr = rs.getString("CitaNomenclatural");
 			    String annotationStr = rs.getString("AnotacionTaxon");
 			    String type = rs.getString("NomPublicationType");
 			    String year = rs.getString("Anio");
@@ -109,7 +109,8 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 				TaxonName taxonName = (TaxonName)parser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, rank);
 				//FIXME TODO
 				Reference nomRef = ReferenceFactory.newGeneric();
-				nomRef.setTitleCache(citaNomenclaturStr, true);
+				nomRef.setAbbrevTitleCache(citaNomenclaturalStr, true);
+
 				nomRef.setDatePublished(TimePeriodParser.parseStringVerbatim(year));
 				taxonName.setNomenclaturalReference(nomRef);
 

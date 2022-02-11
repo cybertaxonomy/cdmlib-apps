@@ -105,22 +105,38 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
 
     private void saveTree(MexicoEfloraImportState state) {
         TransactionStatus tx = this.startTransaction();
+
         @SuppressWarnings("unchecked")
         TermVocabulary<Feature> featureVoc = TermVocabulary.NewInstance(TermType.Feature);
-        featureVoc.setLabel("Catalogo", Language.SPANISH_CASTILIAN());
-//        featureVoc.setTitleCache("Catalogo", true);
+//        featureVoc.setLabel("Catalogo", Language.SPANISH_CASTILIAN());
+        featureVoc.setTitleCache("Catalogo", true);
+
         TermTree<Feature> featureTree = TermTree.NewFeatureInstance(state.getConfig().getFeatureTreeUuid());
-        featureTree.setTitleCache("Catalogo feature tree", true);
+        featureTree.setTitleCache(state.getConfig().getFeatureTreeTitle(), true);
+        featureTree.setUuid(state.getConfig().getFeatureTreeUuid());
+        featureTree.getRoot().addChild(Feature.DISTRIBUTION());
         getTermTreeService().save(featureTree);
+
+        TermTree<Feature> flatFeatureTree = TermTree.NewFeatureInstance(state.getConfig().getFeatureTreeUuid());
+        flatFeatureTree.setTitleCache(state.getConfig().getFlatFeatureTreeTitle(), true);
+        flatFeatureTree.setUuid(state.getConfig().getFlatFeatureTreeUuid());
+        flatFeatureTree.getRoot().addChild(Feature.DISTRIBUTION());
+        getTermTreeService().save(flatFeatureTree);
+
 
         getVocabularyService().save(featureVoc);
         for (TreeNode child : root.children) {
-            saveNodeRecursive(state, child, featureVoc, null, featureTree.getRoot());
+            saveNodeRecursive(state, child, featureVoc, null, featureTree.getRoot(), flatFeatureTree.getRoot());
         }
+
+        featureTree.getRoot().addChild(Feature.COMMON_NAME());
+        flatFeatureTree.getRoot().addChild(Feature.COMMON_NAME());
+
         this.commitTransaction(tx);
     }
 
-    private void saveNodeRecursive(MexicoEfloraImportState state, TreeNode node, TermVocabulary<Feature> featureVoc, Feature parentFeature, TermNode<Feature> parentFeatureTreeNode) {
+    private void saveNodeRecursive(MexicoEfloraImportState state, TreeNode node, TermVocabulary<Feature> featureVoc, Feature parentFeature,
+            TermNode<Feature> parentFeatureTreeNode, TermNode<Feature> flatFeatureTreereTreeNode) {
         if (!node.children.isEmpty()) {
             //is feature
             String sep = UTF8.EN_DASH_SPATIUM.toString();
@@ -132,6 +148,7 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
             feature.setSupportsTextData(false);
             featureVoc.addTerm(feature);
             TermNode<Feature> featureTreeNode = parentFeatureTreeNode.addChild(feature);
+            flatFeatureTreereTreeNode.addChild(feature);
             getTermService().save(feature);
             //parent-child
             if (parentFeature != null) {
@@ -139,7 +156,7 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
                 parentFeature.addIncludes(feature);
             }
             for (TreeNode child : node.children) {
-                saveNodeRecursive(state, child, featureVoc, feature, featureTreeNode);
+                saveNodeRecursive(state, child, featureVoc, feature, featureTreeNode, flatFeatureTreereTreeNode);
             }
         }else {
             TermVocabulary<State> supportedStates = parentFeature.getSupportedCategoricalEnumerations().stream().findAny().orElse(null);
