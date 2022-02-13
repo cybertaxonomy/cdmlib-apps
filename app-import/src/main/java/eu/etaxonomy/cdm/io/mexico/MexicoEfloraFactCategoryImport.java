@@ -58,8 +58,7 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
 
 	@Override
 	protected String getIdQuery(MexicoEfloraImportState state) {
-	    //TODO
-		String sql = " SELECT IdCatNombre "
+	    String sql = " SELECT IdCatNombre "
 		        + " FROM " + dbTableName + " c "
 		        + " ORDER BY c.Nivel1, c.Nivel2, c.Nivel3, c.Nivel4, c.Nivel5, c.Nivel6, c.Nivel7, c.IdCatNombre ";
 		return sql;
@@ -77,14 +76,13 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
 	}
 
 	private class TreeNode{
-	    TreeNode parent;
 	    String key;
 	    int idCatNombre;
 	    String description;
 	    List<TreeNode> children = new ArrayList<>();
 
 	    private void addChild(TreeNode child) {
-	        child.parent = this;
+//	        child.parent = this;
 	        children.add(child);
 	    }
 
@@ -159,7 +157,10 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
             for (TreeNode child : node.children) {
                 saveNodeRecursive(state, child, featureVoc, feature, featureTreeNode, flatFeatureTreereTreeNode);
             }
-        }else {
+        }
+//        else {
+        if (parentFeature != null) {
+            //is state
             TermVocabulary<State> supportedStates = parentFeature.getSupportedCategoricalEnumerations().stream().findAny().orElse(null);
             if (supportedStates == null) {
                 supportedStates = TermVocabulary.NewInstance(TermType.State, State.class);

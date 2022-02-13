@@ -8,22 +8,15 @@
 */
 package eu.etaxonomy.cdm.io.mexico;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
-import eu.etaxonomy.cdm.model.common.IdentifiableSource;
-import eu.etaxonomy.cdm.model.reference.ISourceable;
+import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
+import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.taxon.Taxon;
-import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
@@ -46,83 +39,50 @@ public abstract class MexicoEfloraImportBase
 		return result;
 	}
 
-    //can be overriden
-    protected String getIdInSource(MexicoEfloraImportState state, ResultSet rs) throws SQLException {
-        return null;
-    }
-
-
-	protected Taxon getTaxon(BerlinModelImportState state, int taxonId, Map<String, TaxonBase> taxonMap, int factId) {
-		TaxonBase<?> taxonBase = taxonMap.get(String.valueOf(taxonId));
-
-		//TODO for testing
-//		if (taxonBase == null && ! state.getConfig().isDoTaxa()){
-//			taxonBase = Taxon.NewInstance(TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES()), null);
-//		}
-
-		Taxon taxon;
-		if ( taxonBase instanceof Taxon ) {
-			taxon = (Taxon) taxonBase;
-		} else if (taxonBase != null) {
-			logger.warn("TaxonBase (" + taxonId + ") for Fact(Specimen) with factId " + factId + " was not of type Taxon but: " + taxonBase.getClass().getSimpleName());
-			return null;
-		} else {
-			logger.warn("TaxonBase (" + taxonId + ") for Fact(Specimen) with factId " + factId + " is null.");
-			return null;
-		}
-		return taxon;
-	}
-
-
-	/**
-	 * 	Searches first in the detail maps then in the ref maps for a reference.
-	 *  Returns the reference as soon as it finds it in one of the map, according
-	 *  to the order of the map.
-	 *  If nomRefDetailFk is <code>null</code> no search on detail maps is performed.
-	 *  If one of the maps is <code>null</code> no search on the according map is
-	 *  performed. <BR>
-	 *  You may define the order of search by the order you pass the maps but
-	 *  make sure to always pass the detail maps first.
-	 * @param firstDetailMap
-	 * @param secondDetailMap
-	 * @param firstRefMap
-	 * @param secondRefMap
-	 * @param nomRefDetailFk
-	 * @param nomRefFk
-	 * @return
-	 */
-	protected Reference getReferenceFromMaps(
-			Map<String, Reference> detailMap,
-			Map<String, Reference> refMap,
-			String nomRefDetailFk,
-			String nomRefFk) {
-		Reference ref = null;
-		if (detailMap != null){
-			ref = detailMap.get(nomRefDetailFk);
-		}
-		if (ref == null){
-			ref = refMap.get(nomRefFk);
-		}
-		return ref;
-	}
-
+	protected Reference sourceReference;
     protected Reference getSourceReference(Reference sourceReference) {
+        if (this.sourceReference != null) {
+            return this.sourceReference;
+        }
         Reference persistentSourceReference = getReferenceService().find(sourceReference.getUuid());  //just to be sure
         if (persistentSourceReference != null){
             sourceReference = persistentSourceReference;
         }
+        this.sourceReference = sourceReference;
         return sourceReference;
     }
 
-    protected static <T extends IdentifiableSource> boolean importSourceExists(ISourceable<T> sourceable, String idInSource,
-            String namespace, Reference ref) {
-        for (T source : sourceable.getSources()){
-            if (CdmUtils.nullSafeEqual(namespace, source.getIdNamespace()) &&
-                CdmUtils.nullSafeEqual(idInSource, source.getIdInSource()) &&
-                CdmUtils.nullSafeEqual(ref, source.getCitation())){
-                    return true;
-            }
+    protected NamedArea getArea(MexicoEfloraImportState state, Integer idRegion,
+            String estadoStr, String paisStr, String abbrev, Integer idTipoRegion) {
+
+        NamedArea areaById = state.getAreaMap().get(idRegion);
+        if (areaIsMexicoCountry(idRegion, estadoStr, paisStr, idTipoRegion)) {
+            return areaById;
         }
-        return false;
+        String label = isNotBlank(estadoStr) ? estadoStr : paisStr;
+        String labelKey = label.toLowerCase();
+        NamedArea areaByLabel = state.getAreaLabelMap().get(labelKey) ;
+
+        NamedArea result;
+        if (areaById != null && areaByLabel != null && !areaById.equals(areaByLabel)){
+            logger.warn("Area by label and area by id differs: " + areaById + "<->" + label);
+        }
+        result = areaById == null? areaByLabel : areaById;
+
+        if (result == null) {
+            logger.warn("Area not found, create new one: " + idRegion + "; " + label);
+            NamedAreaLevel level = idTipoRegion != null && idTipoRegion.equals(1)? NamedAreaLevel.COUNTRY() : null;
+            NamedAreaType areaType = NamedAreaType.ADMINISTRATION_AREA();
+            //TODO new namedAreas vocabulary
+            NamedArea namedArea = this.getNamedArea(state, null, label, label, abbrev, areaType, level, null, null);
+            state.getAreaLabelMap().put(labelKey, namedArea);
+        }
+        return result;
+    }
+
+    private boolean areaIsMexicoCountry(Integer idRegion, String estadoStr,
+            String paisStr, Integer idTipoRegion) {
+        return idRegion == 2 && isBlank(estadoStr) &&
+                "MÉXICO".equalsIgnoreCase(paisStr); // && idTipoRegion == 1;
     }
 }

@@ -72,6 +72,8 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
 	@Override
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, MexicoEfloraImportState state) {
 
+	    Reference sourceReference = this.getSourceReference(state.getConfig().getSourceReference());
+
 	    boolean success = true ;
 
 	    @SuppressWarnings("rawtypes")
@@ -89,15 +91,18 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
 				//create TaxonName element
 				String idCombi = rs.getString("IdDist");
 				String taxonUuid = rs.getString("taxonUuid");
+				//TODO nombre in distribution gegenchecken
 //			    String nombreStr = rs.getString("Nombre");
-//			    String paisStr = rs.getString("Pais");
-//			    String estadoStr = rs.getString("Estado");
-//			    String abreviaturaEstado = rs.getString("AbreviaturaEstado");
+			    String paisStr = rs.getString("Pais");
+			    String estadoStr = rs.getString("Estado");
+			    String abreviaturaEstado = rs.getString("AbreviaturaEstado");
 			    String tipoDistribucion = rs.getString("TipoDistribucion");
 
 			    int idRegion = rs.getInt("IdRegion");
 //	            int idTipoDistribucion = rs.getInt("IdTipoDistribucion");
-//	            int idTipoRegiond = rs.getInt("IdTipoRegion");
+	            int idTipoRegion = rs.getInt("IdTipoRegion");
+
+	            //FIXME mapping to mapservice
 
 			    try {
     				TaxonBase<?> taxonBase = taxonMap.get(taxonUuid);
@@ -112,14 +117,14 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
     				    continue;
     				}
 
-    				NamedArea area = getArea(state, idRegion);
-    				PresenceAbsenceTerm status = getStatus(state, tipoDistribucion);
+    				NamedArea area = getArea(state, idRegion, estadoStr, paisStr, abreviaturaEstado, idTipoRegion);
+                    PresenceAbsenceTerm status = getStatus(state, tipoDistribucion);
 
     				Distribution distribution = Distribution.NewInstance(area, status);
 
-    				//TODO
-    				Reference ref = null;
-    				TaxonDescription description = this.getTaxonDescription(taxon, ref, false, true);
+    				//TODO source reference correct (everywhere?)
+    				TaxonDescription description = this.getTaxonDescription(
+    				        taxon, sourceReference, false, true);
     				description.addElement(distribution);
 
     				state.getDistributionMap().put(idCombi, distribution.getUuid());
@@ -156,15 +161,6 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
             e.printStackTrace();
             return null;
         }
-
-    }
-
-    private NamedArea getArea(MexicoEfloraImportState state, Integer idRegion) {
-        NamedArea area = state.getAreaMap().get(idRegion);
-        if (idRegion != null && area == null) {
-            logger.warn("Area not found: " + idRegion);
-        }
-        return area;
     }
 
     @Override

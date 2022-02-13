@@ -39,6 +39,7 @@ public class MexicoEfloraImportState
 	private Map<Integer,Feature> featureMap = new HashMap<>();
 	private Map<Integer,State> stateMap = new HashMap<>();
 	private Map<Integer,NamedArea> areaMap = new HashMap<>();
+	private Map<String,NamedArea> areaLabelMap = new HashMap<>();
 
 	private Map<Integer,UUID> referenceUuidMap = new HashMap<>();
 	private Map<Integer,String> refDetailMap = new HashMap<>();
@@ -73,6 +74,9 @@ public class MexicoEfloraImportState
 
     public Map<Integer,NamedArea> getAreaMap() {
         return areaMap;
+    }
+    public Map<String,NamedArea> getAreaLabelMap() {
+        return areaLabelMap;
     }
 
     public Map<Integer,UUID> getReferenceUuidMap() {

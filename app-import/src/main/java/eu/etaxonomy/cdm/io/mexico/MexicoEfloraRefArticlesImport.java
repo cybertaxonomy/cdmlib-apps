@@ -90,7 +90,7 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
                     handleYearStr(state, yearStr, ref, refId);
 
                     //articleTitle
-                    handleTitleStr(state, journalTitleStr, ref, refId);
+                    handleTitleStr(state, articleTitleStr, ref, refId);
 
                     //journalTitle
                     if (isNotBlank(journalTitleStr)) {
@@ -109,7 +109,7 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
                         String[] split = concat.split(":");
                         String volume = split[0];
                         if (split.length > 1) {
-                            //TODO
+                            //TODO correct handling of detail
                             detail = split[1];
                         }
                         ref.setVolume(volume);

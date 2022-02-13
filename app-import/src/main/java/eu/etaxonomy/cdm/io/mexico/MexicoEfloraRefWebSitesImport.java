@@ -95,7 +95,8 @@ public class MexicoEfloraRefWebSitesImport extends MexicoEfloraReferenceImportBa
                             logger.warn(refId + ": parse exception for " + urlStr);
                         }
                     }else {
-                        logger.warn(refId + ": No uri");
+                        //do not report anymore, is in doc file already
+                        logger.info(refId + ": No uri");
                     }
 
                     //issn

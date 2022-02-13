@@ -73,8 +73,7 @@ public class MexicoEfloraCommonNameRefImport extends MexicoEfloraImportBase {
         Map<String, CommonTaxonName> commonNameMap = partitioner.getObjectMap(MexicoEfloraCommonNameImport.NAMESPACE);
 
 	    @SuppressWarnings("unchecked")
-	    //TODO
-        Map<String, Reference> referenceMap = partitioner.getObjectMap(MexicoEfloraReferenceImportBase.NAMESPACE);
+	    Map<String, Reference> referenceMap = partitioner.getObjectMap(MexicoEfloraReferenceImportBase.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try{
@@ -97,7 +96,6 @@ public class MexicoEfloraCommonNameRefImport extends MexicoEfloraImportBase {
 
     				if (commonName != null) {
     				    DescriptionElementSource source = commonName.addPrimaryTaxonomicSource(ref, detail);
-    				    //TODO
     				    if (source!= null) {
     				        TaxonName nameUsedInSource = getNameUsedInSource(state, observaciones);
     				        source.setNameUsedInSource(nameUsedInSource);
@@ -127,7 +125,7 @@ public class MexicoEfloraCommonNameRefImport extends MexicoEfloraImportBase {
 	}
 
     private TaxonName getNameUsedInSource(MexicoEfloraImportState state, String observaciones) {
-        // TODO Auto-generated method stub
+        // TODO named used in source for common names
         return null;
     }
 

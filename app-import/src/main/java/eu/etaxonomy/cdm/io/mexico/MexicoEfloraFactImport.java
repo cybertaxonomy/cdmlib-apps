@@ -51,7 +51,6 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 
 	@Override
 	protected String getIdQuery(MexicoEfloraImportState state) {
-	    //TODO
 		String sql = " SELECT id  "
 		        + " FROM " + dbTableName
 		        + " ORDER BY IdCAT, IdCatNombre, IdBibliografia ";
@@ -69,13 +68,23 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 		return strRecordQuery;
 	}
 
+	private CategoricalData lastFact;
+	private String lastIdCat = "-1";
+	private int lastIdCatNombre = -1;
 	@Override
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, MexicoEfloraImportState state) {
 
+	    Reference sourceReference = this.getSourceReference(state.getConfig().getSourceReference());
+	    //hope this is transaction save
+	    if (lastFact != null) {
+	        lastFact = (CategoricalData)getDescriptionElementService().find(lastFact.getUuid());
+	    }
 	    boolean success = true ;
 
 	    @SuppressWarnings("unchecked")
         Map<String, TaxonBase<?>> taxonMap = partitioner.getObjectMap(MexicoEfloraTaxonImport.NAMESPACE);
+        @SuppressWarnings("unchecked")
+        Map<String, Reference> referenceMap = partitioner.getObjectMap(MexicoEfloraReferenceImportBase.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try{
@@ -84,34 +93,57 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 			//	if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("PTaxa handled: " + (i-1));}
 
 				//create TaxonName element
-			    int id = rs.getInt("id");
-				int idCatNombre = rs.getInt("IdCatNombre");
+			    int id = rs.getInt("id");  //only for partitioning and logging
 				String idCAT = rs.getString("IdCAT");
+				int idCatNombre = rs.getInt("IdCatNombre");
 				String uuidTaxonStr = rs.getString("taxonUuid");
-//				UUID uuidTaxon = UUID.fromString(uuidTaxonStr);
 
-				//TODO
                 int idBibliografia = rs.getInt("IdBibliografia");
+                //TODO observaciones in facts
                 String observaciones = rs.getString("Observaciones");
 
 			    try {
-    				TaxonBase<?> taxonBase = taxonMap.get(uuidTaxonStr);
-    				Taxon taxon;
-    				if (taxonBase.isInstanceOf(Taxon.class)) {
-    				    taxon = CdmBase.deproxy(taxonBase, Taxon.class);
-    				}else {
-    				    logger.warn(idCatNombre + ": Taxon is not accepted: " + idCAT);
-    				    continue;
-    				}
+			        CategoricalData categoricalData;
+			        if (idCAT.equals(lastIdCat) && idCatNombre == lastIdCatNombre) {
+			            categoricalData = lastFact;
+			        }else {
+			            categoricalData = makeCategoricalData(state, idCatNombre);
+			            Feature lastFeature = lastFact == null? null : lastFact.getFeature();
+                        if (idCAT.equals(lastIdCat) && categoricalData.getFeature().equals(lastFeature)) {
+                            //merge
+                            //add the single new state to the existing categorical data
+                            //TODO not fully correct if bibliography differs for the single states;
+                            State newState = categoricalData.getStatesOnly().stream().findFirst().orElse(null);
+                            if (newState != null) {
+                                lastFact.addStateData(newState);
+                            }
+                            categoricalData  = lastFact;
+//                            lastIdCatNombre = idCatNombre;
+                        }else {
+                            //new categorical data
+                            TaxonBase<?> taxonBase = taxonMap.get(uuidTaxonStr);
+                            Taxon taxon;
+                            if (taxonBase.isInstanceOf(Taxon.class)) {
+                                taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+                            }else {
+                                logger.warn(idCatNombre + ": Taxon is not accepted: " + idCAT);
+                                continue;
+                            }
 
-    				//TODO
-    				Reference ref = null;
-                    TaxonDescription description = this.getTaxonDescription(taxon, ref,
-                            false, true);
-    				makeCategoricalData(state, idCatNombre, description);
+                            //TODO source reference correct?
+                            TaxonDescription description = this.getTaxonDescription(taxon, sourceReference,
+                                    false, true);
+                            description.addElement(categoricalData);
+                            lastFact = categoricalData;
+                            lastIdCat = idCAT;
+                            lastIdCatNombre = idCatNombre;
+                        }
+			        }
+			        handleBibliografia(state, referenceMap, categoricalData, idBibliografia, id);
 
 					partitioner.startDoSave();
 				} catch (Exception e) {
+				    e.printStackTrace();
 					logger.warn("An exception (" +e.getMessage()+") occurred when trying to create fact for id " + id + ".");
 					success = false;
 				}
@@ -125,19 +157,37 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 		return success;
 	}
 
-    private void makeCategoricalData(MexicoEfloraImportState importState,
-            int idCatNombre, TaxonDescription description) {
+    private void handleBibliografia(MexicoEfloraImportState state, Map<String, Reference> referenceMap,
+            CategoricalData categoricalData, int idBibliografia,
+            int id) {
+        Reference ref = referenceMap == null ? null : referenceMap.get(String.valueOf(idBibliografia));
+        String detail = state.getRefDetailMap().get(idBibliografia);
+
+        if (ref != null) {
+            if (categoricalData != null) {
+                categoricalData.addPrimaryTaxonomicSource(ref, detail);
+            }else {
+                logger.warn("Fact does not exist: " + id);
+            }
+        }else {
+            logger.warn("Source not found for " + id + " and bibID: " + idBibliografia);
+        }
+    }
+
+    private CategoricalData makeCategoricalData(MexicoEfloraImportState importState,
+            int idCatNombre) {
         Feature feature = getFeature(importState, idCatNombre);
         State state = getState(importState, idCatNombre);
-        //TODO merge data
         CategoricalData categoricalData = CategoricalData.NewInstance(state, feature);
-
-        description.addElement(categoricalData);
-        return;
+        return categoricalData;
     }
 
     private State getState(MexicoEfloraImportState importState, int idCatNombre) {
-        return importState.getStateMap().get(idCatNombre);
+        State result = importState.getStateMap().get(idCatNombre);
+        if (result == null) {
+            logger.warn("State does not exist: " + idCatNombre);
+        }
+        return result;
     }
 
     private Feature getFeature(MexicoEfloraImportState importState, int idCatNombre) {
@@ -156,7 +206,7 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 			Set<String> referenceIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignUuidKey(rs, taxonIdSet, "taxonUuid");
-//				handleForeignKey(rs, referenceIdSet, "PTRefFk");
+				handleForeignKey(rs, referenceIdSet, "IdBibliografia");
 			}
 
 			//taxon map
@@ -169,7 +219,7 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 			result.put(nameSpace, taxonMap);
 
 			//reference map
-			nameSpace = MexicoEfloraRefArticlesImport.NAMESPACE;
+			nameSpace = MexicoEfloraReferenceImportBase.NAMESPACE;
 			idSet = referenceIdSet;
 			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);

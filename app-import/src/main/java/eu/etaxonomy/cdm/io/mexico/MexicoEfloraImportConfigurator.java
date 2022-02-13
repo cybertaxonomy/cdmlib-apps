@@ -64,18 +64,18 @@ public class MexicoEfloraImportConfigurator
     @Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
+		        MexicoEfloraRegionImport.class,
+		        MexicoEfloraFactCategoryImport.class,
 		        MexicoEfloraRefArticlesImport.class,
 		        MexicoEfloraRefSerialsImport.class,
 		        MexicoEfloraRefOtherBooksImport.class,
 		        MexicoEfloraRefWebSitesImport.class,
-		        MexicoEfloraRegionImport.class,
 		        MexicoEfloraTaxonImport.class,
-		        MexicoEfloraCommonNameImport.class,
-		        MexicoEfloraCommonNameRefImport.class,
+		        MexicoEfloraFactImport.class,
 		        MexicoEfloraDistributionImport.class,
 		        MexicoEfloraDistributionRefImport.class,
-		        MexicoEfloraFactCategoryImport.class,
-		        MexicoEfloraFactImport.class,
+		        MexicoEfloraCommonNameImport.class,
+		        MexicoEfloraCommonNameRefImport.class,
 		        MexicoEfloraTaxonRelationImport.class,
 		};
 	}

@@ -8,14 +8,18 @@
 */
 package eu.etaxonomy.cdm.io.mexico;
 
+import java.net.URISyntaxException;
+
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.DOI;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.term.DefinedTerm;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
@@ -52,7 +56,7 @@ public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImpor
 		return strRecordQuery;
 	}
 
-	@Override
+    @Override
 	protected boolean doCheck(MexicoEfloraImportState state){
 	    return true;
 	}
@@ -72,7 +76,8 @@ public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImpor
         }
 	}
 
-    protected void handleYearStr(MexicoEfloraImportState state, String yearStr, Reference ref, int refId) {
+    protected void handleYearStr(@SuppressWarnings("unused") MexicoEfloraImportState state,
+            String yearStr, Reference ref, int refId) {
         //year
         if (isNotBlank(yearStr)) {
             VerbatimTimePeriod tp = TimePeriodParser.parseStringVerbatim(yearStr);
@@ -82,31 +87,35 @@ public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImpor
             }
     }
 
-    protected void handleTitleStr(MexicoEfloraImportState state, String titleStr, Reference ref, int refId) {
+    protected void handleTitleStr(@SuppressWarnings("unused") MexicoEfloraImportState state,
+            String titleStr, Reference ref, int refId) {
 
         //articleTitle
         if (isNotBlank(titleStr)) {
             ref.setTitle(titleStr);
         }else {
-            logger.warn(refId + ": No title");
+//            logger.warn(refId + ": No title");
         }
     }
 
-    protected void handleUrlStr(MexicoEfloraImportState state, String urlStr, Reference ref, int refId) {
+    protected void handleUrlStr(@SuppressWarnings("unused") MexicoEfloraImportState state,
+            String urlStr, Reference ref, int refId) {
 
         //url
         if (isNotBlank(urlStr)) {
-            //TODO
-//                        URI
-//                        IJournal journal = ReferenceFactory.newJournal();
-//                        journal.setTitle(journalTitleStr);
-//                        ref.setInJournal(journal);
-        }else {
-//                        logger.warn(refId + ": No url");
+            try {
+                URI uri = new URI(urlStr);
+                //for now we handle the uri in the URI field also for non-websites
+                //will be moved to external link by model update script in future
+                ref.setUri(uri);
+            } catch (URISyntaxException e) {
+                logger.warn(refId + ": URL could not be parsed: " + urlStr);
+            }
         }
     }
 
-    protected void handleDoiStr(MexicoEfloraImportState state, String doiStr, Reference ref, int refId) {
+    protected void handleDoiStr(@SuppressWarnings("unused") MexicoEfloraImportState state,
+            String doiStr, Reference ref, int refId) {
 
         //doi
         if (isNotBlank(doiStr)) {
@@ -124,8 +133,15 @@ public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImpor
         state.getReferenceUuidMap().put(refId, ref.getUuid());
         state.getRefDetailMap().put(refId, detail);
 
+        //TODO not needed anymore once "related objects" are adapted everywhere
+        Reference sourceRef = getSourceReference(state.getConfig().getSourceReference());
         ref.addImportSource(String.valueOf(refId), MexicoEfloraReferenceImportBase.NAMESPACE,
-                ref, null);
+                sourceRef, null);
+
+        //.. identifier
+        DefinedTerm conabioIdentifier = getIdentiferType(state, MexicoConabioTransformer.uuidConabioReferenceIdIdentifierType,
+                "CONABIO Reference Identifier", "CONABIO Reference Identifier", "CONABIO", null);
+        ref.addIdentifier(String.valueOf(refId), conabioIdentifier);
     }
 
 	@Override

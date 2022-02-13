@@ -50,7 +50,7 @@ public class MexicoReferenceUpdater {
 
         dataSource.checkConnection();
         CdmApplicationController app = CdmApplicationController.NewInstance(dataSource, hbm2dll);
-        DefinedTerm identifierType = (DefinedTerm)app.getTermService().find(MexicoConabioTransformer.uuidConabioIdIdentifierType);
+        DefinedTerm identifierType = (DefinedTerm)app.getTermService().find(MexicoConabioTransformer.uuidConabioTaxonIdIdentifierType);
 
         Map<String,Reference> journalMap = getJournalMap(app);
         try {

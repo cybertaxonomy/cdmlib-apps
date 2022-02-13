@@ -169,7 +169,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
     }
 
     private DefinedTerm getConabioIdIdentifierType(SimpleExcelTaxonImportState<CONFIG> state) {
-        DefinedTerm conabioIdIdentifierType = getIdentiferType(state, MexicoConabioTransformer.uuidConabioIdIdentifierType, "Conabio name identifier", "Conabio name identifier", "CONABIO ID", null);
+        DefinedTerm conabioIdIdentifierType = getIdentiferType(state, MexicoConabioTransformer.uuidConabioTaxonIdIdentifierType, "Conabio name identifier", "Conabio name identifier", "CONABIO ID", null);
         return conabioIdIdentifierType;
     }
 
@@ -448,7 +448,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
                 logger.warn(line + "Parent is missing: "+ parentStr);
             }else{
                 Taxon taxon = (Taxon)taxonBase;
-                Reference relRef = null;  //TODO
+                Reference relRef = null;
                 classification.addParentChild(parent, taxon, relRef, null);
 //                makeConceptRelation(line, taxon.getName());
             }

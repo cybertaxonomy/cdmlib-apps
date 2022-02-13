@@ -112,6 +112,8 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
     @Override
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, MexicoEfloraImportState state) {
 
+        Reference sourceReference = this.getSourceReference(state.getConfig().getSourceReference());
+
 	    boolean success = true ;
 
 	    @SuppressWarnings("rawtypes")
@@ -128,14 +130,15 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
 
 				//create TaxonName element
 				String idCombi = rs.getString("IdCombinado");
+				//TODO common name id
 //			    String idNomComun = rs.getString("IdNomComun");
 			    String taxonUuid = rs.getString("taxonUuid");
 
 			    String nomComunStr = rs.getString("NomComun");
 			    String lenguaStr = rs.getString("Lengua");
-			    //TODO handle country in
-//			    String paisStr = rs.getString("Pais");
-//			    String estadoStr = rs.getString("Estado");
+
+			    String paisStr = rs.getString("Pais");
+			    String estadoStr = rs.getString("Estado");
 			    int idRegion = rs.getInt("IdRegion");
 
 			    try {
@@ -149,12 +152,11 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
     				}
 
     				Language language = getLanguage(state, lenguaStr);
-    				NamedArea area = getArea(state, idRegion);
+    				NamedArea area = getArea(state, idRegion, estadoStr, paisStr, null, null);
     				CommonTaxonName commonName = CommonTaxonName.NewInstance(nomComunStr,
     				        language, area);
-    				//TODO
-    				Reference ref = null;
-    				TaxonDescription description = this.getTaxonDescription(taxon, ref,
+    				//TODO source reference correct (everywhere?)
+    				TaxonDescription description = this.getTaxonDescription(taxon, sourceReference,
     				        false, true);
     				description.addElement(commonName);
 
@@ -178,13 +180,7 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
 		return success;
 	}
 
-    private NamedArea getArea(MexicoEfloraImportState state, Integer idRegion) {
-        NamedArea area = state.getAreaMap().get(idRegion);
-        if (idRegion != null && area == null) {
-            logger.warn("Area not found: " + idRegion);
-        }
-        return area;
-    }
+
 
     private Language getLanguage(MexicoEfloraImportState state, String lenguaStr) {
         Language language = languageMap.get(lenguaStr);
