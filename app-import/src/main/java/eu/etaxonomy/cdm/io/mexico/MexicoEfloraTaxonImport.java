@@ -42,7 +42,6 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 
     private static final long serialVersionUID = -1186364983750790695L;
-
     private static final Logger logger = Logger.getLogger(MexicoEfloraTaxonImport.class);
 
 	public static final String NAMESPACE = "Taxon";

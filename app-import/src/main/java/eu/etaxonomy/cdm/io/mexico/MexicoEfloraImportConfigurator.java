@@ -77,7 +77,6 @@ public class MexicoEfloraImportConfigurator
 		        MexicoEfloraFactCategoryImport.class,
 		        MexicoEfloraFactImport.class,
 		        MexicoEfloraTaxonRelationImport.class,
-
 		};
 	}
 

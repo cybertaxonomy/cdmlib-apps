@@ -46,7 +46,6 @@ public class MexicoEfloraActivator {
     private static final String featureTreeName = "Catalogo feature tree";
     private static final String flatFeatureTreeName = "Catalogo flat feature tree";
 
-
     //classification
     static final UUID classificationUuid = UUID.fromString("588dd2de-7c95-42ad-8eb1-994460561b5e");
     private static final String classificationName = "Mexico Eflora";

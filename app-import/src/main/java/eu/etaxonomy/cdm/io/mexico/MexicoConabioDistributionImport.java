@@ -197,13 +197,12 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void createStateAreasVoc(SimpleExcelTaxonImportState<CONFIG> state) {
         //voc
         URI termSourceUri = null;
         String label = "Mexican States";
         String description = "Mexican States as used by the CONABIO Rubiaceae database";
-        stateAreasVoc = OrderedTermVocabulary.NewInstance(TermType.NamedArea,
+        stateAreasVoc = OrderedTermVocabulary.NewOrderedInstance(TermType.NamedArea, NamedArea.class,
                 description, label, null, termSourceUri);
         stateAreasVoc.setUuid(MexicoConabioTransformer.uuidMexicanStatesVoc);
         Representation rep = Representation.NewInstance("Estados Méxicanos", "Estados Méxicanos", null, Language.SPANISH_CASTILIAN());
@@ -272,12 +271,6 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
         addArea(state, areaLabel, uuid, mappingLabel, null);  //short cut if label and mapping label are equal
     }
 
-
-    /**
-     * @param state
-     * @param string
-     * @param uuidaguascalientes
-     */
     private void addArea(SimpleExcelTaxonImportState<CONFIG> state, String areaLabel, UUID uuid, String mappingLabel, Integer id1) {
         String abbrev = null;
         NamedArea newArea = NamedArea.NewInstance(

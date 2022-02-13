@@ -137,6 +137,7 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
 
     private void saveNodeRecursive(MexicoEfloraImportState state, TreeNode node, TermVocabulary<Feature> featureVoc, Feature parentFeature,
             TermNode<Feature> parentFeatureTreeNode, TermNode<Feature> flatFeatureTreereTreeNode) {
+
         if (!node.children.isEmpty()) {
             //is feature
             String sep = UTF8.EN_DASH_SPATIUM.toString();
