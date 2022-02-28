@@ -51,7 +51,7 @@
       <!-- the cdm internal repository -->
       <repository>
           <id>EditRepository</id>
-          <url>https://cybertaxonomy.eu/mavenrepo/</url>
+          <url>https://cybertaxonomy.org/mavenrepo/</url>
       </repository>
   </repositories>
   
