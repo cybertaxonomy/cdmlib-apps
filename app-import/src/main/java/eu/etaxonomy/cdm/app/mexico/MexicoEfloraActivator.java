@@ -50,7 +50,7 @@ public class MexicoEfloraActivator {
 
     //classification
     static final UUID classificationUuid = UUID.fromString("588dd2de-7c95-42ad-8eb1-994460561b5e");
-    private static final String classificationName = "Mexico Eflora";
+    private static final String classificationName = "Plantae";
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;

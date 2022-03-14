@@ -69,6 +69,7 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 	protected String getIdQuery(MexicoEfloraImportState state) {
 		String sql = " SELECT IdCAT "
 		        + " FROM " + dbTableName
+		        + " WHERE IdCAT NOT IN ('2PLANT','79217TRACH') "
 		        + " ORDER BY IdCAT ";
 		return sql;
 	}

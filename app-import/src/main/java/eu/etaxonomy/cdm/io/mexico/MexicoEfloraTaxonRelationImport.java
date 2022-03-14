@@ -56,13 +56,14 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 		String sql = " SELECT IdCAT "
 		        + " FROM " + dbTableName + " t "
 		        + " LEFT JOIN cv1_Controlled_vocabulary_for_name_Ranks r ON t.CategoriaTaxonomica = r.NombreCategoriaTaxonomica "
+		        + " WHERE t.IdCAT_AscendenteHerarquico4CDM NOT IN ('2PLANT','79217TRACH') "
 		        + " ORDER BY r.Nivel1, IdCAT ";
 		return sql;
 	}
 
 	@Override
 	protected String getRecordQuery(MexicoEfloraImportConfigurator config) {
-		String sqlSelect = " SELECT t.*, acc.uuid accUuid, p.uuid pUuid, bas.uuid basUuid ";
+		String sqlSelect = " SELECT t.*, acc.uuid accUuid, p.uuid pUuid, bas.uuid basUuid, p.IDCat pID ";
 		String sqlFrom = " FROM " + dbTableName + " t "
 		        + " LEFT JOIN "+dbTableName+" acc ON acc.IdCat = t.IdCATRel "
 		        + " LEFT JOIN "+dbTableName+" p ON p.IdCat = t.IdCAT_AscendenteHerarquico4CDM "
@@ -95,11 +96,11 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 			    String accUuidStr = rs.getString("accUuid"); //accepted for synonym
 			    String parentUuidStr = rs.getString("pUuid");  //parent
 				String basUuidStr = rs.getString("basUuid"); //basionyms of accepted taxa
+				String parentId = rs.getString("pID");
 
-//				UUID accUuid = accUuidStr == null? null : UUID.fromString(accUuidStr);
-//				UUID parentUuid = parentUuidStr == null? null : UUID.fromString(parentUuidStr);
-//				UUID basionymUuid = basUuidStr == null? null : UUID.fromString(basUuidStr);
-
+				if ("2PLANT".equals(parentId) || "79217TRACH".equals(parentId)) {
+				    parentUuidStr = null;
+				}
 
 				TaxonBase<?> taxonBase = taxonMap.get(uuid.toString());
 
