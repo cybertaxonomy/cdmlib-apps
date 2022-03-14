@@ -69,7 +69,7 @@ public abstract class MexicoEfloraImportBase
         }
         result = areaById == null? areaByLabel : areaById;
 
-        if (result == null) {
+        if (result == null && !"ND".equalsIgnoreCase(label)) {  //ND = no data
             logger.warn("Area not found, create new one: " + idRegion + "; " + label);
             NamedAreaLevel level = idTipoRegion != null && idTipoRegion.equals(1)? NamedAreaLevel.COUNTRY() : null;
             NamedAreaType areaType = NamedAreaType.ADMINISTRATION_AREA();

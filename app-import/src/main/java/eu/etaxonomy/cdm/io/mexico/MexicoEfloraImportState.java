@@ -26,7 +26,6 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
  *
  * @author a.mueller
  * @date 29.01.2022
- *
  */
 public class MexicoEfloraImportState
         extends DbImportStateBase<MexicoEfloraImportConfigurator, MexicoEfloraImportState>{

@@ -107,16 +107,18 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
         @SuppressWarnings("unchecked")
         TermVocabulary<Feature> featureVoc = TermVocabulary.NewInstance(TermType.Feature);
 //        featureVoc.setLabel("Catalogo", Language.SPANISH_CASTILIAN());
-        featureVoc.setTitleCache("Catalogo", true);
+        featureVoc.setLabel("Catalogo", Language.SPANISH_CASTILIAN());
 
+        //hierarchical feature tree
         TermTree<Feature> featureTree = TermTree.NewFeatureInstance(state.getConfig().getFeatureTreeUuid());
-        featureTree.setTitleCache(state.getConfig().getFeatureTreeTitle(), true);
+        featureTree.setLabel(state.getConfig().getFeatureTreeTitle(), Language.SPANISH_CASTILIAN());
         featureTree.setUuid(state.getConfig().getFeatureTreeUuid());
         featureTree.getRoot().addChild(Feature.DISTRIBUTION());
         getTermTreeService().save(featureTree);
 
+        //flat feature tree
         TermTree<Feature> flatFeatureTree = TermTree.NewFeatureInstance(state.getConfig().getFeatureTreeUuid());
-        flatFeatureTree.setTitleCache(state.getConfig().getFlatFeatureTreeTitle(), true);
+        flatFeatureTree.setLabel(state.getConfig().getFlatFeatureTreeTitle(), Language.SPANISH_CASTILIAN());
         flatFeatureTree.setUuid(state.getConfig().getFlatFeatureTreeUuid());
         flatFeatureTree.getRoot().addChild(Feature.DISTRIBUTION());
         getTermTreeService().save(flatFeatureTree);
