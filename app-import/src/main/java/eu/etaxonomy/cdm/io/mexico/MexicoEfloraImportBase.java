@@ -8,11 +8,14 @@
 */
 package eu.etaxonomy.cdm.io.mexico;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
+import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
+import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
@@ -69,6 +72,10 @@ public abstract class MexicoEfloraImportBase
         }
         result = areaById == null? areaByLabel : areaById;
 
+        if (result == null) {
+            result = getNewCountry(state, label);
+        }
+
         if (result == null && !"ND".equalsIgnoreCase(label)) {  //ND = no data
             logger.warn("Area not found, create new one: " + idRegion + "; " + label);
             NamedAreaLevel level = idTipoRegion != null && idTipoRegion.equals(1)? NamedAreaLevel.COUNTRY() : null;
@@ -78,6 +85,57 @@ public abstract class MexicoEfloraImportBase
             state.getAreaLabelMap().put(labelKey, namedArea);
         }
         return result;
+    }
+
+    private NamedArea getNewCountry(MexicoEfloraImportState state, String label) {
+        if (StringUtils.isBlank(label)) {
+            return null;
+        }else if (label.equalsIgnoreCase("CANADÁ")) {return Country.CANADA();
+        }else if (label.equalsIgnoreCase("ESTADOS UNIDOS DE AMÉRICA")) {return Country.UNITEDSTATESOFAMERICA();
+        }else if (label.equalsIgnoreCase("HONDURAS")) {return Country.HONDURASREPUBLICOF();
+        }else if (label.equalsIgnoreCase("BELICE")) {return Country.BELIZE();
+        }else if (label.equalsIgnoreCase("EL SALVADOR")) {return Country.ELSALVADORREPUBLICOF();
+        }else if (label.equalsIgnoreCase("PANAMÁ")) {return Country.PANAMAREPUBLICOF();
+        }else if (label.equalsIgnoreCase("GUATEMALA")) {return Country.GUATEMALAREPUBLICOF();
+        }else if (label.equalsIgnoreCase("NICARAGUA")) {return Country.NICARAGUAREPUBLICOF();
+        }else if (label.equalsIgnoreCase("ECUADOR")) {return Country.ECUADORREPUBLICOF();
+        }else if (label.equalsIgnoreCase("PERÚ")) {return Country.PERUREPUBLICOF();
+        }else if (label.equalsIgnoreCase("COSTA RICA")) {return Country.COSTARICAREPUBLICOF();
+        }else if (label.equalsIgnoreCase("COLOMBIA")) {return Country.COLOMBIAREPUBLICOF();
+        }else if (label.equalsIgnoreCase("CUBA")) {return Country.CUBAREPUBLICOF();
+        }else if (label.equalsIgnoreCase("CHILE")) {return Country.CHILEREPUBLICOF();
+        }else if (label.equalsIgnoreCase("BOLIVIA")) {return Country.BOLIVIAREPUBLICOF();
+        }else if (label.equalsIgnoreCase("URUGUAY")) {return Country.URUGUAYEASTERNREPUBLICOF();
+        }else if (label.equalsIgnoreCase("PARAGUAY")) {return Country.PARAGUAYREPUBLICOF();
+        }else if (label.equalsIgnoreCase("VENEZUELA")) {return Country.VENEZUELABOLIVARIANREPUBLICOF();
+        }else if (label.equalsIgnoreCase("BAHAMAS")) {return Country.BAHAMASCOMMONWEALTHOFTHE();
+        }else if (label.equalsIgnoreCase("BRASIL")) {return Country.BRAZILFEDERATIVEREPUBLICOF();
+        }else if (label.equalsIgnoreCase("GRANADA")) {return Country.GRENADA();
+        }else if (label.equalsIgnoreCase("TRINIDAD Y TOBAGO")) {return Country.TRINIDADANDTOBAGOREPUBLICOF();
+        }else if (label.equalsIgnoreCase("GUYANA")) {return Country.GUYANAREPUBLICOF();
+        }else if (label.equalsIgnoreCase("COSTA DE MARFIL")) {return Country.COTEDIVOIREIVORYCOASTREPUBLICOFTHE();
+        }else if (label.equalsIgnoreCase("JAMAICA")) {return Country.JAMAICA();
+        }else if (label.equalsIgnoreCase("PUERTO RICO")) {return Country.PUERTORICO();
+        }else if (label.equalsIgnoreCase("ITALIA")) {return Country.ITALYITALIANREPUBLIC();
+        }else if (label.equalsIgnoreCase("FRANCIA")) {return Country.FRANCE();
+        }else if (label.equalsIgnoreCase("ESPAÑA")) {return Country.SPAINSPANISHSTATE();
+        }else if (label.equalsIgnoreCase("PORTUGAL")) {return Country.PORTUGALPORTUGUESEREPUBLIC();
+        }else if (label.equalsIgnoreCase("FILIPINAS")) {return Country.PHILIPPINESREPUBLICOFTHE();
+        }else if (label.equalsIgnoreCase("INDIA")) {return Country.INDIAREPUBLICOF();
+        }else if (label.equalsIgnoreCase("ALASKA")) {return TdwgAreaProvider.getAreaByTdwgAbbreviation("ASK");
+        }else if (label.equalsIgnoreCase("AUSTRALIA")) {return Country.AUSTRALIACOMMONWEALTHOF();
+        }else if (label.equalsIgnoreCase("REPÚBLICA DOMINICANA")) {return Country.DOMINICANREPUBLIC();
+        }else if (label.equalsIgnoreCase("HAITÍ")) {return Country.HAITIREPUBLICOF();
+        }else if (label.equalsIgnoreCase("CHINA")) {return Country.CHINAPEOPLESREPUBLICOF();
+        }else if (label.equalsIgnoreCase("SUDÁFRICA")) {return Country.SOUTHAFRICAREPUBLICOF();
+        }else if (label.equalsIgnoreCase("MADAGASCAR")) {return Country.MADAGASCARREPUBLICOF();
+        }else if (label.equalsIgnoreCase("NAMIBIA")) {return Country.NAMIBIA();
+        }else if (label.equalsIgnoreCase("ETIOPÍA")) {return Country.ETHIOPIA();
+        }else if (label.equalsIgnoreCase("ANGOLA")) {return Country.ANGOLAREPUBLICOF();
+        }else if (label.equalsIgnoreCase("TAILANDIA")) {return Country.THAILANDKINGDOMOF();
+        }else if (label.equalsIgnoreCase("TANZANIA")) {return Country.TANZANIAUNITEDREPUBLICOF();
+        }
+        return null;
     }
 
     private boolean areaIsMexicoCountry(Integer idRegion, String estadoStr,

@@ -57,7 +57,7 @@ public final class GlobisTransformer extends InputTransformerBase {
 		}else if (area.equals("Philippines")){return Country.PHILIPPINESREPUBLICOFTHE();
 		}else if (area.equals("Mongolia")){return Country.MONGOLIAMONGOLIANPEOPLESREPUBLIC();
 		}else if (area.equals("Russia")){return Country.RUSSIANFEDERATION();
-		}else if (area.equals("France")){return Country.FRANCEFRENCHREPUBLIC();
+		}else if (area.equals("France")){return Country.FRANCE();
 		}else if (area.equals("Poland")){return Country.POLANDPOLISHPEOPLESREPUBLIC();
 		}else if (area.equals("Brazil")){return Country.BRAZILFEDERATIVEREPUBLICOF();
 
