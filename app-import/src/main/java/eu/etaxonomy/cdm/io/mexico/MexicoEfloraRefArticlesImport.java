@@ -41,6 +41,7 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
 
 	private static final String pluralString = "Articles";
 	private static final String dbTableName = "RefArticles";
+	private static final Map<String,IJournal> journalMap = new HashMap<>();
 
 	public MexicoEfloraRefArticlesImport(){
 		super(dbTableName, pluralString);
@@ -94,9 +95,14 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
 
                     //journalTitle
                     if (isNotBlank(journalTitleStr)) {
-                        //TODO dedup
-                        IJournal journal = ReferenceFactory.newJournal();
-                        journal.setTitle(journalTitleStr);
+
+                        IJournal journal = journalMap.get(journalTitleStr);
+                        if (journal == null) {
+                            journal = ReferenceFactory.newJournal();
+                            journal.setTitle(journalTitleStr);
+                            journalMap.put(journalTitleStr, journal);
+                        }
+
                         ref.setInJournal(journal);
                     }else {
                         logger.warn(refId + ": No journal title");
