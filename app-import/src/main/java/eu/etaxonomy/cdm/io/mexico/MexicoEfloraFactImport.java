@@ -161,7 +161,8 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
             CategoricalData categoricalData, int idBibliografia,
             int id) {
         Reference ref = referenceMap == null ? null : referenceMap.get(String.valueOf(idBibliografia));
-        String detail = state.getRefDetailMap().get(idBibliografia);
+//        String detail = state.getRefDetailMap().get(idBibliografia);
+        String detail = null;
 
         if (ref != null) {
             if (categoricalData != null) {

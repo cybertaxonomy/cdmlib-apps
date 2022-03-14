@@ -129,9 +129,9 @@ public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImpor
         }
     }
 
-    protected void handleId(MexicoEfloraImportState state, int refId, Reference ref, String detail) {
+    protected void handleId(MexicoEfloraImportState state, int refId, Reference ref) {
         state.getReferenceUuidMap().put(refId, ref.getUuid());
-        state.getRefDetailMap().put(refId, detail);
+//        state.getRefDetailMap().put(refId, detail);
 
         //TODO not needed anymore once "related objects" are adapted everywhere
         Reference sourceRef = getSourceReference(state.getConfig().getSourceReference());

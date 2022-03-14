@@ -92,7 +92,8 @@ public class MexicoEfloraCommonNameRefImport extends MexicoEfloraImportBase {
 			        CommonTaxonName commonName = commonNameMap.get(idCombi);
 
     				Reference ref = referenceMap.get(String.valueOf(idBibliografia));
-    				String detail = state.getRefDetailMap().get(idBibliografia);
+//    				String detail = state.getRefDetailMap().get(idBibliografia);
+    				String detail = null;
 
     				if (commonName != null) {
     				    DescriptionElementSource source = commonName.addPrimaryTaxonomicSource(ref, detail);

@@ -114,7 +114,7 @@ public class MexicoEfloraRefSerialsImport extends MexicoEfloraReferenceImportBas
                     }
 
                     //register id and make import source
-                    handleId(state, refId, ref, null);
+                    handleId(state, refId, ref);
 
 					partitioner.startDoSave();
 					refsToSave.add(ref);

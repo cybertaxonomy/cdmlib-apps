@@ -103,16 +103,14 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
                     }
 
                     //concat
-                    String detail = null;
                     if (isNotBlank(concat)) {
-                        //TODO split
                         String[] split = concat.split(":");
                         String volume = split[0];
-                        if (split.length > 1) {
-                            //TODO correct handling of detail
-                            detail = split[1];
-                        }
                         ref.setVolume(volume);
+                        if (split.length > 1) {
+                            String pages = split[1];
+                            ref.setPages(pages);
+                        }
                     }else {
                         logger.info(refId + ": No volume");
                     }
@@ -134,7 +132,7 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
                     }
 
                     //register id and make import source
-                    handleId(state, refId, ref, detail);
+                    handleId(state, refId, ref);
 
 					partitioner.startDoSave();
 					refsToSave.add(ref);

@@ -93,8 +93,8 @@ public class MexicoEfloraDistributionRefImport extends MexicoEfloraImportBase {
     				    continue;
     				}
     				Reference ref = referenceMap.get(String.valueOf(idBibliografia));
-    				String detail = state.getRefDetailMap().get(idBibliografia);
-
+//    				String detail = state.getRefDetailMap().get(idBibliografia);
+    				String detail = null;
 
     				DescriptionElementSource source = distribution.addPrimaryTaxonomicSource(ref, detail);
                     //TODO nameUsedInSource for distribution

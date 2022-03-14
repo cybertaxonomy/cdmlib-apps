@@ -108,7 +108,7 @@ public class MexicoEfloraRefWebSitesImport extends MexicoEfloraReferenceImportBa
                     }
 
                     //register id and make import source
-                    handleId(state, refId, ref, null);
+                    handleId(state, refId, ref);
 
 					partitioner.startDoSave();
 					refsToSave.add(ref);
