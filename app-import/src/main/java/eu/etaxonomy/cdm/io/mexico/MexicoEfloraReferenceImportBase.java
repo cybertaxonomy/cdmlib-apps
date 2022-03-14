@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.DOI;
 import eu.etaxonomy.cdm.common.URI;
-import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.strategy.parser.BibliographicAuthorParser;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
@@ -65,9 +65,8 @@ public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImpor
 
         //author
         if (isNotBlank(authorStr)) {
-            TeamOrPersonBase<?> author = Team.NewInstance();
-            //TODO parse
-            author.setTitleCache(authorStr, true);
+            TeamOrPersonBase<?> author = BibliographicAuthorParser
+                    .Instance().parse(authorStr);
             //TODO is parsed really ok?
             state.getDeduplicationHelper().getExistingAgent(author, true);
             ref.setAuthorship(author);
