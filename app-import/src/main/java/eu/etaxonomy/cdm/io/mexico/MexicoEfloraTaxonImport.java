@@ -90,6 +90,7 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, MexicoEfloraImportState state) {
 	    sourceReference = this.getSourceReference(state.getConfig().getSourceReference());
 
+	    state.getDeduplicationHelper().reset();
 	    boolean success = true ;
 	    @SuppressWarnings("rawtypes")
         Set<TaxonBase> taxaToSave = new HashSet<>();
@@ -102,86 +103,92 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 		try{
 //		    System.out.println();
 			while (rs.next()){
-
-			//	if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("PTaxa handled: " + (i-1));}
-//			    System.out.println("i++");
-				//create Taxon element
-				String taxonId = rs.getString("IdCAT");
-				String status = rs.getString("EstatusNombre");
-				String rankStr = rs.getString("CategoriaTaxonomica");
-				String nameStr = rs.getString("Nombre");
-				String autorStr = rs.getString("AutorSinAnio");
-				String fullNameStr = nameStr + " " + autorStr;
-				String citaNomenclaturalStr = rs.getString("CitaNomenclatural");
-			    String annotationStr = rs.getString("AnotacionTaxon");
-			    String type = rs.getString("NomPublicationType");
-			    String year = rs.getString("Anio");
-			    String uuidStr = rs.getString("uuid");
-			    UUID uuid = UUID.fromString(uuidStr);
-				Integer secFk = nullSafeInt(rs, "IdBibliografiaSec");
-
-				//name OLD handling
-				Rank rank = getRank(rankStr);
-				NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-				TaxonName taxonName = (TaxonName)parser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, rank);
-                //.. identifier
-				DefinedTerm conabioIdentifier = getIdentiferType(state, MexicoConabioTransformer.uuidConabioTaxonIdIdentifierType,
-                        "CONABIO Taxon Identifier", "CONABIO Taxon Identifier", "CONABIO", null);
-                taxonName.addIdentifier(taxonId, conabioIdentifier);
-//                .. nom Ref
-                  Reference nomRef = ReferenceFactory.newGeneric();
-                  nomRef.setAbbrevTitleCache(citaNomenclaturalStr, true);
-                  nomRef.setDatePublished(TimePeriodParser.parseStringVerbatim(year));
-                  taxonName.setNomenclaturalReference(nomRef);
-
-//                TaxonName taxonName= makeName(taxonId, state, autorStr,
-//                        nameStr, citaNomenclaturalStr, type, rankStr, annotationStr, year);
-
-				//sec
-				Reference sec = null;
-				if (secFk != null) {
-				    String refFkStr = String.valueOf(secFk);
-				    sec = refMap.get(refFkStr);
-				    if (sec == null && firstMissingSec) {
-				        logger.warn("There are missing sec refs but they are not logged anymore.");
-				        logger.debug("Sec not found for taxonId " +  taxonId +" and secId " + refFkStr);
-				        firstMissingSec = false;
-				    }
-				}
-
-				//taxon
-				TaxonBase<?> taxonBase;
-				Synonym synonym;
-				Taxon taxon;
-				try {
-					if ("aceptado".equals(status)){
-						taxon = Taxon.NewInstance(taxonName, sec);
-						taxonBase = taxon;
-					}else if ("sinónimo".equals(status)){
-						synonym = Synonym.NewInstance(taxonName, sec);
-						taxonBase = synonym;
-					}else {
-					    taxonBase = null;
-					    logger.error("Status not yet implemented: " + status);
-					    return false;
-					}
-					taxonBase.setUuid(uuid);
-
-					partitioner.startDoSave();
-					taxaToSave.add(taxonBase);
-				} catch (Exception e) {
-					logger.warn("An exception (" +e.getMessage()+") occurred when creating taxon with id " + taxonId + ". Taxon could not be saved.");
-					success = false;
-				}
+			    success = handleSingleRecord(partitioner, state, success, taxaToSave, refMap, rs, i++);
 			}
 		} catch (Exception e) {
-			logger.error("SQLException:" +  e);
+		    e.printStackTrace();
+			logger.error("Exception:" +  e);
 			return false;
 		}
 
 		getTaxonService().save(taxaToSave);
 		return success;
 	}
+
+    private boolean handleSingleRecord(ResultSetPartitioner partitioner, MexicoEfloraImportState state, boolean success,
+            Set<TaxonBase> taxaToSave, Map<String, Reference> refMap, ResultSet rs, int i) throws SQLException {
+		if ((i % 1000) == 0 && i!= 1 ){ logger.info("Taxa handled: " + (i-1));}
+//			    System.out.println("i++");
+		//create Taxon element
+		String taxonId = rs.getString("IdCAT");
+		String status = rs.getString("EstatusNombre");
+		String rankStr = rs.getString("CategoriaTaxonomica");
+		String nameStr = rs.getString("Nombre");
+		String autorStr = rs.getString("AutorSinAnio");
+		String fullNameStr = nameStr + " " + autorStr;
+		String citaNomenclaturalStr = rs.getString("CitaNomenclatural");
+	    String annotationStr = rs.getString("AnotacionTaxon");
+	    String type = rs.getString("NomPublicationType");
+	    String year = rs.getString("Anio");
+	    String uuidStr = rs.getString("uuid");
+	    UUID uuid = UUID.fromString(uuidStr);
+		Integer secFk = nullSafeInt(rs, "IdBibliografiaSec");
+
+		//name OLD handling
+//		Rank rank = getRank(rankStr);
+//		NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
+//		TaxonName taxonName = (TaxonName)parser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, rank);
+//        //.. identifier
+//		DefinedTerm conabioIdentifier = getIdentiferType(state, MexicoConabioTransformer.uuidConabioTaxonIdIdentifierType,
+//                "CONABIO Taxon Identifier", "CONABIO Taxon Identifier", "CONABIO", null);
+//        taxonName.addIdentifier(taxonId, conabioIdentifier);
+//        //.. nom Ref
+//        Reference nomRef = ReferenceFactory.newGeneric();
+//        nomRef.setAbbrevTitleCache(citaNomenclaturalStr, true);
+//        nomRef.setDatePublished(TimePeriodParser.parseStringVerbatim(year));
+//        taxonName.setNomenclaturalReference(nomRef);
+
+        TaxonName taxonName= makeName(taxonId, state, autorStr,
+           nameStr, citaNomenclaturalStr, type, rankStr, annotationStr, year);
+
+		//sec
+		Reference sec = null;
+		if (secFk != null) {
+		    String refFkStr = String.valueOf(secFk);
+		    sec = refMap.get(refFkStr);
+		    if (sec == null && firstMissingSec) {
+		        logger.warn("There are missing sec refs but they are not logged anymore.");
+		        logger.debug("Sec not found for taxonId " +  taxonId +" and secId " + refFkStr);
+		        firstMissingSec = false;
+		    }
+		}
+
+		//taxon
+		TaxonBase<?> taxonBase;
+		Synonym synonym;
+		Taxon taxon;
+		try {
+			if ("aceptado".equals(status)){
+				taxon = Taxon.NewInstance(taxonName, sec);
+				taxonBase = taxon;
+			}else if ("sinónimo".equals(status)){
+				synonym = Synonym.NewInstance(taxonName, sec);
+				taxonBase = synonym;
+			}else {
+			    taxonBase = null;
+			    logger.error("Status not yet implemented: " + status);
+			    return false;
+			}
+			taxonBase.setUuid(uuid);
+
+			partitioner.startDoSave();
+			taxaToSave.add(taxonBase);
+		} catch (Exception e) {
+			logger.warn("An exception (" +e.getMessage()+") occurred when creating taxon with id " + taxonId + ". Taxon could not be saved.");
+			success = false;
+		}
+        return success;
+    }
 
 	boolean isFirstDedup = true;
     private TaxonName makeName(String taxonId, MexicoEfloraImportState state,
@@ -190,14 +197,19 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 
         //rank
         Rank rank = getRank(rankStr);
+        //TODO hybrido and race
+        boolean isHybrid = rank == null && "híbrido".equals(rankStr);
+        boolean isRace = Rank.RACE().equals(rank);
 //        rank = state.getTransformer().getRankByKey(rankStr);
+
+        nameStr = removeSubgenusBracket(nameStr, rank);
 
         //name + author
         String fullNameStr = nameStr + (authorStr != null ? " " + authorStr : "");
 
         TaxonName fullName = nameParser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, rank);
         if (fullName.isProtectedTitleCache()){
-            logger.warn(taxonId + ": Name could not be parsed: " + fullNameStr );
+            logger.info(taxonId + ": Name could not be parsed: " + fullNameStr );
         }else{
             if (isFirstDedup) {
                 logger.warn("Deduplication is still switcht off!");
@@ -254,6 +266,17 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
         result.addIdentifier(taxonId, conabioIdentifier);
 
         return result;
+    }
+
+    private String removeSubgenusBracket(String nameStr, Rank rank) {
+        if (nameStr.matches("[A-Z][a-z]+\\s+\\([A-Za-z]+\\)\\s+[a-z]+.*")) {
+            //species and below: remove bracket completely
+            nameStr = nameStr.substring(0, nameStr.indexOf("(")) + nameStr.substring(nameStr.indexOf(")")+1);
+        }else if (nameStr.matches("[A-Z][a-z]+\\s+\\([A-Za-z]+\\)")) {
+            //subgenus: replace (...) bei subg. ...
+            nameStr = nameStr.substring(0, nameStr.indexOf("(")) + "subg. " + nameStr.substring(nameStr.indexOf("(")+1, nameStr.length()-1);
+        }
+        return nameStr;
     }
 
     private void adaptRefTypeForGeneric(IBotanicalName referencedName, String refTypeStr) {
@@ -327,17 +350,14 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
         else if ("subsección".equals(rank)){ return Rank.SUBSECTION_BOTANY();}
         else if ("serie".equals(rank)){ return Rank.SERIES();}
         else if ("grupo".equals(rank)){ return Rank.SPECIESGROUP();}
-        //TODO rank hibrido
-//        else if ("híbrido".equals(rank)){ return Rank.GENUS;}
+        else if ("híbrido".equals(rank)){ return null;}  //will be handled later
         else if ("especie".equals(rank)){ return Rank.SPECIES();}
         else if ("subespecie".equals(rank)){ return Rank.SUBSPECIES();}
-        //TODO rank raza
         else if ("raza".equals(rank)){ return Rank.RACE();}
         else if ("variedad".equals(rank)){ return Rank.VARIETY();}
         else if ("subvariedad".equals(rank)){ return Rank.SUBVARIETY();}
         else if ("forma".equals(rank)){ return Rank.FORM();}
         else if ("subforma".equals(rank)){ return Rank.SUBFORM();}
-        //TODO rank raza
         else if ("raza".equals(rank)){ return Rank.RACE();}
         else {
             logger.warn("Rank not recognized: "+ rank);
