@@ -8,12 +8,12 @@
 */
 package eu.etaxonomy.cdm.app.greece;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -67,10 +67,10 @@ public class GreeceImageActivator {
     static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
-    private static final UUID sourceUuid = UUID.fromString("6fb69240-b344-484a-83c0-2befcee3e6e1");
-//    private static final UUID sourceUuid = UUID.fromString("47716558-a2c1-4108-a9f4-7da241b9c26e");
+//    private static final UUID sourceUuid = UUID.fromString("6fb69240-b344-484a-83c0-2befcee3e6e1");
+    private static final UUID sourceUuid = UUID.fromString("f764c8f8-3f80-49f3-b9b7-fb7fe966d01f");
 
-    private static final String fileName = "metadata_FoG_20200512.xlsx";
+    private static final String fileName = "metadata_FoG_2022.xlsx";
 //    private static final String fileName = "metadata_FoG_AK_Willing_correct.xlsx";
 
 
