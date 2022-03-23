@@ -9,7 +9,6 @@
 package eu.etaxonomy.cdm.io.mexico;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.URI;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -35,8 +33,6 @@ public class MexicoEfloraRefWebSitesImport extends MexicoEfloraReferenceImportBa
     private static final long serialVersionUID = -1186364983750790695L;
     private static final Logger logger = Logger.getLogger(MexicoEfloraRefWebSitesImport.class);
 
-	public static final String NAMESPACE = "WebSites";
-
 	private static final String pluralString = "Websites";
 	private static final String dbTableName = "RefWebSites";
 
@@ -48,11 +44,7 @@ public class MexicoEfloraRefWebSitesImport extends MexicoEfloraReferenceImportBa
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, MexicoEfloraImportState state) {
 
 	    boolean success = true ;
-	    MexicoEfloraImportConfigurator config = state.getConfig();
 		Set<Reference> refsToSave = new HashSet<>();
-
-		@SuppressWarnings("unchecked")
-        Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try{
@@ -129,27 +121,7 @@ public class MexicoEfloraRefWebSitesImport extends MexicoEfloraReferenceImportBa
     @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, MexicoEfloraImportState state) {
 
-        String nameSpace;
-		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-
-		try{
-			Set<String> nameIdSet = new HashSet<>();
-			Set<String> referenceIdSet = new HashSet<>();
-			while (rs.next()){
-//				handleForeignKey(rs, nameIdSet, "PTNameFk");
-//				handleForeignKey(rs, referenceIdSet, "PTRefFk");
-			}
-
-			//reference map
-			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
-			result.put(nameSpace, referenceMap);
-
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
 		return result;
 	}
 

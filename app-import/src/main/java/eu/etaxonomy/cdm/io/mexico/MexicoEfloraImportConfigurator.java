@@ -37,7 +37,6 @@ public class MexicoEfloraImportConfigurator
 			return new MexicoEfloraImportConfigurator(berlinModelSource, destination);
 	}
 
-	//TODO
 	private static IInputTransformer defaultTransformer = new MexicoConabioTransformer();
 
 	private boolean doCommonNames = true;
@@ -53,10 +52,11 @@ public class MexicoEfloraImportConfigurator
 
 	private UUID featureTreeUuid;
 	private UUID flatFeatureTreeUuid;
+	private UUID flatFeatureTreeWithoutUsesUuid;
 
 	private String featureTreeTitle;
 	private String flatFeatureTreeTitle;
-
+	private String flatFeatureTreeWithoutUsesTitle;
 
     private Reference secReference;
 
@@ -90,13 +90,11 @@ public class MexicoEfloraImportConfigurator
 	   super(berlinModelSource, destination, NomenclaturalCode.ICNAFP, defaultTransformer); //default for Berlin Model
 	}
 
-
 	public boolean isDoCommonNames() {
 		return doCommonNames;
 	}
 	public void setDoCommonNames(boolean doCommonNames) {
 		this.doCommonNames = doCommonNames;
-
 	}
 
 	public boolean isDoFacts() {
@@ -156,6 +154,13 @@ public class MexicoEfloraImportConfigurator
         this.flatFeatureTreeUuid = flatFeatureTreeUuid;
     }
 
+    public UUID getFlatFeatureTreeWithoutUsesUuid() {
+        return flatFeatureTreeWithoutUsesUuid;
+    }
+    public void setFlatFeatureTreeWithoutUsesUuid(UUID flatFeatureTreeWithoutUsesUuid) {
+        this.flatFeatureTreeWithoutUsesUuid = flatFeatureTreeWithoutUsesUuid;
+    }
+
     @Override
     public String getFeatureTreeTitle() {
         return featureTreeTitle;
@@ -172,6 +177,13 @@ public class MexicoEfloraImportConfigurator
         this.flatFeatureTreeTitle = flatFeatureTreeTitle;
     }
 
+    public String getFlatFeatureTreeWithoutUsesTitle() {
+        return flatFeatureTreeWithoutUsesTitle;
+    }
+    public void setFlatFeatureTreeWithoutUsesTitle(String flatFeatureTreeWithoutUsesTitle) {
+        this.flatFeatureTreeWithoutUsesTitle = flatFeatureTreeWithoutUsesTitle;
+    }
+
     public boolean isDoNamedAreas() {
         return doNamedAreas;
     }
@@ -185,5 +197,6 @@ public class MexicoEfloraImportConfigurator
     public void setSecReference(Reference secReference) {
         this.secReference = secReference;
     }
+
 
 }

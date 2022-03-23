@@ -86,7 +86,7 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
         ResultSet rs = state.getConfig().getSource().getResultSet(sql);
         try {
             while (rs.next()) {
-                String lang = rs.getString("Lengua");
+                String lang = rs.getString("Lengua").trim();
                 Language language = Language.NewInstance(lang, lang, null, Language.SPANISH_CASTILIAN());
                 voc.addTerm(language);
                 getTermService().save(language);  //not sure if necessary
@@ -97,7 +97,7 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
         }
     }
 
-    private TermVocabulary<Language> createLanguagesVoc(MexicoEfloraImportState state) {
+    private TermVocabulary<Language> createLanguagesVoc(@SuppressWarnings("unused") MexicoEfloraImportState state) {
         URI termSourceUri = null;
         String label = "Mexican Languages";
         String description = "Mexican languages as used by the CONABIO database";
@@ -130,12 +130,12 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
 
 				//create TaxonName element
 				String idCombi = rs.getString("IdCombinado");
-				//TODO common name id
-//			    String idNomComun = rs.getString("IdNomComun");
+
+			    String idNomComun = rs.getString("IdNomComun");
 			    String taxonUuid = rs.getString("taxonUuid");
 
 			    String nomComunStr = rs.getString("NomComun");
-			    String lenguaStr = rs.getString("Lengua");
+			    String lenguaStr = rs.getString("Lengua").trim();
 
 			    String paisStr = rs.getString("Pais");
 			    String estadoStr = rs.getString("Estado");
@@ -155,12 +155,13 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
     				NamedArea area = getArea(state, idRegion, estadoStr, paisStr, null, null);
     				CommonTaxonName commonName = CommonTaxonName.NewInstance(nomComunStr,
     				        language, area);
-    				//TODO source reference correct (everywhere?)
+
     				TaxonDescription description = this.getTaxonDescription(taxon, sourceReference,
     				        false, true);
     				description.addElement(commonName);
 
-    				state.getCommonNameMap().put(idCombi, commonName.getUuid());
+    				commonName.addImportSource(idNomComun + ";" + idCombi, "Eflora_NombresComunes4CDM", sourceReference, null);
+                    state.getCommonNameMap().put(idCombi, commonName.getUuid());
 
 					partitioner.startDoSave();
 					taxaToSave.add(taxonBase);
@@ -180,12 +181,10 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
 		return success;
 	}
 
-
-
-    private Language getLanguage(MexicoEfloraImportState state, String lenguaStr) {
+    private Language getLanguage(@SuppressWarnings("unused") MexicoEfloraImportState state, String lenguaStr) {
         Language language = languageMap.get(lenguaStr);
         if (isNotBlank(lenguaStr) && language == null) {
-            logger.warn("Language not found: " + lenguaStr);
+            logger.warn("Language not found: '" + lenguaStr + "'");
         }
         return language;
     }
@@ -194,15 +193,12 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, MexicoEfloraImportState state) {
 
         String nameSpace;
-		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
             Set<UUID> taxonIdSet = new HashSet<>();
-			Set<String> referenceIdSet = new HashSet<>();
 			while (rs.next()){
                 handleForeignUuidKey(rs, taxonIdSet, "taxonUuid");
-//				handleForeignKey(rs, referenceIdSet, "PTRefFk");
 			}
 
             //taxon map
@@ -213,12 +209,6 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
             List<TaxonBase> taxa = getTaxonService().find(taxonIdSet);
             taxa.stream().forEach(t->taxonMap.put(t.getUuid().toString(), t));
             result.put(nameSpace, taxonMap);
-
-			//reference map
-			nameSpace = MexicoEfloraRefArticlesImport.NAMESPACE;
-			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
-			result.put(nameSpace, referenceMap);
 
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

@@ -65,10 +65,59 @@ public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImpor
 
         //author
         if (isNotBlank(authorStr)) {
+            boolean isEds = false;
+            boolean isEd = false;
+            boolean isCoords = false;
+            boolean isCoord = false;
+            boolean isComps = false;
+            boolean isComp = false;
+
+            if (authorStr.endsWith("(Eds.)") || authorStr.endsWith("(eds.)")
+               || authorStr.endsWith("(editors)")) {
+                isEds = true;
+                authorStr = authorStr.replace("(Eds.)", "").replace("(eds.)", "").replace("(editors)", "").trim();
+            }
+            if (authorStr.endsWith("(Ed.)")) {
+                authorStr = authorStr.replace("(Ed.)", "").trim();
+                isEd = true;
+            }
+            if (authorStr.endsWith("(Coords.)") || authorStr.endsWith("(coords.)")) {
+                authorStr = authorStr.replace("(Coords.)", "").replace("(coords.)", "").trim();
+                isCoords = true;
+            }
+            if (authorStr.endsWith("(Coord.)") || authorStr.endsWith("(coord.)")) {
+                authorStr = authorStr.replace("(Coord.)", "").replace("(coord.)", "").trim();
+                isCoords = true;
+            }
+            if (authorStr.endsWith("(Comps.)") || authorStr.endsWith("(comps.)")) {
+                authorStr = authorStr.replace("(comps.)", "").replace("(Comps.)", "").trim();
+                isComps = true;
+            }
+            if (authorStr.endsWith("(Comp.)") || authorStr.endsWith("(comp.)")) {
+                authorStr = authorStr.replace("(comp.)", "").replace("(Comp.)", "").trim();
+                isComps = true;
+            }
+
             TeamOrPersonBase<?> author = BibliographicAuthorParser
                     .Instance().parse(authorStr);
-            //TODO is parsed really ok?
-            state.getDeduplicationHelper().getExistingAgent(author, true);
+            if (isEds) {
+                author.setTitleCache(author.getTitleCache()+ " (Eds.)", true);
+            }else if (isCoords) {
+                author.setTitleCache(author.getTitleCache()+ " (Coords.)", true);
+            }else if (isCoord) {
+                author.setTitleCache(author.getTitleCache()+ " (Coord.)", true);
+            }else if (isEd) {
+                author.setTitleCache(author.getTitleCache()+ " (Ed.)", true);
+            }else if (isComps) {
+                author.setTitleCache(author.getTitleCache()+ " (Comps.)", true);
+            }else if (isComp) {
+                author.setTitleCache(author.getTitleCache()+ " (Comp.)", true);
+            }
+
+
+            //not sure what is better, but seems to work with "false"
+            boolean parsed = false;
+            author = state.getDeduplicationHelper().getExistingAuthor(author, parsed);
             ref.setAuthorship(author);
         }else {
             logger.warn(refId + ": No author");
@@ -87,7 +136,7 @@ public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImpor
     }
 
     protected void handleTitleStr(@SuppressWarnings("unused") MexicoEfloraImportState state,
-            String titleStr, Reference ref, int refId) {
+            String titleStr, Reference ref, @SuppressWarnings("unused") int refId) {
 
         //articleTitle
         if (isNotBlank(titleStr)) {
@@ -130,12 +179,6 @@ public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImpor
 
     protected void handleId(MexicoEfloraImportState state, int refId, Reference ref) {
         state.getReferenceUuidMap().put(refId, ref.getUuid());
-//        state.getRefDetailMap().put(refId, detail);
-
-        //TODO not needed anymore once "related objects" are adapted everywhere
-        Reference sourceRef = getSourceReference(state.getConfig().getSourceReference());
-        ref.addImportSource(String.valueOf(refId), MexicoEfloraReferenceImportBase.NAMESPACE,
-                sourceRef, null);
 
         //.. identifier
         DefinedTerm conabioIdentifier = getIdentiferType(state, MexicoConabioTransformer.uuidConabioReferenceIdIdentifierType,

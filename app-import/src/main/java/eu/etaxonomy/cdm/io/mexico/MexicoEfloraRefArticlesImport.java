@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.io.mexico;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,7 +18,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.reference.IJournal;
@@ -37,8 +35,6 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
 
     private static final Logger logger = Logger.getLogger(MexicoEfloraRefArticlesImport.class);
 
-	public static final String NAMESPACE = "Articles";
-
 	private static final String pluralString = "Articles";
 	private static final String dbTableName = "RefArticles";
 	private static final Map<String,IJournal> journalMap = new HashMap<>();
@@ -51,11 +47,7 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, MexicoEfloraImportState state) {
 
 	    boolean success = true ;
-	    MexicoEfloraImportConfigurator config = state.getConfig();
 		Set<Reference> refsToSave = new HashSet<>();
-
-		@SuppressWarnings("unchecked")
-        Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try{
@@ -71,6 +63,7 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
 				String articleTitleStr = rs.getString("ArticleTitle");
                 String journalTitleStr = rs.getString("JournalTitle");
                 String concat = rs.getString("Concatenation");
+                //TODO _minor V and P in articles
                 String vStr = rs.getString("V");
                 String pStr = rs.getString("P");
                 String urlStr = rs.getString("URL");
@@ -160,27 +153,7 @@ public class MexicoEfloraRefArticlesImport extends MexicoEfloraReferenceImportBa
     @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, MexicoEfloraImportState state) {
 
-        String nameSpace;
-		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-
-		try{
-			Set<String> nameIdSet = new HashSet<>();
-			Set<String> referenceIdSet = new HashSet<>();
-			while (rs.next()){
-//				handleForeignKey(rs, nameIdSet, "PTNameFk");
-//				handleForeignKey(rs, referenceIdSet, "PTRefFk");
-			}
-
-			//reference map
-			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
-			result.put(nameSpace, referenceMap);
-
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
 		return result;
 	}
 

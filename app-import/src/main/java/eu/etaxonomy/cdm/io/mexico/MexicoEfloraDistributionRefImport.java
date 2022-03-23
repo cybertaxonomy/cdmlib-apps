@@ -24,6 +24,7 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.Distribution;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 
@@ -93,15 +94,12 @@ public class MexicoEfloraDistributionRefImport extends MexicoEfloraImportBase {
     				    continue;
     				}
     				Reference ref = referenceMap.get(String.valueOf(idBibliografia));
-//    				String detail = state.getRefDetailMap().get(idBibliografia);
     				String detail = null;
 
     				DescriptionElementSource source = distribution.addPrimaryTaxonomicSource(ref, detail);
-                    //TODO nameUsedInSource for distribution
                     if (source!= null) {
-                        TaxonName nameUsedInSource = getNameUsedInSource(state, observaciones);
+                        TaxonName nameUsedInSource = getNameUsedInSource(state, observaciones, distribution, ref);
                         source.setNameUsedInSource(nameUsedInSource);
-                        //TODO other observaciones
                     } else {
                         logger.warn("Source not found for " + idCombi + " and bibID: " + idBibliografia);
                     }
@@ -123,16 +121,37 @@ public class MexicoEfloraDistributionRefImport extends MexicoEfloraImportBase {
 		return success;
 	}
 
-    private TaxonName getNameUsedInSource(MexicoEfloraImportState state, String observaciones) {
-        // TODO Auto-generated method stub
+    private TaxonName getNameUsedInSource(MexicoEfloraImportState state, String observaciones, Distribution distribution, Reference ref) {
+        if (observaciones != null) {
+            if (observaciones.matches("^\\(?como .*")){
+                String nameStr = observaciones
+                        .replaceAll("^\\(?como ", "")
+                        .replaceAll("\\)$", "").trim();
+                if (nameStr.contains("registro obtenido a partir")) {
+                    nameStr = nameStr.substring(0, nameStr.indexOf("registro obtenido a partir")).trim();
+                }
+
+                UUID nameUuid = state.getNameMap().get(nameStr);
+                TaxonName name = getName(state, nameUuid);
+                if (name == null) {
+                    String taxon =  CdmBase.deproxy(distribution.getInDescription(),TaxonDescription.class).getTaxon().getName().getTitleCache();
+                    logger.warn("Name in source ("+observaciones+") could not be found for " + taxon + " - Area: " + distribution.getArea().getLabel() + " - Biblio: " + ref.getTitleCache());
+                }
+                return name;
+            }
+        }
         return null;
+    }
+
+    //quick and dirty and slow
+    private TaxonName getName(@SuppressWarnings("unused") MexicoEfloraImportState state, UUID nameUuid) {
+        return getNameService().find(nameUuid);
     }
 
     @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, MexicoEfloraImportState state) {
 
         String nameSpace;
-		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
@@ -145,18 +164,21 @@ public class MexicoEfloraDistributionRefImport extends MexicoEfloraImportBase {
 
             //distribution map
             nameSpace = MexicoEfloraDistributionImport.NAMESPACE;
-            Map<UUID,String> uuidMap = new HashMap<>();
-            distributionIdSet.stream().forEach(dId->uuidMap.put(state.getDistributionMap().get(dId),dId));
+            Map<UUID,String> distributionUuidMap = new HashMap<>();
+            distributionIdSet.stream().forEach(dId->distributionUuidMap.put(state.getDistributionMap().get(dId),dId));
             @SuppressWarnings({ "rawtypes", "unchecked" })
-            List<Distribution> distributions = (List)getDescriptionElementService().find(uuidMap.keySet());
+            List<Distribution> distributions = (List)getDescriptionElementService().find(distributionUuidMap.keySet());
             Map<String, Distribution> distributionMap = new HashMap<>();
-            distributions.stream().forEach(d->distributionMap.put(uuidMap.get(d.getUuid()), d));
+            distributions.stream().forEach(d->distributionMap.put(distributionUuidMap.get(d.getUuid()), d));
             result.put(nameSpace, distributionMap);
 
             //reference map
             nameSpace = MexicoEfloraReferenceImportBase.NAMESPACE;
-            idSet = referenceIdSet;
-            Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
+            Map<UUID,String> referenceUuidMap = new HashMap<>();
+            referenceIdSet.stream().forEach(rId->referenceUuidMap.put(state.getReferenceUuidMap().get(Integer.valueOf(rId)), rId));
+            List<Reference> references = getReferenceService().find(referenceUuidMap.keySet());
+            Map<String, Reference> referenceMap = new HashMap<>();
+            references.stream().forEach(r->referenceMap.put(referenceUuidMap.get(r.getUuid()), r));
             result.put(nameSpace, referenceMap);
 
 		} catch (SQLException e) {

@@ -51,9 +51,10 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 
 	@Override
 	protected String getIdQuery(MexicoEfloraImportState state) {
-		String sql = " SELECT id  "
-		        + " FROM " + dbTableName
-		        + " ORDER BY IdCAT, IdCatNombre, IdBibliografia ";
+		String sql = " SELECT f.id  "
+		        + " FROM " + dbTableName + " f "
+		        + "     LEFT JOIN Eflora_CatalogoNombre4CDM c ON c.IdCatNombre = f.IdCatNombre"
+		        + " ORDER BY f.IdCAT, c.Nivel1, c.Nivel2, c.Nivel3, c.Nivel4, c.Nivel5, c.Nivel6, c.Nivel7, f.IdCatNombre, f.IdBibliografia ";
 		return sql;
 	}
 
@@ -71,6 +72,9 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 	private CategoricalData lastFact;
 	private String lastIdCat = "-1";
 	private int lastIdCatNombre = -1;
+	@SuppressWarnings("unused")
+    private int lastBiblioId = -1;
+
 	@Override
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, MexicoEfloraImportState state) {
 
@@ -99,14 +103,16 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 				String uuidTaxonStr = rs.getString("taxonUuid");
 
                 int idBibliografia = rs.getInt("IdBibliografia");
-                //TODO observaciones in facts
-                String observaciones = rs.getString("Observaciones");
+                //handled in Excel log
+//              String observaciones = rs.getString("Observaciones");
 
 			    try {
 			        CategoricalData categoricalData;
 			        if (idCAT.equals(lastIdCat) && idCatNombre == lastIdCatNombre) {
+			            //same taxon, same feature, same state => only add bibliography
 			            categoricalData = lastFact;
 			        }else {
+			            //create to potential categorical data
 			            categoricalData = makeCategoricalData(state, idCatNombre);
 			            Feature lastFeature = lastFact == null? null : lastFact.getFeature();
                         if (idCAT.equals(lastIdCat) && categoricalData.getFeature().equals(lastFeature)) {
@@ -114,11 +120,11 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
                             //add the single new state to the existing categorical data
                             //TODO not fully correct if bibliography differs for the single states;
                             State newState = categoricalData.getStatesOnly().stream().findFirst().orElse(null);
-                            if (newState != null) {
+                            if (newState != null && !lastFact.hasState(newState)) {
                                 lastFact.addStateData(newState);
                             }
                             categoricalData  = lastFact;
-//                            lastIdCatNombre = idCatNombre;
+                            lastIdCatNombre = idCatNombre;
                         }else {
                             //new categorical data
                             TaxonBase<?> taxonBase = taxonMap.get(uuidTaxonStr);
@@ -130,16 +136,18 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
                                 continue;
                             }
 
-                            //TODO source reference correct?
                             TaxonDescription description = this.getTaxonDescription(taxon, sourceReference,
                                     false, true);
+
                             description.addElement(categoricalData);
-                            lastFact = categoricalData;
-                            lastIdCat = idCAT;
-                            lastIdCatNombre = idCatNombre;
+                            categoricalData.addImportSource(idCAT+";"+idCatNombre, "Eflora_RelBiblioNombreCatalogoNombre", sourceReference, null);
                         }
 			        }
 			        handleBibliografia(state, referenceMap, categoricalData, idBibliografia, id);
+			        lastBiblioId = idBibliografia;
+                    lastIdCat = idCAT;
+                    lastIdCatNombre = idCatNombre;
+                    lastFact = categoricalData;
 
 					partitioner.startDoSave();
 				} catch (Exception e) {
@@ -157,7 +165,7 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 		return success;
 	}
 
-    private void handleBibliografia(MexicoEfloraImportState state, Map<String, Reference> referenceMap,
+    private void handleBibliografia(@SuppressWarnings("unused") MexicoEfloraImportState state, Map<String, Reference> referenceMap,
             CategoricalData categoricalData, int idBibliografia,
             int id) {
         Reference ref = referenceMap == null ? null : referenceMap.get(String.valueOf(idBibliografia));
@@ -199,7 +207,6 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, MexicoEfloraImportState state) {
 
         String nameSpace;
-		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
@@ -219,11 +226,14 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 			taxa.stream().forEach(t->taxonMap.put(t.getUuid().toString(), t));
 			result.put(nameSpace, taxonMap);
 
-			//reference map
-			nameSpace = MexicoEfloraReferenceImportBase.NAMESPACE;
-			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
-			result.put(nameSpace, referenceMap);
+            //reference map
+            nameSpace = MexicoEfloraReferenceImportBase.NAMESPACE;
+            Map<UUID,String> referenceUuidMap = new HashMap<>();
+            referenceIdSet.stream().forEach(rId->referenceUuidMap.put(state.getReferenceUuidMap().get(Integer.valueOf(rId)), rId));
+            List<Reference> references = getReferenceService().find(referenceUuidMap.keySet());
+            Map<String, Reference> referenceMap = new HashMap<>();
+            references.stream().forEach(r->referenceMap.put(referenceUuidMap.get(r.getUuid()), r));
+            result.put(nameSpace, referenceMap);
 
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

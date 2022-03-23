@@ -59,7 +59,7 @@ public abstract class MexicoEfloraImportBase
             String estadoStr, String paisStr, String abbrev, Integer idTipoRegion) {
 
         NamedArea areaById = state.getAreaMap().get(idRegion);
-        if (areaIsMexicoCountry(idRegion, estadoStr, paisStr, idTipoRegion)) {
+        if (areaIsMexicoCountry(idRegion, estadoStr, paisStr)) {
             return areaById;
         }
         String label = isNotBlank(estadoStr) ? estadoStr : paisStr;
@@ -80,14 +80,13 @@ public abstract class MexicoEfloraImportBase
             logger.warn("Area not found, create new one: " + idRegion + "; " + label);
             NamedAreaLevel level = idTipoRegion != null && idTipoRegion.equals(1)? NamedAreaLevel.COUNTRY() : null;
             NamedAreaType areaType = NamedAreaType.ADMINISTRATION_AREA();
-            //TODO new namedAreas vocabulary
             NamedArea namedArea = this.getNamedArea(state, null, label, label, abbrev, areaType, level, null, null);
             state.getAreaLabelMap().put(labelKey, namedArea);
         }
         return result;
     }
 
-    private NamedArea getNewCountry(MexicoEfloraImportState state, String label) {
+    private NamedArea getNewCountry(@SuppressWarnings("unused") MexicoEfloraImportState state, String label) {
         if (StringUtils.isBlank(label)) {
             return null;
         }else if (label.equalsIgnoreCase("CANADÁ")) {return Country.CANADA();
@@ -134,13 +133,16 @@ public abstract class MexicoEfloraImportBase
         }else if (label.equalsIgnoreCase("ANGOLA")) {return Country.ANGOLAREPUBLICOF();
         }else if (label.equalsIgnoreCase("TAILANDIA")) {return Country.THAILANDKINGDOMOF();
         }else if (label.equalsIgnoreCase("TANZANIA")) {return Country.TANZANIAUNITEDREPUBLICOF();
+        }else if (label.equalsIgnoreCase("ARGENTINA")) {return Country.ARGENTINAARGENTINEREPUBLIC();
+        }else if (label.equalsIgnoreCase("SURINAM")) {return Country.SURINAMEREPUBLICOF();
+        }else if (label.equalsIgnoreCase("INGLATERRA")) {return Country.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND();
         }
         return null;
     }
 
     private boolean areaIsMexicoCountry(Integer idRegion, String estadoStr,
-            String paisStr, Integer idTipoRegion) {
+            String paisStr) {
         return idRegion == 2 && isBlank(estadoStr) &&
-                "MÉXICO".equalsIgnoreCase(paisStr); // && idTipoRegion == 1;
+                "MÉXICO".equalsIgnoreCase(paisStr);
     }
 }

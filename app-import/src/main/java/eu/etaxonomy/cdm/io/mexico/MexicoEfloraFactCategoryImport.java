@@ -12,25 +12,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.UTF8;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.State;
-import eu.etaxonomy.cdm.model.name.TaxonName;
-import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.term.TermNode;
 import eu.etaxonomy.cdm.model.term.TermTree;
 import eu.etaxonomy.cdm.model.term.TermType;
@@ -112,21 +106,26 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
         //hierarchical feature tree
         TermTree<Feature> featureTree = TermTree.NewFeatureInstance(state.getConfig().getFeatureTreeUuid());
         featureTree.setLabel(state.getConfig().getFeatureTreeTitle(), Language.SPANISH_CASTILIAN());
-        featureTree.setUuid(state.getConfig().getFeatureTreeUuid());
         featureTree.getRoot().addChild(Feature.DISTRIBUTION());
         getTermTreeService().save(featureTree);
 
         //flat feature tree
-        TermTree<Feature> flatFeatureTree = TermTree.NewFeatureInstance(state.getConfig().getFeatureTreeUuid());
+        TermTree<Feature> flatFeatureTree = TermTree.NewFeatureInstance(state.getConfig().getFlatFeatureTreeUuid());
         flatFeatureTree.setLabel(state.getConfig().getFlatFeatureTreeTitle(), Language.SPANISH_CASTILIAN());
-        flatFeatureTree.setUuid(state.getConfig().getFlatFeatureTreeUuid());
         flatFeatureTree.getRoot().addChild(Feature.DISTRIBUTION());
         getTermTreeService().save(flatFeatureTree);
 
+        //flat feature tree without Usos
+        TermTree<Feature> flatFeatureTreeWithoutUses = TermTree.NewFeatureInstance(state.getConfig().getFlatFeatureTreeWithoutUsesUuid());
+        flatFeatureTreeWithoutUses.setLabel(state.getConfig().getFlatFeatureTreeWithoutUsesTitle(), Language.SPANISH_CASTILIAN());
+        flatFeatureTreeWithoutUses.getRoot().addChild(Feature.DISTRIBUTION());
+        getTermTreeService().save(flatFeatureTreeWithoutUses);
 
         getVocabularyService().save(featureVoc);
         for (TreeNode child : root.children) {
-            saveNodeRecursive(state, child, featureVoc, null, featureTree.getRoot(), flatFeatureTree.getRoot());
+            //filter out Uses
+            TermNode<Feature> withoutUsesRoot = child.idCatNombre == 460? null : flatFeatureTreeWithoutUses.getRoot();
+            saveNodeRecursive(state, child, featureVoc, null, featureTree.getRoot(), flatFeatureTree.getRoot(), withoutUsesRoot);
         }
 
         featureTree.getRoot().addChild(Feature.COMMON_NAME());
@@ -135,8 +134,10 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
         this.commitTransaction(tx);
     }
 
-    private void saveNodeRecursive(MexicoEfloraImportState state, TreeNode node, TermVocabulary<Feature> featureVoc, Feature parentFeature,
-            TermNode<Feature> parentFeatureTreeNode, TermNode<Feature> flatFeatureTreereTreeNode) {
+    private void saveNodeRecursive(MexicoEfloraImportState state, TreeNode node,
+            TermVocabulary<Feature> featureVoc, Feature parentFeature,
+            TermNode<Feature> parentFeatureTreeNode, TermNode<Feature> flatFeatureTreeTreeNode,
+            TermNode<Feature> flatFeatureTreeWithoutUsesTreeNode) {
 
         if (!node.children.isEmpty()) {
             //is feature
@@ -145,11 +146,15 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
             label = label.startsWith(sep)? label.substring(sep.length()):label;
             Feature feature = Feature.NewInstance(label, label, String.valueOf(node.idCatNombre), Language.SPANISH_CASTILIAN());
             feature.setIdInVocabulary(node.key);
+            feature.addIdentifier(String.valueOf(node.idCatNombre), getIdentiferType(state, MexicoConabioTransformer.uuidConabioFactCategoryIdIdentifierType, "CONABIO Fact Identifier", "CONABIO Fact Identifier", null, null));
             feature.setSupportsCategoricalData(true);
             feature.setSupportsTextData(false);
             featureVoc.addTerm(feature);
             TermNode<Feature> featureTreeNode = parentFeatureTreeNode.addChild(feature);
-            flatFeatureTreereTreeNode.addChild(feature);
+            flatFeatureTreeTreeNode.addChild(feature);
+            if (flatFeatureTreeWithoutUsesTreeNode != null) {
+                flatFeatureTreeWithoutUsesTreeNode.addChild(feature);
+            }
             getTermService().save(feature);
             //parent-child
             if (parentFeature != null) {
@@ -157,7 +162,7 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
                 parentFeature.addIncludes(feature);
             }
             for (TreeNode child : node.children) {
-                saveNodeRecursive(state, child, featureVoc, feature, featureTreeNode, flatFeatureTreereTreeNode);
+                saveNodeRecursive(state, child, featureVoc, feature, featureTreeNode, flatFeatureTreeTreeNode, flatFeatureTreeWithoutUsesTreeNode);
             }
         }
 //        else {
@@ -173,6 +178,8 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
             }
             State categoricalState = State.NewInstance(node.description, node.description, String.valueOf(node.idCatNombre), Language.SPANISH_CASTILIAN());
             categoricalState.setIdInVocabulary(node.key);
+            categoricalState.addIdentifier(String.valueOf(node.idCatNombre), getIdentiferType(state, MexicoConabioTransformer.uuidConabioFactCategoryIdIdentifierType, "CONABIO Fact Identifier", "CONABIO Fact Identifier", null, null));
+
             state.getStateMap().put(node.idCatNombre, categoricalState);
             state.getFeatureMap().put(node.idCatNombre, parentFeature);
             getTermService().save(categoricalState);
@@ -268,33 +275,7 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
     @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, MexicoEfloraImportState state) {
 
-        String nameSpace;
-		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-
-		try{
-			Set<String> nameIdSet = new HashSet<>();
-			Set<String> referenceIdSet = new HashSet<>();
-			while (rs.next()){
-//				handleForeignKey(rs, nameIdSet, "PTNameFk");
-//				handleForeignKey(rs, referenceIdSet, "PTRefFk");
-			}
-
-			//name map
-			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			idSet = nameIdSet;
-			Map<String, TaxonName> nameMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonName.class, idSet, nameSpace);
-			result.put(nameSpace, nameMap);
-
-			//reference map
-			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
-			result.put(nameSpace, referenceMap);
-
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
 		return result;
 	}
 

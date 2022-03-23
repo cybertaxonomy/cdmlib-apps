@@ -33,7 +33,7 @@ public class MexicoEfloraImportState
     @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(MexicoEfloraImportState.class);
 
-	private Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<>();
+	private Map<String, DefinedTermBase<?>> dbCdmDefTermMap = new HashMap<>();
 
 	private Map<Integer,Feature> featureMap = new HashMap<>();
 	private Map<Integer,State> stateMap = new HashMap<>();
@@ -41,25 +41,26 @@ public class MexicoEfloraImportState
 	private Map<String,NamedArea> areaLabelMap = new HashMap<>();
 
 	private Map<Integer,UUID> referenceUuidMap = new HashMap<>();
-//	private Map<Integer,String> refDetailMap = new HashMap<>();
 
 	private Map<String,UUID> commonNameMap = new HashMap<>();
     private Map<String,UUID> distributionMap = new HashMap<>();
+
+    private Map<String,UUID> nameMap = new HashMap<>();
 
 
 	public MexicoEfloraImportState(MexicoEfloraImportConfigurator config) {
 		super(config);
 	}
 
-	public Map<String, DefinedTermBase> getDbCdmDefinedTermMap(){
+	public Map<String, DefinedTermBase<?>> getDbCdmDefinedTermMap(){
 		return this.dbCdmDefTermMap;
 	}
 
-	public void putDefinedTermToMap(String tableName, String id, DefinedTermBase term){
+	public void putDefinedTermToMap(String tableName, String id, DefinedTermBase<?> term){
 		 this.dbCdmDefTermMap.put(tableName + "_" + id, term);
 	}
 
-	public void putDefinedTermToMap(String tableName, int id, DefinedTermBase term){
+	public void putDefinedTermToMap(String tableName, int id, DefinedTermBase<?> term){
 		putDefinedTermToMap(tableName, String.valueOf(id), term);
 	}
 
@@ -81,9 +82,6 @@ public class MexicoEfloraImportState
     public Map<Integer,UUID> getReferenceUuidMap() {
         return referenceUuidMap;
     }
-//    public Map<Integer,String> getRefDetailMap() {
-//        return refDetailMap;
-//    }
 
     public Map<String,UUID> getCommonNameMap() {
         return commonNameMap;
@@ -93,5 +91,7 @@ public class MexicoEfloraImportState
     }
 
 
-
+    public Map<String,UUID> getNameMap() {
+        return nameMap;
+    }
 }

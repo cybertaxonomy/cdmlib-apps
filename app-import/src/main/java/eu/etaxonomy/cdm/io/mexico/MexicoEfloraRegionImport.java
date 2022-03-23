@@ -237,7 +237,6 @@ public class MexicoEfloraRegionImport extends MexicoEfloraImportBase {
         mapping.set(area, geoServiceArea);
     }
 
-
 	//not needed
     @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, MexicoEfloraImportState state) {

@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.io.mexico;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,7 +18,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -49,11 +47,7 @@ public class MexicoEfloraRefSerialsImport extends MexicoEfloraReferenceImportBas
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, MexicoEfloraImportState state) {
 
 	    boolean success = true ;
-	    MexicoEfloraImportConfigurator config = state.getConfig();
-		Set<Reference> refsToSave = new HashSet<>();
-
-		@SuppressWarnings("unchecked")
-        Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+	    Set<Reference> refsToSave = new HashSet<>();
 
 		ResultSet rs = partitioner.getResultSet();
 		try{
@@ -69,7 +63,8 @@ public class MexicoEfloraRefSerialsImport extends MexicoEfloraReferenceImportBas
 				String titleStr = rs.getString("Title");
 				String volumeStr = rs.getString("Volume");
                 String pagesStr = rs.getString("Pages");
-                String observacionesStr = rs.getString("Observaciones");
+                //exported as Excel table
+//                String observacionesStr = rs.getString("Observaciones");
                 String urlStr = rs.getString("URL");
                 String doiStr = rs.getString("DOI");
                 String isbnStr = rs.getString("ISBN");
@@ -89,6 +84,11 @@ public class MexicoEfloraRefSerialsImport extends MexicoEfloraReferenceImportBas
 
                     //title
                     handleTitleStr(state, titleStr, ref, refId);
+
+                    //pages
+                    if (isNotBlank(pagesStr)) {
+                        ref.setPages(pagesStr);
+                    }
 
                     //concat
                     if (isNotBlank(volumeStr)) {
@@ -136,27 +136,7 @@ public class MexicoEfloraRefSerialsImport extends MexicoEfloraReferenceImportBas
     @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, MexicoEfloraImportState state) {
 
-        String nameSpace;
-		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-
-		try{
-			Set<String> nameIdSet = new HashSet<>();
-			Set<String> referenceIdSet = new HashSet<>();
-			while (rs.next()){
-//				handleForeignKey(rs, nameIdSet, "PTNameFk");
-//				handleForeignKey(rs, referenceIdSet, "PTRefFk");
-			}
-
-			//reference map
-			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
-			result.put(nameSpace, referenceMap);
-
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
 		return result;
 	}
 

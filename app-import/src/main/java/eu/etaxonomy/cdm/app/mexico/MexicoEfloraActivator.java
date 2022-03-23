@@ -38,26 +38,26 @@ public class MexicoEfloraActivator {
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_test1();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mexico_flora();
 
+    static final boolean doReferences = true;
 
     //feature tree uuid
     private static final UUID featureTreeUuid = UUID.fromString("dd2070ef-e75b-494b-bc6a-4a370271866b");
     private static final UUID flatFeatureTreeUuid = UUID.fromString("33896d1f-c3df-4cdb-afb8-bffd35f9d6b0");
+    private static final UUID flatFeatureTreeWithoutUsesUuid = UUID.fromString("61832cbd-3800-4d43-8048-9514cc7b7f26");
     private static final String featureTreeName = "Catalogo feature tree";
     private static final String flatFeatureTreeName = "Catalogo flat feature tree";
+    private static final String flatFeatureTreeWithoutUsesName = "Catalogo flat feature tree without uses";
 
     //classification
     static final UUID classificationUuid = UUID.fromString("588dd2de-7c95-42ad-8eb1-994460561b5e");
-    private static final String classificationName = "Plantae";
+    private static final String classificationName = "Plantas";
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-
-    boolean doVocabularies = (hbm2dll == DbSchemaValidation.CREATE);
-//    static final boolean doTaxa = false;
-//    static final boolean doDeduplicate = true;
 
     protected void doImport(ICdmDataSource cdmDestination){
 
@@ -72,10 +72,13 @@ public class MexicoEfloraActivator {
         config.setSecReference(getSecReference());
         config.setFeatureTreeUuid(featureTreeUuid);
         config.setFlatFeatureTreeUuid(flatFeatureTreeUuid);
+        config.setFlatFeatureTreeWithoutUsesUuid(flatFeatureTreeWithoutUsesUuid);
         config.setFeatureTreeTitle(featureTreeName);
         config.setFlatFeatureTreeTitle(flatFeatureTreeName);
+        config.setFlatFeatureTreeWithoutUsesTitle(flatFeatureTreeWithoutUsesName);
 
         config.setRecordsPerTransaction(5000);
+        config.setDoReferences(doReferences);
 
         config.setSource(source);
         String fileName = source.toString();

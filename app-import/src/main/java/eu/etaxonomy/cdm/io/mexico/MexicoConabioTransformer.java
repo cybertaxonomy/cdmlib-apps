@@ -37,6 +37,7 @@ public class MexicoConabioTransformer extends InputTransformerBase{
 
     public static final UUID uuidConabioTaxonIdIdentifierType = UUID.fromString("025fb8fe-e8e8-4136-bf37-93367a268889");
     public static final UUID uuidConabioReferenceIdIdentifierType = UUID.fromString("a6f98411-b99b-45c5-9303-d2af421b9f73");
+    public static final UUID uuidConabioFactCategoryIdIdentifierType = UUID.fromString("8d6c1c38-2d23-40b2-8891-f74501d3763c");
 
     public static final UUID uuidNomRefExtension = UUID.fromString("0a7e2f5f-c62d-43e1-874a-07cb1dbb9fa0");
 

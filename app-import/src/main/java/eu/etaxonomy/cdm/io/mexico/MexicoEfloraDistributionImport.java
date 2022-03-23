@@ -90,9 +90,9 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
 
 				//create TaxonName element
 				String idCombi = rs.getString("IdDist");
+
 				String taxonUuid = rs.getString("taxonUuid");
-				//TODO nombre in distribution gegenchecken
-//			    String nombreStr = rs.getString("Nombre");
+			    String nombreStr = rs.getString("Nombre");
 			    String paisStr = rs.getString("Pais");
 			    String estadoStr = rs.getString("Estado");
 			    String abreviaturaEstado = rs.getString("AbreviaturaEstado");
@@ -102,10 +102,13 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
 //	            int idTipoDistribucion = rs.getInt("IdTipoDistribucion");
 	            int idTipoRegion = rs.getInt("IdTipoRegion");
 
-	            //FIXME mapping to mapservice
-
 			    try {
     				TaxonBase<?> taxonBase = taxonMap.get(taxonUuid);
+    				if(isNotBlank(nombreStr) && taxonBase != null && taxonBase.getName() != null
+    				        && !nombreStr.equals(taxonBase.getName().getNameCache())
+    				        && !nombreStr.contains("(") && !taxonBase.getName().isHybrid()) {
+    				    logger.warn(idCombi + ": Name differs " + nombreStr + "<->" + taxonBase.getName().getNameCache());
+    				}
     				Taxon taxon;
     				if (taxonBase == null) {
     				    logger.warn("Taxon "+taxonUuid+" not found for distribution " + idCombi);
@@ -122,11 +125,11 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
 
     				Distribution distribution = Distribution.NewInstance(area, status);
 
-    				//TODO source reference correct (everywhere?)
     				TaxonDescription description = this.getTaxonDescription(
     				        taxon, sourceReference, false, true);
     				description.addElement(distribution);
 
+    				distribution.addImportSource(idCombi, "Eflora_DistribucionEstatalIndividual", sourceReference, null);
     				state.getDistributionMap().put(idCombi, distribution.getUuid());
 
 					partitioner.startDoSave();

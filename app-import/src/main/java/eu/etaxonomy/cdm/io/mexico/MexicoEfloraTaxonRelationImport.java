@@ -56,7 +56,7 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 		String sql = " SELECT IdCAT "
 		        + " FROM " + dbTableName + " t "
 		        + " LEFT JOIN cv1_Controlled_vocabulary_for_name_Ranks r ON t.CategoriaTaxonomica = r.NombreCategoriaTaxonomica "
-		        + " WHERE t.IdCAT_AscendenteHerarquico4CDM NOT IN ('2PLANT','79217TRACH') "
+		        + " WHERE t.IdCAT_AscendenteHerarquico4CDM NOT IN ('2PLANT') "
 		        + " ORDER BY r.Nivel1, IdCAT ";
 		return sql;
 	}
@@ -105,14 +105,16 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 				TaxonBase<?> taxonBase = taxonMap.get(uuid.toString());
 
 				try {
-				    if (taxonBase.isInstanceOf(Synonym.class) && accUuidStr != null) {
+				    if (taxonBase == null) {
+				        logger.warn(taxonId + ": Taxon does not exist");
+				        continue;
+				    }else if (taxonBase.isInstanceOf(Synonym.class) && accUuidStr != null) {
 				        Synonym syn = CdmBase.deproxy(taxonBase, Synonym.class);
 				        TaxonBase<?> related = taxonMap.get(accUuidStr);
 				        if (!related.isInstanceOf(Taxon.class)){
 				            logger.warn(taxonId + ":  Accepted taxon for synonym is not accepted: " + accUuidStr);
 				        }else {
 				            Taxon acc = CdmBase.deproxy(related, Taxon.class);
-				            //TODO type
 				            acc.addSynonym(syn, SynonymType.SYNONYM_OF());
 				        }
 				    }else if (taxonBase.isInstanceOf(Taxon.class) && parentUuidStr != null) {
@@ -122,7 +124,6 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
                             logger.warn(taxonId + ":  Parent is not accepted: " + parentUuidStr);
                         }else {
                             Taxon parent = CdmBase.deproxy(parentBase, Taxon.class);
-                            //TODO
                             Reference parentChildReference = null;
                             getClassification(state).addParentChild(parent, child, parentChildReference, null);
                         }
@@ -138,13 +139,13 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 				        TaxonName name = taxonBase.getName();
 				        TaxonBase<?> basionymTaxon = taxonMap.get(basUuidStr);
 				        name.addBasionym(basionymTaxon.getName());
-				        //TODO synrel type
 				    }
 
 					partitioner.startDoSave();
 					taxaToSave.add(taxonBase);
 				} catch (Exception e) {
 					logger.warn("An exception (" +e.getMessage()+") occurred when trying to create relation for id " + taxonId + ". Relation could not be saved.");
+					e.printStackTrace();
 					success = false;
 				}
 			}
