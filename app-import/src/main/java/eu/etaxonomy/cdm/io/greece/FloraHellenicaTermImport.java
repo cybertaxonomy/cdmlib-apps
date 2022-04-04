@@ -87,7 +87,7 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         URI termSourceUri = null;
         String label = "Checklist of Greece Areas";
         String description = "Areas as used in the Checklist of Greece";
-        OrderedTermVocabulary<NamedArea> areasVoc = OrderedTermVocabulary.NewInstance(TermType.NamedArea,
+        OrderedTermVocabulary<NamedArea> areasVoc = OrderedTermVocabulary.NewOrderedInstance(TermType.NamedArea, NamedArea.class,
                 description, label, null, termSourceUri);
         areasVoc.setUuid(FloraHellenicaTransformer.uuidFloraHellenicaAreasVoc);
 //        Representation rep = Representation.NewInstance("Estados Méxicanos", "Estados Méxicanos", null, Language.SPANISH_CASTILIAN());
@@ -187,7 +187,7 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         URI termSourceUri = null;
         String label = "Checklist of Greece Chorological Categories";
         String description = "Chorological Categories as used in the Checklist of Greece";
-        OrderedTermVocabulary<State> chorologicalVoc = OrderedTermVocabulary.NewInstance(TermType.State,
+        OrderedTermVocabulary<State> chorologicalVoc = OrderedTermVocabulary.NewOrderedInstance(TermType.State, State.class,
                 description, label, null, termSourceUri);
         chorologicalVoc.setUuid(vocUuid);
 
@@ -304,7 +304,7 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         URI termSourceUri = null;
         String label = "Checklist of Greece Lifeforms";
         String description = "Lifeforms as used in the Checklist of Greece";
-        OrderedTermVocabulary<State> lifeformVoc = OrderedTermVocabulary.NewInstance(TermType.State,
+        OrderedTermVocabulary<State> lifeformVoc = OrderedTermVocabulary.NewOrderedInstance(TermType.State, State.class,
                 description, label, null, termSourceUri);
         lifeformVoc.setUuid(vocUuid);
 
@@ -348,7 +348,7 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         URI termSourceUri = null;
         String label = "Checklist of Greece Habitats";
         String description = "Habitats as used in the Checklist of Greece";
-        OrderedTermVocabulary<State> habitatVoc = OrderedTermVocabulary.NewInstance(TermType.State,
+        OrderedTermVocabulary<State> habitatVoc = OrderedTermVocabulary.NewOrderedInstance(TermType.State, State.class,
                 description, label, null, termSourceUri);
         habitatVoc.setUuid(vocUuid);
 
@@ -397,10 +397,10 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
 
         OrderedTermVocabulary<?> statusVoc;
         if (state.getConfig().isStatusAsDistribution()){
-            statusVoc = OrderedTermVocabulary.NewInstance(TermType.PresenceAbsenceTerm,
+            statusVoc = OrderedTermVocabulary.NewOrderedInstance(TermType.PresenceAbsenceTerm, null,
                     description, label, null, termSourceUri);
         }else{
-            statusVoc = OrderedTermVocabulary.NewInstance(TermType.State,
+            statusVoc = OrderedTermVocabulary.NewOrderedInstance(TermType.State, null,
                     description, label, null, termSourceUri);
         }
 

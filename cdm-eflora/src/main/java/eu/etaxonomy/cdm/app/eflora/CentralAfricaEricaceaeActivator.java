@@ -197,7 +197,7 @@ public class CentralAfricaEricaceaeActivator {
 		}
 		TransactionStatus tx = app.startTransaction();
 
-		OrderedTermVocabulary<NamedArea> areaVoc = OrderedTermVocabulary.NewInstance(TermType.NamedArea, "Phytogeographic Regions of Central Africa", "Phytogeographic Regions of Central Africa", "FdAC regions", null);
+		OrderedTermVocabulary<NamedArea> areaVoc = OrderedTermVocabulary.NewOrderedInstance(TermType.NamedArea, NamedArea.class, "Phytogeographic Regions of Central Africa", "Phytogeographic Regions of Central Africa", "FdAC regions", null);
 		app.getVocabularyService().save(areaVoc);
 
 		NamedAreaLevel level = NamedAreaLevel.NewInstance("Phytogeographic Regions of Central Africa", "Phytogeographic Regions of Central Africa", "FdAC regions");

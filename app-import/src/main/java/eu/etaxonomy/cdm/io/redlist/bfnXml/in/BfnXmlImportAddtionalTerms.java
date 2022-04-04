@@ -282,7 +282,7 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
 		}
 		//create termvocabulary
 		if(termVocabulary == null){
-			termVocabulary = OrderedTermVocabulary.NewInstance(termType, strTermVocabulary, strTermVocabulary, strTermVocabulary, null);
+			termVocabulary = OrderedTermVocabulary.NewOrderedInstance(termType, null, strTermVocabulary, strTermVocabulary, strTermVocabulary, null);
 			if(vocUUID != null){
 				termVocabulary.setUuid(vocUUID);
 			}

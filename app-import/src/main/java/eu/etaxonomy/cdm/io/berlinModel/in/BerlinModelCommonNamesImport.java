@@ -273,7 +273,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 					if (commonTaxonNames.size() == 0){
 						commonTaxonName = CommonTaxonName.NewInstance(commonNameString, language);
 					}else{
-						commonTaxonName = (CommonTaxonName)commonTaxonNames.get(0).clone();
+						commonTaxonName = commonTaxonNames.get(0).clone();
 					}
 					commonTaxonNames.add(commonTaxonName);
 					regionFk = regionFk.trim();
@@ -358,7 +358,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 						//TODO is this really wanted
 						TaxonDescription misappliedNameDescription = getDescription(misappliedNameTaxon);
 						for (CommonTaxonName commonTaxonName : commonTaxonNames){
-							CommonTaxonName commonNameClone = (CommonTaxonName)commonTaxonName.clone();
+							CommonTaxonName commonNameClone = commonTaxonName.clone();
 							misappliedNameDescription.addElement(commonNameClone);
 							doIdCreatedUpdatedNotes(state, commonNameClone, rs, String.valueOf(commonNameId), NAMESPACE);
 						}
@@ -612,8 +612,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
    private void fillRegionMap(BerlinModelImportState state, String sqlWhere,
             Map<String, NamedArea> emCodeToAreaMap) throws SQLException {
 
-        @SuppressWarnings("unchecked")
-        OrderedTermVocabulary<NamedArea> voc = areaVoc = OrderedTermVocabulary.NewInstance(TermType.NamedArea, "Euro+Med common name areas", "E+M Common Name Areas", null, null);
+        OrderedTermVocabulary<NamedArea> voc = areaVoc = OrderedTermVocabulary.NewOrderedInstance(TermType.NamedArea, NamedArea.class, "Euro+Med common name areas", "E+M Common Name Areas", null, null);
         getVocabularyService().save(areaVoc);
 
         Map<String,NamedArea> existingAreas = new HashMap<>();

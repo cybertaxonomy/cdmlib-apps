@@ -9,7 +9,6 @@
 
 package eu.etaxonomy.cdm.io.berlinModel.in;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelAreaImportValidator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
@@ -381,7 +381,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 		String label = "E+M Areas";
 		String abbrev = null;
 		URI termSourceUri = null;
-		OrderedTermVocabulary<NamedArea> result = OrderedTermVocabulary.NewInstance(type, description, label, abbrev, termSourceUri);
+		OrderedTermVocabulary<NamedArea> result = OrderedTermVocabulary.NewOrderedInstance(type, null, description, label, abbrev, termSourceUri);
 
 		result.setUuid(BerlinModelTransformer.uuidVocEuroMedAreas);
 		getVocabularyService().save(result);
@@ -492,7 +492,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
         String label = "E+M Caucasus Areas";
         String abbrev = null;
         URI termSourceUri = null;
-        OrderedTermVocabulary<NamedArea> result = OrderedTermVocabulary.NewInstance(type, description, label, abbrev, termSourceUri);
+        OrderedTermVocabulary<NamedArea> result = OrderedTermVocabulary.NewOrderedInstance(type, null, description, label, abbrev, termSourceUri);
         result.setUuid(BerlinModelTransformer.uuidVocCaucasusAreas);
         getVocabularyService().save(result);
         return result;
