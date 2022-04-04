@@ -139,12 +139,13 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
             TermNode<Feature> parentFeatureTreeNode, TermNode<Feature> flatFeatureTreeTreeNode,
             TermNode<Feature> flatFeatureTreeWithoutUsesTreeNode) {
 
+        Feature feature = null;
         if (!node.children.isEmpty()) {
             //is feature
             String sep = UTF8.EN_DASH_SPATIUM.toString();
             String label = (parentFeature == null? "" : parentFeature.getTitleCache() ) + sep + node.description;
             label = label.startsWith(sep)? label.substring(sep.length()):label;
-            Feature feature = Feature.NewInstance(label, label, String.valueOf(node.idCatNombre), Language.SPANISH_CASTILIAN());
+            feature = Feature.NewInstance(label, label, String.valueOf(node.idCatNombre), Language.SPANISH_CASTILIAN());
             feature.setIdInVocabulary(node.key);
             feature.addIdentifier(String.valueOf(node.idCatNombre), getIdentiferType(state, MexicoConabioTransformer.uuidConabioFactCategoryIdIdentifierType, "CONABIO Fact Identifier", "CONABIO Fact Identifier", null, null));
             feature.setSupportsCategoricalData(true);
@@ -165,8 +166,11 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
                 saveNodeRecursive(state, child, featureVoc, feature, featureTreeNode, flatFeatureTreeTreeNode, flatFeatureTreeWithoutUsesTreeNode);
             }
         }
-//        else {
-        if (parentFeature != null) {
+        if (parentFeature != null || feature != null && (
+                node.idCatNombre == 2 || node.idCatNombre == 4 || node.idCatNombre == 57 || node.idCatNombre == 1067)) {
+
+            parentFeature = parentFeature == null? feature : parentFeature;
+
             //is state
             TermVocabulary<State> supportedStates = parentFeature.getSupportedCategoricalEnumerations().stream().findAny().orElse(null);
             if (supportedStates == null) {
