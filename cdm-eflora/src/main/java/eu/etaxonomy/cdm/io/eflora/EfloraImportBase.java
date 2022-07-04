@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -28,29 +28,26 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @since 04.08.2008
- * @version 1.0
  */
 public abstract class EfloraImportBase  extends CdmImportBase<EfloraImportConfigurator, EfloraImportState> {
-	private static final Logger logger = Logger.getLogger(EfloraImportBase.class);
 
-	
-	protected abstract void doInvoke(EfloraImportState state);
+    private static final Logger logger = Logger.getLogger(EfloraImportBase.class);
 
-	
-	
+	@Override
+    protected abstract void doInvoke(EfloraImportState state);
+
 	protected Element getBodyElement(EfloraImportConfigurator config){
 		Element root = config.getSourceRoot();
-		
+
 		if (! "publication".equalsIgnoreCase(root.getName())){
 			logger.error("Root element is not 'publication'");
 			return null;
 		}
 		//TODO prevent multiple elements
-		
+
 		return root;
 	}
-	
-	
+
 	protected boolean testAdditionalElements(Element parentElement, List<String> excludeList){
 		boolean result = true;
 		List<Element> list = parentElement.getChildren();
@@ -62,8 +59,8 @@ public abstract class EfloraImportBase  extends CdmImportBase<EfloraImportConfig
 		}
 		return result;
 	}
-	
-	
+
+
 	protected <T extends IdentifiableEntity> T makeReferenceType(Element element, Class<? extends T> clazz, MapWrapper<? extends T> objectMap, ResultWrapper<Boolean> success){
 		T result = null;
 		String linkType = element.getAttributeValue("linkType");
@@ -92,8 +89,8 @@ public abstract class EfloraImportBase  extends CdmImportBase<EfloraImportConfig
 		}
 		return result;
 	}
-	
-	
+
+
 	protected Reference makeAccordingTo(Element elAccordingTo, MapWrapper<Reference> referenceMap, ResultWrapper<Boolean> success){
 		Reference result = null;
 		if (elAccordingTo != null){
@@ -104,7 +101,7 @@ public abstract class EfloraImportBase  extends CdmImportBase<EfloraImportConfig
 			childName = "Simple";
 			obligatory = true;
 			Element elSimple = XmlHelp.getSingleChildElement(success, elAccordingTo, childName, elAccordingTo.getNamespace(), obligatory);
-			
+
 			if (elAccordingToDetailed != null){
 				result = makeAccordingToDetailed(elAccordingToDetailed, referenceMap, success);
 			}else{
@@ -115,8 +112,7 @@ public abstract class EfloraImportBase  extends CdmImportBase<EfloraImportConfig
 		}
 		return result;
 	}
-	
-	
+
 	private Reference makeAccordingToDetailed(Element elAccordingToDetailed, MapWrapper<Reference> referenceMap, ResultWrapper<Boolean> success){
 		Reference result = null;
 		Namespace tcsNamespace = elAccordingToDetailed.getNamespace();
@@ -126,13 +122,13 @@ public abstract class EfloraImportBase  extends CdmImportBase<EfloraImportConfig
 			boolean obligatory = false;
 			Element elAuthorTeam = XmlHelp.getSingleChildElement(success, elAccordingToDetailed, childName, tcsNamespace, obligatory);
 			makeAccordingToAuthorTeam(elAuthorTeam, success);
-			
+
 			//PublishedIn
 			childName = "PublishedIn";
 			obligatory = false;
 			Element elPublishedIn = XmlHelp.getSingleChildElement(success, elAccordingToDetailed, childName, tcsNamespace, obligatory);
 			result = makeReferenceType(elPublishedIn, Reference.class, referenceMap, success);
-			
+
 			//MicroReference
 			childName = "MicroReference";
 			obligatory = false;
@@ -140,13 +136,13 @@ public abstract class EfloraImportBase  extends CdmImportBase<EfloraImportConfig
 			String microReference = elMicroReference.getTextNormalize();
 			if (CdmUtils.Nz(microReference).equals("")){
 				//TODO
-				logger.warn("MicroReference not yet implemented for AccordingToDetailed");	
+				logger.warn("MicroReference not yet implemented for AccordingToDetailed");
 			}
 		}
 		return result;
 	}
 
-	private Team makeAccordingToAuthorTeam(Element elAuthorTeam, ResultWrapper<Boolean> succes){
+	private Team makeAccordingToAuthorTeam(Element elAuthorTeam, ResultWrapper<Boolean> success){
 		Team result = null;
 		if (elAuthorTeam != null){
 			//TODO
@@ -154,7 +150,4 @@ public abstract class EfloraImportBase  extends CdmImportBase<EfloraImportConfig
 		}
 		return result;
 	}
-
-
-
 }
