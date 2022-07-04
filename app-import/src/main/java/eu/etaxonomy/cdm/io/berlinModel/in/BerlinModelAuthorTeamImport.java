@@ -292,19 +292,19 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
     }
 
     protected void checkTeamNomenclaturalTitle(Team team, String authorTeamCache, int authorTeamId) {
-        if (team.getCacheStrategy().getNomenclaturalTitleCache(team).equals(authorTeamCache)){
+        if (team.cacheStrategy().getNomenclaturalTitleCache(team).equals(authorTeamCache)){
             team.setProtectedNomenclaturalTitleCache(false);
-        }else if(team.getCacheStrategy().getNomenclaturalTitleCache(team).replace(" ,", ",").equals(authorTeamCache)){
+        }else if(team.cacheStrategy().getNomenclaturalTitleCache(team).replace(" ,", ",").equals(authorTeamCache)){
             //also accept teams with ' , ' as separator as not protected
             team.setProtectedNomenclaturalTitleCache(false);
         }else{
             team.setNomenclaturalTitleCache(authorTeamCache, true);
-            logger.warn("Creation of nomTitle for team with members did not work: " + authorTeamCache + " <-> " + team.getCacheStrategy().getNomenclaturalTitleCache(team)+ " : " + authorTeamId);
+            logger.warn("Creation of nomTitle for team with members did not work: " + authorTeamCache + " <-> " + team.cacheStrategy().getNomenclaturalTitleCache(team)+ " : " + authorTeamId);
         }
     }
 
     protected void checkTeamTitleCache(Team team, String fullAuthorTeamCache, int authorTeamId) {
-        INomenclaturalAuthorCacheStrategy<Team> formatter = team.getCacheStrategy();
+        INomenclaturalAuthorCacheStrategy<Team> formatter = team.cacheStrategy();
         if (team.generateTitle().equals(fullAuthorTeamCache)){
             team.setProtectedTitleCache(false);
         }else if(fullAuthorTeamCache == null){

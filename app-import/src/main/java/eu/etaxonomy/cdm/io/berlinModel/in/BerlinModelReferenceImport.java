@@ -1214,7 +1214,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
     }
 
     private static void checkTeam(Team team, String refAuthorString, Integer refId) {
-        TeamDefaultCacheStrategy formatter = (TeamDefaultCacheStrategy) team.getCacheStrategy();
+        TeamDefaultCacheStrategy formatter = (TeamDefaultCacheStrategy) team.cacheStrategy();
 
         if (formatter.getTitleCache(team).equals(refAuthorString)){
             team.setProtectedTitleCache(false);
@@ -1234,7 +1234,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
     }
 
     private static void checkPerson(Person person, String refAuthorString, boolean hasDedupMember, Integer refId) {
-        PersonDefaultCacheStrategy formatter = (PersonDefaultCacheStrategy) person.getCacheStrategy();
+        PersonDefaultCacheStrategy formatter = (PersonDefaultCacheStrategy) person.cacheStrategy();
 
         String oldTitleCache = person.getTitleCache();
         boolean oldTitleCacheProtected = person.isProtectedTitleCache();
