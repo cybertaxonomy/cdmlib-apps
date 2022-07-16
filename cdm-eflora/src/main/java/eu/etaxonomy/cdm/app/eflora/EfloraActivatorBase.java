@@ -54,14 +54,15 @@ public class EfloraActivatorBase {
 		config.setObservers(observerList);
 		config.setCheck(check);
 
-		myImport = new CdmDefaultImport<MarkupImportConfigurator>();
+		myImport = new CdmDefaultImport<>();
 
 		return config;
 	}
 
 	protected TermTree<Feature> makeAutomatedFeatureTree(ICdmRepository app,
 			MarkupImportState state, UUID featureTreeUuid, String featureTreeTitle){
-		System.out.println("Start creating automated Feature Tree");
+
+	    System.out.println("Start creating automated Feature Tree");
 		TermTree<Feature> tree = TermTree.NewFeatureInstance(featureTreeUuid);
 		tree.setTitleCache(featureTreeTitle, true);
 		TermNode<Feature> root = tree.getRoot();

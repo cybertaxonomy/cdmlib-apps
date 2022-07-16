@@ -335,13 +335,10 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 		return result;
 	}
 
-
-
-
 	private TermTree<Feature> makeFeatureNode(ITermService service){
 		MarkupTransformer transformer = new MarkupTransformer();
 
-		TermTree<Feature> result = TermTree.NewInstance();
+		TermTree<Feature> result = TermTree.NewFeatureInstance();
 		result.setTitleCache("Old feature tree", true);
 		TermNode<Feature> root = result.getRoot();
 
