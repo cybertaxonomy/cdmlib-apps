@@ -121,6 +121,7 @@ public class EfloraActivatorBase {
 	protected void executeVolume(URI source, boolean include) {
 		if (include){
 			System.out.println("\nStart import from ("+ source.toString() + ") ...");
+			logger.warn("start");
 			config.setSource(source);
 			myImport.invoke(config);
 			System.out.println("End import from ("+ source.toString() + ")...");

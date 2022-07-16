@@ -34,63 +34,16 @@ import eu.etaxonomy.cdm.model.term.TermTree;
  * @since 20.06.2008
  */
 public class FloreGabonActivator extends EfloraActivatorBase {
+
 	private static final Logger logger = Logger.getLogger(FloreGabonActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 //	static final URI source = EfloraSources.fdg_sample();
-	static final URI fdg1 = EfloraSources.fdg_1();
-	static final URI fdg2 = EfloraSources.fdg_2();
-	static final URI fdg3 = EfloraSources.fdg_3();
-	static final URI fdg4 = EfloraSources.fdg_4();
-	static final URI fdg5 = EfloraSources.fdg_5();
-	static final URI fdg5bis = EfloraSources.fdg_5bis();
-	static final URI fdg6 = EfloraSources.fdg_6();
-	static final URI fdg7 = EfloraSources.fdg_7();
-	static final URI fdg8 = EfloraSources.fdg_8();
-	static final URI fdg9 = EfloraSources.fdg_9();
-	static final URI fdg10 = EfloraSources.fdg_10();
-	static final URI fdg11 = EfloraSources.fdg_11();
-	static final URI fdg12_17 = EfloraSources.fdg_12_17();
-	static final URI fdg13 = EfloraSources.fdg_13();
-	static final URI fdg14 = EfloraSources.fdg_14();
-	static final URI fdg15 = EfloraSources.fdg_15();
-	static final URI fdg16 = EfloraSources.fdg_16();
-	static final URI fdg18 = EfloraSources.fdg_18();
-	static final URI fdg19 = EfloraSources.fdg_19();
-	static final URI fdg20 = EfloraSources.fdg_20();
-	static final URI fdg21 = EfloraSources.fdg_21();
-	static final URI fdg22 = EfloraSources.fdg_22();
-	static final URI fdg23 = EfloraSources.fdg_23();
-	static final URI fdg24 = EfloraSources.fdg_24();
-	static final URI fdg25 = EfloraSources.fdg_25();
-	static final URI fdg26 = EfloraSources.fdg_26();
-	static final URI fdg27 = EfloraSources.fdg_27();
-	static final URI fdg28 = EfloraSources.fdg_28();
-	static final URI fdg29 = EfloraSources.fdg_29();
-	static final URI fdg30 = EfloraSources.fdg_30();
-	static final URI fdg31 = EfloraSources.fdg_31();
-	static final URI fdg32 = EfloraSources.fdg_32();
-	static final URI fdg33 = EfloraSources.fdg_33();
-	static final URI fdg34 = EfloraSources.fdg_34();
-	static final URI fdg35 = EfloraSources.fdg_35();
 
-//	static final URI fdg36 = EfloraSources.fdg_36();
-//	static final URI fdg37 = EfloraSources.fdg_37();
-	static final URI fdg36_37 = EfloraSources.fdg_36_37();
-
-	static final URI fdg38 = EfloraSources.fdg_38();
-	static final URI fdg39 = EfloraSources.fdg_39();
-	static final URI fdg40 = EfloraSources.fdg_40();
-	static final URI fdg41 = EfloraSources.fdg_41();
-	static final URI fdg42 = EfloraSources.fdg_42();
-	static final URI fdg43 = EfloraSources.fdg_43();
-	static final URI fdg44 = EfloraSources.fdg_44();
-	static final URI fdg45 = EfloraSources.fdg_45();
-
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_preview();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_production();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 
 	//feature tree uuid
@@ -117,59 +70,108 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	//if true, use inverse include information
 	private boolean inverseInclude = true;
 
+	private boolean includeFdg12_17 = true;  //2236  1h17  803t (Rubiaceae)
+	private boolean includeFdg36_37 = true;  //2022  1h8   1627t(824)
+    private boolean includeFdg29 = false;     //1442  //transient (nach 24min)
+    private boolean includeFdg16 = true;     //1355
+    private boolean includeFdg26 = true;     //1290
+    private boolean includeFdg15 = true;  //transient  //1228
+    private boolean includeFdg44 = true;  //1176
+    private boolean includeFdg20 = true;  //1045
+
+    private boolean includeFdg13 = true;  //transient object
+    private boolean includeFdg5 = true;
+    private boolean includeFdg31 = true;
+    private boolean includeFdg23 = true;
+    private boolean includeFdg24 = true;
+    private boolean includeFdg32 = true;
+    private boolean includeFdg8 = true;
+
 	private boolean includeFdg1 = true;
 	private boolean includeFdg2 = true;
 	private boolean includeFdg3 = true;
 	private boolean includeFdg4 = true;
-	private boolean includeFdg5 = true;
 	private boolean includeFdg5bis = true;
 	private boolean includeFdg6 = true;
 	private boolean includeFdg7 = true;
-	private boolean includeFdg8 = true;
 	private boolean includeFdg9 = true;
 	private boolean includeFdg10 = true;
 	private boolean includeFdg11 = true;
-	private boolean includeFdg12_17 = true;
-	private boolean includeFdg13 = true;
+
 	private boolean includeFdg14 = true;
-	private boolean includeFdg15 = true;
-	private boolean includeFdg16 = true;
+
 	private boolean includeFdg18 = true;
 	private boolean includeFdg19 = true;
-	private boolean includeFdg20 = true;
 	private boolean includeFdg21 = true;
 	private boolean includeFdg22 = true;
-
-	private boolean includeFdg23 = false;
-	private boolean includeFdg24 = true;
 	private boolean includeFdg25 = true;
-	private boolean includeFdg26 = true;
 
 	private boolean includeFdg27 = true;
 	private boolean includeFdg28 = true;
 
-	private boolean includeFdg29 = true;
-
 	private boolean includeFdg30 = true;
 
-	private boolean includeFdg31 = true;
-	private boolean includeFdg32 = true;
 	private boolean includeFdg33 = true;
 
 	private boolean includeFdg34 = true;
 	private boolean includeFdg35 = true;
-
-//	private boolean includeFdg36 = true;
-//	private boolean includeFdg37 = true;
-	private boolean includeFdg36_37 = true;
 	private boolean includeFdg38 = true;
 	private boolean includeFdg39 = true;
 	private boolean includeFdg40 = true;
 	private boolean includeFdg41 = true;
 	private boolean includeFdg42 = true;
 	private boolean includeFdg43 = true;
-	private boolean includeFdg44 = true;
 	private boolean includeFdg45 = true;
+
+	   static final URI fdg1 = EfloraSources.fdg_1();
+	    static final URI fdg2 = EfloraSources.fdg_2();
+	    static final URI fdg3 = EfloraSources.fdg_3();
+	    static final URI fdg4 = EfloraSources.fdg_4();
+	    static final URI fdg5 = EfloraSources.fdg_5();
+	    static final URI fdg5bis = EfloraSources.fdg_5bis();
+	    static final URI fdg6 = EfloraSources.fdg_6();
+	    static final URI fdg7 = EfloraSources.fdg_7();
+	    static final URI fdg8 = EfloraSources.fdg_8();
+	    static final URI fdg9 = EfloraSources.fdg_9();
+	    static final URI fdg10 = EfloraSources.fdg_10();
+	    static final URI fdg11 = EfloraSources.fdg_11();
+	    static final URI fdg12_17 = EfloraSources.fdg_12_17();
+	    static final URI fdg13 = EfloraSources.fdg_13();
+	    static final URI fdg14 = EfloraSources.fdg_14();
+	    static final URI fdg15 = EfloraSources.fdg_15();
+	    static final URI fdg16 = EfloraSources.fdg_16();
+	    static final URI fdg18 = EfloraSources.fdg_18();
+	    static final URI fdg19 = EfloraSources.fdg_19();
+	    static final URI fdg20 = EfloraSources.fdg_20();
+	    static final URI fdg21 = EfloraSources.fdg_21();
+	    static final URI fdg22 = EfloraSources.fdg_22();
+	    static final URI fdg23 = EfloraSources.fdg_23();
+	    static final URI fdg24 = EfloraSources.fdg_24();
+	    static final URI fdg25 = EfloraSources.fdg_25();
+	    static final URI fdg26 = EfloraSources.fdg_26();
+	    static final URI fdg27 = EfloraSources.fdg_27();
+	    static final URI fdg28 = EfloraSources.fdg_28();
+	    static final URI fdg29 = EfloraSources.fdg_29();
+	    static final URI fdg30 = EfloraSources.fdg_30();
+	    static final URI fdg31 = EfloraSources.fdg_31();
+	    static final URI fdg32 = EfloraSources.fdg_32();
+	    static final URI fdg33 = EfloraSources.fdg_33();
+	    static final URI fdg34 = EfloraSources.fdg_34();
+	    static final URI fdg35 = EfloraSources.fdg_35();
+
+	//  static final URI fdg36 = EfloraSources.fdg_36();
+	//  static final URI fdg37 = EfloraSources.fdg_37();
+	    static final URI fdg36_37 = EfloraSources.fdg_36_37();
+
+	    static final URI fdg38 = EfloraSources.fdg_38();
+	    static final URI fdg39 = EfloraSources.fdg_39();
+	    static final URI fdg40 = EfloraSources.fdg_40();
+	    static final URI fdg41 = EfloraSources.fdg_41();
+	    static final URI fdg42 = EfloraSources.fdg_42();
+	    static final URI fdg43 = EfloraSources.fdg_43();
+	    static final URI fdg44 = EfloraSources.fdg_44();
+	    static final URI fdg45 = EfloraSources.fdg_45();
+
 
 // **************** NO CHANGE **********************************************/
 
@@ -277,12 +279,6 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 		//Vol35
 		executeVolume(fdg35, includeFdg35 ^ inverseInclude);
 
-//		//Vol36
-//		executeVolume(fdg36, includeFdg36 ^ inverseInclude);
-//
-//		//Vol37
-//		executeVolume(fdg37, includeFdg37 ^ inverseInclude);
-
 		//Vol 36_37
 		executeVolume(fdg36_37, includeFdg36_37 ^ inverseInclude);
 
@@ -310,11 +306,11 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 		//Vol45
 		executeVolume(fdg45, includeFdg45 ^ inverseInclude);
 
-		TermTree<Feature> tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
-		myImport.getCdmAppController().getTermTreeService().saveOrUpdate(tree);
-
-		makeAutomatedFeatureTree(myImport.getCdmAppController(), config.getState(),
-				featureTreeUuid, featureTreeTitle);
+//		TermTree<Feature> tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
+//		myImport.getCdmAppController().getTermTreeService().saveOrUpdate(tree);
+//
+//		makeAutomatedFeatureTree(myImport.getCdmAppController(), config.getState(),
+//				featureTreeUuid, featureTreeTitle);
 
 		//check keys
 		if (doPrintKeys){
@@ -551,6 +547,13 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 
 	public static void main(String[] args) {
 		FloreGabonActivator me = new FloreGabonActivator();
-		me.doImport(cdmDestination);
+		try {
+            me.doImport(cdmDestination);
+        } catch (Exception e) {
+            logger.warn("Uncatched exception: " + e.getMessage());
+            e.printStackTrace();
+        }
+		logger.warn("Finish");
+		System.exit(0);
 	}
 }
