@@ -6,13 +6,13 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 import eu.etaxonomy.cdm.model.common.MarkerType;
@@ -25,20 +25,17 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
  * @since 11.05.2009
  */
 public class CentralAfricaFernsImportState extends DbImportStateBase<CentralAfricaFernsImportConfigurator, CentralAfricaFernsImportState>{
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CentralAfricaFernsImportState.class);
 
-	Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<String, DefinedTermBase>();
+    @SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
 
-	Map<String, User> usernameMap = new HashMap<String, User>();
+	Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<>();
+
+	Map<String, User> usernameMap = new HashMap<>();
 
 	private String taxonNumber;
 	private Rank currentRank;
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IoStateBase#initialize(eu.etaxonomy.cdm.io.common.IoConfiguratorBase)
-	 */
 	@Override
 	public void initialize(CentralAfricaFernsImportConfigurator config) {
 //		super(config);
@@ -88,7 +85,4 @@ public class CentralAfricaFernsImportState extends DbImportStateBase<CentralAfri
 	public Rank getCurrentRank() {
 		return currentRank;
 	}
-
-
-
 }

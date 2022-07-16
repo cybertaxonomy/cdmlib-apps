@@ -5,11 +5,11 @@
 *
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
-*/ 
-
+*/
 package eu.etaxonomy.cdm.io.eflora.floraMalesiana;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.eflora.EfloraImportState;
 
@@ -18,12 +18,14 @@ import eu.etaxonomy.cdm.io.eflora.EfloraImportState;
  *
  */
 public class FloraMalesianaImportState extends EfloraImportState{
-	private static final Logger logger = Logger.getLogger(FloraMalesianaImportState.class);
 
-// ******************************* CONSTRUCTOR **********************************************
-	
+    @SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
+
+    // ******************************* CONSTRUCTOR **********************************************
+
 	public FloraMalesianaImportState(FloraMalesianaImportConfigurator config) {
 		super(config);
 	}
-	
+
 }

@@ -6,13 +6,13 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
@@ -50,7 +50,8 @@ import eu.etaxonomy.cdm.model.term.TermType;
  * @since 20.06.2008
  */
 public class CentralAfricaEricaceaeActivator {
-	private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeActivator.class);
+
+    private static Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
@@ -182,12 +183,8 @@ public class CentralAfricaEricaceaeActivator {
 			CdmDefaultImport<SpecimenCdmExcelImportConfigurator> specimenImport = new CdmDefaultImport<SpecimenCdmExcelImportConfigurator>();
 			specimenImport.setCdmAppController(app);
 			specimenImport.invoke(specimenConfig);
-
 		}
 		return;
-
-
-
 	}
 
 	private void newNamedAreas(CdmDefaultImport<EfloraImportConfigurator> myImport) {

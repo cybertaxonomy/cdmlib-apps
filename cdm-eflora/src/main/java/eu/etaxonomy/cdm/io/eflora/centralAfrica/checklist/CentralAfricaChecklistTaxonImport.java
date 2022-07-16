@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist;
 
 import java.sql.ResultSet;
@@ -18,7 +17,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.service.IClassificationService;
@@ -49,16 +49,19 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
  */
 @Component
-public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistImportBase<TaxonBase> implements IMappingImport<TaxonBase, CentralAfricaChecklistImportState>{
-	private static final Logger logger = Logger.getLogger(CentralAfricaChecklistTaxonImport.class);
+public class CentralAfricaChecklistTaxonImport
+        extends CentralAfricaChecklistImportBase<TaxonBase>
+        implements IMappingImport<TaxonBase, CentralAfricaChecklistImportState>{
 
-	private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
+    private static final long serialVersionUID = 2070937718714283237L;
+    private static Logger logger = LogManager.getLogger();
+
+    private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 
 	private Map<UUID, Taxon> higherTaxonMap;
 
@@ -76,11 +79,6 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery() {
 		String strQuery = " SELECT pk FROM " + dbTableName +
@@ -88,14 +86,10 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 		return strQuery;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist.CentralAfricaChecklistImportBase#getMapping()
-	 */
 	@Override
     protected DbImportMapping getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping();
+			mapping = new DbImportMapping<>();
 
  			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "pk", TAXON_NAMESPACE)); //id + tu_status
 
@@ -112,9 +106,6 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 		return mapping;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(CentralAfricaChecklistImportConfigurator config) {
 		String strSelect = " SELECT * ";
@@ -123,7 +114,6 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 		String strRecordQuery = strSelect + strFrom + strWhere + strOrderBy;
 		return strRecordQuery;
 	}
-
 
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, CentralAfricaChecklistImportState state) {
@@ -139,7 +129,6 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 		state.setGenevaReference(null);
 		return success;
 	}
-
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, CentralAfricaChecklistImportState state) {

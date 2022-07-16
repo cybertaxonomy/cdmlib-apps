@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.eflora;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.ITermService;
@@ -35,7 +36,7 @@ import eu.etaxonomy.cdm.model.term.TermTree;
  */
 public class FloreGabonActivator extends EfloraActivatorBase {
 
-	private static final Logger logger = Logger.getLogger(FloreGabonActivator.class);
+	private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

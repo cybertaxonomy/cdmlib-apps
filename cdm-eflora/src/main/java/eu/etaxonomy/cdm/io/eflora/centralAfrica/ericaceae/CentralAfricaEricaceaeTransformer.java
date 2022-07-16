@@ -1,17 +1,17 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ericaceae;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -20,12 +20,13 @@ import eu.etaxonomy.cdm.io.eflora.EfloraTransformer;
 /**
  * @author a.mueller
  * @since 01.03.2010
- * @version 1.0
  */
 public final class CentralAfricaEricaceaeTransformer extends EfloraTransformer {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeTransformer.class);
-	
+
+    private static final long serialVersionUID = 6770846804101581950L;
+    @SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
+
 	//Languages
 	private static final UUID uuidKinyarwanda = UUID.fromString("95d170f5-7654-42bf-8293-c3584191a45a");
 	private static final UUID uuidKibemba = UUID.fromString("6069b231-101a-4a7b-84c5-4116b92db99c");
@@ -43,11 +44,11 @@ public final class CentralAfricaEricaceaeTransformer extends EfloraTransformer {
 	private static final UUID uuidKitembo = UUID.fromString("09a7da83-0e1f-42ae-886b-88675800d245");
 	private static final UUID uuidKinyabongo = UUID.fromString("cae69a27-77f9-46db-b7ea-646c0c037cfe");
 
-	
+
 	@Override
 	public UUID getLanguageUuid(String key) throws UndefinedTransformerMethodException {
 		if (CdmUtils.isEmpty(key)){return null;
-		
+
 		}else if (key.equalsIgnoreCase("Kinyarwanda")){return uuidKinyarwanda;
 		}else if (key.equalsIgnoreCase("Kibemba")){return uuidKibemba;
 		}else if (key.equalsIgnoreCase("Mashi")){return uuidMashi;
@@ -67,5 +68,5 @@ public final class CentralAfricaEricaceaeTransformer extends EfloraTransformer {
 			return null;
 		}
 	}
-	
+
 }

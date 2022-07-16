@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns;
 
 import java.sql.ResultSet;
@@ -22,7 +21,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
@@ -73,10 +73,12 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  * @since 20.02.2010
  */
 @Component
-public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase<TaxonBase> implements IMappingImport<TaxonBase, CentralAfricaFernsImportState>{
+public class CentralAfricaFernsTaxonImport
+        extends CentralAfricaFernsImportBase<TaxonBase>
+        implements IMappingImport<TaxonBase, CentralAfricaFernsImportState>{
 
     private static final long serialVersionUID = 2109721344787099118L;
-    private static final Logger logger = Logger.getLogger(CentralAfricaFernsTaxonImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	public static final UUID TNS_EXT_UUID = UUID.fromString("41cb0450-ac84-4d73-905e-9c7773c23b05");
 
@@ -123,14 +125,11 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Basionym of", "Needs better understanding"));
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Synonym of", "Needs better understanding. Strange values like "));
 
-
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Chromosome number" , "Wrong data. Seems to be 'reference full'"));
-
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Book Publisher & Place" , "How to access the reference via String mapper?"));
 
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Reprint no" , "What's this?"));
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Date verified" , "Needed?"));
-
 
 //
 //			UUID credibilityUuid = ErmsTransformer.uuidCredibility;
@@ -146,9 +145,6 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		return mapping;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(CentralAfricaFernsImportConfigurator config) {
 		String strSelect = " SELECT * ";
@@ -274,8 +270,6 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 
 	}
 
-
-
 	private List<SpecimenTypeDesignation> handleTypeLocationPart(CentralAfricaFernsImportState state,
 				String typeString, String typeCollectorString, String typeLocationPart) {
 		List<SpecimenTypeDesignation> result = new ArrayList<SpecimenTypeDesignation>();
@@ -317,8 +311,6 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		return result;
 	}
 
-
-
 	/**
 	 * @param split
 	 * @return
@@ -331,8 +323,6 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		lastDesignation.setTypeSpecimen(specimen);
 		return lastDesignation;
 	}
-
-
 
 	private SpecimenTypeDesignation makeSpecimenTypeCollection(SpecimenTypeDesignation designation, String collectionString, String strCollectionPattern, String strNumberPattern, String strAddInfoPattern) {
 		SpecimenTypeDesignation result = SpecimenTypeDesignation.NewInstance();

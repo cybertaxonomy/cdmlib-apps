@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.eflora;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -26,8 +27,9 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @since 20.06.2008
  */
 public class CentralAfricaChecklistActivator {
+
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CentralAfricaChecklistActivator.class);
+    private static Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

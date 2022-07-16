@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.config.AccountStore;
@@ -22,9 +23,9 @@ import eu.etaxonomy.cdm.io.common.Source;
  *
  */
 public class CdmImportSources {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CdmImportSources.class);
 
+	@SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
 
 	public static Source AFRICA_CHECKLIST_ACCESS(){
 		//

@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora;
 
 import java.util.ArrayList;
@@ -21,7 +20,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.springframework.stereotype.Component;
@@ -84,14 +84,14 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
-
 /**
  * @author a.mueller
- *
  */
 @Component
 public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<EfloraImportState> {
-	private static final Logger logger = Logger.getLogger(EfloraTaxonImport.class);
+
+    private static final long serialVersionUID = -333673708310331342L;
+    private static Logger logger = LogManager.getLogger();
 
 	private static int modCount = 30000;
 	private final NonViralNameParserImpl parser = new NonViralNameParserImpl();
@@ -99,7 +99,6 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	public EfloraTaxonImport(){
 		super();
 	}
-
 
 	@Override
 	public boolean doCheck(EfloraImportState state){
@@ -130,7 +129,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		Reference sourceReference = state.getConfig().getSourceReference();
 		getReferenceService().saveOrUpdate(sourceReference);
 
-		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
+		Set<TaxonBase> taxaToSave = new HashSet<>();
 		ResultWrapper<Boolean> success = ResultWrapper.NewInstance(true);
 
 		Element elbody= getBodyElement(state.getConfig());

@@ -6,10 +6,10 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ericaceae;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.URI;
@@ -22,7 +22,7 @@ public class CentralAfricaEricaceaeImportConfigurator extends EfloraImportConfig
 
     private static final long serialVersionUID = 2277089945601876389L;
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeImportConfigurator.class);
+    private static Logger logger = LogManager.getLogger();
 
 	public static CentralAfricaEricaceaeImportConfigurator NewInstance(URI uri, ICdmDataSource destination){
 		return new CentralAfricaEricaceaeImportConfigurator(uri, destination);
@@ -32,7 +32,8 @@ public class CentralAfricaEricaceaeImportConfigurator extends EfloraImportConfig
 	private String classificationTitle = "Flore d'Afrique Centrale - Ericaceae";
 	private String sourceReferenceTitle = "Flore d'Afrique Centrale - Ericaceae";
 
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
 			CentralAfricaEricaceaeTaxonImport.class

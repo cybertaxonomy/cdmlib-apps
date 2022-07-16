@@ -6,12 +6,12 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -29,11 +29,11 @@ import eu.etaxonomy.cdm.model.term.TermTree;
 /**
  * @author a.mueller
  * @since 20.06.2008
- * @version 1.0
  */
 public class CentralAfricaFernsActivator {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CentralAfricaFernsActivator.class);
+
+    @SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;

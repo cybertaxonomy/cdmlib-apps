@@ -1,18 +1,18 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns;
 
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
@@ -27,19 +27,20 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 /**
  * @author a.mueller
  * @since 01.03.2010
- * @version 1.0
  */
 public final class CentralAfricaFernsTransformer extends InputTransformerBase {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CentralAfricaFernsTransformer.class);
-	
+
+    private static final long serialVersionUID = -7721642556404712780L;
+    @SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
+
 	//Extensions
 	public static UUID uuidFascicle = UUID.fromString("718bb2d6-dbcd-4e60-9cfa-154a59461ef4");
 	public static UUID uuidNomenclaturalRemarks = UUID.fromString("ea7ceb5c-1b31-47b2-8544-89c90aed3a44");
 	public static UUID uuidNamePublishedAs = UUID.fromString("8eb258aa-6342-49cd-ad7b-185a3e879031");
 	public static UUID uuidIllustrationsNonOriginal = UUID.fromString("b0beb324-76a6-4f76-9e0c-413383782329");
-		
-	
+
+
 	//NamedAreas
 	public static UUID uuidZanzibar = UUID.fromString("8d7dc5e2-43a6-4e7d-af29-a43cf62ca212");
 	public static UUID uuidAnnobon = UUID.fromString("a90c534e-d079-4525-82be-6a35c111f0ab");
@@ -84,10 +85,10 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 	public static UUID uuidStoltenhoff = UUID.fromString("6ff68f76-0bb9-45e7-900c-ea78ee28e415");
 	public static UUID uuidOmoroIs = UUID.fromString("715d3872-1693-4217-a45e-b36cdeba51be");
 	public static UUID uuidMoorea = UUID.fromString("40a49403-d178-4789-86d6-13aad498ba4c");
-	
-	
 
-	
+
+
+
 //	69e62cb6-e0ea-4886-8c52-5aa6de6bee74
 //	54715820-f15e-4ad1-b7a4-2a0e5967c931
 //	baaec166-6df9-4a55-b3c7-465982e481bb
@@ -145,13 +146,13 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 		}else if (key.matches("Sumatra")){return TdwgAreaProvider.getAreaByTdwgAbbreviation("SUM-OO");
 		}else if (key.matches("Gana")){return TdwgAreaProvider.getAreaByTdwgAbbreviation("GHA-OO");
 		}else if (key.matches("Lestho")){return TdwgAreaProvider.getAreaByTdwgAbbreviation("LES-OO");
-		
-		
+
+
 		}else{
 			return null;
 		}
 	}
-	
+
 	@Override
 	public UUID getNamedAreaUuid(String key) throws UndefinedTransformerMethodException {
 		if (StringUtils.isBlank(key)){return null;
@@ -163,7 +164,7 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Diego Garcia")){return uuidDiegoGarcia;
 		//Pemba ist die zweitgr��te Insel des ostafrikanischen Sansibar-Archipels. Gemeinsam mit der 50 km s�dlich gelegenen Insel Unguja und zahlreichen kleinen Nebeninseln bildet Pemba den halbautonomen Teilstaat �Sansibar� in Tansania.
 		}else if (key.matches("Pemba( Isl.)?")){return uuidPemba;
-		//Santo Ant�o (port. f�r Heiliger Antonius) ist mit 779 km� die zweitgr��te der Kapverdischen Inseln im Atlantik. 
+		//Santo Ant�o (port. f�r Heiliger Antonius) ist mit 779 km� die zweitgr��te der Kapverdischen Inseln im Atlantik.
 		}else if (key.matches("S(an)?(to?)?\\.? Ant[\u00E3a]o") ){return uuidStoAntao;
 		//Sao Vicente  ist eine der kleineren Kapverdischen Inseln im Atlantik
 		}else if (key.matches("S(\u00E3o)?\\.? Vicente")){return uuidSaoVicente;
@@ -223,7 +224,7 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 		}else if (key.matches("Moh[�e]ll?[yi]")){return uuidMohely;
 		//Santa Maria ist die geologisch �lteste Insel der Azoren im Atlantischen Ozean
 		}else if (key.matches("Santa Maria")){return uuidSantaMaria;
-		//S�o Miguel ist die gr��te Insel der Azoren. 
+		//S�o Miguel ist die gr��te Insel der Azoren.
 		}else if (key.matches("S\u00E3o Miguel")){return uuidSaoMiguel;
 		//Terceira geh�rt zur Zentralgruppe der Azoren.
 		}else if (key.matches("Terceira")){return uuidTerceira;
@@ -241,16 +242,16 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 		}else if (key.matches("Omoro Isl.")){return uuidOmoroIs;
 		//Moorea �ltere Namen Aimeho oder Eimeo (Cook), Santo Domingo (Boenechea) und York Island (Wallis), ist eine Insel im S�d-Pazifik, die politisch zu Franz�sisch-Polynesien geh�rt.
 		}else if (key.matches("Moorea")){return uuidMoorea;
-		
+
 		}else{
 			return null;
 		}
 
 	}
-	
-	
-	
-	
+
+
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getExtensionTypeByKey(java.lang.String)
 	 */
@@ -274,8 +275,8 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 		return null;
 	}
 
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getFeatureByKey(java.lang.String)
 	 */
@@ -298,19 +299,12 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 //		}else if (key.equalsIgnoreCase("Chromosomes")){return uuidChromosomes;
 //		}else if (key.equalsIgnoreCase("Inflorescence")){return uuidInflorescence;
 
-		
-		
 		}else{
 			return null;
 		}
-		
+
 	}
 
-	
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getMarkerTypeByKey(java.lang.String)
-	 */
 	@Override
 	public MarkerType getMarkerTypeByKey(String key) throws UndefinedTransformerMethodException {
 		if (StringUtils.isBlank(key)){return null;
@@ -328,10 +322,8 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 		}else{
 			return null;
 		}
-
 	}
 
-	
 	@Override
 	public PresenceAbsenceTerm getPresenceTermByKey(String key) throws UndefinedTransformerMethodException {
 		if (StringUtils.isBlank(key)){return null;
@@ -361,7 +353,5 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 		}else{
 			return null;
 		}
-
 	}
-	
 }

@@ -16,7 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.ITermService;
@@ -38,7 +39,8 @@ import eu.etaxonomy.cdm.model.term.TermTree;
  * @author a.mueller
  */
 public class EfloraActivatorBase {
-	private static final Logger logger = Logger.getLogger(EfloraActivatorBase.class);
+
+	private static final Logger logger = LogManager.getLogger();
 
 	protected MarkupImportConfigurator config;
 	protected CdmDefaultImport<MarkupImportConfigurator> myImport;

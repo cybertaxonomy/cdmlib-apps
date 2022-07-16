@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist;
 
 import java.sql.ResultSet;
@@ -16,7 +15,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -37,19 +37,19 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
  */
 @Component
-public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklistImportBase<TaxonBase> implements IMappingImport<TaxonBase, CentralAfricaChecklistImportState>{
+public class CentralAfricaChecklistSynonymImport
+        extends CentralAfricaChecklistImportBase<TaxonBase>
+        implements IMappingImport<TaxonBase, CentralAfricaChecklistImportState>{
+
     private static final long serialVersionUID = 954395388404224712L;
+    private static Logger logger = LogManager.getLogger();
 
-    private static final Logger logger = Logger.getLogger(CentralAfricaChecklistSynonymImport.class);
-
-	private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-
+    private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 
 	private DbImportMapping<?, ?> mapping;
 

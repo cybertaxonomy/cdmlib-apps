@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.eflora;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.ITermService;
@@ -36,7 +37,8 @@ import eu.etaxonomy.cdm.model.term.TermTree;
  * @since 20.06.2008
  */
 public class FloraMalesianaActivator_OLD {
-	private static final Logger logger = Logger.getLogger(FloraMalesianaActivator_OLD.class);
+
+    private static Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;

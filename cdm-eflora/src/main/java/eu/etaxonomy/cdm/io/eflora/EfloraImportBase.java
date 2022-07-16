@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.eflora;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.Namespace;
 
@@ -31,7 +32,8 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 public abstract class EfloraImportBase  extends CdmImportBase<EfloraImportConfigurator, EfloraImportState> {
 
-    private static final Logger logger = Logger.getLogger(EfloraImportBase.class);
+    private static final long serialVersionUID = 7299440225208421263L;
+    private static Logger logger = LogManager.getLogger();
 
 	@Override
     protected abstract void doInvoke(EfloraImportState state);

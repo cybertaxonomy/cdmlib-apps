@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist;
 
 import java.sql.ResultSet;
@@ -14,7 +13,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
@@ -28,14 +26,12 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
  */
 @Component
 public class CentralAfricaChecklistReferenceImport  extends CentralAfricaChecklistImportBase<Reference> implements IMappingImport<Reference, CentralAfricaChecklistImportState>{
-	private static final Logger logger = Logger.getLogger(CentralAfricaChecklistReferenceImport.class);
 
 	private DbImportMapping<?,?> mapping;
 
@@ -49,11 +45,6 @@ public class CentralAfricaChecklistReferenceImport  extends CentralAfricaCheckli
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery() {
 		String strQuery = " SELECT DISTINCT source FROM " + dbTableName +
@@ -101,15 +92,8 @@ public class CentralAfricaChecklistReferenceImport  extends CentralAfricaCheckli
 		return validator.validate(state);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(CentralAfricaChecklistImportState state){
 		return state.getConfig().getDoReferences().equals(IImportConfigurator.DO_REFERENCES.NONE);
 	}
-
-
-
 }

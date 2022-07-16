@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns;
 
 import java.sql.ResultSet;
@@ -16,7 +15,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
@@ -32,12 +32,15 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * @author a.mueller
  * @since 20.03.2008
- * @version 1.0
  */
-public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> extends CdmImportBase<CentralAfricaFernsImportConfigurator, CentralAfricaFernsImportState> implements ICdmIO<CentralAfricaFernsImportState>, IPartitionedIO<CentralAfricaFernsImportState> {
-	private static final Logger logger = Logger.getLogger(CentralAfricaFernsImportBase.class);
+public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase>
+        extends CdmImportBase<CentralAfricaFernsImportConfigurator, CentralAfricaFernsImportState>
+        implements ICdmIO<CentralAfricaFernsImportState>, IPartitionedIO<CentralAfricaFernsImportState> {
 
-	public static final UUID ID_IN_SOURCE_EXT_UUID = UUID.fromString("23dac094-e793-40a4-bad9-649fc4fcfd44");
+    private static final long serialVersionUID = 6238050332974814337L;
+    private static Logger logger = LogManager.getLogger();
+
+    public static final UUID ID_IN_SOURCE_EXT_UUID = UUID.fromString("23dac094-e793-40a4-bad9-649fc4fcfd44");
 
 	protected static final String TAXON_NAMESPACE = "African_pteridophytes_Taxon";
 	protected static final String NAME_NAMESPACE = "African_pteridophytes_Name";
@@ -45,19 +48,11 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 
 	private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 
-
 	private String pluralString;
 	private String dbTableName;
 	//TODO needed?
 	private Class cdmTargetClass;
 
-
-
-
-	/**
-	 * @param dbTableName
-	 * @param dbTableName2
-	 */
 	public CentralAfricaFernsImportBase(String pluralString, String dbTableName, Class cdmTargetClass) {
 		this.pluralString = pluralString;
 		this.dbTableName = dbTableName;
@@ -112,41 +107,23 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 		return success;
 	}
 
-
-
-	/**
-	 * @return
-	 */
 	protected abstract DbImportMapping<?, ?> getMapping();
 
-	/**
-	 * @return
-	 */
 	protected abstract String getRecordQuery(CentralAfricaFernsImportConfigurator config);
 
-	/**
-	 * @return
-	 */
 	protected String getIdQuery(){
 		String result = " SELECT id FROM " + getTableName();
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getPluralString()
-	 */
 	@Override
     public String getPluralString(){
 		return pluralString;
 	}
 
-	/**
-	 * @return
-	 */
 	protected String getTableName(){
 		return this.dbTableName;
 	}
-
 
 	/**
 	 * Reads a foreign key field from the result set and adds its value to the idSet.
@@ -177,8 +154,6 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 	protected void doLogPerLoop(int count, int recordsPerLog, String pluralString){
 		if ((count % recordsPerLog ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}
-
-
 
 	protected void setAuthor(IBotanicalName taxonName, ResultSet rs, String taxonNumber, boolean isHigherTaxon) throws SQLException {
 
@@ -259,9 +234,4 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 	//		}
 		}
 	}
-
-
-
-
-
 }

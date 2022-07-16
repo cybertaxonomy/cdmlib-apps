@@ -1,12 +1,11 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns;
 
 import java.sql.ResultSet;
@@ -14,7 +13,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
@@ -29,18 +29,19 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
  */
 @Component
 public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImportBase<Reference> implements IMappingImport<Reference, CentralAfricaFernsImportState>{
-	private static final Logger logger = Logger.getLogger(CentralAfricaFernsReferenceImport.class);
-	
-	private DbImportMapping<?,?> mapping;
-	
-	
+
+    private static final long serialVersionUID = 6680459184882127822L;
+    private static Logger logger = LogManager.getLogger();
+
+    private DbImportMapping<?,?> mapping;
+
+
 //	private int modCount = 10000;
 	private static final String pluralString = "references";
 	private static final String dbTableName = "literature";
@@ -50,42 +51,28 @@ public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImport
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
-	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.globis.GlobisImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery() {
-		String strRecordQuery = 
-			" SELECT refID " + 
-			" FROM " + dbTableName; 
-		return strRecordQuery;	
+		String strRecordQuery =
+			" SELECT refID " +
+			" FROM " + dbTableName;
+		return strRecordQuery;
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(CentralAfricaFernsImportConfigurator config) {
-		String strRecordQuery = 
-			" SELECT * " + 
+		String strRecordQuery =
+			" SELECT * " +
 			" FROM literature " +
 			" WHERE ( literature.refId IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.globis.GlobisImportBase#getMapping()
-	 */
-	protected DbImportMapping getMapping() {
+	@Override
+    protected DbImportMapping getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping();
-			
+			mapping = new DbImportMapping<>();
+
 //			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "refID", REFERENCE_NAMESPACE)); //id
 			mapping.addMapper(DbIgnoreMapper.NewInstance("CountryDummy"));
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("CreatedBy"));
@@ -101,22 +88,19 @@ public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImport
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("RefMarker"));
 			mapping.addMapper(DbImportStringMapper.NewInstance("RefPages", "pages"));
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("RefPages only"));
-			
-			
-			
+
 			Reference ref = null;
 //			ref.setP
-			
-		
+
 ////			mapping.addMapper(DbImportExtensionMapper.NewInstance("imis_id", GlobisTransformer.IMIS_UUID, "imis", "imis", "imis"));
-//						
+//
 //			mapping.addMapper(DbImportTruncatedStringMapper.NewInstance("source_name", "titleCache", "title"));
 //			mapping.addMapper(DbImportStringMapper.NewInstance("source_abstract", "referenceAbstract"));
 //			mapping.addMapper(DbImportAnnotationMapper.NewInstance("source_note", AnnotationType.EDITORIAL(), Language.DEFAULT()));
-//			
+//
 //			//or as Extension?
 //			mapping.addMapper(DbImportExtensionMapper.NewInstance("source_link", ExtensionType.URL()));
-//			
+//
 //			//not yet implemented
 //			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("source_type"));
 //			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("source_orig_fn"));
@@ -124,11 +108,9 @@ public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImport
 		}
 		return mapping;
 	}
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
-	 */
-	public Reference createObject(ResultSet rs, CentralAfricaFernsImportState state)
+
+	@Override
+    public Reference createObject(ResultSet rs, CentralAfricaFernsImportState state)
 			throws SQLException {
 		Reference ref;
 		String refType = rs.getString("RefType");
@@ -159,21 +141,16 @@ public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImport
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		return result;  //not needed
 	}
-	
+
 	@Override
 	protected boolean doCheck(CentralAfricaFernsImportState state){
 		IOValidator<CentralAfricaFernsImportState> validator = new CentralAfricaFernsReferenceImportValidator();
 		return validator.validate(state);
 	}
-	
+
 	@Override
 	protected boolean isIgnore(CentralAfricaFernsImportState state){
 		//TODO
 		return state.getConfig().getDoReferences() != IImportConfigurator.DO_REFERENCES.ALL;
 	}
-
-
-
-
-
 }

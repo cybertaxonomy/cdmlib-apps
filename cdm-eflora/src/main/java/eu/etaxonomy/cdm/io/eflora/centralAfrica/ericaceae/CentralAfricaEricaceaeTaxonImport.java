@@ -6,14 +6,14 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ericaceae;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom.Element;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +47,7 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 
     private static final long serialVersionUID = 6442665916458420942L;
-    private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeTaxonImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	@Override
 	protected TeamOrPersonBase<?> handleNomenclaturalReference(TaxonName name, String value) {

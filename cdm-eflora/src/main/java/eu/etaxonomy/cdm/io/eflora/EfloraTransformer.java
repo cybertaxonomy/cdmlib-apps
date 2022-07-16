@@ -6,12 +6,12 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
@@ -22,13 +22,13 @@ import eu.etaxonomy.cdm.model.description.Feature;
 /**
  * @author a.mueller
  * @since 01.03.2010
- * @version 1.0
  */
 public class EfloraTransformer extends InputTransformerBase {
+
     private static final long serialVersionUID = -4804745203889579244L;
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(EfloraTransformer.class);
+    private static Logger logger = LogManager.getLogger();
 
 	//feature uuids
 	public static final UUID uuidHabitat = UUID.fromString("fb16929f-bc9c-456f-9d40-dec987b36438");

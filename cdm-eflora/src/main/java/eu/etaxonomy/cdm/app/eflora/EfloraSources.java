@@ -8,7 +8,8 @@
 */
 package eu.etaxonomy.cdm.app.eflora;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.URI;
 
@@ -17,8 +18,9 @@ import eu.etaxonomy.cdm.common.URI;
  * @since 09.06.2010
  */
 public class EfloraSources {
+
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(EfloraSources.class);
+    private static Logger logger = LogManager.getLogger();
 
 	//Ericaceae
 	public static URI ericacea_local() {

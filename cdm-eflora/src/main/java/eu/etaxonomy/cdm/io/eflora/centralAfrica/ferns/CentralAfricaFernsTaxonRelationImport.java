@@ -19,7 +19,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.service.IClassificationService;
@@ -68,7 +69,7 @@ public class CentralAfricaFernsTaxonRelationImport
         implements IMappingImport<TaxonBase, CentralAfricaFernsImportState>{
 
     private static final long serialVersionUID = 5561099127416844593L;
-    private static final Logger logger = Logger.getLogger(CentralAfricaFernsTaxonRelationImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private DbImportMapping<?,?> mapping;
 

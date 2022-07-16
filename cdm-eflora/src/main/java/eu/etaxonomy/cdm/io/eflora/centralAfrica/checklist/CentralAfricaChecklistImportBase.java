@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist;
 
 import java.sql.ResultSet;
@@ -18,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -43,10 +43,13 @@ import eu.etaxonomy.cdm.model.permission.User;
 /**
  * @author a.mueller
  * @since 20.03.2008
- * @version 1.0
  */
-public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase> extends CdmImportBase<CentralAfricaChecklistImportConfigurator, CentralAfricaChecklistImportState> implements ICdmIO<CentralAfricaChecklistImportState>, IPartitionedIO<CentralAfricaChecklistImportState> {
-	private static final Logger logger = Logger.getLogger(CentralAfricaChecklistImportBase.class);
+public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
+        extends CdmImportBase<CentralAfricaChecklistImportConfigurator, CentralAfricaChecklistImportState>
+        implements ICdmIO<CentralAfricaChecklistImportState>, IPartitionedIO<CentralAfricaChecklistImportState> {
+
+    private static final long serialVersionUID = 1625850214352011096L;
+    private static Logger logger = LogManager.getLogger();
 
 	public static final UUID ID_IN_SOURCE_EXT_UUID = UUID.fromString("23dac094-e793-40a4-bad9-649fc4fcfd44");
 

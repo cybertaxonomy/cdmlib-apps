@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora;
 
 import java.io.InputStream;
@@ -14,24 +13,24 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom.Element;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.XmlHelp;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 @Component
-public class EfloraImportConfigurator extends ImportConfiguratorBase<EfloraImportState, URI> implements IImportConfigurator {
+public class EfloraImportConfigurator extends ImportConfiguratorBase<EfloraImportState, URI> {
 
     private static final long serialVersionUID = -2922682361995025203L;
-    private static final Logger logger = Logger.getLogger(EfloraImportConfigurator.class);
+    private static Logger logger = LogManager.getLogger();
 
 	public static EfloraImportConfigurator NewInstance(URI uri, ICdmDataSource destination){
 		return new EfloraImportConfigurator(uri, destination);
@@ -52,7 +51,8 @@ public class EfloraImportConfigurator extends ImportConfiguratorBase<EfloraImpor
 	//if true, the keys will be printed after they have been created
 	private boolean doPrintKeys = false;
 
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
 			EfloraTaxonImport.class
