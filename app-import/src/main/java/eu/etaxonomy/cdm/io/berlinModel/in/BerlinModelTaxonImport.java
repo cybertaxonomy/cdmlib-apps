@@ -109,7 +109,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-		String sqlSelect = " SELECT pt.* , n.notes nameNotes";
+		String sqlSelect = " SELECT pt.* ";
 		String sqlFrom = " FROM PTaxon pt ";
 		if (config.isEuroMed()){
 			sqlFrom = " FROM PTaxon AS pt "
@@ -118,7 +118,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 			if (!config.isUseLastScrutinyAsSec()){
 			    sqlFrom += " LEFT OUTER JOIN Reference r ON pt.LastScrutinyFk = r.RefId ";
 			}
-			sqlSelect += " , em.MA ";
+			sqlSelect += ", n.notes nameNotes , em.MA ";
 			if (!config.isUseLastScrutinyAsSec()){
 			    sqlSelect += ", r.RefCache as LastScrutiny ";
             }
