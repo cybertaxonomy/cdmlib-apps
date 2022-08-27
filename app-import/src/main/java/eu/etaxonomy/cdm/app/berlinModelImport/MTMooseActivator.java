@@ -40,9 +40,9 @@ public class MTMooseActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.MT_MOOSE();
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_moose_production();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
 	static final UUID classificationUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
 	static final UUID sourceRefUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
@@ -80,7 +80,9 @@ public class MTMooseActivator {
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
 	static final boolean doFacts = false;    //no facts exist
+  static final boolean doNamedAreas = false;	 //no areas exist
 	static final boolean doOccurences = false;   //no occurrences exist
+  static final boolean doOccurenceSources = false;  //no occurrences exist
 	static final boolean doCommonNames = false;  //no common names exist
 
 // ************************ NONE **************************************** //
@@ -100,8 +102,10 @@ public class MTMooseActivator {
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
 //	static final boolean doFacts = false;
+//    static final boolean doNamedAreas = false;
 //	static final boolean doOccurences = false;
-//	static final boolean doCommonNames = false;
+//    static final boolean doOccurenceSources = false;
+//    static final boolean doCommonNames = false;
 
 
 	public void invoke(String[] args){
@@ -130,7 +134,9 @@ public class MTMooseActivator {
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
 		config.setDoFacts(doFacts);
+		config.setDoNamedAreas(doNamedAreas);
 		config.setDoOccurrence(doOccurences);
+		config.setDoOccurrenceSources(doOccurenceSources);
 		config.setDoCommonNames(doCommonNames);
 		config.setSourceRefUuid(sourceRefUuid);
 		config.setRelTaxaIdQuery(relPTaxonIdQuery);

@@ -87,10 +87,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
 	private Map<Integer, NamedArea> euroMedAreas = new HashMap<>();
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
         // not relevant
@@ -111,8 +107,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
         }
         return;
     }
-
-
 
     private TermVocabulary<NamedArea> createEuroMedAreas(BerlinModelImportState state) throws SQLException {
 
@@ -509,7 +503,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 		return validator.validate(state);
 	}
 
-
 	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		if (state.getConfig().isDoNamedAreas()){
@@ -526,6 +519,4 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 			}
 		}
 	}
-
-
 }

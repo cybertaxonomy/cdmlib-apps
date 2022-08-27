@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.berlinModel.in;
 
 import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.TAX_REL_IS_HETEROTYPIC_SYNONYM_OF;
@@ -80,6 +79,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	private static final String pluralString = "taxon relations";
 	private static final String dbTableName = "RelPTaxon";
 
+	private boolean hasProvisional = true;
 
 	public BerlinModelTaxonRelationImport(){
 		super(dbTableName, pluralString);
@@ -301,7 +301,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
                             }
 							Taxon fromTaxon = (Taxon)taxon1;
 							if (relQualifierFk == TAX_REL_IS_INCLUDED_IN){
-							    Boolean provisional = rs.getBoolean("Provisional");
+							    Boolean provisional = makeProvisional(rs);
 							    taxonRelationship = makeTaxonomicallyIncluded(state, classificationMap, treeRefFk, fromTaxon, toTaxon, citation, microcitation, provisional);
 							}else if (relQualifierFk == TAX_REL_IS_MISAPPLIED_NAME_OF){
 							    boolean isProParte = "p.p.".equals(notes);
@@ -463,13 +463,15 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		return success;
 	}
 
+    private boolean makeProvisional(ResultSet rs){
+        try {
+            return hasProvisional? rs.getBoolean("Provisional") : false;
+        } catch (SQLException e) {
+            hasProvisional = false;
+            return false;
+        }
+    }
 
-	/**
-     * @param toTaxon
-     * @param synonym
-     * @param notes
-     * @return
-     */
     private String handleSynonymNotes(BerlinModelImportState state, Taxon toTaxon, Synonym synonym, String notes, int relId) {
         if (state.getConfig().isEuroMed() && isNotBlank(notes)){
             notes = notes.trim();
