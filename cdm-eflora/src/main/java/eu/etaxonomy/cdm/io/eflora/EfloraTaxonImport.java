@@ -1992,10 +1992,6 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 
 	private final Pattern rexGenusAuthor = Pattern.compile("(\\[|\\().*(\\]|\\))");
 
-	/**
-	 * @param value
-	 * @param taxonNameBase
-	 */
 	protected void handleGenus(String value, INonViralName taxonName) {
 		Matcher matcher = rexGenusAuthor.matcher(value);
 		if (matcher.find()){
@@ -2004,7 +2000,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 			author = author.substring(1, author.length() - 1);
 			Team team = Team.NewInstance();
 			team.setTitleCache(author, true);
-			Credit credit = Credit.NewInstance(team, null);
+			Credit credit = Credit.NewInstance(team, null, null);
 			taxonName.addCredit(credit);
 //			taxonName.setCombinationAuthorship(team);
 //			taxonName.setGenusOrUninomial(genus);
@@ -2013,11 +2009,6 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		}
 	}
 
-
-	/**
-	 * @param taxon
-	 * @param lastTaxon
-	 */
 	private void handleTaxonRelation(EfloraImportState state, Taxon taxon, Taxon lastTaxon) {
 
 		Classification tree = getTree(state);
