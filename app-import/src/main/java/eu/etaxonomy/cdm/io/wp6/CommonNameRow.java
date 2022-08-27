@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.wp6;
 
 import java.util.ArrayList;
@@ -17,7 +16,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -30,22 +30,21 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  */
 public class CommonNameRow {
 
-	private static final Logger logger = Logger.getLogger(CommonNameRow.class);
-
+    private static final Logger logger = LogManager.getLogger();
 
 	private String species;
 	private String reference;
 	private String area;
 	private String nameUsedInSource;
 
-	private Map<String, List<String>> commonNames = new HashMap<String, List<String>>();
+	private Map<String, List<String>> commonNames = new HashMap<>();
 
 
 	public CommonNameRow() {
 		this.species = "";
 		this.reference =  "";
 		this.area =  "";
-		commonNames = new HashMap<String, List<String>>();
+		commonNames = new HashMap<>();
 	}
 
 // **************************** GETTER / SETTER *********************************/
@@ -150,7 +149,4 @@ public class CommonNameRow {
 	public String getNameUsedInSource() {
 		return nameUsedInSource;
 	}
-
-
-
 }

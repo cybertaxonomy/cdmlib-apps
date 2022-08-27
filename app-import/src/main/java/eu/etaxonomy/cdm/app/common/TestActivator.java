@@ -18,7 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.service.dto.DistributionInfoDTO;
 import eu.etaxonomy.cdm.api.service.dto.DistributionInfoDTO.InfoPart;
@@ -45,7 +46,7 @@ import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 public class TestActivator {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(TestActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();

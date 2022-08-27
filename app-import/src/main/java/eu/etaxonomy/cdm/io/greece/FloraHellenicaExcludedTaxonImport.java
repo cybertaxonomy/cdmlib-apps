@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
@@ -35,16 +36,13 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * @author a.mueller
  * @since 14.12.2016
- *
  */
-
 @Component
 public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImportConfigurator>
             extends FloraHellenicaImportBase<CONFIG>{
 
-
     private static final long serialVersionUID = 2629253144140992196L;
-    private static final Logger logger = Logger.getLogger(FloraHellenicaExcludedTaxonImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String TAXON = "Taxon";
     private static final String UNIQUE_ID = "Unique ID";
@@ -63,9 +61,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
     }
 
     boolean isFirst = true;
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
 

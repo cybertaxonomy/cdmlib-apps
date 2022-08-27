@@ -9,7 +9,8 @@
 
 package eu.etaxonomy.cdm.app.images;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
@@ -29,7 +30,7 @@ public abstract class AbstractImageImporter
         extends CdmImportBase<ImageImportConfigurator, ImageImportState> {
 
     private static final long serialVersionUID = 6178173988325980060L;
-    private static final Logger logger = Logger.getLogger(AbstractImageImporter.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	protected CdmApplicationController appCtr;
 

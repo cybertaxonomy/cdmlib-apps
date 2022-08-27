@@ -8,12 +8,13 @@
 */
 package eu.etaxonomy.cdm.app.redlist;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -26,10 +27,10 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @since 25.11.2016
- *
  */
 public class GermanSLActivator {
-    private static final Logger logger = Logger.getLogger(GermanSLActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;

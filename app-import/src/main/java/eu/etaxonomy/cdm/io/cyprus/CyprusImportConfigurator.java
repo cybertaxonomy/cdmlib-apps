@@ -9,11 +9,12 @@
 
 package eu.etaxonomy.cdm.io.cyprus;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
@@ -30,7 +31,7 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase {
     private static final long serialVersionUID = 5590553979984931651L;
 
     @SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(CyprusImportConfigurator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private UUID uuidCyprusReference = UUID.fromString("b5281cd3-9d5d-4ae2-8d55-b62a592ce846");
 

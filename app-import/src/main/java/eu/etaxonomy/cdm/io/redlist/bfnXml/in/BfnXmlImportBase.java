@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.redlist.bfnXml.in;
 
 import static eu.etaxonomy.cdm.io.common.ImportHelper.OBLIGATORY;
@@ -19,7 +18,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -40,12 +40,11 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.oppermann
  * @since 03.07.2013
- *
  */
 public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfigurator, BfnXmlImportState> {
     private static final long serialVersionUID = 3390179691538955000L;
 
-    private static final Logger logger = Logger.getLogger(BfnXmlImportBase.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	protected static Namespace nsTcom = Namespace.getNamespace("http://rs.tdwg.org/ontology/voc/Common#");
 	protected static Namespace nsTn = Namespace.getNamespace("http://rs.tdwg.org/ontology/voc/TaxonName#");

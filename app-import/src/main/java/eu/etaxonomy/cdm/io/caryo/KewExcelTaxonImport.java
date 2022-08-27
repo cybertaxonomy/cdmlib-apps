@@ -18,7 +18,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -59,7 +60,7 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
             extends SimpleExcelTaxonImport<CONFIG>{
 
     private static final long serialVersionUID = 1081966876789613803L;
-    private static final Logger logger = Logger.getLogger(KewExcelTaxonImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String NO_SIMPLE_DIFF = "xxxxx";
 

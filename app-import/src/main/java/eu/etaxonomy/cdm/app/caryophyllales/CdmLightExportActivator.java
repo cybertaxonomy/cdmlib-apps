@@ -12,14 +12,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import eu.etaxonomy.cdm.common.URI;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.util.TestDatabase;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.cdmLight.CdmLightExportConfigurator;
@@ -34,11 +35,10 @@ import eu.etaxonomy.cdm.io.common.ExportResultType;
 public class CdmLightExportActivator {
 private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_caryophyllales_nepenthaceae();
 
+    private static final Logger logger = LogManager.getLogger();
+
     // Export:
     private static String exportFileName = "file://C://Users//k.luther//Documents//Caryophyllales//OutputModel";
-
-
-    private static final Logger logger = Logger.getLogger(CdmLightExportActivator.class);
 
     private ExportResult invokeExport(ICdmDataSource sourceParam, URI uri) {
 //      String server = "localhost";

@@ -12,7 +12,8 @@ package eu.etaxonomy.cdm.io.caryo;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -26,8 +27,7 @@ public final class CaryoTransformer extends InputTransformerBase {
 
     private static final long serialVersionUID = 4211928286547705792L;
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CaryoTransformer.class);
-
+    private static final Logger logger = LogManager.getLogger();
 
 	//feature
 //	public static final UUID endemismUuid =  UUID.fromString("dd343c31-1916-4786-a530-536ea995dce4");

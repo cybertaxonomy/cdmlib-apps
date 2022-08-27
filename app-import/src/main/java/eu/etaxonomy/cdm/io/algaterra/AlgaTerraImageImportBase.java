@@ -12,7 +12,8 @@ package eu.etaxonomy.cdm.io.algaterra;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -33,9 +34,12 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
  * @since 12.09.2012
  */
 public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
-	private static final Logger logger = Logger.getLogger(AlgaTerraImageImportBase.class);
 
-	public static final String TERMS_NAMESPACE = "ALGA_TERRA_TERMS";
+    private static final long serialVersionUID = 1L;
+
+    private static final Logger logger = LogManager.getLogger();
+
+    public static final String TERMS_NAMESPACE = "ALGA_TERRA_TERMS";
 
 	private static final String ALGAE_URL_BASE = "http://mediastorage.bgbm.org/fsi/server?type=image&profile=jpeg&quality=100&source=Algaterra%2FAlgae%2F";
 	private static final String SITE_URL_BASE =  "http://mediastorage.bgbm.org/fsi/server?type=image&profile=jpeg&quality=100&source=Algaterra%2FSites%2F";

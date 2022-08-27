@@ -17,7 +17,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -59,7 +60,7 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
  */
 public class CichorieaeImageUpdateActivator {
 
-	private static final Logger logger = Logger.getLogger(CichorieaeImageUpdateActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cichorieae();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_cyprus();

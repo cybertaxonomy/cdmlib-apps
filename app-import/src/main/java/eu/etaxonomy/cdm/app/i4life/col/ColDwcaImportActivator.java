@@ -9,21 +9,22 @@
 
 package eu.etaxonomy.cdm.app.i4life.col;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.dwca.in.DwcaDataImportConfiguratorBase.DatasetUse;
-import eu.etaxonomy.cdm.io.stream.mapping.IImportMapping.MappingType;
 import eu.etaxonomy.cdm.io.dwca.in.DwcaImportConfigurator;
+import eu.etaxonomy.cdm.io.stream.mapping.IImportMapping.MappingType;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -34,9 +35,10 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @since 10.11.2011
  */
 public class ColDwcaImportActivator {
-	private static final Logger logger = Logger.getLogger(ColDwcaImportActivator.class);
 
-	//handled by ImportSteps now
+    private static final Logger logger = LogManager.getLogger();
+
+    //handled by ImportSteps now
     //static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
 	static final ImportSteps importSteps = ImportSteps.ExtensionsOnly;

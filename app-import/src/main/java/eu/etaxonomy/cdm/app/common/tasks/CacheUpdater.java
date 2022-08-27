@@ -6,14 +6,14 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.common.tasks;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.UpdateResult;
@@ -26,12 +26,12 @@ import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 
-
 /**
  * @author a.mueller
  */
 public class CacheUpdater {
-	private static final Logger logger = Logger.getLogger(CacheUpdater.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
@@ -49,8 +49,6 @@ public class CacheUpdater {
 //			TaxonBase.class.getName()
 	});
 	//new ArrayList<Class<? extends IdentifiableEntity>>();
-
-
 
 	private ImportResult doInvoke(ICdmDataSource destination){
 		ImportResult result = new ImportResult();

@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.algaterra;
 
 import java.math.BigDecimal;
@@ -19,7 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
@@ -61,7 +61,7 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 
     private static final long serialVersionUID = 2918870166537160882L;
-    private static final Logger logger = Logger.getLogger(AlgaTerraEcoFactImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 
 	private static int modCount = 5000;

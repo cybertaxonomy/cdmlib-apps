@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.wp6.palmae;
 
 import java.io.File;
@@ -14,7 +13,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -30,10 +30,10 @@ import eu.etaxonomy.cdm.io.taxonx.TaxonXImportConfigurator;
 /**
  * @author a.mueller
  * @since 20.06.2008
- * @version 1.0
  */
 public class PalmaeTaxonXImportActivator {
-	private static final Logger logger = Logger.getLogger(PalmaeTaxonXImportActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.UPDATE;

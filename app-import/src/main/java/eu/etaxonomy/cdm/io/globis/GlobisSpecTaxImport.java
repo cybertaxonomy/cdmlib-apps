@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.globis;
 
 import java.sql.ResultSet;
@@ -20,7 +19,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
@@ -60,14 +60,15 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
  */
 @Component
 public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements IMappingImport<Reference, GlobisImportState>{
-	private static final Logger logger = Logger.getLogger(GlobisSpecTaxImport.class);
+
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = LogManager.getLogger();
 
 	private int modCount = 10000;
 	private static final String pluralString = "taxa";

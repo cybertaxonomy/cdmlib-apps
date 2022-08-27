@@ -6,14 +6,14 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.redlist.bfnXml.in;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.stereotype.Component;
@@ -37,12 +37,12 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  *
  * @author a.oppermann
  * @since 04.07.2013
- *
  */
 @Component
 public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnXmlImportState> {
+
     private static final long serialVersionUID = 3545757825059662424L;
-    private static final Logger logger = Logger.getLogger(BfnXmlImportFeature.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public BfnXmlImportFeature(){
 		super();

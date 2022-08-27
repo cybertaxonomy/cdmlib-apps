@@ -1,11 +1,17 @@
 /**
- *
- */
+* Copyright (C) 2007 EDIT
+* European Distributed Institute of Taxonomy
+* http://www.e-taxonomy.eu
+*
+* The contents of this file are subject to the Mozilla Public License Version 1.1
+* See LICENSE.TXT at the top of this package for the full license terms.
+*/
 package eu.etaxonomy.cdm.io.algaterra;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -14,10 +20,10 @@ import eu.etaxonomy.cdm.model.description.Feature;
 /**
  * @author a.mueller
  * @since 13.09.2012
- *
  */
 public class AlgaTerraImportTransformer extends BerlinModelTransformer {
-	private static final Logger logger = Logger.getLogger(AlgaTerraImportTransformer.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	// feature - parameter
 	public static final UUID uuidFeaturePH = UUID.fromString("99354dac-0695-44b3-a0e6-c4d4f5684006");

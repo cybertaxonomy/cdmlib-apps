@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.redlist.germanSL;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -20,14 +21,12 @@ import eu.etaxonomy.cdm.model.name.Rank;
 /**
  * @author a.mueller
  * @since 25.11.2016
- *
  */
 public class GermanSLTransformer  extends InputTransformerBase{
 
     private static final long serialVersionUID = -1794363151658943665L;
-
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(GermanSLTransformer.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final UUID uuidRankZUS = UUID.fromString("db161a9e-aebc-419f-a724-14feae1b08f7");
     private static final UUID uuidIdentifierTypeLettercode = UUID.fromString("99b907df-c932-4007-96e9-b6a0d5e1f3bf");

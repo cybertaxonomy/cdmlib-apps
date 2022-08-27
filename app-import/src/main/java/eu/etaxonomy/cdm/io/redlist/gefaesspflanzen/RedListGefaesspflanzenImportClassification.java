@@ -18,7 +18,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -46,7 +47,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 @SuppressWarnings("serial")
 public class RedListGefaesspflanzenImportClassification extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
 
-    private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportClassification.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String tableName = "Rote Liste Gefäßpflanzen";
 

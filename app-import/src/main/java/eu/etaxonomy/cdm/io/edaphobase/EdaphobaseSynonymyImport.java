@@ -15,7 +15,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
@@ -37,7 +38,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
 
     private static final long serialVersionUID = 6641343927320994726L;
-    private static final Logger logger = Logger.getLogger(EdaphobaseSynonymyImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String tableName = "tax_synonym";
     private static final String pluralString = "related synonyms";
@@ -108,7 +109,7 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
                             if (synonym.getAcceptedTaxon()!= null){
                                 String message = "Synonym ("+synId+") already has an accepted taxon. Have to clone synonym. RelId: " + id;
                                 logger.warn(message);
-                                synonym = (Synonym)synonym.clone();
+                                synonym = synonym.clone();
                             }
                             taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
                             state.addSynonymWithAcceptedTaxon(synId);

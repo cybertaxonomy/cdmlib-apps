@@ -15,7 +15,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -45,7 +46,7 @@ public class JaxbExportActivator {
 	 *  Only root taxa and no synonyms and relationships are retrieved. */
 	private static final int NUMBER_ROWS_TO_RETRIEVE = 0;
 
-	private static final Logger logger = Logger.getLogger(JaxbImportActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private void invokeExport(ICdmDataSource sourceParam, File file) {
 //		String server = "localhost";

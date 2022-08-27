@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
@@ -30,8 +31,9 @@ import eu.etaxonomy.cdm.model.media.Rights;
  * @since 05.2017
  */
 public class GreeceImagesUpdaterTurlandActivator {
-	@SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(GreeceImagesUpdaterTurlandActivator.class);
+
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
 
 //  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();

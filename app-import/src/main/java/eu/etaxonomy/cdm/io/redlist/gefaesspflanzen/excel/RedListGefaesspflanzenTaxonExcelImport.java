@@ -1,4 +1,3 @@
-// $Id$
 /**
 * Copyright (C) 2017 EDIT
 * European Distributed Institute of Taxonomy
@@ -13,7 +12,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -45,7 +45,7 @@ public class RedListGefaesspflanzenTaxonExcelImport<CONFIG extends RedListGefaes
         extends SimpleExcelTaxonImport<CONFIG> {
 
     private static final long serialVersionUID = -884838817884874228L;
-    private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenTaxonExcelImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String ID_COL = "SORT_ID";
     private static final String UUID_COL = "TAXON_UUID";

@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.io.mexico;
 
 import java.net.URISyntaxException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.DOI;
@@ -29,10 +30,10 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 @Component
 public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImportBase {
 
-    public static final String NAMESPACE = "References";
-
     private static final long serialVersionUID = -5161951752826380728L;
-    private static final Logger logger = Logger.getLogger(MexicoEfloraReferenceImportBase.class);
+    private static final Logger logger = LogManager.getLogger();
+
+    public static final String NAMESPACE = "References";
 
     public MexicoEfloraReferenceImportBase(String dbTableName, String pluralString){
 		super(dbTableName, pluralString);

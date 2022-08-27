@@ -6,13 +6,13 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.redlist.bfnXml.in;
 
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -28,7 +28,7 @@ public final class BfnXmlTransformer extends InputTransformerBase{
     private static final long serialVersionUID = -4795356792130338005L;
 
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(BfnXmlTransformer.class);
+    private static final Logger logger = LogManager.getLogger();
 
     public static final String RAUTE = "\u2666";
 

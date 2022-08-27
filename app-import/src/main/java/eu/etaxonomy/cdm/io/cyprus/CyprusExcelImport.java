@@ -16,7 +16,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -53,8 +54,7 @@ public class CyprusExcelImport
         extends ExcelImportBase<CyprusImportState, CyprusImportConfigurator, ExcelRowBase> {
 
     private static final long serialVersionUID = 4449832452730987788L;
-
-    private static final Logger logger = Logger.getLogger(CyprusExcelImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static Set<String> validMarkers = new HashSet<>(Arrays.asList(new String[]{"", "valid", "accepted", "a", "v", "t"}));
 	public static Set<String> synonymMarkers = new HashSet<>(Arrays.asList(new String[]{"", "invalid", "synonym", "s", "i"}));

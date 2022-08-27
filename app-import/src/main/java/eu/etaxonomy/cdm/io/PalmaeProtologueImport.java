@@ -8,19 +8,20 @@
 */
 package eu.etaxonomy.cdm.io;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
 import eu.etaxonomy.cdm.app.images.ImageImportState;
 import eu.etaxonomy.cdm.common.ExcelUtils;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.model.media.ExternalLinkType;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 
@@ -30,9 +31,9 @@ import eu.etaxonomy.cdm.model.name.TaxonName;
  */
 @Component
 public class PalmaeProtologueImport extends AbstractImageImporter {
-    private static final long serialVersionUID = -7178567387220714414L;
 
-    private static final Logger logger = Logger.getLogger(PalmaeProtologueImport.class);
+    private static final long serialVersionUID = -7178567387220714414L;
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final String SPECIES = "Species";
 	public static final String TAXONID = "Taxon ID";

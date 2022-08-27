@@ -12,7 +12,8 @@ package eu.etaxonomy.cdm.io.cuba;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -26,7 +27,7 @@ public final class CubaTransformer extends InputTransformerBase {
     private static final long serialVersionUID = 1070018208741186271L;
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CubaTransformer.class);
+    private static final Logger logger = LogManager.getLogger();
 
     //references
     public static final UUID uuidRefFRC = UUID.fromString("c1caf6a2-5083-4f44-8f97-9abe23a84cd8");

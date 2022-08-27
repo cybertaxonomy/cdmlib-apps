@@ -8,7 +8,8 @@
 */
 package eu.etaxonomy.cdm.app.common.tasks;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -27,8 +28,9 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  * @since 24.11.2017
  */
 public class Deduplicator {
+
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(Deduplicator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     //database validation status (create, update, validate ...)
 //  static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

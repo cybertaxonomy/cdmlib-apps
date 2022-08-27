@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -43,7 +44,7 @@ public class IpniSourcesImport<CONFIG extends IpniSourcesImportConfigurator>
 
     private static final long serialVersionUID = -6723116237971852295L;
 
-    private static final Logger logger = Logger.getLogger(IpniSourcesImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String NAMECACHE = "full_name_without_family_and_authors";
     private static final String GENUS = "genus";

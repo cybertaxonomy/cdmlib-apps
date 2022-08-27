@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -38,7 +39,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 
     private static final long serialVersionUID = 8097679811768529307L;
-    private static final Logger logger = Logger.getLogger(MexicoEfloraFactImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	protected static final String NAMESPACE = "Facts";
 

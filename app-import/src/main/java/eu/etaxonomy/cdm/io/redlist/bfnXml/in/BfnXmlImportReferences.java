@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml.in;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.model.agent.Person;
@@ -31,9 +32,10 @@ import eu.etaxonomy.cdm.model.reference.ReferenceType;
  */
 @Component
 public class BfnXmlImportReferences extends BfnXmlImportBase  {
+
     private static final long serialVersionUID = 3545757825059662424L;
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(BfnXmlImportReferences.class);
+    private static final Logger logger = LogManager.getLogger();
 
     public static final UUID uuidSeries = UUID.fromString("766a239f-08e9-45d2-bb13-0756149438e7");
     public static final UUID uuidBand1 = UUID.fromString("887c0dcf-7d1a-489a-bb45-ede77de98de");

@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.wp6.palmae;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
@@ -27,7 +28,8 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  * @since 18.07.2011
  */
 public class UseSummaryActivator {
-	private static final Logger logger = Logger.getLogger(UseSummaryActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	private static String fileName = new String("C:\\tmp\\temp\\NormalExplicit.xls");
 	private static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;

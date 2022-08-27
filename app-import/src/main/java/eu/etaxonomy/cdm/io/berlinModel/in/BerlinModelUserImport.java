@@ -16,7 +16,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -39,7 +40,7 @@ import eu.etaxonomy.cdm.model.permission.User;
 public class BerlinModelUserImport extends BerlinModelImportBase {
     private static final long serialVersionUID = 3277951604022442721L;
 
-    private static final Logger logger = Logger.getLogger(BerlinModelUserImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final String NAMESPACE = "User";
 

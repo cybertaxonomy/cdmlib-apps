@@ -6,10 +6,10 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.phycobank;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 
@@ -18,8 +18,9 @@ import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
  * @since 11.05.2009
  */
 public class PhycobankHigherClassificationImportState extends SimpleExcelTaxonImportState<PhycobankHigherClassificationImportConfigurator> {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(PhycobankHigherClassificationImportState.class);
+
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
 
     //Constructor
     public PhycobankHigherClassificationImportState(PhycobankHigherClassificationImportConfigurator config) {

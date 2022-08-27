@@ -8,7 +8,8 @@
 */
 package eu.etaxonomy.cdm.app.images;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
@@ -20,7 +21,7 @@ import eu.etaxonomy.cdm.io.common.ImportStateBase;
 public class ImageImportState extends ImportStateBase<ImageImportConfigurator, CdmImportBase>{
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(ImageImportState.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public ImageImportState(ImageImportConfigurator config) {
 		super(config);

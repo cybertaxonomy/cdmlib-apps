@@ -23,8 +23,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Partial;
 import org.joda.time.format.DateTimeFormat;
@@ -87,9 +87,9 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 @Component("iAPTExcelImport")
 public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends SimpleExcelTaxonImport<CONFIG> {
     private static final long serialVersionUID = -747486709409732371L;
-    private static final Logger logger = Logger.getLogger(IAPTExcelImport.class);
-    public static final String ANNOTATION_MARKER_STRING = "[*]";
+    private static final Logger logger = LogManager.getLogger();
 
+    public static final String ANNOTATION_MARKER_STRING = "[*]";
 
     private static UUID ROOT_UUID = UUID.fromString("4137fd2a-20f6-4e70-80b9-f296daf51d82");
 

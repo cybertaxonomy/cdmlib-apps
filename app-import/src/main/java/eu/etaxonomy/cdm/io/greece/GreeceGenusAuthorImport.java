@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.io.greece;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
@@ -29,7 +30,7 @@ public class GreeceGenusAuthorImport
     	extends SimpleExcelTaxonImport<GreeceGenusAuthorImportConfigurator>{
 
 	private static final long serialVersionUID = 1173327042682886814L;
-    private static final Logger logger = Logger.getLogger(GreeceGenusAuthorImport.class);
+	private static final Logger logger = LogManager.getLogger();
 
     private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 

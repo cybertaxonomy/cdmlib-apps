@@ -18,7 +18,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -66,8 +67,7 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         extends SimpleExcelTaxonImport<CONFIG> {
 
     private static final long serialVersionUID = -6691694003401153408L;
-
-    private static final Logger logger = Logger.getLogger(IpniImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String ID_COL = "EDIT-Genus-Taxon-ID";
     private static final String EDIT_GENUS = "EDIT-Genus";

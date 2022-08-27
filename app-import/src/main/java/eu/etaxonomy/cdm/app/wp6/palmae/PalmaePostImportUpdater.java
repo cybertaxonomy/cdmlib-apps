@@ -6,14 +6,14 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.wp6.palmae;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
@@ -39,10 +39,10 @@ import eu.etaxonomy.cdm.model.term.TermTree;
  * @since 01.10.2009
  */
 public class PalmaePostImportUpdater {
-	private static final Logger logger = Logger.getLogger(PalmaePostImportUpdater.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2Palmae();
-
 
 	private String relationships = "relationships";
 	private String taxonomicAccounts = "taxonomic accounts";

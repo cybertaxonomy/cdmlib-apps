@@ -6,10 +6,10 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.berlinModel.in.validation;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
 import eu.etaxonomy.cdm.io.common.IOValidator;
@@ -19,8 +19,9 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
  * @since 17.02.2010
  */
 public class BerlinModelAreaImportValidator implements IOValidator<BerlinModelImportState> {
-	@SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(BerlinModelAreaImportValidator.class);
+
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
 
 	@Override
 	public boolean validate(BerlinModelImportState state) {

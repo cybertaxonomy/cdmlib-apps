@@ -15,7 +15,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
@@ -42,7 +43,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 
     private static final long serialVersionUID = 3910940848080132170L;
-    private static final Logger logger = Logger.getLogger(AlgaTerraPictureImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 5000;
 	private static final String pluralString = "pictures";

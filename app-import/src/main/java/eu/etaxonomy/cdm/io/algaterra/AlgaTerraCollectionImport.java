@@ -16,7 +16,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraCollectionImportValidator;
@@ -30,15 +31,16 @@ import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 
-
 /**
  * @author a.mueller
  * @since 01.09.2012
  */
 @Component
 public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(AlgaTerraCollectionImport.class);
 
+    private static final long serialVersionUID = 1L;
+
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 5000;
 	private static final String pluralString = "collections";
@@ -52,10 +54,6 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 		super(dbTableName, pluralString);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT CollectionId " +
@@ -64,9 +62,6 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =
@@ -79,9 +74,6 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 		return strQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
 	@Override
     public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
@@ -142,15 +134,12 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 						subCollection.setSuperCollection(collection);
 					}
 
-
 					//TODO movedToFk (extension ??)
-
 
 				} catch (Exception e) {
 					logger.warn("Exception in collection: CollectionId " + collectionId + ". " + e.getMessage());
 //					e.printStackTrace();
 				}
-
             }
 
 			logger.warn(pluralString + " to save: " + collectionsToSave.size());
@@ -163,18 +152,6 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 		}
 	}
 
-
-
-	/**
-	 * @param collectionsToSave
-	 * @param collectionId
-	 * @param name
-	 * @param town
-	 * @param ihCode
-	 * @param sourceRef
-	 * @param collectionMap
-	 * @return
-	 */
 	private Collection makeCollection(Set<Collection> collectionsToSave, int collectionId,
 			String name, String town, String ihCode, Reference sourceRef, String namespace, Map<String, Collection> collectionMap) {
 		Collection collection = Collection.NewInstance();
@@ -228,9 +205,6 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 		return validator.validate(state);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(BerlinModelImportState bmState){
 		AlgaTerraImportState state = (AlgaTerraImportState)bmState;

@@ -12,7 +12,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.util.Assert;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -32,8 +33,8 @@ import eu.etaxonomy.cdm.io.sdd.in.SDDImportConfigurator;
  * @since 24.10.2008
  */
 public class SDDImportActivator {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(SDDImportActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;

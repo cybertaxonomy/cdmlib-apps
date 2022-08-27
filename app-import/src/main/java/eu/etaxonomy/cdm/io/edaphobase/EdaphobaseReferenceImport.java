@@ -16,7 +16,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.DOI;
@@ -31,13 +32,12 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @since 18.12.2015
- *
  */
 @Component
 public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
-    private static final long serialVersionUID = 6895687693249076160L;
 
-    private static final Logger logger = Logger.getLogger(EdaphobaseReferenceImport.class);
+    private static final long serialVersionUID = 6895687693249076160L;
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String tableName = "lit_document";
 

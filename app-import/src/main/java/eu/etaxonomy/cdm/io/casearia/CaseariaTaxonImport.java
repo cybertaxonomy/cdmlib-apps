@@ -16,7 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.service.config.SynonymDeletionConfigurator;
@@ -54,7 +55,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportConfigurator>{
 
     private static final long serialVersionUID = 7686154384296707819L;
-    private static final Logger logger = Logger.getLogger(CaseariaTaxonImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     protected static final String TAXON_MAPPING = "TaxonMapping";
     private static final String NAME_CIT = "NameCit";

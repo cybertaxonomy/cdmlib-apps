@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -39,12 +40,12 @@ import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
  *
  */
 public class DipteraCollectionImport {
-	private static final Logger logger = Logger.getLogger(DipteraCollectionImport.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final File acronymsFile = new File("src/main/resources/collections/Acronyms.tab");
 	//datasource for use from local main()
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-
 
 	public ImportResult invoke(ICdmDataSource dataSource) {
 	    ImportResult result = new ImportResult();
@@ -62,11 +63,6 @@ public class DipteraCollectionImport {
 
 	}
 
-
-	/**
-	 * @param cdmApp
-	 * @param colletionMap
-	 */
 	private void addCollectionsToSpecimen(CdmApplicationController cdmApp, Map<String, Collection> colletionMap) {
 		List<DerivedUnit> specimens = cdmApp.getOccurrenceService().list(DerivedUnit.class, null, null, null, null);
 		for (SpecimenOrObservationBase<?> specOrObservBase : specimens){
@@ -80,11 +76,6 @@ public class DipteraCollectionImport {
 		cdmApp.getOccurrenceService().save(specimenList);
 	}
 
-
-	/**
-	 * @param specimen
-	 * @param colletionMap
-	 */
 	private void handleSingleSpecimen(DerivedUnit specimen, Map<String, Collection> collectionMap) {
 		String titleCache = specimen.getTitleCache();
 		String collectionCode = getCollectionCode(titleCache);

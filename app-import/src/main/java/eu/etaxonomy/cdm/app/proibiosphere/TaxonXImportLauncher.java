@@ -6,8 +6,8 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.app.proibiosphere;
+
 import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +27,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
@@ -40,11 +41,9 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
-
-
 public class TaxonXImportLauncher {
-    private static final Logger log = Logger.getLogger(TaxonXImportLauncher.class);
-    //    private static final Logger log = Logger.getLogger(CdmEntityDaoBase.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
@@ -56,13 +55,10 @@ public class TaxonXImportLauncher {
 
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
-    private enum FilterType{MODS, TAXON};
-
+    private enum FilterType{MODS, TAXON}
 
     static String plaziUrlTaxName = "http://plazi.cs.umb.edu/GgServer/search?taxonomicName.isNomenclature=true&taxonomicName.exactMatch=true&indexName=0&subIndexName=taxonomicName&subIndexName=MODS&minSubResultSize=1&searchMode=index&resultFormat=xml&xsltUrl=http%3A%2F%2Fplazi.cs.umb.edu%2FGgServer%2Fresources%2FsrsWebPortalData%2FCdmSyncTreatmentList.xslt&taxonomicName.taxonomicName=";
     static String plaziUrlModsDoc = "http://plazi.cs.umb.edu/GgServer/search?taxonomicName.isNomenclature=true&taxonomicName.exactMatch=true&indexName=0&subIndexName=taxonomicName&subIndexName=MODS&minSubResultSize=1&searchMode=index&resultFormat=xml&xsltUrl=http%3A%2F%2Fplazi.cs.umb.edu%2FGgServer%2Fresources%2FsrsWebPortalData%2FCdmSyncTreatmentList.xslt&MODS.ModsDocID=";
-
-
 
     public static void main(String[] args) {
     	String[] spiderModsList = new String[] {"zt03768p138","zt03750p196","zt03666p193","zt03664p068","zt03646p592","zt03507p056","zt03415p057","zt03383p038","zt03305p052","zt03228p068","zt03131p034","zt02963p068","zt02883p068","zt02814p018","zt02739p050","zt02730p043","zt02637p054","zt02593p127","zt02551p068","zt02534p036","zt02526p053","zt02427p035","zt02361p012","zt02267p068","zt02223p047","zt01826p058","zt01775p024","zt01744p040","zt01529p060","zt01004p028","zt00904","zt00872","zt00619","zt00109","DippenaarSchoeman1989Penestominae","Simon1902Cribellates","Simon1903Penestominae","Lehtinen1967CribellatePenestominae"};
@@ -103,7 +99,7 @@ public class TaxonXImportLauncher {
         config.setUseOldUnparsedSynonymExtraction(useOldUnparsedSynonymExtraction);
 
         config.setImportClassificationName(defaultClassification);
-        log.info("Start import from  TaxonX Data");
+        logger.info("Start import from  TaxonX Data");
 
         config.setLastImport(false);
 
@@ -121,7 +117,7 @@ public class TaxonXImportLauncher {
                     prepareReferenceAndSource(config,source);
                      //   taxonxImportConfigurator.setTaxonReference(null);
                     taxonImport.invoke(config);
-                    log.info("End import from SpecimenData ("+ source.toString() + ")...");
+                    logger.info("End import from SpecimenData ("+ source.toString() + ")...");
 
                     //          //deduplicate
                     //            ICdmRepository app = taxonImport.getCdmAppController();
@@ -225,9 +221,9 @@ public class TaxonXImportLauncher {
             pages.addAll(startPages.keySet());
 
             Collections.sort(pages);
-            //            log.info(pages);
+            //            logger.info(pages);
 
-            log.info("Document "+docId+" should have "+treatments.size()+" treatments");
+            logger.info("Document "+docId+" should have "+treatments.size()+" treatments");
                 List<URI> uritmp = documentMap.get(docId);
                 if (uritmp == null) {
                     uritmp = new ArrayList<>();
@@ -289,7 +285,7 @@ public class TaxonXImportLauncher {
 		    }else if (filterType == FilterType.TAXON) {
 		        urlstr=plaziUrlTaxName + filter;
 		    }
-		    log.info("URLstr: " + urlstr);
+		    logger.info("URLstr: " + urlstr);
 
 		    URL plaziURL = new URL(urlstr);
 		    BufferedReader in = new BufferedReader(new InputStreamReader(plaziURL.openStream()));

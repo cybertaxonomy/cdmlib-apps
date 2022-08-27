@@ -6,12 +6,12 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.redlist.gefaesspflanzen;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -23,13 +23,11 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
  *
  * @author pplitzner
  * @since Mar 1, 2016
- *
  */
 @SuppressWarnings("serial")
 public final class RedListGefaesspflanzenTransformer extends InputTransformerBase {
 
-    @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenTransformer.class);
+    private static final Logger logger = LogManager.getLogger();
 
     @Override
     public UUID getRankUuid(String key) throws UndefinedTransformerMethodException {

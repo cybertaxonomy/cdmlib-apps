@@ -27,7 +27,8 @@ import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetadataItem;
 import org.apache.commons.imaging.common.ImageMetadata;
 import org.apache.commons.imaging.common.ImageMetadata.ImageMetadataItem;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -74,7 +75,8 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * @since 05.2017
  */
 public class CyprusImagesActivator {
-	private static final Logger logger = Logger.getLogger(CyprusImagesActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	static final ICdmDataSource cdmDestination = CdmDestinations.local_cyprus();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_cyprus();

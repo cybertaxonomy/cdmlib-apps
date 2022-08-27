@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.greece;
 import java.util.Calendar;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
@@ -35,7 +36,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 public class BupleurumExportActivator {
 
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(BupleurumExportActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     static final ICdmDataSource greeceSource = CdmDestinations.cdm_production_greece_checklist();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();

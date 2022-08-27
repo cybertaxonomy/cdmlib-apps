@@ -20,7 +20,6 @@ import eu.etaxonomy.cdm.io.common.Source;
 /**
  * @author a.mueller
  * @since 21.04.2010
- *
  */
 public class CdmImportSources {
 

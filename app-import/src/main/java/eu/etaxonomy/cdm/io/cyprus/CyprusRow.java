@@ -1,26 +1,26 @@
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.cyprus;
 
 import java.util.TreeMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author a.babadshanjan
  * @since 13.01.2009
- * @version 1.0
  */
 public class CyprusRow {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CyprusRow.class);
+
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
 
 	private String species;
 	private String subspecies;
@@ -33,12 +33,10 @@ public class CyprusRow {
 	private String genus;
 	private String family;
 	private String division;
-	
-	//Sets
-	private TreeMap<Integer, String> distributions = new TreeMap<Integer, String>();
 
-	
-	
+	//Sets
+	private TreeMap<Integer, String> distributions = new TreeMap<>();
+
 	public CyprusRow() {
 		this.species = "";
 		this.subspecies = "";
@@ -52,25 +50,25 @@ public class CyprusRow {
 		this.family = "";
 		this.division = "";
 	}
-	
+
 //	public CyprusRow(String name, int parentId) {
 //		this(name, parentId, null);
 //	}
-	
+
 //	public CyprusRow(String scientificName, int parentId, String reference) {
 //		this.parentId = parentId;
 //		this.scientificName = scientificName;
 //		this.reference = reference;
 //	}
-	
-// **************************** GETTER / SETTER *********************************/	
-	
+
+// **************************** GETTER / SETTER *********************************/
+
 
 
 	public void putDistribution(int key, String distribution){
 		this.distributions.put(key, distribution);
 	}
-	
+
 	public String getSpecies() {
 		return species;
 	}
@@ -159,5 +157,5 @@ public class CyprusRow {
 	public String getRedDataBookCategory() {
 		return redDataBookCategory;
 	}
-	
+
 }

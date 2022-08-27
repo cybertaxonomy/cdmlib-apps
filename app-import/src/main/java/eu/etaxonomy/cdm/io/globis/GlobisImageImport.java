@@ -11,7 +11,6 @@ package eu.etaxonomy.cdm.io.globis;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import eu.etaxonomy.cdm.common.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -23,10 +22,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.UriUtils;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -56,7 +57,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 
     private static final long serialVersionUID = 5697033145326415146L;
-    private static final Logger logger = Logger.getLogger(GlobisImageImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private int modCount = 1000;
 

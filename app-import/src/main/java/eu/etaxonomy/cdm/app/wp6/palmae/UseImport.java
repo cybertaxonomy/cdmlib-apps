@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.wp6.palmae;
 
 import java.io.FileInputStream;
@@ -21,7 +20,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -71,7 +71,8 @@ import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 public class UseImport {
-	public static final Logger logger = Logger.getLogger(UseImport.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	public static ICdmDataSource dataSource() {
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;

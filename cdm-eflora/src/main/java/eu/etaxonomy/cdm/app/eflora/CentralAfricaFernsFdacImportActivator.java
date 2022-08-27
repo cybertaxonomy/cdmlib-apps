@@ -8,8 +8,6 @@
 */
 package eu.etaxonomy.cdm.app.eflora;
 
-import org.apache.log4j.Logger;
-
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -28,9 +26,6 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @since 03.04.2012
  */
 public class CentralAfricaFernsFdacImportActivator {
-
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CentralAfricaFernsFdacImportActivator.class);
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

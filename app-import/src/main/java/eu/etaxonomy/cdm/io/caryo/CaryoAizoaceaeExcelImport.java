@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.service.config.SynonymDeletionConfigurator;
@@ -49,7 +50,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoaceaeExcelImportConfigurator>{
 
     private static final long serialVersionUID = -729761811965260921L;
-    private static final Logger logger = Logger.getLogger(CaryoAizoaceaeExcelImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String ACCEPTED_PLANT_NAME_ID = "accepted_plant_name_id";
     private static final String NOMENCLATURAL_REMARKS = "nomenclatural_remarks";

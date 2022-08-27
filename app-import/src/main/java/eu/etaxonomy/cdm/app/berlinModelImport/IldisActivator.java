@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.berlinModelImport;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -30,17 +31,17 @@ import eu.etaxonomy.cdm.model.term.TermTree;
 /**
  * @author a.mueller
  * @since 03.12.2010
- *
  */
 public class IldisActivator {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(IldisActivator.class);
+
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
+
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.ILDIS();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_ildis_dev();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
-
 
 	static final UUID secUuid = UUID.fromString("a7f29364-ce98-4c1d-ad2e-3d889cc5885c");
 	static final UUID classificationUuid = UUID.fromString("c7a4e447-ca1e-46e9-adb9-037dab039ccc");

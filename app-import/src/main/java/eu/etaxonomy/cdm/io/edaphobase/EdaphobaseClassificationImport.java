@@ -16,7 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
@@ -31,23 +32,17 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author a.mueller
  * @since 21.12.2015
- *
  */
 @Component
 public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
     private static final long serialVersionUID = -9138378836474086070L;
 
-    private static final Logger logger = Logger.getLogger(EdaphobaseClassificationImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String tableName = "tax_taxon";
 
     private static final String pluralString = "taxon relationships";
 
-
-    /**
-     * @param tableName
-     * @param pluralString
-     */
     public EdaphobaseClassificationImport() {
         super(tableName, pluralString);
     }

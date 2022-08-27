@@ -6,14 +6,14 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.wp6.cichorieae;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.config.CacheUpdaterConfigurator;
@@ -22,23 +22,20 @@ import eu.etaxonomy.cdm.common.monitor.IRemotingProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
-import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-
 
 /**
  * TODO add the following to a wiki page:
  * HINT: If you are about to import into a mysql data base running under windows and if you wish to dump and restore the resulting data bas under another operation systen
  * you must set the mysql system variable lower_case_table_names = 0 in order to create data base with table compatible names.
  *
- *
  * @author a.mueller
- *
  */
 public class CichorieaeCacheUpdater {
-	private static final Logger logger = Logger.getLogger(CichorieaeCacheUpdater.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
@@ -128,8 +125,8 @@ public class CichorieaeCacheUpdater {
                 logger.info("Waiting for monitered work to start ..");
                 monitor = appCtrInit.getProgressMonitorService().getRemotingMonitor(monitUuid);
 			}
-			
-			
+
+
 			String successString = monitor == null || monitor.isDone() ? "successful" : " with errors ";
 			System.out.println("End updating caches for "+ destination.getDatabase() + "..." +  successString);
 			return success;

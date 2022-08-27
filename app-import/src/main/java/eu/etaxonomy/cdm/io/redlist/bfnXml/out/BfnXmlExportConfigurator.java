@@ -6,12 +6,12 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.redlist.bfnXml.out;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -19,17 +19,14 @@ import eu.etaxonomy.cdm.io.common.XmlExportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 
 /**
- *
  * @author pplitzner
  * @since May 3, 2016
- *
  */
 public class BfnXmlExportConfigurator extends XmlExportConfiguratorBase<BfnXmlExportState>{
 
     private static final long serialVersionUID = -74469857806841119L;
-
     @SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(BfnXmlExportConfigurator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private final Document document;
 

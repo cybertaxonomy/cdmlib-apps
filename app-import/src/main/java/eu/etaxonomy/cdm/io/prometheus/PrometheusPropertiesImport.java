@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.prometheus;
 import java.io.File;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -22,15 +23,14 @@ import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
-*
 * @author pplitzner
 * @date 18.02.2019
-*
 */
 @Component
 public class PrometheusPropertiesImport extends CsvImportBase<PrometheusPropertiesCsvImportConfigurator, PrometheusPropertiesCsvImportState, File>{
+
     private static final long serialVersionUID = -5600766240192189822L;
-    private static Logger logger = Logger.getLogger(PrometheusPropertiesImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     final String HEADER_LABEL = "NEW_QUALITATIVE_PROPERTIES - NEW_QUALITATIVE_PROPERTY - term";
 

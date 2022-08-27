@@ -12,7 +12,8 @@ package eu.etaxonomy.cdm.app.caryophyllales;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
@@ -28,7 +29,8 @@ import eu.etaxonomy.cdm.io.tcsxml.in.TcsXmlImportConfigurator;
  * @since 2014
  */
 public class CaryophyllalesTcsXmlActivator {
-	private static final Logger logger = Logger.getLogger(CaryophyllalesTcsXmlActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;

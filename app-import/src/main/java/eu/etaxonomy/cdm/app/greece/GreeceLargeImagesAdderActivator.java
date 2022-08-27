@@ -13,7 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
@@ -35,15 +36,14 @@ import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
  * @since 05.2017
  */
 public class GreeceLargeImagesAdderActivator {
-	@SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(GreeceLargeImagesAdderActivator.class);
 
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
 
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
 	static boolean testOnly = false;
-
 
     private void addLargeImage(ICdmDataSource cdmDestination){
         CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, DbSchemaValidation.VALIDATE);

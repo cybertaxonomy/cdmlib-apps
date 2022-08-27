@@ -15,7 +15,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonImport.PublishMarkerChooser;
@@ -34,7 +35,7 @@ public class BerlinModelImportConfigurator
 
     private static final long serialVersionUID = 70300913255425256L;
 
-    private static Logger logger = Logger.getLogger(BerlinModelImportConfigurator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static BerlinModelImportConfigurator NewInstance(Source berlinModelSource, ICdmDataSource destination){
 			return new BerlinModelImportConfigurator(berlinModelSource, destination);

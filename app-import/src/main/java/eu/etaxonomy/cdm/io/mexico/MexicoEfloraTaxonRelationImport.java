@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.mexico;
 
 import java.sql.ResultSet;
@@ -18,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -39,7 +39,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 
     private static final long serialVersionUID = 8616047381536678637L;
-    private static final Logger logger = Logger.getLogger(MexicoEfloraTaxonRelationImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	protected static final String NAMESPACE = "TaxonRelation";
 

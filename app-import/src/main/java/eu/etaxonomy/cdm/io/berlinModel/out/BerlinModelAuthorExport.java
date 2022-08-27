@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.berlinModel.out;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -28,15 +29,15 @@ import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 
-
 /**
  * @author a.mueller
  * @since 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelAuthorExport extends BerlinModelExportBase<Person> {
-	private static final Logger logger = Logger.getLogger(BerlinModelAuthorExport.class);
+
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 5000;
 	private static final String dbTableName = "Author";

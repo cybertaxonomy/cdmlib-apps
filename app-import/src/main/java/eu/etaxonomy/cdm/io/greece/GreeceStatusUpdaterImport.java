@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
@@ -37,6 +38,9 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 @Component
 public class GreeceStatusUpdaterImport
     	extends SimpleExcelTaxonImport<GreeceStatusUpdaterConfigurator>{
+
+    private static final long serialVersionUID = 1017757693469612631L;
+    private static final Logger logger = LogManager.getLogger();
 
     private static final UUID UUID_STATE_ALIEN_ESTABLISHED = UUID.fromString("0df082b1-d38a-455e-9406-8d5ca58c1df9");
     private static final UUID UUID_STATE_ALIEN_NON_ESTABLISHED = UUID.fromString("0642289d-3f7a-408f-b84f-335fb720d952");
@@ -67,8 +71,6 @@ public class GreeceStatusUpdaterImport
     private static final String REDLIST_CATEGORY = "IUCN RedlistCategory";
     private static final String SCIENTIFIC_NAME = "scientificName";
     private static final String TAXON_UUID = "taxon uid";
-    private static final long serialVersionUID = 1017757693469612631L;
-	private static final Logger logger = Logger.getLogger(GreeceStatusUpdaterImport.class);
 
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<GreeceStatusUpdaterConfigurator> state) {

@@ -3,7 +3,8 @@
  */
 package eu.etaxonomy.cdm.database.update;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
@@ -18,7 +19,8 @@ import eu.etaxonomy.cdm.model.taxon.Classification;
  * @author a.mueller
  */
 public class BgbmInstancesUpdater {
-	private static final Logger logger = Logger.getLogger(BgbmInstancesUpdater.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	private static String integrationServer = "160.45.63.201";
 	private static String productionServer = "160.45.63.171";

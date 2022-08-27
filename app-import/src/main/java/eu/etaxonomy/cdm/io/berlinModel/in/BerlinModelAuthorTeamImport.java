@@ -19,7 +19,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -41,7 +42,7 @@ import eu.etaxonomy.cdm.strategy.cache.agent.INomenclaturalAuthorCacheStrategy;
 public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 
     private static final long serialVersionUID = -4318481607033688522L;
-    private static final Logger logger = Logger.getLogger(BerlinModelAuthorTeamImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final String NAMESPACE = "AuthorTeam";
 	   public static final String NAMESPACE_SPLIT = "AuthorTeam_Split";

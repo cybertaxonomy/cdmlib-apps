@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.uzbekistan;
 import java.io.File;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
@@ -36,8 +37,9 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  * @since 05.05.2020
  */
 public class UzbekistanTaxonActivator {
+
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(UzbekistanTaxonActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     //database validation status (create, update, validate ...)
 

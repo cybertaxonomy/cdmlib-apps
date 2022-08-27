@@ -13,7 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -37,7 +38,7 @@ import eu.etaxonomy.cdm.model.agent.Person;
 public class DwcaExportActivator {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(DwcaExportActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	private static final String fileDestination = "C:\\tmp\\dwcaTmp\\cyprus\\";

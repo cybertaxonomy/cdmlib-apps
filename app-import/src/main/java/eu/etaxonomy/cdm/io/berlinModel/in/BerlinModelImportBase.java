@@ -14,7 +14,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import eu.etaxonomy.cdm.api.service.pager.Pager;
@@ -55,17 +56,14 @@ import eu.etaxonomy.cdm.persistence.query.MatchMode;
 public abstract class BerlinModelImportBase
             extends DbImportBase<BerlinModelImportState, BerlinModelImportConfigurator>
             implements ICdmIO<BerlinModelImportState>, IPartitionedIO<BerlinModelImportState> {
+
     private static final long serialVersionUID = -4982506434258587864L;
-    private static final Logger logger = Logger.getLogger(BerlinModelImportBase.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public BerlinModelImportBase(String tableName, String pluralString ) {
 		super(tableName, pluralString);
 	}
 
-
-	/**
-	 * @return
-	 */
 	@Override
     protected String getIdQuery(BerlinModelImportState state){
 		String result = " SELECT " + getTableName() + "id FROM " + getTableName();

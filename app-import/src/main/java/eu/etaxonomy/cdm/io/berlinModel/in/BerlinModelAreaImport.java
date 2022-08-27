@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.berlinModel.in;
 
 import java.sql.ResultSet;
@@ -16,7 +15,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -42,7 +42,6 @@ import eu.etaxonomy.cdm.model.term.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
-
 /**
  * @author a.mueller
  * @since 20.03.2008
@@ -51,7 +50,7 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
     private static final long serialVersionUID = -2810052908318645219L;
-    private static final Logger logger = Logger.getLogger(BerlinModelAreaImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final String NAMESPACE = "emArea";
 

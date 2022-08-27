@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.images;
 
 import java.io.FileNotFoundException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -27,7 +28,7 @@ public class ImageImportConfigurator
         extends ImportConfiguratorBase<ImageImportState, URI> {
 
     private static final long serialVersionUID = -3177654877920655720L;
-    private static final Logger logger = Logger.getLogger(ImageImportConfigurator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static ImageImportConfigurator NewInstance(URI source, ICdmDataSource destination, String mediaUrlString, Class<? extends AbstractImageImporter> importerClass){
 		return new ImageImportConfigurator(source, destination, mediaUrlString, importerClass);

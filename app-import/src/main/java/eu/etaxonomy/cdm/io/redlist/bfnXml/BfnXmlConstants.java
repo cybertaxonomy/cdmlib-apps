@@ -8,17 +8,19 @@
 */
 package eu.etaxonomy.cdm.io.redlist.bfnXml;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.model.common.Language;
 
 /**
  * @author pplitzner
  * @since May 3, 2016
- *
  */
 public class BfnXmlConstants {
-    public static final Logger logger = Logger.getLogger(BfnXmlConstants.class);
+
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
 
     public static final Language defaultLanguage = Language.DEFAULT();
 

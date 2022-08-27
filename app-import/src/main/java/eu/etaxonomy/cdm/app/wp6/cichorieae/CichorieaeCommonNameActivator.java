@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.wp6.cichorieae;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
@@ -28,7 +29,8 @@ import eu.etaxonomy.cdm.io.wp6.CommonNameImportConfigurator;
  * @author a.mueller
  */
 public class CichorieaeCommonNameActivator {
-	private static final Logger logger = Logger.getLogger(CichorieaeCommonNameActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

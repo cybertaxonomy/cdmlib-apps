@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.caryophyllales;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.berlinModelImport.SourceBase;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -30,7 +31,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 public class CaryophyllaceaeActivator extends SourceBase{
 
 	@SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(CaryophyllaceaeActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	private static final DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

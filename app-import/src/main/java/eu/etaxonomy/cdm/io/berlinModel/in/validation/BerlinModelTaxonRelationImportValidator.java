@@ -6,14 +6,14 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.berlinModel.in.validation;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
@@ -25,8 +25,9 @@ import eu.etaxonomy.cdm.io.common.Source;
  * @since 17.02.2010
  */
 public class BerlinModelTaxonRelationImportValidator implements IOValidator<BerlinModelImportState> {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(BerlinModelTaxonRelationImportValidator.class);
+
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
 
 	@Override
 	public boolean validate(BerlinModelImportState state) {
@@ -39,7 +40,6 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 		result &= checkTaxonRelationsWithDifferingRelReferences(state);
 		return result;
 	}
-
 
 	private boolean checkInActivatedStatus(BerlinModelImportState state){
 		try {

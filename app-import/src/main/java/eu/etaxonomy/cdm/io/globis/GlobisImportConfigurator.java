@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.globis;
 
 import java.lang.reflect.Method;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
@@ -26,8 +27,10 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  * @since 20.03.2008
  */
 public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImportState> implements IImportConfigurator{
-	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(GlobisImportConfigurator.class);
+
+    private static final long serialVersionUID = 1L;
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
 
 	public static GlobisImportConfigurator NewInstance(Source ermsSource, ICdmDataSource destination){
 			return new GlobisImportConfigurator(ermsSource, destination);
@@ -38,20 +41,20 @@ public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImp
 
 	//TODO needed ??
 	private Method userTransformationMethod;
-	
-	
+
+
 	private boolean doAuthors = true;
 	private boolean doImages = true;
 	private boolean doCurrentTaxa = true;
 	private boolean doSpecTaxa = true;
 	private boolean doCommonNames = true;
-	
+
 	private boolean doReadMediaData = true;
-	
+
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 
 	private String imageBaseUrl = "http://globis-images.insects-online.de/images/";
-	
+
 	private static IInputTransformer defaultTransformer = new GlobisTransformer();
 	public boolean isDoNewUser() {
 		return doNewUser;
@@ -63,8 +66,9 @@ public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImp
 	}
 
 	private boolean doNewUser = true;
-	
-	protected void makeIoClassList(){
+
+	@Override
+    protected void makeIoClassList(){
 		ioClassList = new Class[]{
 				 GlobisAuthorImport.class,
 				 GlobisReferenceImport.class
@@ -73,14 +77,15 @@ public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImp
 				, GlobisSpecTaxImport.class
 				, GlobisCommonNameImport.class
 				, GlobisImageImport.class
-		};	
+		};
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
 	 */
-	public GlobisImportState getNewState() {
+	@Override
+    public GlobisImportState getNewState() {
 		return new GlobisImportState(this);
 	}
 
@@ -89,17 +94,19 @@ public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImp
 	private GlobisImportConfigurator(Source source, ICdmDataSource destination) {
 	   super(source, destination, NomenclaturalCode.ICZN, defaultTransformer);//default for Globis
 	}
-	
+
 	/**
 	 * @return the limitSave
 	 */
-	public int getRecordsPerTransaction() {
+	@Override
+    public int getRecordsPerTransaction() {
 		return recordsPerTransaction;
 	}
 	/**
 	 * @param limitSave the limitSave to set
 	 */
-	public void setRecordsPerTransaction(int recordsPerTransaction) {
+	@Override
+    public void setRecordsPerTransaction(int recordsPerTransaction) {
 		this.recordsPerTransaction = recordsPerTransaction;
 	}
 
@@ -116,7 +123,7 @@ public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImp
 	public boolean isDoImages() {
 		return doImages;
 	}
-	
+
 	public DO_REFERENCES getDoReferences() {
 		return doReferences;
 	}

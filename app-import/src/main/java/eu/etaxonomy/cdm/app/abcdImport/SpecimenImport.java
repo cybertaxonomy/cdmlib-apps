@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.abcdImport;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
@@ -22,7 +23,7 @@ import eu.etaxonomy.cdm.io.specimen.abcd206.in.Abcd206ImportConfigurator;
 
 public class SpecimenImport {
     @SuppressWarnings("unused")
-    private static Logger logger = Logger.getLogger(SpecimenImport.class);
+    private static Logger logger = LogManager.getLogger(SpecimenImport.class);
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

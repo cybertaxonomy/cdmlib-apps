@@ -15,7 +15,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.service.config.MatchingTaxonConfigurator;
@@ -36,13 +37,12 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * @since 14.12.2016
  *
  */
-
 @Component
 public class FloraHellenicaImageCaptionImport<CONFIG extends FloraHellenicaImportConfigurator>
             extends FloraHellenicaImportBase<CONFIG>{
 
     private static final long serialVersionUID = 2629253144140992196L;
-    private static final Logger logger = Logger.getLogger(FloraHellenicaImageCaptionImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String TEXT = "Text";
     protected static Integer startPage = 316;

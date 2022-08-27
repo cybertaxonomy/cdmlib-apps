@@ -1,13 +1,14 @@
 package eu.etaxonomy.cdm.app.references;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.util.TestDatabase;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -16,19 +17,16 @@ import eu.etaxonomy.cdm.io.reference.endnote.in.EndnoteImportConfigurator;
 public class EndNoteImportActivator {
 	/* SerializeFrom DB **/
 	private static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	
+
 	// Import:
 	private static String importFileNameString =	"file:/C:/EndNoteTest.xml";
-	
 
-	
+    private static final Logger logger = LogManager.getLogger();
 
-	private static final Logger logger = Logger.getLogger(EndNoteImportActivator.class);
-
-	
 	public static String chooseFile(String[] args) {
-		if(args == null)
-			return null;
+		if(args == null) {
+            return null;
+        }
 		for (String dest: args){
 			if (dest.endsWith(".xml")){
 				return args[0];
@@ -45,7 +43,7 @@ public class EndNoteImportActivator {
 			if (importFileParamString !=null && destination != null){
 				URI importFileParam = new URI(importFileParamString);
 				endNoteImportConfigurator = EndnoteImportConfigurator.NewInstance(importFileParam, destination);
-			}else if (destination != null){			
+			}else if (destination != null){
 				endNoteImportConfigurator = EndnoteImportConfigurator.NewInstance(importFileName, destination);
 			} else if (importFileParamString !=null ){
 				URI importFileParam = new URI(importFileParamString);
@@ -53,24 +51,24 @@ public class EndNoteImportActivator {
 			} else{
 				endNoteImportConfigurator = EndnoteImportConfigurator.NewInstance(importFileName, cdmDestination);
 			}
-		
-			CdmDefaultImport<EndnoteImportConfigurator> endNoteImport = 
+
+			CdmDefaultImport<EndnoteImportConfigurator> endNoteImport =
 				new CdmDefaultImport<EndnoteImportConfigurator>();
-	
-	
+
+
 			// invoke import
 			logger.debug("Invoking Jaxb import");
-	
+
 			endNoteImport.invoke(endNoteImportConfigurator, destination, true);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			return;
 		}
-		
+
 
 	}
 
-	
+
 	private CdmApplicationController initDb(ICdmDataSource db) {
 
 		// Init source DB
@@ -81,7 +79,7 @@ public class EndNoteImportActivator {
 		return appCtrInit;
 	}
 
-	
+
 	// Load test data to DB
 	private void loadTestData(CdmApplicationController appCtrInit) {
 
@@ -100,7 +98,7 @@ public class EndNoteImportActivator {
 		CdmApplicationController appCtr = null;
 		appCtr = sc.initDb(destination);
 		//sc.loadTestData(appCtr);
-				
+
 		sc.invokeImport(file, destination);
 	}
 

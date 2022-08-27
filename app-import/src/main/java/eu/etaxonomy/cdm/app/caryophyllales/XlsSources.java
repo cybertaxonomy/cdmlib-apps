@@ -14,7 +14,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.URI;
 
@@ -25,9 +26,9 @@ import eu.etaxonomy.cdm.common.URI;
  * @since Jun 2015
  */
 public class XlsSources {
-	@SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(XlsSources.class);
 
+	@SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
 
 	public static URI normalExplicit(){
 		try {

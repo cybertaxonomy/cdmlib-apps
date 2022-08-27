@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2008 EDIT
- * European Distributed Institute of Taxonomy 
+ * European Distributed Institute of Taxonomy
  * http://www.e-taxonomy.eu
  */
 
@@ -8,7 +8,8 @@ package eu.etaxonomy.cdm.app.pilotOutputHtml;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.sdd.ViolaExportActivator;
 import eu.etaxonomy.cdm.database.CdmDataSource;
@@ -31,8 +32,8 @@ public class SimpleDescriptionOutput {
 	//private static final String destinationFolder = "C:/tmp/viola/exports_SDD";
 
 	/** NUMBER_ROWS_TO_RETRIEVE = 0 is the default case to retrieve all rows.
-	 * For testing purposes: If NUMBER_ROWS_TO_RETRIEVE >0 then retrieve 
-	 *  as many rows as specified for agents, references, etc. 
+	 * For testing purposes: If NUMBER_ROWS_TO_RETRIEVE >0 then retrieve
+	 *  as many rows as specified for agents, references, etc.
 	 *  Only root taxa and no synonyms and relationships are retrieved. */
 	private static final int NUMBER_ROWS_TO_RETRIEVE = 0;
 
@@ -46,7 +47,7 @@ public class SimpleDescriptionOutput {
 		return datasource;
 	}
 
-	private static final Logger logger = Logger.getLogger(ViolaExportActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private static boolean doAgents = true;
 	private static boolean doAgentData = true;
@@ -68,16 +69,16 @@ public class SimpleDescriptionOutput {
 
 	// 3 arguments: name of the CDM database, name of the destination file, path for the destination file
 	private void invokeExport(String[] args) {
-		
-//		PilotOutputExportConfigurator htmlExportConfigurator = 
+
+//		PilotOutputExportConfigurator htmlExportConfigurator =
 //			PilotOutputExportConfigurator.NewInstance(sourceDb, destinationFileName, destinationFolder);
 		ICdmDataSource sourceDb = ViolaExportActivator.CDM_DB(args[0]);
-		PilotOutputExportConfigurator htmlExportConfigurator = 
+		PilotOutputExportConfigurator htmlExportConfigurator =
 			PilotOutputExportConfigurator.NewInstance(sourceDb, args[1], args[2]);
-		
-		CdmDefaultExport<PilotOutputExportConfigurator> htmlExport = 
+
+		CdmDefaultExport<PilotOutputExportConfigurator> htmlExport =
 			new CdmDefaultExport<PilotOutputExportConfigurator>();
-		
+
 		htmlExportConfigurator.setSource(sourceDb);
 		File destinationFile = new File(args[2] + File.separator + args[1]);
 		htmlExportConfigurator.setDestination(destinationFile);
@@ -118,7 +119,7 @@ public class SimpleDescriptionOutput {
 //		CdmApplicationController appCtr = null;
 //		appCtr = sc.initDb(sourceDb);
 //		sc.loadTestData(appCtr);
-		
+
 		sdo.invokeExport(args);
 
 	}

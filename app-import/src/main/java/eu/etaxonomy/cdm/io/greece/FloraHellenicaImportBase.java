@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
@@ -29,12 +30,11 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
  * @author a.mueller
  * @since 14.12.2016
  */
-
 public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImportConfigurator>
             extends SimpleExcelTaxonImport<CONFIG>{
 
     private static final long serialVersionUID = 2593130403213346396L;
-    private static final Logger logger = Logger.getLogger(FloraHellenicaImportBase.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private Map<UUID, Taxon> acceptedTaxonMap = new HashMap<>();
     private Reference sourceReference;

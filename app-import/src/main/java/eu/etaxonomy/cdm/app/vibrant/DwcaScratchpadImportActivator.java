@@ -10,20 +10,21 @@
 package eu.etaxonomy.cdm.app.vibrant;
 
 import java.io.File;
-import eu.etaxonomy.cdm.common.URI;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.dwca.in.DwcaDataImportConfiguratorBase.DatasetUse;
-import eu.etaxonomy.cdm.io.stream.mapping.IImportMapping.MappingType;
 import eu.etaxonomy.cdm.io.dwca.in.DwcaImportConfigurator;
+import eu.etaxonomy.cdm.io.stream.mapping.IImportMapping.MappingType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -31,11 +32,11 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @since 03.04.2012
- * @version 1.0
  */
 public class DwcaScratchpadImportActivator {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(DwcaScratchpadImportActivator.class);
+
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.UPDATE;//UPDATE;//CREATE;//UPDATE;

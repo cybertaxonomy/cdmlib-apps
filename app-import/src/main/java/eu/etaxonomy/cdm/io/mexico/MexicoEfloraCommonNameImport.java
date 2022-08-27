@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.URI;
@@ -41,7 +42,7 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
 
     private static final long serialVersionUID = 8616047381536678637L;
-    private static final Logger logger = Logger.getLogger(MexicoEfloraCommonNameImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	protected static final String NAMESPACE = "CommonNames";
 

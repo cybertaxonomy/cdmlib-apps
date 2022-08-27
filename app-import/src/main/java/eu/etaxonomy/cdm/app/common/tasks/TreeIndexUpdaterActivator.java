@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.common.tasks;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
@@ -29,7 +30,7 @@ import eu.etaxonomy.cdm.database.update.TreeIndexUpdater;
 public class TreeIndexUpdaterActivator {
 
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(CacheUpdater.class);
+    private static final Logger logger = LogManager.getLogger();
 
     //database validation status (create, update, validate ...)
      static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

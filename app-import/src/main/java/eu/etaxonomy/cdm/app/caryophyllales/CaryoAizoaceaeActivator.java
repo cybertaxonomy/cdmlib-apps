@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.caryophyllales;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
@@ -25,7 +26,7 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 public class CaryoAizoaceaeActivator {
 
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(CaryoAizoaceaeActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final ICdmDataSource destinationDb = CdmDestinations.cdm_local_caryo();
 //    private static final ICdmDataSource destinationDb = CdmDestinations.cdm_production_caryophyllales_spp();

@@ -14,7 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
@@ -51,7 +52,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
             extends SimpleExcelTaxonImport<CONFIG>{
 
     private static final long serialVersionUID = 7793140600785382094L;
-    private static final Logger logger = Logger.getLogger(UzbekistanTaxonImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String COMMON_NAME = "common name";
     private static final String PARENT_TAXON_UUID = "parentTaxonUuid";

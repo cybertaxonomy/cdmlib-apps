@@ -6,7 +6,6 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.io.cyprus;
 
 import java.util.ArrayList;
@@ -19,7 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.service.pager.Pager;
@@ -50,12 +50,11 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
  * @author a.babadshanjan
  * @since 08.01.2009
  */
-
 @Component
 public class CyprusDistributionImport
        extends ExcelImportBase<CyprusImportState, CyprusImportConfigurator, ExcelRowBase> {
     private static final long serialVersionUID = -8527569026580975181L;
-    private static final Logger logger = Logger.getLogger(CyprusDistributionImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	@Override
 	protected boolean doCheck(CyprusImportState state) {
@@ -72,12 +71,12 @@ public class CyprusDistributionImport
 	private Reference refMeikle1977 = ReferenceFactory.newGeneric();
 	private Reference refMeikle1985 = ReferenceFactory.newGeneric();
 
-	private final Map<String, Taxon> taxonWithAuthorStore = new HashMap<String, Taxon>();
-	private final Map<String, Taxon> taxonNameOnlyStore = new HashMap<String, Taxon>();
+	private final Map<String, Taxon> taxonWithAuthorStore = new HashMap<>();
+	private final Map<String, Taxon> taxonNameOnlyStore = new HashMap<>();
 
 
 	private boolean areasCreated = false;
-	private final Map<String, NamedArea> divisions = new HashMap<String, NamedArea>();
+	private final Map<String, NamedArea> divisions = new HashMap<>();
 
 	private void makeAreasAndReference(CyprusImportState state) {
 		if (areasCreated == false){

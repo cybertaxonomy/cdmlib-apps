@@ -20,7 +20,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -53,7 +54,7 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 
     private static final long serialVersionUID = -1186364983750790695L;
-    private static final Logger logger = Logger.getLogger(MexicoEfloraTaxonImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final String NAMESPACE = "Taxon";
 

@@ -9,11 +9,12 @@
 package eu.etaxonomy.cdm.app.salvador;
 
 import java.io.IOException;
-import eu.etaxonomy.cdm.common.URI;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.database.update.CdmUpdater;
@@ -27,10 +28,10 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @since 08.07.2017
- *
  */
 public class SalvadorSpecimenActivator {
-    private static final Logger logger = Logger.getLogger(SalvadorSpecimenActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

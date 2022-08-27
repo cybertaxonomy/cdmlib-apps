@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.plantglossary.kew;
 import java.io.File;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -23,15 +24,14 @@ import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
- *
  * @author pplitzner
  * @since Jan 25, 2019
- *
  */
 @Component
 public class KewPlantGlossaryImport extends CsvImportBase<KewPlantGlossaryCsvImportConfigurator, KewPlantGlossaryCsvImportState, File>{
+
     private static final long serialVersionUID = -5600766240192189822L;
-    private static Logger logger = Logger.getLogger(KewPlantGlossaryImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     final String HEADER_LABEL = "term";
     final String HEADER_DEFINITION = "definition";

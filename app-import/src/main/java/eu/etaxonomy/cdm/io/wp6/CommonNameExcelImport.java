@@ -16,7 +16,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.criterion.Criterion;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +48,7 @@ public class CommonNameExcelImport
             extends ExcelImportBase<CichorieaeCommonNameImportState, CommonNameImportConfigurator, ExcelRowBase> {
 
     private static final long serialVersionUID = 747044451715401750L;
-    private static final Logger logger = Logger.getLogger(CommonNameExcelImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	protected static final String SPECIES_COLUMN = "Art";
 	protected static final String COMMON_NAME_COLUMN = "common name";

@@ -12,7 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
@@ -33,7 +34,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
  */
 public class EuroMedDistributionAggregationActivator {
 
-    private static final Logger logger = Logger.getLogger(EuroMedDistributionAggregationActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;

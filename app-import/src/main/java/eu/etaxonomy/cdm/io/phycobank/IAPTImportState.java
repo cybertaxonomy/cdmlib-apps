@@ -6,14 +6,14 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.phycobank;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
@@ -27,8 +27,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
  * @since 11.05.2009
  */
 public class IAPTImportState extends SimpleExcelTaxonImportState<IAPTImportConfigurator> {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(IAPTImportState.class);
+
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
 
 	private final Map<String, Taxon> higherTaxonTaxonMap = new HashMap<>();
 

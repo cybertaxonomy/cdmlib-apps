@@ -13,7 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportState;
@@ -33,11 +34,11 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 /**
  * @author a.mueller
  * @since 12.05.2009
- * @version 1.0
  */
 public class FactCategoryMapper extends DbSingleAttributeExportMapperBase<BerlinModelExportState> implements IDbExportMapper<BerlinModelExportState, IExportTransformer>{
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(FactCategoryMapper.class);
+
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
 
 	private PreparedStatement preparedStatement;
 	private CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = null;

@@ -12,7 +12,8 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
@@ -32,7 +33,8 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @since Jul 26, 2016
  */
 public class IAPTActivator {
-    private static final Logger logger = Logger.getLogger(IAPTActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
     public static final String DATA_FILE_FULL = "Registration_DB_from_BGBM17.xls";
     public static final String DATA_FILE_0_100 = "iapt-100.xls";

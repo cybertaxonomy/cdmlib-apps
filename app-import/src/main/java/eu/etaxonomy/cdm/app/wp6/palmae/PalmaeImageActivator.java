@@ -6,17 +6,17 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.wp6.palmae;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.images.ImageImportConfigurator;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.PalmaeImageImport;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -27,11 +27,11 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
  *
  * @author n.hoffmann
  * @since 18.11.2008
- * @version 1.0
  */
 public class PalmaeImageActivator  {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(PalmaeImageActivator.class);
+
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final String sourceFolderString = "\\\\Media\\EditWP6\\palmae\\photos\\new";
 	private static final ICdmDataSource cdmDestination = CdmDestinations.localH2Palmae();

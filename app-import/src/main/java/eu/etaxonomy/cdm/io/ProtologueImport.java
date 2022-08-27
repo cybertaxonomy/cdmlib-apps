@@ -6,21 +6,21 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io;
 
 import java.io.File;
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.ICommonService;
 import eu.etaxonomy.cdm.app.wp6.palmae.config.PalmaeProtologueImportConfigurator;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.DefaultImportState;
 import eu.etaxonomy.cdm.model.media.ExternalLinkType;
@@ -35,7 +35,7 @@ public class ProtologueImport
         extends CdmImportBase<PalmaeProtologueImportConfigurator, DefaultImportState<PalmaeProtologueImportConfigurator>>{
 
     private static final long serialVersionUID = 4580327331805229644L;
-    private static final Logger logger = Logger.getLogger(ProtologueImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private String pluralString = "protologues";
 	private static int modCount = 200;

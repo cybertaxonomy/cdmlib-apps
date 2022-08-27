@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.cuba;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
@@ -36,7 +37,8 @@ import eu.etaxonomy.cdm.model.term.TermTree;
  * @since 04.01.2016
  */
 public class CubaActivator {
-	private static final Logger logger = Logger.getLogger(CubaActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

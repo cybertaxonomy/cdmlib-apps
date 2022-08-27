@@ -9,13 +9,14 @@
 package eu.etaxonomy.cdm.io.plantglossary;
 
 import java.io.File;
-import eu.etaxonomy.cdm.common.URI;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.csv.in.CsvImportBase;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
@@ -26,15 +27,14 @@ import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
- *
  * @author pplitzner
  * @since Dec 7, 2018
- *
  */
 @Component
 public class PlantGlossaryStateImport extends CsvImportBase<PlantGlossaryCsvImportConfigurator, PlantGlossaryCsvImportState, File>{
+
     private static final long serialVersionUID = -5600766240192189822L;
-    private static Logger logger = Logger.getLogger(PlantGlossaryStateImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     final String HEADER_LABEL = "dcterms:identifier";
     final String HEADER_DEFINITION = "definition";

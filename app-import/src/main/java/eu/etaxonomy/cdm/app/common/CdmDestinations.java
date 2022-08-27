@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.common;
 
 import java.lang.reflect.Method;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.config.AccountStore;
 import eu.etaxonomy.cdm.database.CdmDataSource;
@@ -21,7 +22,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 public class CdmDestinations {
 
 	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(CdmDestinations.class);
+    private static final Logger logger = LogManager.getLogger();
 
     public static ICdmDataSource cdm_pesi2019_final(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;

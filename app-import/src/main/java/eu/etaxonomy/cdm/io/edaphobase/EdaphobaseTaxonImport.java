@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -56,8 +57,9 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImplRegExBase;
  */
 @Component
 public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
+
     private static final long serialVersionUID = -9138378836474086070L;
-    private static final Logger logger = Logger.getLogger(EdaphobaseTaxonImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String tableName = "tax_taxon";
 
@@ -279,7 +281,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         if (isNotBlank(nameAddition) && nameAddition.matches("(nec|non) " + capitalWord +  ", \\d{4}")){
             String str = nameAddition.substring(4);
             String[] split = str.split(",");
-            IZoologicalName homonym = (IZoologicalName)name.clone();
+            IZoologicalName homonym = name.clone();
             homonym.setCombinationAuthorship(null);
             homonym.setBasionymAuthorship(null);
             homonym.setPublicationYear(null);

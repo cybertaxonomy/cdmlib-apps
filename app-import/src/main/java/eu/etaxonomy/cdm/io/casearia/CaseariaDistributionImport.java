@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.casearia;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -36,7 +37,7 @@ public class CaseariaDistributionImport extends SimpleExcelTaxonImport<CaseariaI
 
     private static final long serialVersionUID = -7841292708411771648L;
 
-    private static final Logger logger = Logger.getLogger(CaseariaDistributionImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String NAME_CIT = "NameCit";
     private static final String IPNI_ID = "ipni_id";

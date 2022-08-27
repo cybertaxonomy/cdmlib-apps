@@ -6,13 +6,13 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.app.proibiosphere;
 
 import java.io.File;
 import java.net.URISyntaxException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
@@ -25,14 +25,14 @@ import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
-
 /**
  * @author PK
  * @since 19.09.2008
  */
 public class SynthesysCacheActivator {
+
     @SuppressWarnings("unused")
-    private static Logger logger = Logger.getLogger(SynthesysCacheActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     //database validation status (create, update, validate ...)
 
@@ -46,9 +46,6 @@ public class SynthesysCacheActivator {
     //    static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         URI source;
         try {

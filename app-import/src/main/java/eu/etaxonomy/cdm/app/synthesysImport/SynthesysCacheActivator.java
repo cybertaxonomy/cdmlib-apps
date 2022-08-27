@@ -6,18 +6,17 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.app.synthesysImport;
 
 import java.io.FileNotFoundException;
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
@@ -25,6 +24,7 @@ import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.common.CdmImportSources;
 import eu.etaxonomy.cdm.common.ExcelUtils;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
@@ -52,10 +52,10 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * @author PK
  * @since 19.09.2008
- * @version 1.0
  */
 public class SynthesysCacheActivator {
-	private static final Logger logger = Logger.getLogger(SynthesysCacheActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	protected String fullScientificNameString = null;
 	protected String institutionCode = null;

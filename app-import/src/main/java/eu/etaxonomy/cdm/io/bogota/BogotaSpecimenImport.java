@@ -1,4 +1,3 @@
-// $Id$
 /**
 * Copyright (C) 2017 EDIT
 * European Distributed Institute of Taxonomy
@@ -15,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Partial;
 import org.springframework.stereotype.Component;
 
@@ -65,7 +65,6 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 /**
  * @author a.mueller
  * @since 21.04.2017
- *
  */
 @Component
 public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurator>
@@ -73,7 +72,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
 
     private static final long serialVersionUID = -884838817884874228L;
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(BogotaSpecimenImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String COL_TAXON_UUID = "Platform Name ID = cdmID";
     private static final String COL_VOUCHER_ID = "Voucher ID";

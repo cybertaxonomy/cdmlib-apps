@@ -6,10 +6,10 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.phycobank;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 
@@ -21,7 +21,7 @@ public final class IAPTTransformer extends InputTransformerBase {
     private static final long serialVersionUID = 1070018208741186271L;
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(IAPTTransformer.class);
+    private static final Logger logger = LogManager.getLogger();
 
     //references
 

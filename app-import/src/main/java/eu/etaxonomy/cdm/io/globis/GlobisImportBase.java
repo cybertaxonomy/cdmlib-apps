@@ -18,7 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.NonUniqueObjectException;
 import org.joda.time.DateTime;
 
@@ -55,7 +56,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImportBase<GlobisImportConfigurator, GlobisImportState> implements ICdmIO<GlobisImportState>, IPartitionedIO<GlobisImportState> {
 
     private static final long serialVersionUID = -7813164269152576841L;
-    private static final Logger logger = Logger.getLogger(GlobisImportBase.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final UUID ID_IN_SOURCE_EXT_UUID = UUID.fromString("23dac094-e793-40a4-bad9-649fc4fcfd44");
 

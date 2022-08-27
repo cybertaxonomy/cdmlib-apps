@@ -13,7 +13,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
@@ -30,7 +31,7 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 public final class GlobisTransformer extends InputTransformerBase {
 
     private static final long serialVersionUID = 8353340999086630728L;
-    private static final Logger logger = Logger.getLogger(GlobisTransformer.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	//marker types
 	public static final UUID uuidCheckedMarkerType = UUID.fromString("f2a7926f-def1-49a6-b642-9b81e6b1e35c");

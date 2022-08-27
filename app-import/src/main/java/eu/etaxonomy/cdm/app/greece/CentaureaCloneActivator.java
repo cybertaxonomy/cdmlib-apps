@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.greece;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.UpdateResult;
@@ -27,9 +28,8 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
  */
 public class CentaureaCloneActivator {
 
-
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(BupleurumExportActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_greece();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();

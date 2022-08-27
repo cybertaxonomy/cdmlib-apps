@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportBase;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
@@ -31,11 +32,9 @@ public abstract class SimpleExcelSpecimenImport<CONFIG extends ExcelImportConfig
         extends ExcelImportBase<SimpleExcelSpecimenImportState<CONFIG>, CONFIG, ExcelRowBase>{
 
     private static final long serialVersionUID = -4345647703312616421L;
-
-    private static final Logger logger = Logger.getLogger(SimpleExcelSpecimenImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     protected static INonViralNameParser<?> nameParser = NonViralNameParserImpl.NewInstance();
-
 
     @Override
     protected void analyzeRecord(Map<String, String> record, SimpleExcelSpecimenImportState<CONFIG> state) {

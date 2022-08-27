@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.stereotype.Component;
@@ -58,19 +59,16 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 import eu.etaxonomy.cdm.strategy.parser.ParserProblem;
+
 /**
- *
  * @author a.oppermann
  * @since 04.07.2013
- *
  */
-//@Component("bfnXmlTaxonNameIO")
 @Component
 public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 
     private static final long serialVersionUID = -6684136204048549833L;
-
-    private static final Logger logger = Logger.getLogger(BfnXmlImportTaxonName.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private static NomenclaturalCode nomenclaturalCode = null;
 	private static int parsingProblemCounter = 0;

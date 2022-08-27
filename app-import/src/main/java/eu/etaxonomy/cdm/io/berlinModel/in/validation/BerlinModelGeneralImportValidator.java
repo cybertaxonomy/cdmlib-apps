@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -12,7 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase;
@@ -23,7 +24,6 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 
-
 /**
  * For validating general consistencies like existence of tables, etc.
  * @author a.mueller
@@ -31,17 +31,19 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
  */
 @Component
 public class BerlinModelGeneralImportValidator extends BerlinModelImportBase implements IOValidator<BerlinModelImportState> {
-	private static final Logger logger = Logger.getLogger(BerlinModelGeneralImportValidator.class);
+
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = LogManager.getLogger();
 
 	public BerlinModelGeneralImportValidator(){
 		super(null, null);
 	}
-	
+
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		return validate(state);
 	}
-	
+
 
 	@Override
 	public boolean validate(BerlinModelImportState state) {
@@ -49,18 +51,19 @@ public class BerlinModelGeneralImportValidator extends BerlinModelImportBase imp
 		BerlinModelImportConfigurator bmiConfig = state.getConfig();
 		result &= checkRelAuthorsExist(bmiConfig);
 		result &= checkRelReferenceExist(bmiConfig);
-		
+
 		return result;
 	}
-	
-	protected void doInvoke(BerlinModelImportState state){
+
+	@Override
+    protected void doInvoke(BerlinModelImportState state){
 		//do nothing
 		return;
-		
+
 	}
-	
+
 	private boolean checkRelAuthorsExist(BerlinModelImportConfigurator config){
-		
+
 		try {
 			boolean result = true;
 			Source source = config.getSource();
@@ -82,9 +85,9 @@ public class BerlinModelGeneralImportValidator extends BerlinModelImportBase imp
 		}
 
 	}
-	
+
 	private boolean checkRelReferenceExist(BerlinModelImportConfigurator config){
-		
+
 		try {
 			boolean result = true;
 			Source source = config.getSource();
@@ -107,7 +110,7 @@ public class BerlinModelGeneralImportValidator extends BerlinModelImportBase imp
 
 	}
 
-	
+
 	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		return false;

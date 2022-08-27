@@ -9,7 +9,8 @@
 
 package eu.etaxonomy.cdm.io.berlinModel.out;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
@@ -21,13 +22,11 @@ import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 public class BerlinModelExportState extends DbExportStateBase<BerlinModelExportConfigurator, IExportTransformer>{
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(BerlinModelExportState.class);
-
+    private static final Logger logger = LogManager.getLogger();
 
 	public BerlinModelExportState(BerlinModelExportConfigurator config) {
 		super(config);
 	}
-
 
 	private Integer nextRefDetailId = null;
 	private Integer nextFactCategoryId = null;

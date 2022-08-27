@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.wp6.palmae.config;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.ProtologueImport;
@@ -30,7 +31,7 @@ public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<D
     private static final long serialVersionUID = 803256639557697105L;
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(PalmaeProtologueImportConfigurator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private String urlString = null;
 

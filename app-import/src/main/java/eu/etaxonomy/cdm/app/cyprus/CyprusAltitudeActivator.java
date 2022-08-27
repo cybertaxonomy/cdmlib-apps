@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.app.cyprus;
 
 import java.io.FileNotFoundException;
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
@@ -19,12 +18,14 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.ExcelUtils;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
@@ -49,7 +50,8 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * @since 16.12.2010
  */
 public class CyprusAltitudeActivator {
-	private static final Logger logger = Logger.getLogger(CyprusAltitudeActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

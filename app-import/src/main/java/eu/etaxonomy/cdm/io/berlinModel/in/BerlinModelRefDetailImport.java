@@ -16,7 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelRefDetailImportValidator;
@@ -41,8 +42,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 public class BerlinModelRefDetailImport extends BerlinModelImportBase {
 
     private static final long serialVersionUID = 894197428295813181L;
-
-    private static final Logger logger = Logger.getLogger(BerlinModelRefDetailImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 //	public static final String NOM_REFDETAIL_NAMESPACE = "NomRefDetail";
 //	public static final String BIBLIO_REFDETAIL_NAMESPACE = "BiblioRefDetail";

@@ -6,13 +6,13 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.cyprus;
 
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -21,15 +21,12 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 /**
  * @author a.mueller
  * @since 01.03.2010
- * @version 1.0
  */
 public final class CyprusTransformer extends InputTransformerBase {
     private static final long serialVersionUID = 6499276527625309482L;
 
-
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CyprusTransformer.class);
-
+    private static final Logger logger = LogManager.getLogger();
 
 	//feature
 	public static final UUID redBookUuid =  UUID.fromString("df59d44a-ee5a-4c01-8637-127cc804842d");

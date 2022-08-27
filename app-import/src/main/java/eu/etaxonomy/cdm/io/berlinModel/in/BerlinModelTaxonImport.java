@@ -27,7 +27,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -62,8 +63,7 @@ import eu.etaxonomy.cdm.model.term.DefinedTerm;
 public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 
     private static final long serialVersionUID = -1186364983750790695L;
-
-    private static final Logger logger = Logger.getLogger(BerlinModelTaxonImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final String NAMESPACE = "Taxon";
 

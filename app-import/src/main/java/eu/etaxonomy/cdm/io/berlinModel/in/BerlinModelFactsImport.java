@@ -25,7 +25,8 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -86,9 +87,9 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  */
 @Component
 public class BerlinModelFactsImport  extends BerlinModelImportBase {
-    private static final long serialVersionUID = 4095154818163504795L;
 
-    private static final Logger logger = Logger.getLogger(BerlinModelFactsImport.class);
+    private static final long serialVersionUID = 4095154818163504795L;
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final String NAMESPACE = "Fact";
 

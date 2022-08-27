@@ -8,12 +8,13 @@
 */
 package eu.etaxonomy.cdm.app.faueu;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -25,11 +26,11 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 /**
  * @author a.mueller
  * @since 27.04.2017
- *
  */
 public class FaunaEuropaeaDistributionUpdateActivator {
+
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(FaunaEuropaeaDistributionUpdateActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_faunaEu_mysql();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_pesi_fauna_europaea();
@@ -39,12 +40,7 @@ public class FaunaEuropaeaDistributionUpdateActivator {
     //see also FaunaEuropaeaTransformer in pesi
     static final UUID areaVocabularyUuid = UUID.fromString("16325043-e7da-4742-b012-9ce03362a124");
 
-    /**
-     * @param source
-     * @param args
-     */
     private void invoke(URI source, ICdmDataSource cdmDestination) {
-
 
         ICdmDataSource destination = cdmDestination;
         System.out.println("Starting update for Fauna Europaea distribution data from (" + source + ")...");

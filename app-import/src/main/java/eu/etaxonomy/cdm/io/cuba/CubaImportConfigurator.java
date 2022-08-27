@@ -9,10 +9,10 @@
 
 package eu.etaxonomy.cdm.io.cuba;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.etaxonomy.cdm.common.URI;
-
-import org.apache.log4j.Logger;
-
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
@@ -31,7 +31,7 @@ public class CubaImportConfigurator extends ExcelImportConfiguratorBase {
     private static final long serialVersionUID = 5590553979984931651L;
 
     @SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(CubaImportConfigurator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private String cubaReferenceTitle;
 

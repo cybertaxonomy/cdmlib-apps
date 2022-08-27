@@ -27,7 +27,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.service.media.MediaInfoFileReader;
@@ -59,7 +60,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
     private static final long serialVersionUID = 4174085686074314138L;
 
-    private static final Logger logger = Logger.getLogger(BerlinModelNameFactsImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final String NAMESPACE = "NameFact";
 

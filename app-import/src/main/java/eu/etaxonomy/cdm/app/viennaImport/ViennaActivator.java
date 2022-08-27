@@ -6,21 +6,21 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.viennaImport;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.config.AccountStore;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Person;
@@ -41,10 +41,10 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * @author AM
  * @since 08.05.2008
- * @version 1.0
  */
 public class ViennaActivator {
-	private static final Logger logger = Logger.getLogger(ViennaActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	static final Source berlinModelSource = ViennaActivator.VIENNA();
 

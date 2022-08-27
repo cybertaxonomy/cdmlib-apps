@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.mexico;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -37,7 +38,8 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  * @since 16.06.2016
  */
 public class MexicoConabioActivator {
-    private static final Logger logger = Logger.getLogger(MexicoConabioActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

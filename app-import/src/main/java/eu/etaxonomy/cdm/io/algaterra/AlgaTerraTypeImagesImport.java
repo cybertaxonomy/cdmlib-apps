@@ -16,7 +16,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraTypeImportValidator;
@@ -38,8 +39,10 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  */
 @Component
 public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
-	private static final Logger logger = Logger.getLogger(AlgaTerraTypeImagesImport.class);
 
+    private static final long serialVersionUID = 1L;
+
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 5000;
 	private static final String pluralString = "type images";
@@ -49,10 +52,6 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 		super(dbTableName, pluralString);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT SpecimenFigureId "
@@ -62,9 +61,6 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =
@@ -77,9 +73,6 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 		return strQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
 	@Override
     public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
@@ -156,8 +149,6 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 		Integer refDetailFk = nullSafeInt(rs, "refDetailFk");
 
 		//TODO
-
-
 	}
 
 	@Override
@@ -200,5 +191,4 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 		return !  ( config.isDoTypes() && config.isDoImages()) ;
 //		return false;
 	}
-
 }

@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.io.edaphobase;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -19,12 +20,12 @@ import eu.etaxonomy.cdm.model.name.Rank;
 /**
  * @author a.mueller
  * @since 18.12.2015
- *
  */
 public class EdaphobaseImportTransformer extends InputTransformerBase {
+
     private static final long serialVersionUID = 1011498282020827250L;
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(EdaphobaseImportTransformer.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final UUID uuidTaxGrossgruppeMarker = UUID.fromString("71f22f44-5131-4d54-8362-1c77ac5c567a");
     private static final UUID uuidEdaphoRankMarker = UUID.fromString("6eaeffd2-b89b-436b-b0ee-75af5f0a9b81");
@@ -32,8 +33,6 @@ public class EdaphobaseImportTransformer extends InputTransformerBase {
     protected static final UUID uuidVocFeatureQuantitative = UUID.fromString("8d449d74-5997-431f-af2d-409113b5b74e");
     protected static final UUID uuidVocFeatureBiological = UUID.fromString("f366ddf8-51da-436d-b4f4-8e86721adae6");
     protected static final UUID uuidVocFeatureMorpho = UUID.fromString("1ecf1157-6943-4790-b015-fde07c2d00d3");
-
-
 
     @Override
     public Rank getRankByKey(String key) throws UndefinedTransformerMethodException {

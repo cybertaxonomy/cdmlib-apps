@@ -6,10 +6,8 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.globis;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -17,9 +15,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -45,7 +45,8 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  */
 @Component
 public class GlobisReferenceImport  extends GlobisImportBase<Reference> implements IMappingImport<Reference, GlobisImportState>{
-	private static final Logger logger = Logger.getLogger(GlobisReferenceImport.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	private int modCount = 10000;
 	private static final String pluralString = "references";

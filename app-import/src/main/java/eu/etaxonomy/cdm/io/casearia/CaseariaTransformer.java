@@ -9,7 +9,8 @@
 package eu.etaxonomy.cdm.io.casearia;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -23,7 +24,7 @@ public class CaseariaTransformer extends InputTransformerBase{
 
     private static final long serialVersionUID = 4635704148993246218L;
 
-    private static final Logger logger = Logger.getLogger(CaseariaTransformer.class);
+    private static final Logger logger = LogManager.getLogger();
 
      @Override
     public Rank getRankByKey(String key) throws UndefinedTransformerMethodException {

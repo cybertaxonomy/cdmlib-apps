@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2008 EDIT
- * European Distributed Institute of Taxonomy 
+ * European Distributed Institute of Taxonomy
  * http://www.e-taxonomy.eu
  */
 
@@ -8,7 +8,8 @@ package eu.etaxonomy.cdm.app.sdd;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.CdmDataSource;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -23,6 +24,8 @@ import eu.etaxonomy.cdm.io.sdd.out.SDDExportConfigurator;
  */
 public class ViolaExportActivator {
 
+    private static final Logger logger = LogManager.getLogger();
+
 	/* SerializeFrom DB **/
 	private static final String sourceDbName = "cdm";
 	private static final String destinationFileName = "ViolaFromCDM.xml";
@@ -30,8 +33,8 @@ public class ViolaExportActivator {
 	//private static final String destinationFolder = "C:/tmp/viola/exports_SDD";
 
 	/** NUMBER_ROWS_TO_RETRIEVE = 0 is the default case to retrieve all rows.
-	 * For testing purposes: If NUMBER_ROWS_TO_RETRIEVE >0 then retrieve 
-	 *  as many rows as specified for agents, references, etc. 
+	 * For testing purposes: If NUMBER_ROWS_TO_RETRIEVE >0 then retrieve
+	 *  as many rows as specified for agents, references, etc.
 	 *  Only root taxa and no synonyms and relationships are retrieved. */
 	private static final int NUMBER_ROWS_TO_RETRIEVE = 0;
 
@@ -44,8 +47,6 @@ public class ViolaExportActivator {
 		ICdmDataSource datasource = CdmDataSource.NewH2EmbeddedInstance(dbname, username, "");
 		return datasource;
 	}
-
-	private static final Logger logger = Logger.getLogger(ViolaExportActivator.class);
 
 	private static final ICdmDataSource sourceDb = ViolaExportActivator.CDM_DB(sourceDbName);
 	private static final File destinationFile = new File(destinationFolder + File.separator + destinationFileName);
@@ -69,13 +70,13 @@ public class ViolaExportActivator {
 	private static boolean doHomotypicalGroups = true;
 
 	private void invokeExport() {
-		
-		SDDExportConfigurator sddExportConfigurator = 
+
+		SDDExportConfigurator sddExportConfigurator =
 			SDDExportConfigurator.NewInstance(sourceDb, destinationFileName, destinationFolder);
-		
-		CdmDefaultExport<SDDExportConfigurator> sddExport = 
+
+		CdmDefaultExport<SDDExportConfigurator> sddExport =
 			new CdmDefaultExport<SDDExportConfigurator>();
-		
+
 		sddExportConfigurator.setSource(sourceDb);
 		sddExportConfigurator.setDestination(destinationFile);
 		sddExportConfigurator.setDbSchemaValidation(DbSchemaValidation.VALIDATE);
@@ -115,8 +116,8 @@ public class ViolaExportActivator {
 //		CdmApplicationController appCtr = null;
 //		appCtr = sc.initDb(sourceDb);
 //		sc.loadTestData(appCtr);
-		
-		
+
+
 		vea.invokeExport();
 
 	}

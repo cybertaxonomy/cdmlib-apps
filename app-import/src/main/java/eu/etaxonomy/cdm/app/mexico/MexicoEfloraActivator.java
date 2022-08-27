@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.mexico;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.common.CdmImportSources;
@@ -32,7 +33,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 public class MexicoEfloraActivator {
 
-    private static final Logger logger = Logger.getLogger(MexicoEfloraActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;

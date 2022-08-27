@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
@@ -54,12 +55,11 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 public class GreeceWillingImport
         extends SimpleExcelTaxonImport<GreeceWillingImportConfigurator>{
 
+    private static final long serialVersionUID = 8258914747643501550L;
+    private static final Logger logger = LogManager.getLogger();
+
     private static final String HERBARIUM_ID_NAMESPACE = "HerbariumID";
     private static final String RDF_ID_NAMESPACE = "rdfID";
-
-    private static final long serialVersionUID = 8258914747643501550L;
-
-    private static final Logger logger = Logger.getLogger(GreeceWillingImport.class);
 
     private String lastCollectorNumber;
     private UUID lastDerivedUnitUuid;

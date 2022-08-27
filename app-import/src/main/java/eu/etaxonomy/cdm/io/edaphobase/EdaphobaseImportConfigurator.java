@@ -8,7 +8,8 @@
 */
 package eu.etaxonomy.cdm.io.edaphobase;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
@@ -20,14 +21,13 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @since 18.12.2015
- *
  */
 public class EdaphobaseImportConfigurator
         extends DbImportConfiguratorBase<EdaphobaseImportState>
 {
     private static final long serialVersionUID = 5397992611211404553L;
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(EdaphobaseImportConfigurator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private boolean doTaxa = true;
     public boolean isDoTaxa() {return doTaxa;}
@@ -59,19 +59,10 @@ public class EdaphobaseImportConfigurator
     public boolean isIgnore4nomial() {return ignore4nomial;}
     public void setIgnore4nomial(boolean ignore4nomial) {this.ignore4nomial = ignore4nomial;}
 
-
-    /**
-     * @param source
-     * @param cdmDestination
-     * @return
-     */
     public static EdaphobaseImportConfigurator NewInstance(Source source, ICdmDataSource cdmDestination) {
         return new EdaphobaseImportConfigurator(source, cdmDestination, new EdaphobaseImportTransformer());
     }
 
-    /**
-     * @param transformer
-     */
     public EdaphobaseImportConfigurator(Source source, ICdmDataSource destination, EdaphobaseImportTransformer transformer) {
         super(source, destination, NomenclaturalCode.ICZN, transformer);
     }
@@ -81,6 +72,7 @@ public class EdaphobaseImportConfigurator
         return new EdaphobaseImportState(this);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
@@ -101,6 +93,4 @@ public class EdaphobaseImportConfigurator
         sourceRef.setTitle("Edaphobase");
         return sourceRef;
     }
-
-
 }

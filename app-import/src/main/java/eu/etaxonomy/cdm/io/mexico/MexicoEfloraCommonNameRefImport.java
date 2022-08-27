@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -36,7 +37,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 public class MexicoEfloraCommonNameRefImport extends MexicoEfloraImportBase {
 
     private static final long serialVersionUID = -1712022169834400067L;
-    private static final Logger logger = Logger.getLogger(MexicoEfloraCommonNameRefImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	protected static final String NAMESPACE = "CommonNameRef";
 

@@ -3,7 +3,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.config.CacheUpdaterConfigurator;
@@ -18,23 +19,22 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 public class CaryophyllalesCacheUpdater {
 
-		private static final Logger logger = Logger.getLogger(CaryophyllalesCacheUpdater.class);
+    private static final Logger logger = LogManager.getLogger();
+	//database validation status (create, update, validate ...)
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_algaterranew();
 
-		//database validation status (create, update, validate ...)
-		static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
-		static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_algaterranew();
-
-		static final List<String> classListStrings =  Arrays.asList(new String[]{
-				//IdentifiableEntity.class.getName(),
+	static final List<String> classListStrings =  Arrays.asList(new String[]{
+			//IdentifiableEntity.class.getName(),
 //				IdentifiableEntity.class.getName(),
-				//AgentBase.class.getName(),
-				//Reference.class.getName(),
-				TaxonName.class.getName(),
-				TaxonBase.class.getName()
+			//AgentBase.class.getName(),
+			//Reference.class.getName(),
+			TaxonName.class.getName(),
+			TaxonBase.class.getName()
 
 
-		});
-		//new ArrayList<Class<? extends IdentifiableEntity>>();
+	});
+	//new ArrayList<Class<? extends IdentifiableEntity>>();
 
 	// **************** ALL *********************
 

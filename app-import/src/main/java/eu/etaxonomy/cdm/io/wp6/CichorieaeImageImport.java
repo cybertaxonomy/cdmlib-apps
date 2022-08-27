@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.http.HttpException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.service.media.MediaInfoFileReader;
@@ -46,7 +47,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class CichorieaeImageImport extends AbstractImageImporter {
 
     private static final long serialVersionUID = -5123899111873586729L;
-    private static final Logger logger = Logger.getLogger(CichorieaeImageImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	/**
 	 * Imports images from a directory.

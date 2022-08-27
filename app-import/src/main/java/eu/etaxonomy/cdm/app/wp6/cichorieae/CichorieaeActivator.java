@@ -6,14 +6,14 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.wp6.cichorieae;
 
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.berlinModelImport.BerlinModelSources;
@@ -37,18 +37,16 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.term.TermTree;
 
-
 /**
  * TODO add the following to a wiki page:
  * HINT: If you are about to import into a mysql data base running under windows and if you wish to dump and restore the resulting data bas under another operation systen
  * you must set the mysql system variable lower_case_table_names = 0 in order to create data base with table compatible names.
  *
- *
  * @author a.mueller
- *
  */
 public class CichorieaeActivator {
-	private static final Logger logger = Logger.getLogger(CichorieaeActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;

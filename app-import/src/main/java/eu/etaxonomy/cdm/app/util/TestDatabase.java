@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
@@ -59,10 +60,10 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
  */
 public class TestDatabase {
 
-	private static final String server = "192.168.2.10";
-	private static final String username = "edit";
+    private static final Logger logger = LogManager.getLogger();
 
-	private static final Logger logger = Logger.getLogger(TestDatabase.class);
+    private static final String server = "192.168.2.10";
+	private static final String username = "edit";
 
 	public static ICdmDataSource CDM_DB(String dbname) {
 
@@ -89,7 +90,7 @@ public class TestDatabase {
 		DataSet dataSet = buildDataSet();
 
 		appCtr.getTermService().save(dataSet.getTerms());
-		appCtr.getTaxonService().save((List)dataSet.getTaxonBases());
+		appCtr.getTaxonService().save(dataSet.getTaxonBases());
 
 		appCtr.commitTransaction(txStatus);
 		appCtr.close();

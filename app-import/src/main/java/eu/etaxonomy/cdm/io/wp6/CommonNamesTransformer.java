@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.wp6;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
@@ -23,12 +24,13 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 /**
  * @author a.mueller
  * @since 01.03.2010
- * @version 1.0
  */
 public final class CommonNamesTransformer extends InputTransformerBase {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CommonNamesTransformer.class);
-	
+
+    private static final long serialVersionUID = 1L;
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
+
 
 	//named area
 	public static final UUID uuidCentralAfrica =  UUID.fromString("45f4e8a4-5145-4d87-af39-122495c08fe3");
@@ -51,7 +53,7 @@ public final class CommonNamesTransformer extends InputTransformerBase {
 	public static final UUID uuidWestCentralEastAfrica =  UUID.fromString("a94d2b9d-c58e-41df-9587-e3e01714b000");
 	public static final UUID uuidWesternAndEasternAfrica =  UUID.fromString("19ffdae5-622c-459d-af29-c19914e0e3da");
 
-	
+
    // Languages
 	public static final UUID uuidAge = UUID.fromString("7915d555-72b3-4862-b8de-d6037dc581f0");
 	public static final UUID uuidArb = UUID.fromString("5e4ff341-a5fd-4ae7-9228-c60cb5c668fa");
@@ -90,9 +92,9 @@ public final class CommonNamesTransformer extends InputTransformerBase {
 	public static final UUID uuidGur =  UUID.fromString("9ec8ba64-8911-4b92-89eb-e0092b4113e4");
 	public static final UUID uuidKilur =  UUID.fromString("89f1286f-e869-4f10-a43a-d86ef729833e");
 	public static final UUID uuidNgwaka =  UUID.fromString("67dfc889-0084-4932-9b21-ed54bbfe341f");
-	
 
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getMarkerTypeByKey(java.lang.String)
 	 */
@@ -104,7 +106,7 @@ public final class CommonNamesTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Canary Islands")){return TdwgAreaProvider.getAreaByTdwgAbbreviation("CNY-OO");
 		}else if (key.equalsIgnoreCase("North America")){return TdwgAreaProvider.getAreaByTdwgAbbreviation("7");
 		}else if (key.equalsIgnoreCase("Tansania")){return TdwgAreaProvider.getAreaByTdwgAbbreviation("TAN-OO");
-		
+
 		}else{
 			return null;
 		}
@@ -134,15 +136,15 @@ public final class CommonNamesTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Western Africa")){return uuidWestAfrica;
 		}else if (key.equalsIgnoreCase("Western and Eastern Africa")){return uuidWesternAndEasternAfrica;
 		}else if (key.equalsIgnoreCase("Western Central Africa")){return uuidWestAndCentralAfrica;
-		
-		
+
+
 		}else{
 			return null;
 		}
 
 	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getLanguageByKey(java.lang.String)
 	 */
@@ -196,8 +198,8 @@ public final class CommonNamesTransformer extends InputTransformerBase {
 		}
 	}
 
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getLanguageUuid(java.lang.String)
 	 */
@@ -208,13 +210,13 @@ public final class CommonNamesTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Kilur")){return uuidKilur;
 		}else if (key.equalsIgnoreCase("Ngwaka")){return uuidNgwaka;
 		}else if (key.equalsIgnoreCase("Gur")){return uuidGur;
-		
+
 		}else{
 			return null;
 		}
 
 	}
 
-	
-	
+
+
 }

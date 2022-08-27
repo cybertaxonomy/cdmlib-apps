@@ -12,7 +12,8 @@ package eu.etaxonomy.cdm.app.cyprus;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.ITermService;
@@ -38,7 +39,8 @@ import eu.etaxonomy.cdm.model.term.TermTree;
  * @since 16.12.2010
  */
 public class CyprusActivator {
-	private static final Logger logger = Logger.getLogger(CyprusActivator.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;

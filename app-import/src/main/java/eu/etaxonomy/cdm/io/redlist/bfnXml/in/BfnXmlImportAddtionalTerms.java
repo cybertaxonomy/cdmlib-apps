@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.redlist.bfnXml.in;
 
 import java.util.Arrays;
@@ -14,7 +13,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -30,21 +30,18 @@ import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 /**
- *
  * This class creates all area vocabularies and all distribution status vocabularies
  * for the German redlists.
  *
  * @author a.oppermann
  * @author a.mueller
  * @since 04.07.2013
- *
  */
 @Component
 public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
 
     private static final long serialVersionUID = 8997499338798245806L;
-
-    private static final Logger logger = Logger.getLogger(BfnXmlImportAddtionalTerms.class);
+    private static final Logger logger = LogManager.getLogger();
 
     public enum Vocabulary{
         GERMAN_FEDERAL_STATES("Bundesländer"),

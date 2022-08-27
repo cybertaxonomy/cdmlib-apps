@@ -1,18 +1,18 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.cyprus;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
 import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
@@ -21,14 +21,13 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 /**
  * @author a.mueller
  * @since 11.05.2009
- * @version 1.0
  */
 public class CyprusImportState extends ExcelImportState<CyprusImportConfigurator, ExcelRowBase>{
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CyprusImportState.class);
+	private static final Logger logger = LogManager.getLogger();
 
-	private Map<String, Taxon> higherTaxonTaxonMap = new HashMap<String, Taxon>();
-	
+	private Map<String, Taxon> higherTaxonTaxonMap = new HashMap<>();
+
 	private CyprusRow cyprusRow;
 	private CyprusDistributionRow cyprusDistributionRow;
 
@@ -37,7 +36,7 @@ public class CyprusImportState extends ExcelImportState<CyprusImportConfigurator
 		super(config);
 	}
 
-	
+
 	public boolean containsHigherTaxon(String higherName) {
 		return higherTaxonTaxonMap.containsKey(higherName);
 	}
@@ -55,7 +54,7 @@ public class CyprusImportState extends ExcelImportState<CyprusImportConfigurator
 	}
 
 
-	
+
 
 //	public boolean containsHigherTaxonUuid(String higherName) {
 //		return higherTaxonUuidMap.containsKey(higherName);
@@ -73,8 +72,8 @@ public class CyprusImportState extends ExcelImportState<CyprusImportConfigurator
 //		return higherTaxonUuidMap.get(higherName);
 //	}
 
-	
-	
+
+
 	/**
 	 * @return the cyprusRow
 	 */
@@ -89,7 +88,7 @@ public class CyprusImportState extends ExcelImportState<CyprusImportConfigurator
 		this.cyprusRow = cyprusRow;
 	}
 
-	
+
 	/**
 	 * @return the cyprusRow
 	 */
@@ -104,7 +103,7 @@ public class CyprusImportState extends ExcelImportState<CyprusImportConfigurator
 		this.cyprusDistributionRow = cyprusRow;
 	}
 
-	
 
-    
+
+
 }

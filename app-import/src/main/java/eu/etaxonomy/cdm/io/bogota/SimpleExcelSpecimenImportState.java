@@ -8,7 +8,8 @@
 */
 package eu.etaxonomy.cdm.io.bogota;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
@@ -17,14 +18,12 @@ import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
 /**
  * @author a.mueller
  * @since 16.06.2016
- *
  */
 public class SimpleExcelSpecimenImportState<CONFIG extends ExcelImportConfiguratorBase>
         extends ExcelImportState<CONFIG, ExcelRowBase>{
 
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(SimpleExcelSpecimenImportState.class);
-
+    private static final Logger logger = LogManager.getLogger();
 
 // ************************* CONSTRUCTUR *******************************/
     /**

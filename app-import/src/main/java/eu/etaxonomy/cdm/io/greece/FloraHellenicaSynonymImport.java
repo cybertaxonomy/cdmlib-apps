@@ -15,7 +15,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
@@ -36,13 +37,12 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  * @author a.mueller
  * @since 14.12.2016
  */
-
 @Component
 public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConfigurator>
             extends FloraHellenicaImportBase<CONFIG>{
 
     private static final long serialVersionUID = -3565782012921316901L;
-    private static final Logger logger = Logger.getLogger(FloraHellenicaSynonymImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String ACCEPTED_NAME = "Accepted name";
     private static final String SYNONYM = "synonym";

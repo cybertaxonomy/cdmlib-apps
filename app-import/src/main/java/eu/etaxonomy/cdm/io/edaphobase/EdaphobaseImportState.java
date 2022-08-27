@@ -14,25 +14,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 
 /**
  * @author a.mueller
  * @since 18.12.2015
- *
  */
 public class EdaphobaseImportState extends DbImportStateBase<EdaphobaseImportConfigurator, EdaphobaseImportState>{
+
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(EdaphobaseImportState.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private final Map<String, UUID> authorMap = new HashMap<>();
     private final Set<Integer> synonymsWithAcceptedTaxa = new HashSet<>();
 
-    /**
-     * @param config
-     */
     protected EdaphobaseImportState(EdaphobaseImportConfigurator config) {
         super(config);
     }

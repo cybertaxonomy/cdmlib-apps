@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml.in;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
@@ -22,8 +23,9 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  * @since 2013
  */
 public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator, BfnXmlImportBase>{
+
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(BfnXmlImportState.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private Reference firstListSecRef;
 	private Reference secondListSecRef;

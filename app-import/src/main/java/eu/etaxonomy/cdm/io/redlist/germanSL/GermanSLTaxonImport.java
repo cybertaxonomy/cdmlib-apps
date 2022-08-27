@@ -15,7 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -42,17 +43,15 @@ import eu.etaxonomy.cdm.model.term.OrderedTermVocabulary;
 /**
  * @author a.mueller
  * @since 25.11.2016
- *
  */
 @Component
 public class GermanSLTaxonImport
             extends GermanSLImporBase {
 
     private static final long serialVersionUID = 236093186271666895L;
+    private static final Logger logger = LogManager.getLogger();
 
-    private static final Logger logger = Logger.getLogger(GermanSLTaxonImport.class);
-
-    static final String SPECIES_NR = "SPECIES_NR";
+    private static final String SPECIES_NR = "SPECIES_NR";
     private static final String AUTHOR = "AUTHOR";
     private static final String ABBREVIAT = "ABBREVIAT";
     private static final String SEC = "SECUNDUM";

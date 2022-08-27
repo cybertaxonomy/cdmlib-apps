@@ -16,7 +16,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -49,7 +50,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 
     private static final long serialVersionUID = 2462539699442149049L;
-    private static final Logger logger = Logger.getLogger(GlobisCommonNameImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private int modCount = 10000;
 	private static final String pluralString = "common names";

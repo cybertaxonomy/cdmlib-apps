@@ -6,13 +6,13 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.wp6.cichorieae;
 
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.images.ImageImportConfigurator;
@@ -25,11 +25,11 @@ import eu.etaxonomy.cdm.io.wp6.CichorieaeImageImport;
 /**
  * @author n.hoffmann
  * @since 18.11.2008
- * @version 1.0
  */
 public class CichorieaeFirstImageImportActivator  {
+
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CichorieaeFirstImageImportActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	//	private static final File sourceFile = new File("src/main/resources/images/images_cich.xls");
 	private static final ICdmDataSource cdmDestination = CdmDestinations.localH2Cichorieae();

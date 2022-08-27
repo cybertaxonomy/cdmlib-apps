@@ -15,7 +15,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -31,7 +32,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 public class MexicoEfloraRefOtherBooksImport extends MexicoEfloraReferenceImportBase {
 
     private static final long serialVersionUID = -1186364983750790695L;
-    private static final Logger logger = Logger.getLogger(MexicoEfloraRefOtherBooksImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private static final String pluralString = "Other books";
 	private static final String dbTableName = "RefOtherBooks";

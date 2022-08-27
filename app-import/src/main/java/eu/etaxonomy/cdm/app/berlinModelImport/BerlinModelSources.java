@@ -10,7 +10,8 @@
 
 package eu.etaxonomy.cdm.app.berlinModelImport;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.config.AccountStore;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -18,9 +19,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 
 public class BerlinModelSources {
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(BerlinModelSources.class);
-
-
+    private static final Logger logger = LogManager.getLogger();
 
 	public static Source euroMed_PESI3(){
 		//	BerlinModel - Euro+Med

@@ -9,7 +9,8 @@
 package eu.etaxonomy.cdm.io.mexico;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
@@ -30,7 +31,7 @@ public abstract class MexicoEfloraImportBase
             implements ICdmIO<MexicoEfloraImportState>, IPartitionedIO<MexicoEfloraImportState> {
 
     private static final long serialVersionUID = -5229728676004248450L;
-    private static final Logger logger = Logger.getLogger(MexicoEfloraImportBase.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public MexicoEfloraImportBase(String tableName, String pluralString ) {
 		super(tableName, pluralString);

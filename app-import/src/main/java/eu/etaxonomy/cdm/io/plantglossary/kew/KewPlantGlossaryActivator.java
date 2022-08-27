@@ -1,11 +1,12 @@
 package eu.etaxonomy.cdm.io.plantglossary.kew;
 
 import java.io.IOException;
-import eu.etaxonomy.cdm.common.URI;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -13,14 +14,13 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 
 /**
- *
  * @author pplitzner
  * @since Jan 25, 2019
- *
  */
 public class KewPlantGlossaryActivator {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(KewPlantGlossaryActivator.class);
+
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
 
 	private void doImport(ICdmDataSource cdmDestination) throws IOException{
 

@@ -6,11 +6,9 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.algaterra;
 
 import java.math.BigDecimal;
-import eu.etaxonomy.cdm.common.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -20,10 +18,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraMorphologyImportValidator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
@@ -50,7 +50,6 @@ import eu.etaxonomy.cdm.model.term.DefinedTerm;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
-
 /**
  * @author a.mueller
  * @since 01.09.2012
@@ -59,7 +58,7 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 
     private static final long serialVersionUID = 5978046406702163690L;
-    private static final Logger logger = Logger.getLogger(AlgaTerraMorphologyImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 5000;
 	private static final String pluralString = "morpho facts";
@@ -70,7 +69,6 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 		super(dbTableName, pluralString);
 	}
 
-
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT MorphoFactId " +
@@ -78,7 +76,6 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 				" ORDER BY MorphoFact.MorphoFactId ";
 		return result;
 	}
-
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
@@ -226,7 +223,7 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 		return feature;
 	}
 
-	private void doNonListenFeatures(AlgaTerraImportState state) throws SQLException{
+	private void doNonListenFeatures(AlgaTerraImportState state) {
 		String baseName = "Apices";
 		handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, baseName);
 

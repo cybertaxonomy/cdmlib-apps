@@ -18,7 +18,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -36,22 +37,17 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 /**
  * @author a.mueller
  * @since 18.12.2015
- *
  */
 @Component
 public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
+
     private static final long serialVersionUID = -9138378836474086070L;
-    private static final Logger logger = Logger.getLogger(EdaphobaseDescriptionImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String tableName = "description_detail";
 
     private static final String pluralString = "descriptions";
 
-
-    /**
-     * @param tableName
-     * @param pluralString
-     */
     public EdaphobaseDescriptionImport() {
         super(tableName, pluralString);
     }

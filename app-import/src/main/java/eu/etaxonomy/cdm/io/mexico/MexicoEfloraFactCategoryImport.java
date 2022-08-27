@@ -15,7 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -38,8 +39,7 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
 
     private static final long serialVersionUID = -7920836240918111566L;
-
-    private static final Logger logger = Logger.getLogger(MexicoEfloraFactCategoryImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	protected static final String NAMESPACE = "FactCategory";
 

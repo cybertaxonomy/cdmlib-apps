@@ -10,20 +10,20 @@ package eu.etaxonomy.cdm.io.greece;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 
 /**
  * @author a.mueller
  * @since 14.12.2016
- *
  */
 public class FloraHellenicaTransformer extends InputTransformerBase{
 
     private static final long serialVersionUID = -3400280126782787668L;
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(FloraHellenicaTransformer.class);
+    private static final Logger logger = LogManager.getLogger();
 
     //taxon info feature
     protected static final UUID uuidFloraHellenicaTaxonInfoFeature = UUID.fromString("81f92518-eeff-43d2-8dfd-d277efdbecbe");

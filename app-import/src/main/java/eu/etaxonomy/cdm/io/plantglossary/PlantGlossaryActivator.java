@@ -1,19 +1,21 @@
 package eu.etaxonomy.cdm.io.plantglossary;
 
 import java.io.IOException;
-import eu.etaxonomy.cdm.common.URI;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 
 public class PlantGlossaryActivator {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(PlantGlossaryActivator.class);
+
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
 
 	private void doImport(ICdmDataSource cdmDestination) throws IOException{
 

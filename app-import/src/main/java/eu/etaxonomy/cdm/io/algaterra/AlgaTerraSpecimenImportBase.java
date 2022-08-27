@@ -9,7 +9,6 @@
 
 package eu.etaxonomy.cdm.io.algaterra;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,10 +18,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -58,7 +59,7 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
     private static final long serialVersionUID = -1741703900571072861L;
 
-    private static final Logger logger = Logger.getLogger(AlgaTerraSpecimenImportBase.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final String ECO_FACT_FIELD_OBSERVATION_NAMESPACE = "EcoFact_FieldObservation";
 	public static final String ECO_FACT_DERIVED_UNIT_NAMESPACE = "EcoFact_DerivedUnit";

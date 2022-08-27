@@ -18,7 +18,8 @@ import org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetada
 import org.apache.commons.imaging.common.ImageMetadata;
 import org.apache.commons.imaging.common.ImageMetadata.ImageMetadataItem;
 import org.apache.http.HttpException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -43,7 +44,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 public class ImageImportTest {
 
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(FloraHellenicaImageImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String BASE_URL = "https://media.e-taxonomy.eu/flora-greece/";
     private static final String IMAGE_FOLDER = "////BGBM-PESIHPC/Greece/thumbs/";

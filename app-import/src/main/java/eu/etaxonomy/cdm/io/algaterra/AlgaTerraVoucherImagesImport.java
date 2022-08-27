@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.algaterra;
 
 import java.sql.ResultSet;
@@ -16,7 +15,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraTypeImportValidator;
@@ -38,7 +38,7 @@ import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 public class AlgaTerraVoucherImagesImport  extends AlgaTerraImageImportBase {
 
     private static final long serialVersionUID = -1702110625354900442L;
-    private static final Logger logger = Logger.getLogger(AlgaTerraVoucherImagesImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 5000;
 	private static final String pluralString = "voucher images";

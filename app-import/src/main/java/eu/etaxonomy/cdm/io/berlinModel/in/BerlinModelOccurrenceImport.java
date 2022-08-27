@@ -18,7 +18,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -52,8 +53,7 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 
     private static final long serialVersionUID = -7918122767284077183L;
-
-    private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final String NAMESPACE = "Occurrence";
 

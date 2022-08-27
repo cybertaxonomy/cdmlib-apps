@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.IAgentService;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.model.agent.Person;
@@ -28,15 +28,16 @@ import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 
-
 /**
  * @author a.mueller
  * @since 25.02.2014
  */
 @Component
 public class GlobisAuthorImport  extends GlobisImportBase<TeamOrPersonBase<?>> implements IMappingImport<TeamOrPersonBase<?>, GlobisImportState>{
-	private static final Logger logger = Logger.getLogger(GlobisAuthorImport.class);
-	
+
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = LogManager.getLogger();
+
 	private static final String pluralString = "references";
 	private static final String dbTableName = "Literatur";
 	private static final Class<?> cdmTargetClass = Reference.class;
@@ -45,12 +46,9 @@ public class GlobisAuthorImport  extends GlobisImportBase<TeamOrPersonBase<?>> i
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-	
-	
-
 	@Override
 	protected void doInvoke(GlobisImportState state) {
-		
+
 		//create reference authors
 		GlobisReferenceImport globisReferenceImport = (GlobisReferenceImport)getBean("globisReferenceImport");
 		if (globisReferenceImport == null){
@@ -71,7 +69,7 @@ public class GlobisAuthorImport  extends GlobisImportBase<TeamOrPersonBase<?>> i
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
 
 
@@ -93,15 +91,15 @@ public class GlobisAuthorImport  extends GlobisImportBase<TeamOrPersonBase<?>> i
 		//not required here
 		return null;
 	}
-	
-	
-	
+
+
+
 	protected static TeamOrPersonBase<?> makeAuthor(String refAuthor, GlobisImportState state, IAgentService service) {
-		
+
 		//create string list for single authors
 		List<String> singleAuthorStrings = makeAuthorStringList(refAuthor);
 
-		TeamOrPersonBase<?> result; 
+		TeamOrPersonBase<?> result;
 		if (singleAuthorStrings.size() > 1){
 			Team newTeam = Team.NewInstance();
 			for (String str : singleAuthorStrings){
@@ -119,10 +117,10 @@ public class GlobisAuthorImport  extends GlobisImportBase<TeamOrPersonBase<?>> i
 		}else{
 			result = makePerson(singleAuthorStrings.get(0), state, service);
 		}
-		
+
 		return result;
 	}
-	
+
 	private static List<String> makeAuthorStringList(String refAuthor) {
 		List<String> singleAuthorStrings = new ArrayList<String>();
 		String[] split = refAuthor.split(";");
@@ -138,9 +136,6 @@ public class GlobisAuthorImport  extends GlobisImportBase<TeamOrPersonBase<?>> i
 		}
 		return singleAuthorStrings;
 	}
-
-
-
 
 	protected static String makeTeamKey(Team team, GlobisImportState state, IAgentService service){
 		String uuidList = "";
@@ -166,13 +161,13 @@ public class GlobisAuthorImport  extends GlobisImportBase<TeamOrPersonBase<?>> i
 		return person;
 	}
 
-	
+
 	@Override
 	protected boolean doCheck(GlobisImportState state){
 		logger.info("Do check not implemented for Author import");
 		return true;
 	}
-	
+
 	@Override
 	protected boolean isIgnore(GlobisImportState state){
 		return !state.getConfig().isDoAuthors();

@@ -8,7 +8,8 @@
 */
 package eu.etaxonomy.cdm.io.redlist.germanSL;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
@@ -16,15 +17,13 @@ import eu.etaxonomy.cdm.model.name.IBotanicalName;
 /**
  * @author a.mueller
  * @since 15.05.2018
- *
  */
 public abstract class GermanSLImporBase
         extends SimpleExcelTaxonImport<GermanSLImportConfigurator> {
 
     private static final long serialVersionUID = 236093186271666895L;
 
-    private static final Logger logger = Logger.getLogger(GermanSLImporBase.class);
-
+    private static final Logger logger = LogManager.getLogger();
 
     protected class NameResult{
         IBotanicalName name;

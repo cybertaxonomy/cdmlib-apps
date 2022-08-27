@@ -19,7 +19,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -74,8 +75,9 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 @Component
 public class CubaExcelImport
         extends ExcelImportBase<CubaImportState, CubaImportConfigurator, ExcelRowBase> {
+
     private static final long serialVersionUID = -747486709409732371L;
-    private static final Logger logger = Logger.getLogger(CubaExcelImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String HOMONYM_MARKER = "\\s+homon.?$";
     private static final String DOUBTFUL_MARKER = "^\\?\\s?";

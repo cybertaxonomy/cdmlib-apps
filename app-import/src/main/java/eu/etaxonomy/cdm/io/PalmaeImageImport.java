@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io;
 
 import java.io.File;
@@ -25,7 +24,8 @@ import org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetada
 import org.apache.commons.imaging.common.ImageMetadata;
 import org.apache.commons.imaging.common.ImageMetadata.ImageMetadataItem;
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
@@ -59,10 +59,9 @@ import eu.etaxonomy.cdm.strategy.match.IMatchStrategyEqual;
 public class PalmaeImageImport extends AbstractImageImporter {
 
     private static final long serialVersionUID = 1226643507245147417L;
+    private static final Logger logger = LogManager.getLogger();
 
-    private static final Logger logger = Logger.getLogger(PalmaeImageImport.class);
-
-	enum MetaData{
+    enum MetaData{
 		NAME,
 		ARTIST,
 		COPYRIGHT,

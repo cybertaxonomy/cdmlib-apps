@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
@@ -30,13 +31,12 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
  * @author a.mueller
  * @since 14.12.2016
  */
-
 @Component
 public class FloraHellenicaCommentsImport<CONFIG extends FloraHellenicaImportConfigurator>
         extends FloraHellenicaImportBase<CONFIG>{
 
     private static final long serialVersionUID = -3565782012921316901L;
-    private static final Logger logger = Logger.getLogger(FloraHellenicaCommentsImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String TAXON = "Taxon";
     private static final String UNIQUE_ID_ACCEPTED = "Unique ID of taxon name (Includes valid and excluded taxa IDs)";

@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.io.greece;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -18,24 +19,21 @@ import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.strategy.homotypicgroup.BasionymRelationCreator;
+
 /**
  * Creates basionym relationships for all taxa.
  *
  * @author a.mueller
  * @since 03.04.2017
  */
-
 @Component
 public class FloraHellenicaBasionymImport<CONFIG extends FloraHellenicaImportConfigurator>
         extends CdmImportBase<CONFIG,SimpleExcelTaxonImportState<CONFIG>>{
 
     private static final long serialVersionUID = -7066421762179411758L;
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(FloraHellenicaBasionymImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void doInvoke(SimpleExcelTaxonImportState<CONFIG> state) {
 
@@ -49,24 +47,13 @@ public class FloraHellenicaBasionymImport<CONFIG extends FloraHellenicaImportCon
         this.commitTransaction(tx);
     }
 
-
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean doCheck(SimpleExcelTaxonImportState<CONFIG> state) {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isIgnore(SimpleExcelTaxonImportState<CONFIG> state) {
         return false;
     }
-
-
-
 }

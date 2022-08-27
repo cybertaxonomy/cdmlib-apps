@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.mexico;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -25,11 +26,9 @@ import eu.etaxonomy.cdm.model.name.Rank;
 public class MexicoConabioTransformer extends InputTransformerBase{
 
     private static final long serialVersionUID = -5618949703252325141L;
-
-    private static final Logger logger = Logger.getLogger(MexicoConabioTransformer.class);
+    private static final Logger logger = LogManager.getLogger();
 
     public static UUID uuidReferenceEflora = UUID.fromString("0a04f189-b014-41b3-8a59-40f2f56a3087");
-
 
     public static UUID uuidReferenceBorhidi = UUID.fromString("f76a535b-a1fd-437c-a09d-f94eddae2b5e");
     //    public static UUID uuidReferenceConabio = UUID.fromString("7183652f-d7ca-45a7-9383-265996d3d10f");

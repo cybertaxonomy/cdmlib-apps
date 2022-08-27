@@ -14,7 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -43,15 +44,15 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 
-
 /**
  * @author a.mueller
  * @since 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelFactExport extends BerlinModelExportBase<TextData> {
-	private static final Logger logger = Logger.getLogger(BerlinModelFactExport.class);
+
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 2500;
 	private static final String dbTableName = "Fact";

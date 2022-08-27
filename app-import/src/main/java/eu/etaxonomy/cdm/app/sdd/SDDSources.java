@@ -6,25 +6,24 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.sdd;
 
 import java.io.File;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.URI;
 
 /**
  * @author h.fradin
  * @since 24.10.2008
- * @version 1.0
  */
 public class SDDSources {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(SDDSources.class);
 
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
 
 	public static URI tdwg_expert(){
 

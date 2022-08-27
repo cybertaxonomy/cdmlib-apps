@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.berlinModelImport;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.ITermService;
@@ -43,9 +44,10 @@ import eu.etaxonomy.cdm.model.term.TermTree;
  *
  */
 public class AlgaTerraActivator {
-	private static final Logger logger = Logger.getLogger(AlgaTerraActivator.class);
 
-	//database validation status (create, update, validate ...)
+    private static Logger logger = LogManager.getLogger();
+
+    //database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.AlgaTerra();
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();

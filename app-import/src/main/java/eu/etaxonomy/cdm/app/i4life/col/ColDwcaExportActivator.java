@@ -10,15 +10,16 @@
 package eu.etaxonomy.cdm.app.i4life.col;
 
 import java.io.File;
-import eu.etaxonomy.cdm.common.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -38,8 +39,9 @@ import eu.etaxonomy.cdm.model.agent.Person;
  *
  */
 public class ColDwcaExportActivator {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(ColDwcaExportActivator.class);
+
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	private static final String fileDestination = "C:\\tmp\\dwcaTmp\\cyprus\\";

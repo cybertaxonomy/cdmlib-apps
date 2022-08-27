@@ -22,7 +22,8 @@ import java.util.TreeSet;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -53,7 +54,6 @@ import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
- *
  * @author a.mueller
  * @since 20.03.2008
  */
@@ -61,7 +61,7 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
     private static final long serialVersionUID = -8921948187177864321L;
 
-    private static final Logger logger = Logger.getLogger(BerlinModelCommonNamesImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final UUID REFERENCE_LANGUAGE_ISO639_2_UUID = UUID.fromString("40c4f8dd-3d9c-44a4-b77a-76e137a89a5f");
 	public static final UUID REFERENCE_LANGUAGE_STRING_UUID = UUID.fromString("2a1b678f-c27d-48c1-b43e-98fd0d426305");

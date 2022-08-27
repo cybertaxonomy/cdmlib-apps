@@ -15,7 +15,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportState;
@@ -33,7 +34,8 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  */
 public class RefDetailMapper extends DbSingleAttributeExportMapperBase<BerlinModelExportState>
         implements IDbExportMapper<BerlinModelExportState, IExportTransformer>{
-	private static final Logger logger = Logger.getLogger(RefDetailMapper.class);
+
+    private static final Logger logger = LogManager.getLogger();
 
 	private final String cdmRefAttributeString;
 	private PreparedStatement preparedStatement;
@@ -46,11 +48,6 @@ public class RefDetailMapper extends DbSingleAttributeExportMapperBase<BerlinMod
 //		return new RefDetailMapper();
 //	}
 
-
-	/**
-	 * @param dbAttributString
-	 * @param cdmAttributeString
-	 */
 	private RefDetailMapper(String cdmAttributeString, String cdmRefAttributeString, String dbAttributeString) {
 		super(cdmAttributeString, dbAttributeString, null);
 		this.cdmRefAttributeString = cdmRefAttributeString;

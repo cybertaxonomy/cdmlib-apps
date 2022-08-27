@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.abcdImport;
 import java.io.File;
 import java.net.URISyntaxException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
@@ -28,7 +29,7 @@ import eu.etaxonomy.cdm.io.specimen.excel.in.SpecimenSynthesysExcelImportConfigu
 public class SynthesysCacheActivator {
 
     @SuppressWarnings("unused")
-    private static Logger logger = Logger.getLogger(SynthesysCacheActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     //database validation status (create, update, validate ...)
 

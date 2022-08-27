@@ -14,7 +14,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -35,15 +36,15 @@ import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 
-
 /**
  * @author a.mueller
  * @since 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelNameRelationExport extends BerlinModelExportBase<RelationshipBase> {
-	private static final Logger logger = Logger.getLogger(BerlinModelNameRelationExport.class);
+
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 100;
 	private static final String dbTableName = "RelName";
@@ -55,9 +56,6 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelExportState state){
 		boolean result = true;
@@ -75,7 +73,6 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 
 		mapping.addMapper(DbObjectMapper.NewInstance("fromName", "NameFk1"));
 		mapping.addMapper(DbObjectMapper.NewInstance("toName", "NameFk2"));
-
 
 		mapping.addMapper(MethodMapper.NewInstance("RelNameQualifierFk", this));
 

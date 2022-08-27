@@ -13,7 +13,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.sdd.SDDSources;
 import eu.etaxonomy.cdm.common.URI;
@@ -24,7 +25,7 @@ import eu.etaxonomy.cdm.common.URI;
  */
 public class TcsSources {
 
-	private static final Logger logger = Logger.getLogger(TcsSources.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static URI normalExplicit(){
 		try {

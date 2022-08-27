@@ -6,7 +6,6 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.io.redlist.gefaesspflanzen;
 
 import java.sql.ResultSet;
@@ -18,7 +17,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -54,17 +54,14 @@ import eu.etaxonomy.cdm.model.term.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
- *
  * @author pplitzner
  * @since Mar 1, 2016
- *
  */
-
 @Component
 @SuppressWarnings("serial")
 public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
 
-    private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportNames.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String tableName = "Rote Liste Gefäßpflanzen";
 

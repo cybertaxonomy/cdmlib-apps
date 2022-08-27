@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -47,7 +48,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
     private static final long serialVersionUID = 1139543760239436841L;
-    private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceSourceImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 5000;
 	private static final String pluralString = "occurrence sources";

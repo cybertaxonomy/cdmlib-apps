@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.algaterra;
 
 import java.sql.ResultSet;
@@ -19,7 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
@@ -62,8 +62,7 @@ import eu.etaxonomy.cdm.model.term.DefinedTerm;
 public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 
     private static final long serialVersionUID = 32400936433601479L;
-    private static final Logger logger = Logger.getLogger(AlgaTerraTypeImport.class);
-
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 5000;
 	private static final String pluralString = "types";
@@ -77,7 +76,6 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 	public AlgaTerraTypeImport(){
 		super(dbTableName, pluralString);
 	}
-
 
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {

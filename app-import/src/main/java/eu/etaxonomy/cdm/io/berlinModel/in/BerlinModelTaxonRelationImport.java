@@ -30,7 +30,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -69,9 +70,9 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  */
 @Component
 public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
-    private static final long serialVersionUID = -7234926279240842557L;
 
-    private static final Logger logger = Logger.getLogger(BerlinModelTaxonRelationImport.class);
+    private static final long serialVersionUID = -7234926279240842557L;
+    private static final Logger logger = LogManager.getLogger();
 
 	public static final String TREE_NAMESPACE = "PTRefFk";
 
@@ -379,7 +380,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							Synonym synonym = (Synonym)taxon1;
 							if (synonym.getAcceptedTaxon()!= null){
 							    logger.warn("RelID: " + relPTaxonId + ". Synonym ("+taxon1Id +") already has an accepted taxon. Create clone.");
-							    synonym = (Synonym)synonym.clone();
+							    synonym = synonym.clone();
 							}
 							makeSynRel(state, relQualifierFk, toTaxon, synonym, citation, microcitation);
 

@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
@@ -34,7 +35,7 @@ import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
  */
 public class CyprusNewImageUpdaterActivator {
 
-    private static final Logger logger = Logger.getLogger(CyprusImagesActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.local_cyprus();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_cyprus();

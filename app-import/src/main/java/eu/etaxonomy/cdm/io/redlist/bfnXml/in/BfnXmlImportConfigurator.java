@@ -6,24 +6,23 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.redlist.bfnXml.in;
 
 /**
  * @author a.oppermann
  * @since 03.07.2013
- *
  */
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.XmlHelp;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
@@ -34,9 +33,9 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 @Component
 public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImportState, URI>  {
-    private static final long serialVersionUID = -1647291548711127385L;
 
-    private static final Logger logger = Logger.getLogger(BfnXmlImportConfigurator.class);
+    private static final long serialVersionUID = -1647291548711127385L;
+    private static final Logger logger = LogManager.getLogger();
 
 	//TODO
 	private static IInputTransformer defaultTransformer = null;

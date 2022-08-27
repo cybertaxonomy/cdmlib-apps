@@ -6,17 +6,17 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.io.cuba;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.DOI;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.ext.geo.GeoServiceArea;
 import eu.etaxonomy.cdm.ext.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
@@ -34,21 +34,16 @@ import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
-
 /**
  * @author a.mueller
  * @since 05.01.2016
  */
-
 @Component
 public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, CubaImportState> {
     private static final long serialVersionUID = -747486709409732371L;
 
-    private static final Logger logger = Logger.getLogger(CubaVocabularyImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void doInvoke(CubaImportState state) {
         try {
@@ -60,9 +55,6 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         }
     }
 
-    /**
-     * @param state
-     */
     private void makeAlternativeFloras(CubaImportState state) {
 
         //FRC
@@ -112,10 +104,6 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
 
     }
 
-    /**
-     * @param state
-     * @throws UndefinedTransformerMethodException
-     */
     private void makePresenceAbsenceTerms(CubaImportState state) throws UndefinedTransformerMethodException {
         TransactionStatus tx = startTransaction();
 

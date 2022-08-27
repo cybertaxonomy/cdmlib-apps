@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.greece;
 import java.text.ParseException;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -45,15 +46,10 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
     private static final long serialVersionUID = 1347759514044184010L;
 
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(FloraHellenicaTaxonImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private NamedArea greece;
 
-
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void doInvoke(SimpleExcelTaxonImportState<FloraHellenicaImportConfigurator> state) {
 
@@ -77,11 +73,6 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         }
     }
 
-    /**
-     * @param state
-     * @return
-     */
-    @SuppressWarnings("unchecked")
     private void createAreasVoc(SimpleExcelTaxonImportState<FloraHellenicaImportConfigurator> state) {
         //voc
         URI termSourceUri = null;

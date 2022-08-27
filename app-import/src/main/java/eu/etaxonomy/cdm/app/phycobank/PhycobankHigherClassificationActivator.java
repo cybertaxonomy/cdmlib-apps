@@ -9,13 +9,14 @@
 
 package eu.etaxonomy.cdm.app.phycobank;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.util.Date;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -34,9 +35,9 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  * @since 2018-08-09
  */
 public class PhycobankHigherClassificationActivator {
-    @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(PhycobankHigherClassificationActivator.class);
 
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
 
     // ====================================================================================
 

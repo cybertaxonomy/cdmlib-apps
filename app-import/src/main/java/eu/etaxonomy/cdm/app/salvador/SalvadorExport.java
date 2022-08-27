@@ -6,12 +6,12 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.salvador;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.berlinModelImport.BerlinModelDestinations;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -24,17 +24,15 @@ import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
-
 /**
- *
  * @author a.mueller
- *
  */
 public class SalvadorExport {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(SalvadorExport.class);
 
-	//database validation status (create, update, validate ...)
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
+
+    //database validation status (create, update, validate ...)
 	static final Source berlinModelDestination = BerlinModelDestinations.El_Salvador_Andreas();
 	static final ICdmDataSource cdmSource = CdmDestinations.localH2Salvador();
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");

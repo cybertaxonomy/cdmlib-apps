@@ -15,7 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -43,15 +44,13 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * @author a.mueller
  * @since 14.12.2016
- *
  */
-
 @Component
 public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfigurator>
             extends FloraHellenicaImportBase<CONFIG>{
 
     private static final long serialVersionUID = -6291948918967763381L;
-    private static final Logger logger = Logger.getLogger(FloraHellenicaTaxonImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String LIFE_FORM = "Life-form";
     private static final String STATUS = "Status";

@@ -1,4 +1,3 @@
-// $Id$
 /**
 * Copyright (C) 2017 EDIT
 * European Distributed Institute of Taxonomy
@@ -12,7 +11,8 @@ package eu.etaxonomy.cdm.io.bogota;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -44,7 +44,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         extends SimpleExcelTaxonImport<CONFIG> {
 
     private static final long serialVersionUID = -884838817884874228L;
-    private static final Logger logger = Logger.getLogger(BogotaChecklistTaxonImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String ID_COL = "#";
     private static final String AUTHOR = "Autor";

@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.common;
 
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.berlinModelImport.SourceBase;
 import eu.etaxonomy.cdm.app.tcs.TcsSources;
@@ -22,8 +23,9 @@ import eu.etaxonomy.cdm.io.common.Source;
  * @since 21.04.2010
  */
 public class CdmImportSources extends SourceBase{
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CdmImportSources.class);
+
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
 
 	public static Source ROTE_LISTE_GEFAESSPFLANZEN_DB(){
 		String dbms = Source.MYSQL;

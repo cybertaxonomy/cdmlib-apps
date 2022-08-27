@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.globis;
 
 import java.util.HashMap;
@@ -14,7 +13,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
@@ -28,21 +28,21 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 /**
  * @author a.mueller
  * @since 11.05.2009
- * @version 1.0
  */
 public class GlobisImportState extends DbImportStateBase<GlobisImportConfigurator, GlobisImportState>{
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(GlobisImportState.class);
 
-	private Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<String, DefinedTermBase>();
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
 
-	private Map<String, User> usernameMap = new HashMap<String, User>();
+	private Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<>();
+
+	private Map<String, User> usernameMap = new HashMap<>();
 
 	private Map<Integer, Map<Integer,Rank>> rankMap;
 
-	private Map<String, Person> personMap = new HashMap<String, Person>();
+	private Map<String, Person> personMap = new HashMap<>();
 
-	private Map<String, Team> teamMap = new HashMap<String, Team>();
+	private Map<String, Team> teamMap = new HashMap<>();
 
 
 
@@ -136,10 +136,9 @@ public class GlobisImportState extends DbImportStateBase<GlobisImportConfigurato
 	}
 
 	public Set<AgentBase> getAgents(){
-		Set<AgentBase> result = new HashSet<AgentBase>();
+		Set<AgentBase> result = new HashSet<>();
 		result.addAll(personMap.values());
 		result.addAll(teamMap.values());
 		return result;
 	}
-
 }

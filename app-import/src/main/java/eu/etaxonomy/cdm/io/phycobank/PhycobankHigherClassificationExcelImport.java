@@ -6,7 +6,6 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.io.phycobank;
 
 import java.util.ArrayList;
@@ -15,7 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
@@ -36,13 +36,12 @@ import eu.etaxonomy.cdm.persistence.query.MatchMode;
  * @author a.mueller
  * @since 2018-08-09
  */
-
 @Component
 public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHigherClassificationImportConfigurator>
         extends SimpleExcelTaxonImport<CONFIG> {
 
     private static final long serialVersionUID = -77504409820284052L;
-    private static final Logger logger = Logger.getLogger(PhycobankHigherClassificationExcelImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String GENUS = "genus";
     private static final String SUBFAMILIA = "subfam";

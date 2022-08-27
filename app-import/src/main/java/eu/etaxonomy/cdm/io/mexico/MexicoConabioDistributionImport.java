@@ -13,7 +13,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.URI;
@@ -45,8 +46,7 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
             extends SimpleExcelTaxonImport<CONFIG> {
 
     private static final long serialVersionUID = -1733208053395372094L;
-
-    private static final Logger logger = Logger.getLogger(MexicoConabioDistributionImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private OrderedTermVocabulary<NamedArea> stateAreasVoc;
     private NamedArea mexico;

@@ -15,7 +15,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
@@ -43,7 +44,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
 
     private static final long serialVersionUID = 8968205268798472136L;
-    private static final Logger logger = Logger.getLogger(EdaphobaseSynonymy2Import.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String tableName = "tax_synonym";
     private static final String pluralString = "related unreal synonyms";

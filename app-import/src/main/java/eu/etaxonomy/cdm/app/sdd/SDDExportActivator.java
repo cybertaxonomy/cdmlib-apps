@@ -12,7 +12,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.util.Assert;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -28,9 +29,10 @@ import eu.etaxonomy.cdm.io.sdd.out.SDDExportConfigurator;
 /**
  * @author l.morris
  * @since 29 Nov 2012
- *
  */
 public class SDDExportActivator {
+
+    private static final Logger logger = LogManager.getLogger();
 
 	/* SerializeFrom DB **/
 	private static final String sourceDbName = "cdm";
@@ -97,11 +99,7 @@ public class SDDExportActivator {
        }
        //return loadedDataSource;
        return dataSource;
-   }
-
-
-
-	private static final Logger logger = Logger.getLogger(ViolaExportActivator.class);
+    }
 
 	//private static final ICdmDataSource sourceDb = ViolaExportActivator.CDM_DB(sourceDbName);
 	private static final ICdmDataSource sourceDb = customDataSource();

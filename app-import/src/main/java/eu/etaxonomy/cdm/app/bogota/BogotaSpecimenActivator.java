@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.bogota;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
@@ -32,12 +33,12 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  *
  * @author a.mueller
  * @since 21.04.2017
- *
  */
 public class BogotaSpecimenActivator {
-    private static final Logger logger = Logger.getLogger(BogotaSpecimenActivator.class);
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    private static final Logger logger = LogManager.getLogger();
+
+    //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_bogota();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_bogota();
 

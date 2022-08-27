@@ -9,7 +9,6 @@
 
 package eu.etaxonomy.cdm.io.algaterra;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -20,13 +19,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.format.datetime.joda.DateTimeParser;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraDnaImportValidator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
@@ -52,15 +53,16 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.term.DefinedTerm;
 
-
 /**
  * @author a.mueller
  * @since 01.09.2012
  */
 @Component
 public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
-	private static final Logger logger = Logger.getLogger(AlgaTerraDnaImport.class);
 
+    private static final long serialVersionUID = 1L;
+
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 5000;
 	private static final String pluralString = "dna facts";
@@ -87,9 +89,6 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =
@@ -250,12 +249,6 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 	}
 
 
-	/**
-	 * @param rs
-	 * @return
-	 * @throws SQLException
-	 * @throws ParseException
-	 */
 	private DateTime makeImportDateTime(ResultSet rs) throws SQLException,
 			ParseException {
 		DateTime importDateTime = null;
@@ -272,8 +265,6 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 		}
 		return importDateTime;
 	}
-
-
 
 	private Sequence makeSequence(ResultSet rs, DnaSample dnaSample, int dnaFactId, DateTime importDateTime) throws SQLException {
 		String sequenceStr = rs.getString("PlainSequence");
@@ -295,18 +286,6 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 		return sequence;
 	}
 
-
-
-	/**
-	 * @param sequence2
-	 * @param rs
-	 * @param accessionStr
-	 * @param notesStr
-	 * @param sequence
-	 * @param importDateTime
-	 * @return
-	 * @throws SQLException
-	 */
 	private void makeGenBankAccession(ResultSet rs, Sequence sequence, DateTime importDateTime, Integer dnaFactId) throws SQLException {
 		String accessionStr = rs.getString("Accession");
 		String notesStr = rs.getString("Notes");

@@ -13,7 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
 import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
@@ -29,8 +30,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
  * @since 11.05.2009
  */
 public class CubaImportState extends ExcelImportState<CubaImportConfigurator, ExcelRowBase>{
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CubaImportState.class);
+
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
 
 	private final Map<String, Taxon> higherTaxonTaxonMap = new HashMap<>();
 

@@ -9,7 +9,8 @@ package eu.etaxonomy.cdm.app.util;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
@@ -30,11 +31,11 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 public class TestTransaction {
 
-	private static final String dbName = "cdm_test_jaxb";
-    private static final int MAX_ENTRIES = 20;
+    private static final ICdmDataSource db = TestDatabase.CDM_DB(dbName);
+    private static final Logger logger = LogManager.getLogger();
 
-	private static final ICdmDataSource db = TestDatabase.CDM_DB(dbName);
-    private static final Logger logger = Logger.getLogger(TestTransaction.class);
+    private static final String dbName = "cdm_test_jaxb";
+    private static final int MAX_ENTRIES = 20;
 
 
     /** Modifies disjunct objects within two transactions of one application context.

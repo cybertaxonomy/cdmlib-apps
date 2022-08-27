@@ -6,10 +6,10 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.berlinModel.out;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase;
@@ -28,7 +28,7 @@ public class BerlinModelExportConfigurator
     private static final long serialVersionUID = -2346209092417359348L;
 
     @SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(BerlinModelExportConfigurator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 //	TODO
 	private static IExportTransformer defaultTransformer = null;

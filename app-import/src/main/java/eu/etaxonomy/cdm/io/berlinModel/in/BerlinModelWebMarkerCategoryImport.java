@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -14,7 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
@@ -29,22 +30,23 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 /**
  * @author a.mueller
  * @since 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelWebMarkerCategoryImport extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(BerlinModelWebMarkerCategoryImport.class);
+
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 100;
 	private static final String dbTableName = "webMarkerCategory";
 	private static final String pluralString = "markerCategories";
-	
+
 	public BerlinModelWebMarkerCategoryImport(){
 		super(dbTableName, pluralString);
 	}
-	
+
 	private static Map<String, MarkerType> generalCategoryMap;
-	
+
 	private static Map<String, MarkerType> getGeneralCategoryMap(){
 		if (generalCategoryMap == null){
 			generalCategoryMap = new HashMap<String, MarkerType>();
@@ -53,27 +55,28 @@ public class BerlinModelWebMarkerCategoryImport extends BerlinModelImportBase {
 		}
 		return generalCategoryMap;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#doInvoke(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
 	 */
-	protected void doInvoke(BerlinModelImportState state){
+	@Override
+    protected void doInvoke(BerlinModelImportState state){
 		boolean success = true ;
 
 		BerlinModelImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
 
 		logger.info("start make "+pluralString+" ...");
-		
+
 		ResultSet rs = source.getResultSet(getRecordQuery(config)) ;
-		
+
 		int i = 0;
 		//for each reference
 		try{
 			while (rs.next()){
 				try{
 					if ((i++ % modCount ) == 0 && i!= 1 ){ logger.info(""+pluralString+" handled: " + (i-1));}
-					
+
 					//
 					int markerCategoryId = rs.getInt("MarkerCategoryID");
 					String fullDbId = dbTableName + "_" + markerCategoryId;
@@ -100,7 +103,7 @@ public class BerlinModelWebMarkerCategoryImport extends BerlinModelImportBase {
 			return;
 		}
 
-			
+
 		logger.info("save " + i + " "+pluralString + " ...");
 
 		logger.info("end make "+pluralString+" ..." + getSuccessString(success));;
@@ -108,16 +111,16 @@ public class BerlinModelWebMarkerCategoryImport extends BerlinModelImportBase {
 			state.setUnsuccessfull();
 		}
 		return;
-		
+
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
 	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-		String strQuery = 
+		String strQuery =
 			" SELECT *  " +
             " FROM "+dbTableName+" " ;
 		return strQuery;
@@ -138,7 +141,7 @@ public class BerlinModelWebMarkerCategoryImport extends BerlinModelImportBase {
 		IOValidator<BerlinModelImportState> validator = new BerlinModelWebMarkerCategoryImportValidator();
 		return validator.validate(state);
 	}
-	
+
 	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoMarker();

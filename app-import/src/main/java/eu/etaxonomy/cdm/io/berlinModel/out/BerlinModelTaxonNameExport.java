@@ -12,7 +12,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -38,7 +39,6 @@ import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 
-
 /**
  * @author a.mueller
  * @since 20.03.2008
@@ -47,7 +47,7 @@ import eu.etaxonomy.cdm.model.name.TaxonName;
 public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonName> {
 
     private static final long serialVersionUID = 4478799976310317219L;
-    private static final Logger logger = Logger.getLogger(BerlinModelTaxonNameExport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 2500;
 	private static final String dbTableName = "Name";

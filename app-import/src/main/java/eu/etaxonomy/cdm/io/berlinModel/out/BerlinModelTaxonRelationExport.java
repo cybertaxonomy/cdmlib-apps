@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.berlinModel.out;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -28,7 +29,6 @@ import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 
-
 /**
  * @author a.mueller
  * @since 20.03.2008
@@ -37,7 +37,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 public class BerlinModelTaxonRelationExport extends BerlinModelExportBase<RelationshipBase> {
     private static final long serialVersionUID = -7568153921512019118L;
 
-    private static final Logger logger = Logger.getLogger(BerlinModelTaxonRelationExport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "RelPTaxon";

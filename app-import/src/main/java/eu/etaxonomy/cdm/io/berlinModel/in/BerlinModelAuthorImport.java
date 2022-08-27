@@ -9,13 +9,13 @@
 package eu.etaxonomy.cdm.io.berlinModel.in;
 
 import java.sql.ResultSet;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelAuthorImportValidator;
@@ -39,11 +39,11 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  */
 @Component
 public class BerlinModelAuthorImport extends BerlinModelImportBase {
+
     private static final long serialVersionUID = 2155984573495140615L;
+    private static final Logger logger = LogManager.getLogger();
 
     private static final boolean BLANK_TO_NULL = true;
-
-	private static final Logger logger = Logger.getLogger(BerlinModelAuthorImport.class);
 
 	public static final String NAMESPACE = "Author";
 
@@ -162,7 +162,7 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 
 			} //while rs.hasNext()
 			//logger.info("save " + i + " "+pluralString + " ...");
-			getAgentService().save((Collection)personMap.values());
+			getAgentService().save(personMap.values());
 
 		}catch(Exception ex){
 			logger.error(ex.getMessage());

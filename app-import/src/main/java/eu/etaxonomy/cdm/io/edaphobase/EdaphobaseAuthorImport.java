@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -29,23 +30,17 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 /**
  * @author a.mueller
  * @since 21.12.2015
- *
  */
 @Component
 public class EdaphobaseAuthorImport extends EdaphobaseImportBase {
     private static final long serialVersionUID = -9138378836474086070L;
 
-    private static final Logger logger = Logger.getLogger(EdaphobaseAuthorImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String tableName = "tax_taxon";
 
     private static final String pluralString = "authors";
 
-
-    /**
-     * @param tableName
-     * @param pluralString
-     */
     public EdaphobaseAuthorImport() {
         super(tableName, pluralString);
     }

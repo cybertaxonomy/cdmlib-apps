@@ -12,7 +12,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
@@ -27,14 +28,12 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 /**
  * @author a.mueller
  * @since 25.11.2016
- *
  */
 @Component
 public class GermanSLTaxonRelationImport extends GermanSLTaxonImport {
 
     private static final long serialVersionUID = 3381597141845204995L;
-
-    private static final Logger logger = Logger.getLogger(GermanSLTaxonRelationImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
     public static final String TAXON_NAMESPACE = "1.3.4";
 

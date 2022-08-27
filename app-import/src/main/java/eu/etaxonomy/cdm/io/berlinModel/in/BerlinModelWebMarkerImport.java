@@ -15,7 +15,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelWebMarkerImportValidator;
@@ -36,7 +37,7 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 public class BerlinModelWebMarkerImport extends BerlinModelImportBase {
 
     private static final long serialVersionUID = 6350956896121390550L;
-    private static final Logger logger = Logger.getLogger(BerlinModelWebMarkerImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 2000;
 	private static final String dbTableName = "webMarker";

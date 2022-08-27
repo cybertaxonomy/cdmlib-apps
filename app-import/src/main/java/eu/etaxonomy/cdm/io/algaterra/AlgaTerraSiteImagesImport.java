@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.algaterra;
 
 import java.sql.ResultSet;
@@ -16,7 +15,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraTypeImportValidator;
@@ -29,15 +29,15 @@ import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 
-
 /**
  * @author a.mueller
  * @since 20.03.2008
  */
 @Component
 public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
-	private static final Logger logger = Logger.getLogger(AlgaTerraSiteImagesImport.class);
 
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 5000;
 	private static final String pluralString = "site images";
@@ -59,9 +59,6 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =
@@ -74,9 +71,6 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 		return strQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
 	@Override
     public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
@@ -142,13 +136,9 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 		}
 	}
 
-
-
 	private void handleSiteImageSpecificFields(ResultSet rs, Media media, AlgaTerraImportState state) throws SQLException {
 		//TODO
-
 	}
-
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
@@ -188,5 +178,4 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 		AlgaTerraImportConfigurator config = ((AlgaTerraImportState) bmState).getAlgaTerraConfigurator();
 		return !  ( config.isDoEcoFacts() && config.isDoImages()) ;
 	}
-
 }

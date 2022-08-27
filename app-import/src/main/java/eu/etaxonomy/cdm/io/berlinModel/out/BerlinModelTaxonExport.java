@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.berlinModel.out;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -41,7 +42,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 
     private static final long serialVersionUID = 145503113573711492L;
-    private static final Logger logger = Logger.getLogger(BerlinModelTaxonExport.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "PTaxon";

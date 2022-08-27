@@ -6,14 +6,14 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.redlist.bfnXml;
 
 //
 //import java.net.URISyntaxException;
 //import java.net.URL;
 //
-//import org.apache.log4j.Logger;
+//import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
 //import org.aspectj.lang.annotation.Before;
 //import org.junit.Test;
 //import org.unitils.spring.annotation.SpringBeanByName;
@@ -31,7 +31,7 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml;
  * @since 29.01.2009
  */
 //public class BfnXmlImportConfiguratorTest extends CdmTransactionalIntegrationTest {
-//	Logger logger = Logger.getLogger(getClass());
+//	Logger logger = LogManager.getLogger();
 //	@SpringBeanByName
 //	CdmApplicationAwareDefaultImport<?> defaultImport;
 //

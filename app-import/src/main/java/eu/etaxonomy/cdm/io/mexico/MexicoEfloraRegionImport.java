@@ -13,7 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.URI;
@@ -37,9 +38,9 @@ import eu.etaxonomy.cdm.model.term.TermType;
 public class MexicoEfloraRegionImport extends MexicoEfloraImportBase {
 
     private static final long serialVersionUID = -361321245993093847L;
-    private static final Logger logger = Logger.getLogger(MexicoEfloraRegionImport.class);
+    private static final Logger logger = LogManager.getLogger();
 
-	protected static final String NAMESPACE = "Region";
+    protected static final String NAMESPACE = "Region";
 
 	private static final String pluralString = "regions";
 	private static final String dbTableName = "cv2_Controlled_vocabulary_for_Mexican_States";

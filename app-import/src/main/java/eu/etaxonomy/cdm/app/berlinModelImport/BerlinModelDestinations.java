@@ -10,7 +10,8 @@
 
 package eu.etaxonomy.cdm.app.berlinModelImport;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.config.AccountStore;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -18,7 +19,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 
 public class BerlinModelDestinations {
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(BerlinModelDestinations.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	public static Source El_Salvador_Andreas(){
 		//	BerlinModel - El_Salvador

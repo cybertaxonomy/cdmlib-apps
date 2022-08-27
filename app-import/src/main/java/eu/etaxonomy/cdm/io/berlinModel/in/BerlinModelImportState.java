@@ -13,7 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 import eu.etaxonomy.cdm.model.common.MarkerType;
@@ -24,8 +25,9 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
  * @since 11.05.2009
  */
 public class BerlinModelImportState extends DbImportStateBase<BerlinModelImportConfigurator, BerlinModelImportState>{
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(BerlinModelImportState.class);
+
+    @SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger();
 
 	private Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<>();
 

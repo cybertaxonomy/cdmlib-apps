@@ -13,7 +13,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -28,13 +29,13 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 /**
  * @author pplitzner
  * @since Feb 29, 2016
- *
  */
 @Component
 @SuppressWarnings("serial")
 public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
 
-    private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportAuthor.class);
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
 
     private static final String tableName = "Rote Liste Gefäßpflanzen";
 

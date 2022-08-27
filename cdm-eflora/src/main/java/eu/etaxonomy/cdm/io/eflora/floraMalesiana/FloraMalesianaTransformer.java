@@ -8,8 +8,6 @@
 */
 package eu.etaxonomy.cdm.io.eflora.floraMalesiana;
 
-import org.apache.log4j.Logger;
-
 import eu.etaxonomy.cdm.io.eflora.EfloraTransformer;
 
 /**
@@ -19,6 +17,4 @@ import eu.etaxonomy.cdm.io.eflora.EfloraTransformer;
 public final class FloraMalesianaTransformer extends EfloraTransformer {
     private static final long serialVersionUID = 358595282613079689L;
 
-    @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(FloraMalesianaTransformer.class);
 }

@@ -3,7 +3,6 @@
  * European Distributed Institute of Taxonomy
  * http://www.e-taxonomy.eu
  */
-
 package eu.etaxonomy.cdm.app.redlist;
 
 import java.io.File;
@@ -12,12 +11,14 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.helpers.ISO8601DateFormat;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -27,14 +28,12 @@ import eu.etaxonomy.cdm.io.redlist.bfnXml.out.BfnXmlExportConfigurator;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.out.BfnXmlExportTransformer;
 
 /**
- *
  * @author pplitzner
  * @since May 3, 2016
- *
  */
 public class BfnXmlExportActivator {
 
-	private static final Logger logger = Logger.getLogger(BfnXmlExportActivator.class);
+    private static final Logger logger = LogManager.getLogger();
 
     protected Document document;
 

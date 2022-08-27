@@ -9,7 +9,8 @@
 
 package eu.etaxonomy.cdm.io.caryo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
@@ -26,7 +27,7 @@ public class CaryoImportConfigurator
 
     private static final long serialVersionUID = 9002177401082394179L;
     @SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(CaryoImportConfigurator.class);
+    private static final Logger logger = LogManager.getLogger();
 
 	private boolean isDoTaxa;
 
