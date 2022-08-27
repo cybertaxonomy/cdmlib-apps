@@ -39,6 +39,7 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.occurrence.DerivationEvent;
+import eu.etaxonomy.cdm.model.occurrence.DerivationEventType;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.DeterminationEvent;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationType;
@@ -223,7 +224,7 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 
 	private DerivedUnit makeIdentifiedSpecimen(DerivedUnit ecoFact, String recordBasis, Integer taxonId, Integer ecoFactId) {
 		//TODO event type
-		DerivationEvent event = DerivationEvent.NewInstance();
+		DerivationEvent event = DerivationEvent.NewInstance(DerivationEventType.ACCESSIONING());
 		SpecimenOrObservationType derivedUnitType = makeDerivedUnitType(recordBasis);
 		if (derivedUnitType == null){
 			String message = "derivedUnitType is NULL for recordBasis (%s). Use dummy type instead. (TaxonId = %s)";

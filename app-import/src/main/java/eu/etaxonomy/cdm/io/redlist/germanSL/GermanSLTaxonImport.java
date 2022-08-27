@@ -51,7 +51,7 @@ public class GermanSLTaxonImport
     private static final long serialVersionUID = 236093186271666895L;
     private static final Logger logger = LogManager.getLogger();
 
-    private static final String SPECIES_NR = "SPECIES_NR";
+    static final String SPECIES_NR = "SPECIES_NR";
     private static final String AUTHOR = "AUTHOR";
     private static final String ABBREVIAT = "ABBREVIAT";
     private static final String SEC = "SECUNDUM";

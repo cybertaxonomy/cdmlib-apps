@@ -98,7 +98,7 @@ public class DipteraPostImportUpdater {
 						if (scientificName != null){
 							source.setNameUsedInSource(scientificName);
 						}else{
-							source.setOriginalNameString(originalNameString);
+							source.setOriginalInfo(originalNameString);
 						}
 					}
 

@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
@@ -36,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.LogUtils;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.Institution;
@@ -1129,7 +1131,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         }
 
         String lineNumber = "L#" + state.getCurrentLine() + ": ";
-        logger.setLevel(Level.DEBUG);
+        LogUtils.setLevel(logger, Level.DEBUG);
         Map<String, String> record = state.getOriginalRecord();
         logger.debug(lineNumber + record.toString());
 

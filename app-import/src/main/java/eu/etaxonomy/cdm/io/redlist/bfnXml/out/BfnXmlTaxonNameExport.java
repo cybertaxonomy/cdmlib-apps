@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -43,18 +45,15 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.term.DefinedTerm;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
-
-
 /**
- *
  * @author pplitzner
  * @since May 3, 2016
- *
  */
 @Component
 public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
 
     private static final long serialVersionUID = -931703660108981011L;
+    private static final Logger logger = LogManager.getLogger();
 
 	public BfnXmlTaxonNameExport(){
 		super();
@@ -78,7 +77,6 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
             exportTaxonomy(classification, roteListeDaten, state);
 
         }
-
 	}
 
     private void exportTaxonomy(Classification classification, Element roteListeDaten, BfnXmlExportState state) {

@@ -778,7 +778,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
     		    Reference ref = getSalvadorReference(vol);
     		    String originalName = getSalvadorImageNameInfo(intFact);
     		    IdentifiableSource source = media.addSource(OriginalSourceType.PrimaryMediaSource, fact, "Fig.", ref, "p. " + page);
-    		    source.setOriginalNameString(originalName);
+    		    source.setOriginalInfo(originalName);
     		    media.setArtist(getSalvadorArtist());
     		    media.addRights(getSalvadorCopyright(vol));
     		    String uriStr = String.format(uriStrFormat, vol, fact);

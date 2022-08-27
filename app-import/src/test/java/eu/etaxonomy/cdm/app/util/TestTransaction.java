@@ -31,12 +31,12 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 public class TestTransaction {
 
-    private static final ICdmDataSource db = TestDatabase.CDM_DB(dbName);
     private static final Logger logger = LogManager.getLogger();
 
     private static final String dbName = "cdm_test_jaxb";
     private static final int MAX_ENTRIES = 20;
 
+    private static final ICdmDataSource db = TestDatabase.CDM_DB(dbName);
 
     /** Modifies disjunct objects within two transactions of one application context.
      *  Flow:

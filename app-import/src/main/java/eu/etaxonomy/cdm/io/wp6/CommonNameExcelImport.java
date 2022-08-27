@@ -255,7 +255,7 @@ public class CommonNameExcelImport
 				CommonTaxonName commonName = CommonTaxonName.NewInstance(strCommonName, language, area);
 				if (ref != null || StringUtils.isNotBlank(nameUsedInSource)){
 					DescriptionElementSource source = DescriptionElementSource.NewPrimarySourceInstance(ref, null);
-					source.setOriginalNameString(nameUsedInSource);
+					source.setOriginalInfo(nameUsedInSource);
 					commonName.addSource(source);
 				}else{
 					logger.debug("No reference defined");

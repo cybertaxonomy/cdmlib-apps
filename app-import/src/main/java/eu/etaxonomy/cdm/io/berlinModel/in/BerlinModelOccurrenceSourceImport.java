@@ -142,11 +142,11 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
     					TaxonName taxonName = getName(state, oldName, oldNameFk, oldNameFkFullCache, oldNameFkCache, occurrenceSourceId, distribution);
 						if (taxonName != null){
 						    if(isNotBlank(oldName) && !oldName.equals(taxonName.getNameCache())){
-	                            originalSource.setOriginalNameString(oldName);
+	                            originalSource.setOriginalInfo(oldName);
 	                        }
 						    originalSource.setNameUsedInSource(taxonName);
     					}else if(isNotBlank(oldName)){
-    						originalSource.setOriginalNameString(oldName);
+    						originalSource.setOriginalInfo(oldName);
     					}
     					distribution.addSource(originalSource);
     				}else{

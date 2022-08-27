@@ -39,6 +39,7 @@ import eu.etaxonomy.cdm.model.name.ITaxonNameBase;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivationEvent;
+import eu.etaxonomy.cdm.model.occurrence.DerivationEventType;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.DeterminationEvent;
 import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
@@ -365,7 +366,7 @@ public class SynthesysCacheActivator {
 
 
 //			//link fieldObservation and specimen
-			DerivationEvent derivationEvent = DerivationEvent.NewInstance();
+			DerivationEvent derivationEvent = DerivationEvent.NewInstance(DerivationEventType.ACCESSIONING());
 			derivationEvent.addOriginal(fieldUnit);
 			derivedThing.addDerivationEvent(derivationEvent);
 //			derivationEvent.addDerivative(derivedThing);

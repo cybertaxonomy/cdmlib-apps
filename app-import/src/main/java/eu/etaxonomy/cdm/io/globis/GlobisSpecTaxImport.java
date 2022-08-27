@@ -49,6 +49,7 @@ import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivationEvent;
+import eu.etaxonomy.cdm.model.occurrence.DerivationEventType;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationType;
@@ -760,7 +761,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	}
 
 	protected DerivedUnit makeSingleTypeSpecimen(FieldUnit fieldObservation) {
-		DerivationEvent derivEvent = DerivationEvent.NewInstance();
+		DerivationEvent derivEvent = DerivationEvent.NewInstance(DerivationEventType.ACCESSIONING());
 //			derivEvent.setType(DerivationEventType.ACCESSIONING());
 		fieldObservation.addDerivationEvent(derivEvent);
 		DerivedUnit specimen = DerivedUnit.NewPreservedSpecimenInstance();

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.springframework.stereotype.Component;
@@ -25,19 +27,15 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.term.DefinedTerm;
 
-
-
 /**
- *
  * @author pplitzner
  * @since May 3, 2016
- *
  */
 @Component
 public class BfnXmlExportConceptRelations extends BfnXmlExportBase {
 
     private static final long serialVersionUID = -931703660108981011L;
-
+    private static final Logger logger = LogManager.getLogger();
 
 	public BfnXmlExportConceptRelations(){
 		super();

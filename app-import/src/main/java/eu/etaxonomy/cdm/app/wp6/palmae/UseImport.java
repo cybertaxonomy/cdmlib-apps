@@ -298,7 +298,7 @@ public class UseImport {
 						useReference = reference.getRecords().get(0);
 					}
 					IdentifiableSource source =IdentifiableSource.NewPrimarySourceInstance(useReference, null);  //is type correct?
-					source.setOriginalNameString(taxon.getName().toString());
+					source.setOriginalInfo(taxon.getName().getTitleCache());
 					newUseDescription.addSource(source);
 					TextData useSummary = TextData.NewInstance(featureUseSummary);
 					LanguageString languageString = LanguageString.NewInstance(lstUseSummary.get(1), Language.ENGLISH());
