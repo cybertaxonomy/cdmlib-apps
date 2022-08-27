@@ -41,8 +41,6 @@ public class BerlinModelSources {
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-
-
 	public static Source euroMed_Pub2(){
         //  BerlinModel - Euro+Med
         String dbms = Source.SQL_SERVER_2008;
@@ -52,7 +50,6 @@ public class BerlinModelSources {
         String userName = "WebUser";  //was webUser  or pesiexport
         return  makeSource(dbms, strServer, strDB, port, userName, null);
     }
-
 
 	public static Source euroMed_BGBM42(){
 		//	BerlinModel - Euro+Med

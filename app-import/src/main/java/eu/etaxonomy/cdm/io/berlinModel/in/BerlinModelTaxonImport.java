@@ -124,7 +124,6 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
             }
 		}
 
-
 		String sqlWhere = " WHERE ( pt.RIdentifier IN (" + ID_LIST_TOKEN + ") )";
 
 		String strRecordQuery =sqlSelect + " " + sqlFrom + " " + sqlWhere ;

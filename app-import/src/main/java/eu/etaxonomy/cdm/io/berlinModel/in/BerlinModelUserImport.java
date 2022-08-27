@@ -31,15 +31,14 @@ import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.permission.User;
 
-
 /**
  * @author a.mueller
  * @since 20.03.2008
  */
 @Component
 public class BerlinModelUserImport extends BerlinModelImportBase {
-    private static final long serialVersionUID = 3277951604022442721L;
 
+    private static final long serialVersionUID = 3277951604022442721L;
     private static final Logger logger = LogManager.getLogger();
 
 	public static final String NAMESPACE = "User";
@@ -76,7 +75,6 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 		ResultSet rs = source.getResultSet(strQuery) ;
 		Collection<User> users = new ArrayList<>();
 		Set<String> existingUsernames = new HashSet<>();
-
 
 		TransactionStatus tx = this.startTransaction();
 		int i = 0;
@@ -153,7 +151,6 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 		return;
 	}
 
-
     private Person deduplicatePerson(BerlinModelImportState state, Person person) {
         Person result = state.getDeduplicationHelper().getExistingAuthor(person, false);
         return result;
@@ -178,5 +175,4 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		return null; //not needed at the moment
 	}
-
 }

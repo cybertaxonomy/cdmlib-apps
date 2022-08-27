@@ -141,6 +141,7 @@ public class BerlinModelImportConfigurator
     public boolean isTaxonNoteAsFeature() {return isTaxonNoteAsFeature;}
     public void setTaxonNoteAsFeature(boolean isTaxonNoteAsFeature) {this.isTaxonNoteAsFeature = isTaxonNoteAsFeature;}
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{

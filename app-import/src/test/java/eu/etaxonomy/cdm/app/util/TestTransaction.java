@@ -3,7 +3,6 @@
 * European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
 */
-
 package eu.etaxonomy.cdm.app.util;
 
 import java.util.List;

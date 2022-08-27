@@ -30,22 +30,18 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  * HINT: If you are about to import into a mysql data base running under windows and if you wish to dump and restore the resulting data bas under another operation systen
  * you must set the mysql system variable lower_case_table_names = 0 in order to create data base with table compatible names.
  *
- *
  * @author a.mueller
- *
  */
 public class MTMooseActivator {
 
 	private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE_DROP;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.MT_MOOSE();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_moose_dev();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_moose_production();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_moose();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
 	static final UUID classificationUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
@@ -61,7 +57,6 @@ public class MTMooseActivator {
 
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-
 
 	//NomenclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICNAFP;
@@ -158,17 +153,17 @@ public class MTMooseActivator {
 //			app.getTermTreeService().saveOrUpdate(tree);
 //		}
 
-
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 	}
 
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
+	    logger.warn("test");
 		MTMooseActivator activator = new MTMooseActivator();
-		activator.invoke(args);
+		try {
+            activator.invoke(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		System.exit(0);
 	}
-
 }
