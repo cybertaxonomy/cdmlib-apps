@@ -3,7 +3,7 @@
   <Appenders>
     <File name="FILE" fileName="app-import.log" append="true">
       <!-- header and footer not tested, taken from https://stackoverflow.com/questions/24553348/how-to-produce-a-header-row-in-log4j2 -->
-      <PatternLayout pattern="%d{ABSOLUTE} %5p %c{1}:%L - %m%n" header="%d{dd MMM yyyy}" footer="XXX"/>
+      <PatternLayout pattern="%d{ABSOLUTE} %5p %c{1}:%L - %m%n" /> <!-- header="%d{dd MMM yyyy}" footer="XXX" -->
     </File>
     <Console name="STDOUT" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
@@ -21,7 +21,7 @@
 
     <!-- suppress HHH90000003 (but be aware there might be other deprecations) -->
     <Logger name="org.hibernate.orm.deprecation" level="error"/>  <!-- additivity="false" -->
-    
+    <!-- suppress HHH000179: Narrowing proxy to class ... issues -->
     <Logger name="org.hibernate.engine.internal.StatefulPersistenceContext" level="error"/>
     
   </Loggers>
