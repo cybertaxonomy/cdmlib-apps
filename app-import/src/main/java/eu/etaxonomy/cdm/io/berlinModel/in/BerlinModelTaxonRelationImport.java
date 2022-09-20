@@ -401,7 +401,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 
 								if (! (taxon1 instanceof Taxon)){
 									success = false;
-									logger.error("TaxonBase (ID = " + taxon1.getId()+ ", RIdentifier = " + taxon1Id + ") can't be casted to Taxon");
+									logger.error("TaxonBase (ID = " + taxon1.getId()+ ", RIdentifier = " + taxon1Id + ") can't be casted to Taxon for concept relationship from taxon (relRefID=" + relPTaxonId + ")");
 								}else{
 									Taxon fromTaxon = (Taxon)taxon1;
 									if (isInverse.getValue() == true){
@@ -577,6 +577,11 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							"  LEFT OUTER JOIN RelPTaxon AS RelPTaxon_1 ON pt.PTNameFk = RelPTaxon_1.PTNameFk1 AND pt.PTRefFk = RelPTaxon_1.PTRefFk1 " +
 						" WHERE (RelPTaxon_1.RelQualifierFk IS NULL) AND (dbo.RelPTaxon.RelQualifierFk IS NULL) " +
 						" ORDER BY pt.PTRefFk "	;
+		if ("PTaxon WHERE notIntoCdm = 0".equals(state.getConfig().getTaxonTable())) {
+		    //Moose
+		    sql = sql.replace("WHERE ", "WHERE notIntoCdm = 0 AND ");
+		}
+
 		ResultSet rs = state.getConfig().getSource().getResultSet(sql);
 		Map<Object, Map<String, ? extends CdmBase>> maps = getRelatedObjectsForFlatPartition(rs);
 

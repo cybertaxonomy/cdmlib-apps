@@ -57,13 +57,19 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
-	      if (state.getConfig().isEuroMed() && state.getConfig().getAuthorFilter() != null ){
-	          //for performance reasons we do not use a subquery
-	          return " SELECT authorId "
-	                 + " FROM v_cdm_exp_authorsAll "
-	                 + " ORDER BY authorId "
-	                 ;
-	        }
+	    if (state.getConfig().isEuroMed() && state.getConfig().getAuthorFilter() != null ){
+	        //for performance reasons we do not use a subquery
+	        return " SELECT authorId "
+	               + " FROM v_cdm_exp_authorsAll "
+	               + " ORDER BY authorId "
+	               ;
+	    }else if ("v_cdmExport_authors".equals(state.getConfig().getAuthorFilter())) {
+	        //Moose
+	        return " SELECT authorId "
+            + " FROM v_cdmExport_authors "
+            + " ORDER BY authorId "
+            ;
+	    }
 
 	    String result = " SELECT authorId FROM " + getTableName();
 		if (StringUtils.isNotBlank(state.getConfig().getAuthorFilter())){

@@ -60,6 +60,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbSingleAttributeImportMapperBase;
 import eu.etaxonomy.cdm.io.common.mapping.berlinModel.CdmOneToManyMapper;
 import eu.etaxonomy.cdm.io.common.mapping.berlinModel.CdmStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.berlinModel.CdmUriMapper;
+import eu.etaxonomy.cdm.io.common.mapping.berlinModel.CdmUuidMapper;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
@@ -142,6 +143,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		new CdmStringMapper("series", "seriesPart"),
 		new CdmStringMapper("issn", "issn"),
 		new CdmUriMapper("url", "uri"),
+		new CdmUuidMapper("uuid", "uuid"),
 		DbImportExtensionMapper.NewInstance("NomStandard", ExtensionType.NOMENCLATURAL_STANDARD()),
 		DbImportExtensionMapper.NewInstance("DateString", DATE_STRING_UUID, "Date String", "Date String", "dates"),
 		DbImportExtensionMapper.NewInstance("RefDepositedAt", REF_DEPOSITED_AT_UUID, "Ref. deposited at", "Reference is deposited at", "at"),
@@ -1066,6 +1068,14 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 					value = null;
 				}
 			}
+			if (mapper instanceof CdmUuidMapper && value != null){
+                try {
+                    value = UUID.fromString(value.toString());
+                } catch (IllegalArgumentException e) {
+                    logger.error("UUID syntax exception: " + value.toString());
+                    value = null;
+                }
+            }
 			if (value != null){
 				String destinationAttribute = mapper.getDestinationAttribute();
 				if (! omitAttributes.contains(destinationAttribute)){

@@ -40,9 +40,9 @@ public class MTMooseActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.MT_MOOSE();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_moose_production();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
 	static final UUID classificationUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
 	static final UUID sourceRefUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
@@ -54,6 +54,10 @@ public class MTMooseActivator {
 
 	static final String relPTaxonIdQuery = "SELECT * FROM RelPTaxon r " +
 			" WHERE NOT (r.PTRefFk1 <> r.PTRefFk2 AND r.RelQualifierFk = 1)";
+	static final String taxonTable = "PTaxon WHERE notIntoCdm = 0";
+	static final String authorTable = "v_cdmExport_authors";
+	static final String authorTeamTable = "v_cdmExport_authorTeamsAll";
+	static final String referenceTable = "v_cdmExport_references";
 
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -139,7 +143,13 @@ public class MTMooseActivator {
 		config.setDoOccurrenceSources(doOccurenceSources);
 		config.setDoCommonNames(doCommonNames);
 		config.setSourceRefUuid(sourceRefUuid);
+
+		//filter
 		config.setRelTaxaIdQuery(relPTaxonIdQuery);
+		config.setTaxonTable(taxonTable);
+		config.setAuthorFilter(authorTable);
+		config.setAuthorTeamFilter(authorTeamTable);
+		config.setReferenceIdTable(referenceTable);
 
 		config.setDbSchemaValidation(hbm2dll);
 

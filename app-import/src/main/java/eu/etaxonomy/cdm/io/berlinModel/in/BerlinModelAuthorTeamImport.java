@@ -69,7 +69,11 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 
 		String strRecordQuery = getRecordQuery(config);
 		String strWhere = " WHERE (1=1) ";
-		if (state.getConfig().getAuthorTeamFilter() != null){
+		if ("v_cdmExport_authorTeamsAll".equals(state.getConfig().getAuthorTeamFilter())) {
+		    //Moose
+		    strWhere += " AND authorTeamFk IN "
+		            + " (SELECT authorTeamId FROM v_cdmExport_authorTeamsAll)";
+		}else if (state.getConfig().getAuthorTeamFilter() != null){
 			strWhere += " AND " + state.getConfig().getAuthorTeamFilter();
 			strWhere = strWhere.replaceFirst("authorTeamId", "authorTeamFk");
 		}
@@ -102,6 +106,11 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 		    return " SELECT authorTeamId "
 		         + " FROM v_cdm_exp_authorTeamsAll ORDER BY authorTeamId "
 		         ;
+		}else if ("v_cdmExport_authorTeamsAll".equals(state.getConfig().getAuthorTeamFilter())){
+		    //Moose
+		    return " SELECT authorTeamId "
+	                 + " FROM v_cdmExport_authorTeamsAll ORDER BY authorTeamId "
+	                 ;
 		}
 
 	    String strWhere = " WHERE (1=1) ";
