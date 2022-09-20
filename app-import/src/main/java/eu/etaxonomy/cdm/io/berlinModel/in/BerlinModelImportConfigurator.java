@@ -434,28 +434,17 @@ public class BerlinModelImportConfigurator
 	public String getTaxonTable() {
 		return this.taxonTable ;
 	}
-	/**
-	 * @param taxonTable the taxonTable to set
-	 */
 	public void setTaxonTable(String taxonTable) {
 		this.taxonTable = taxonTable;
 	}
 
-
-
 	public String getClassificationQuery() {
 		return this.classificationQuery ;
 	}
-	/**
-	 * @param classificationQuery the classificationQuery to set
-	 */
 	public void setClassificationQuery(String classificationQuery) {
 		this.classificationQuery = classificationQuery;
 	}
 
-	/**
-	 * @param relTaxaIdQuery the relTaxaIdQuery to set
-	 */
 	public void setRelTaxaIdQuery(String relTaxaIdQuery) {
 		this.relTaxaIdQuery = relTaxaIdQuery;
 	}
@@ -478,25 +467,25 @@ public class BerlinModelImportConfigurator
 	}
 
 
+	public String getReferenceIdTable() {
+	    return referenceIdTable;
+	}
 	public void setReferenceIdTable(String referenceIdTable) {
 		this.referenceIdTable = referenceIdTable;
 	}
-	public String getReferenceIdTable() {
-		return referenceIdTable;
-	}
 
+	public String getFactFilter() {
+	    return factFilter;
+	}
 	public void setFactFilter(String factFilter) {
 		this.factFilter = factFilter;
 	}
-	public String getFactFilter() {
-		return factFilter;
-	}
 
+	public String getRefDetailFilter() {
+	    return refDetailFilter;
+	}
 	public void setRefDetailFilter(String refDetailFilter) {
 		this.refDetailFilter = refDetailFilter;
-	}
-	public String getRefDetailFilter() {
-		return refDetailFilter;
 	}
 
 
@@ -543,14 +532,12 @@ public class BerlinModelImportConfigurator
 		this.useSingleClassification = useSingleClassification;
 	}
 
-
+	public String getAuthorTeamFilter() {
+	    return authorTeamFilter;
+	}
 	public void setAuthorTeamFilter(String authorTeamFilter) {
 		this.authorTeamFilter = authorTeamFilter;
 	}
-	public String getAuthorTeamFilter() {
-		return authorTeamFilter;
-	}
-
 
 	public String getAuthorFilter() {
 		return authorFilter;
@@ -558,8 +545,6 @@ public class BerlinModelImportConfigurator
 	public void setAuthorFilter(String authorFilter) {
 		this.authorFilter = authorFilter;
 	}
-
-
 
 	public boolean isSwitchSpeciesGroup() {
 		return switchSpeciesGroup;

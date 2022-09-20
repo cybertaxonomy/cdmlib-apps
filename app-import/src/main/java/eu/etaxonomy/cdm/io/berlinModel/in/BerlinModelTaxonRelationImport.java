@@ -418,7 +418,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 								}
 							} catch (UnknownCdmTypeException e) {
 								logger.warn("TaxonRelationShipType " + relQualifierFk + " (conceptRelationship) not yet implemented");
-								 success = false;
+								success = false;
 							}
 						}else {
 							logger.warn("TaxonRelationShipType " + relQualifierFk + " not yet implemented: RelPTaxonId = " + relPTaxonId );
