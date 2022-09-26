@@ -217,8 +217,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 			strQuery = strQuery + " UNION " + strFlatQuery;
 		}
 
-
-
 		if (state.getConfig().getClassificationQuery() != null){
 			strQuery = state.getConfig().getClassificationQuery();
 		}
@@ -591,9 +589,9 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		rs = state.getConfig().getSource().getResultSet(sql);
 		try {
 			while (rs.next()){
-				Integer treeRefFk = rs.getInt("secRefFk");
+				Integer classificationRefFk = rs.getInt("secRefFk");
 				String taxonId = rs.getString("RIdentifier");
-				Classification classification = getClassificationTree(state, classificationMap, treeRefFk);
+				Classification classification = getClassificationTree(state, classificationMap, classificationRefFk);
 				TaxonBase<?> taxon = taxonMap.get(taxonId);
 				if (taxon == null){
 					String message = "TaxonBase for taxon id (%s) not found in taxonMap";

@@ -452,20 +452,12 @@ public class BerlinModelImportConfigurator
 		return this.relTaxaIdQuery ;
 	}
 
-
-	/**
-	 * @return the nameIdTable
-	 */
 	public String getNameIdTable() {
 		return nameIdTable;
 	}
-	/**
-	 * @param nameIdTable the nameIdTable to set
-	 */
 	public void setNameIdTable(String nameIdTable) {
 		this.nameIdTable = nameIdTable;
 	}
-
 
 	public String getReferenceIdTable() {
 	    return referenceIdTable;

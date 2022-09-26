@@ -92,7 +92,6 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 			    result += "       nameFk2 IN (SELECT NameId FROM %s) ";
 			    result = String.format(result, nameIdTable, nameIdTable );
 			}
-
 		}else{
 			//
 		}

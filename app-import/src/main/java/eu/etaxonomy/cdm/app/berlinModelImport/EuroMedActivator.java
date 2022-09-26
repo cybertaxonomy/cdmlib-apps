@@ -196,10 +196,7 @@ public class EuroMedActivator {
 	static String authorTeamFilter =  " authorTeamId IN (SELECT drvTab.authorTeamId FROM (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) as drvTab) ";
 	static String authorFilter = " authorId IN (SELECT drvTab.authorId FROM (SELECT authorId FROM v_cdm_exp_authorsAll) as drvTab) ";
 
-
-
 // **************** ALL *********************
-
 
 	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") to " + cdmDestination.getDatabase() + " ...");

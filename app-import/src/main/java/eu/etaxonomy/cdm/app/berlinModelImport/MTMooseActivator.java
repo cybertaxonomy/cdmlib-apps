@@ -79,6 +79,7 @@ public class MTMooseActivator {
 	static final boolean doNameStatus = true;
 	static final boolean doTypes = true;
 	static final boolean doNameFacts = false;   //no name facts exist
+	static final boolean doMarker = false;
 
 	//taxa
 	static final boolean doTaxa = true;
@@ -106,10 +107,11 @@ public class MTMooseActivator {
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
 //	static final boolean doFacts = false;
-//    static final boolean doNamedAreas = false;
+//  static final boolean doNamedAreas = false;
 //	static final boolean doOccurences = false;
-//    static final boolean doOccurenceSources = false;
-//    static final boolean doCommonNames = false;
+//  static final boolean doOccurenceSources = false;
+//  static final boolean doCommonNames = false;
+//  static final boolean doMarker = false;
 
 
 	public void invoke(String[] args){
@@ -142,6 +144,7 @@ public class MTMooseActivator {
 		config.setDoOccurrence(doOccurences);
 		config.setDoOccurrenceSources(doOccurenceSources);
 		config.setDoCommonNames(doCommonNames);
+		config.setDoMarker(doMarker);
 		config.setSourceRefUuid(sourceRefUuid);
 
 		//filter
@@ -156,7 +159,7 @@ public class MTMooseActivator {
 		config.setCheck(check);
 
 		// invoke import
-		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
+		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<>();
 		bmImport.invoke(config);
 
 //		if (doFacts && (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK) )   ){
