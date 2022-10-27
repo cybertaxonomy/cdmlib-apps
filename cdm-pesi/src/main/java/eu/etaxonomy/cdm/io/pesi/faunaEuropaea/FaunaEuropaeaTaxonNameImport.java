@@ -20,7 +20,6 @@ import static eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer.T_
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,7 +27,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -59,21 +59,18 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 /**
  * @author a.babadshanjan
  * @since 12.05.2009
- * @version 1.0
  */
 @Component
 public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 
-	public static final String OS_NAMESPACE_TAXON = "Taxon";
+    private static final long serialVersionUID = 8983826428922492502L;
+    private static Logger logger = LogManager.getLogger();
 
-	private static final Logger logger = Logger.getLogger(FaunaEuropaeaTaxonNameImport.class);
+	public static final String OS_NAMESPACE_TAXON = "Taxon";
 
 	/* Max number of taxa to retrieve (for test purposes) */
 	private final int maxTaxa = 0;
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(FaunaEuropaeaImportState state) {
 		boolean result = true;
@@ -84,9 +81,6 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(FaunaEuropaeaImportState state) {
 		return ! state.getConfig().isDoTaxa();
@@ -105,7 +99,6 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		logger.info("End making taxa...");
 		return;
 	}
-
 
 	/**
 	 * Returns an empty string in case of a null string.
@@ -505,7 +498,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			Set<Synonym> synonymSet) {
 		processTaxaSecondPass(state, taxonMap, fauEuTaxonMap, synonymSet);
 		if(logger.isDebugEnabled()) { logger.debug("Saving taxa ... " + taxonMap.size()); }
-		getTaxonService().save((Collection)taxonMap.values());
+		getTaxonService().save(taxonMap.values());
 
 		commitTransaction(txStatus);
 	}
@@ -1056,7 +1049,4 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			return text;
 		}
 	}
-
-
-
 }

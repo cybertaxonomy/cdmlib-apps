@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -50,7 +51,7 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 public class PesiOccurrenceExport_Old extends PesiExportBase {
 
     private static final long serialVersionUID = 1444152605658503549L;
-    private static final Logger logger = Logger.getLogger(PesiOccurrenceExport_Old.class);
+    private static Logger logger = LogManager.getLogger();
 
     private static final Class<? extends CdmBase> standardMethodParameter = AnnotatableEntity.class;
 

@@ -15,7 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -38,7 +39,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class IndexFungorumHigherClassificationImport  extends IndexFungorumImportBase {
 
     private static final long serialVersionUID = -6841466146506309309L;
-    private static final Logger logger = Logger.getLogger(IndexFungorumHigherClassificationImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private static final String pluralString = "higher classifications";
 	private static final String dbTableName = "tblPESIfungi-Classification";

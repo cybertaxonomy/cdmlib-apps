@@ -13,7 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 import eu.etaxonomy.cdm.model.permission.User;
@@ -25,8 +26,9 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
  * @since 11.05.2009
  */
 public class IndexFungorumImportState extends DbImportStateBase<IndexFungorumImportConfigurator, IndexFungorumImportState>{
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(IndexFungorumImportState.class);
+
+    @SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
 
 	private Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<>();
 

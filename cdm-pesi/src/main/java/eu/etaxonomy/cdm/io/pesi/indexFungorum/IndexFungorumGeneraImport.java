@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.pesi.indexFungorum;
 
 import java.sql.ResultSet;
@@ -16,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -30,7 +30,6 @@ import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
-
 /**
  * @author a.mueller
  * @since 27.02.2012
@@ -39,7 +38,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 
     private static final long serialVersionUID = -265928225339065992L;
-    private static final Logger logger = Logger.getLogger(IndexFungorumGeneraImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private static final String pluralString = "genera";
 	private static final String dbTableName = "tblGenera";

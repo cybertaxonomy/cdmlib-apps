@@ -14,7 +14,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
@@ -36,7 +37,7 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 
     private static final long serialVersionUID = -3956071827341860580L;
-    private static final Logger logger = Logger.getLogger(ErmsImportRankMap.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private Map<Integer, Map<Integer,Rank>> rankMap;
 

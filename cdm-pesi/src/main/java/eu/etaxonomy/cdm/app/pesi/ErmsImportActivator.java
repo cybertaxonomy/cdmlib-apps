@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.pesi;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -32,7 +33,7 @@ import eu.etaxonomy.cdm.model.name.TaxonName;
  */
 public class ErmsImportActivator {
 
-    private static final Logger logger = Logger.getLogger(ErmsImportActivator.class);
+    private static Logger logger = LogManager.getLogger();
 
 //	static final Source ermsSource = PesiSources.PESI2019_ERMS_2018();
 	static final Source ermsSource = PesiSources.PESI2019_ERMS_2019();

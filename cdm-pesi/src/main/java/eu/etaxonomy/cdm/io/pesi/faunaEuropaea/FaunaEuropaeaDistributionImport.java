@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
 import java.sql.ResultSet;
@@ -18,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -33,16 +33,15 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
-
 /**
  * @author a.babadshanjan
  * @since 12.05.2009
  */
 @Component
 public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
-    private static final long serialVersionUID = 746146902707885655L;
-    private static final Logger logger = Logger.getLogger(FaunaEuropaeaDistributionImport.class);
 
+    private static final long serialVersionUID = 746146902707885655L;
+    private static Logger logger = LogManager.getLogger();
 
 	@Override
 	protected boolean doCheck(FaunaEuropaeaImportState state) {

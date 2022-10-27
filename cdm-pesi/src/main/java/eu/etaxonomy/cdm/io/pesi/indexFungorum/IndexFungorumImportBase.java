@@ -18,7 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ibm.lsid.MalformedLSIDException;
 
@@ -58,7 +59,7 @@ public abstract class IndexFungorumImportBase
         implements ICdmIO<IndexFungorumImportState>, IPartitionedIO<IndexFungorumImportState> {
 
     private static final long serialVersionUID = -729872543287390949L;
-    private static final Logger logger = Logger.getLogger(IndexFungorumImportBase.class);
+    private static Logger logger = LogManager.getLogger();
 
 	//NAMESPACES
 	protected static final String NAMESPACE_REFERENCE = "reference";

@@ -12,7 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
@@ -34,7 +35,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 public class ErmsGeneralImportValidator extends ErmsImportBase<CdmBase> implements IOValidator<ErmsImportState> {
 
     private static final long serialVersionUID = 7759961747172738096L;
-    private static final Logger logger = Logger.getLogger(ErmsGeneralImportValidator.class);
+    private static Logger logger = LogManager.getLogger();
 
 	public ErmsGeneralImportValidator(){
 		super(null, null, null);

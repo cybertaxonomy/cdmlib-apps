@@ -16,7 +16,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
@@ -38,8 +39,7 @@ public class ErmsVernacularSourcesImport
 
     private static final long serialVersionUID = 8334548532717058431L;
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(ErmsVernacularSourcesImport.class);
-
+    private static Logger logger = LogManager.getLogger();
 
 //************************** VARIABLES ********************************************
 

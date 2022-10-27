@@ -8,7 +8,8 @@
 */
 package eu.etaxonomy.cdm.app.common;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.config.AccountStore;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -18,8 +19,9 @@ import eu.etaxonomy.cdm.io.common.Source;
  * @since 16.02.2010
  */
 public class PesiDestinations {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(PesiDestinations.class);
+
+    @SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
 
 	public static Source pesi_test_local_CDM_EM2PESI(){
 		String dbms = Source.SQL_SERVER_2008;

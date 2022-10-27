@@ -14,7 +14,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
@@ -48,7 +49,7 @@ public class ErmsReferenceImport
             implements IMappingImport<Reference, ErmsImportState>{
 
     private static final long serialVersionUID = -2345972558542643378L;
-    private static final Logger logger = Logger.getLogger(ErmsReferenceImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 

@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.io.pesi.erms;
 
 import java.lang.reflect.Method;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
@@ -30,9 +31,8 @@ public class ErmsImportConfigurator
         extends DbImportConfiguratorBase<ErmsImportState>{
 
     private static final long serialVersionUID = 5434106058744720246L;
-
     @SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(ErmsImportConfigurator.class);
+    private static Logger logger = LogManager.getLogger();
 
 	public static ErmsImportConfigurator NewInstance(Source ermsSource, ICdmDataSource destination){
 	    return new ErmsImportConfigurator(ermsSource, destination);

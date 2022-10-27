@@ -11,7 +11,6 @@ package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -22,7 +21,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -52,9 +52,9 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  */
 @Component
 public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
-    private static final long serialVersionUID = -586555645981648177L;
 
-    private static final Logger logger = Logger.getLogger(FaunaEuropaeaRefImport.class);
+    private static final long serialVersionUID = -586555645981648177L;
+    private static Logger logger = LogManager.getLogger();
 
 	@Override
 	protected boolean doCheck(FaunaEuropaeaImportState state) {
@@ -222,7 +222,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 				        inReference = inReferences.get(tempInReference.getTitleCache());
 
 				    }else{
-				        inReference = (Reference) tempInReference.clone();
+				        inReference = tempInReference.clone();
 				        inReference.setPages(null);
 				        inReference.setEdition(null);
 				        inReferences.put(inReference.getTitleCache(), inReference);
@@ -318,7 +318,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 			referenceUuids.put(refID, uuid);
 		}
 
-		getAgentService().save((Collection)authors.values());
+		getAgentService().save(authors.values());
 		commitTransaction(txStatus);
 	}
 

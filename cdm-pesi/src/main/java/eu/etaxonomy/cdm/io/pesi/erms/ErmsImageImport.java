@@ -16,7 +16,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
@@ -37,9 +38,8 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class ErmsImageImport  extends ErmsImportBase<TextData> {
 
     private static final long serialVersionUID = 3482371545516808276L;
-
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(ErmsImageImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 

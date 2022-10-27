@@ -21,7 +21,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -52,7 +53,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
              implements ICdmIO<ErmsImportState>, IPartitionedIO<ErmsImportState> {
 
     private static final long serialVersionUID = 3856605408484122428L;
-    private static final Logger logger = Logger.getLogger(ErmsImportBase.class);
+    private static Logger logger = LogManager.getLogger();
 
 	public static final UUID ID_IN_SOURCE_EXT_UUID = UUID.fromString("23dac094-e793-40a4-bad9-649fc4fcfd44");
 

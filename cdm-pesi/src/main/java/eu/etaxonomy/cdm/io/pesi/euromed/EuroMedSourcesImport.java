@@ -12,7 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -29,8 +30,8 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class EuroMedSourcesImport
         extends CdmImportBase<EuroMedSourcesImportConfigurator, EuroMedSourcesImportState>{
 
-    private static final Logger logger = Logger.getLogger(EuroMedSourcesImportConfigurator.class);
     private static final long serialVersionUID = -8740059585975302440L;
+    private static Logger logger = LogManager.getLogger();
 
     @Override
     protected void doInvoke(EuroMedSourcesImportState state) {

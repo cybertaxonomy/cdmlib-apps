@@ -9,7 +9,8 @@
 
 package eu.etaxonomy.cdm.io.pesi.indexFungorum;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
@@ -28,7 +29,7 @@ public class IndexFungorumImportConfigurator
 
     private static final long serialVersionUID = -6354012088315750673L;
     @SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(IndexFungorumImportConfigurator.class);
+    private static Logger logger = LogManager.getLogger();
 
 	public static IndexFungorumImportConfigurator NewInstance(Source source, ICdmDataSource destination){
 			return new IndexFungorumImportConfigurator(source, destination);

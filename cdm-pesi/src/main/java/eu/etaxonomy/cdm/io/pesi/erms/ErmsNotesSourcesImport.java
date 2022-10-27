@@ -16,7 +16,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
@@ -35,11 +36,10 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  */
 @Component
 public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
+
     private static final long serialVersionUID = -5197101648269924453L;
-
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(ErmsNotesSourcesImport.class);
-
+    private static Logger logger = LogManager.getLogger();
 
 //************************** VARIABLES ********************************************
 

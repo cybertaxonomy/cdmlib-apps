@@ -9,7 +9,8 @@
 
 package eu.etaxonomy.cdm.io.pesi.erms.validation;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsImportConfigurator;
@@ -20,7 +21,8 @@ import eu.etaxonomy.cdm.io.pesi.erms.ErmsImportState;
  * @since 12.03.2010
  */
 public class ErmsVernacularImportValidator  implements IOValidator<ErmsImportState>{
-	private static final Logger logger = Logger.getLogger(ErmsVernacularImportValidator.class);
+
+    private static Logger logger = LogManager.getLogger();
 
 	@Override
     public boolean validate(ErmsImportState state){

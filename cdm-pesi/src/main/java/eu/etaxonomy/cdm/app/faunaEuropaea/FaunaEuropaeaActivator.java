@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.faunaEuropaea;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -34,9 +35,9 @@ import eu.etaxonomy.cdm.model.term.TermTree;
  * @since 12.05.2009
  */
 public class FaunaEuropaeaActivator {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(FaunaEuropaeaActivator.class);
 
+    @SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
 
 	static final Source faunaEuropaeaSource = PesiSources.mfn_faunEu_pesi3();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_faunaEu_mysql();

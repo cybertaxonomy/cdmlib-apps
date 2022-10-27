@@ -19,7 +19,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -44,7 +45,7 @@ import eu.etaxonomy.cdm.model.reference.OriginalSourceBase;
 public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 
     private static final long serialVersionUID = 2307694402632743697L;
-    private static final Logger logger = Logger.getLogger(FaunaEuropaeaUsersImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	/* Interval for progress info message when retrieving taxa */
 	private final int modCount = 10000;
@@ -298,8 +299,8 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 			Collection<Institution> institutionsToSave,
 			int i) {
 
-	    Map<UUID, AgentBase> instMap = getAgentService().save((Collection)institutionsToSave);
-		Map<UUID, AgentBase> userMap = getAgentService().save((Collection)persons.values());
+	    Map<UUID, AgentBase> instMap = getAgentService().save(institutionsToSave);
+		Map<UUID, AgentBase> userMap = getAgentService().save(persons.values());
 		logger.info("i = " + i + " - persons saved");
 
 

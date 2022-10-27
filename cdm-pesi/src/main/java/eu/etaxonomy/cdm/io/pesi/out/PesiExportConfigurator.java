@@ -8,7 +8,8 @@
 */
 package eu.etaxonomy.cdm.io.pesi.out;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase;
@@ -25,7 +26,7 @@ public class PesiExportConfigurator
 
     private static final long serialVersionUID = -4855001834616976415L;
     @SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(PesiExportConfigurator.class);
+    private static Logger logger = LogManager.getLogger();
 
     private int limitSave = 2000;
     private int limitSaveDescription = 500;

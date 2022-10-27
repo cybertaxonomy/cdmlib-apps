@@ -12,7 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 
@@ -22,7 +23,7 @@ import eu.etaxonomy.cdm.common.CdmUtils;
  */
 public class PesiValidatorBase {
 
-    private static final Logger logger = Logger.getLogger(PesiValidatorBase.class);
+    private static Logger logger = LogManager.getLogger();
 
     protected boolean testTreeIndex(ResultSet destRS, String childIndexAttr, String parentIndexAttr, String id) throws SQLException {
         boolean result;

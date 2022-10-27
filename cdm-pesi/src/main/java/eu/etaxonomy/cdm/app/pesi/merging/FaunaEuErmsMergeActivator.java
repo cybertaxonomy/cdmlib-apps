@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.exception.ReferencedObjectUndeletableException;
@@ -36,6 +37,8 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 public class FaunaEuErmsMergeActivator extends PesiMergeBase{
 
+    private static Logger logger = LogManager.getLogger();
+
 	static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.localH2();
 
 	static final int faunaEuUuid = 0;
@@ -46,8 +49,6 @@ public class FaunaEuErmsMergeActivator extends PesiMergeBase{
 	private Classification ermsClassification;
 
 	private CdmApplicationController appCtrInit;
-
-	private static final Logger logger = Logger.getLogger(FaunaEuErmsMergeActivator.class);
 
 	//csv files starting with...
 	static String sFileName = "c:\\test";

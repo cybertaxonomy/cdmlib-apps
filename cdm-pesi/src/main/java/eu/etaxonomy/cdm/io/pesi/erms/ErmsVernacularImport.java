@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
@@ -45,8 +46,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 
     private static final long serialVersionUID = -5928250782824234181L;
-
-	private static final Logger logger = Logger.getLogger(ErmsVernacularImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 //	private ErmsImportState state;   //import instance is never used more than once for Erms ; dirty

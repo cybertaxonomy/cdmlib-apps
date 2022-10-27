@@ -10,11 +10,11 @@ package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -28,7 +28,6 @@ import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
-
 /**
  * @author a.babadshanjan
  * @since 12.05.2009
@@ -37,8 +36,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Logger logger = Logger.getLogger(FaunaEuropaeaAuthorImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private static int modCount = 1000;
 	private final static String authorSeparator = ", ";
@@ -141,7 +139,7 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 			txStatus = startTransaction();
 
 			// save authors
-			getAgentService().save((Collection)authorStore.objects());
+			getAgentService().save(authorStore.objects());
 
 			commitTransaction(txStatus);
 

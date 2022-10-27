@@ -15,7 +15,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.DeleteResult;
@@ -52,7 +53,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
  */
 public class PesiCommandLineMerge extends PesiMergeBase {
 
-    private static final Logger logger = Logger.getLogger(PesiCommandLineMerge.class);
+    private static Logger logger = LogManager.getLogger();
 
     static final ICdmDataSource pesiSource = CdmDestinations.cdm_pesi2019_final();
 
@@ -462,7 +463,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         //TODO handle duplicates for taxon descriptions
         for (TaxonDescription description: remove.getDescriptions()){
             System.out.println("Move taxon description: " + description.getTitleCache());
-            stay.addDescription((TaxonDescription)description.clone());
+            stay.addDescription(description.clone());
         }
     }
 
@@ -471,7 +472,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         String className = removeEntity.getClass().getSimpleName();
         for (Credit credit: removeEntity.getCredits()){
             System.out.println("Move "+className+" credit: " + credit.toString());
-            stayEntity.addCredit((Credit)credit.clone());
+            stayEntity.addCredit(credit.clone());
         }
     }
 
@@ -485,7 +486,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
 
                 IdentifiableEntity<?> thisStayEntity = selectStay(removeEntity, stayEntity, "Extension");
                 if (thisStayEntity != null){
-                    thisStayEntity.addExtension((Extension)extension.clone());
+                    thisStayEntity.addExtension(extension.clone());
                 }
             }
         }
@@ -526,7 +527,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
                 System.out.println("Move "+className+" marker: " + marker.getMarkerType().getTitleCache() + ": " + marker.getValue());
                 IdentifiableEntity<?> thisStayEntity = selectStay(removeEntity, stayEntity, "Marker");
                 if (thisStayEntity != null){
-                    thisStayEntity.addMarker((Marker)marker.clone());
+                    thisStayEntity.addMarker(marker.clone());
                 }
             }
         }
@@ -540,7 +541,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
                 String type = annotation.getAnnotationType() == null? "no type" : annotation.getAnnotationType().getTitleCache();
                 System.out.println("Move "+className+" note: " + type + ": " + annotation.getText());
                 handleRemoveAnnotation(annotation, removeEntity, stayEntity);
-                stayEntity.addAnnotation((Annotation)annotation.clone());
+                stayEntity.addAnnotation(annotation.clone());
             }
         }
     }
@@ -550,7 +551,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         String className = removeEntity.getClass().getSimpleName();
         for (IdentifiableSource source: removeEntity.getSources()){
             System.out.println("Move "+className+" source: " + source.getType().getLabel() + ": " + source.getCitation().getTitleCache() + "; " + source.getIdInSource() + "/" + source.getIdNamespace());
-            stayEntity.addSource((IdentifiableSource)source.clone());
+            stayEntity.addSource(source.clone());
         }
     }
 

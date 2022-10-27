@@ -10,7 +10,8 @@
 package eu.etaxonomy.cdm.io.pesi.indexFungorum;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
@@ -26,10 +27,9 @@ import eu.etaxonomy.cdm.model.name.Rank;
 public final class IndexFungorumTransformer extends InputTransformerBase {
 
     private static final long serialVersionUID = 7930365658820136180L;
-    private static final Logger logger = Logger.getLogger(IndexFungorumTransformer.class);
+    private static Logger logger = LogManager.getLogger();
 
 	public static final String LSID_PREFIX = "urn:lsid:indexfungorum.org:names:";
-
 
 	@Override
 	public Rank getRankByKey(String key) throws UndefinedTransformerMethodException {
@@ -51,7 +51,6 @@ public final class IndexFungorumTransformer extends InputTransformerBase {
 				return null;
 		}
 	}
-
 
 	@Override
 	public NamedArea getNamedAreaByKey(String key) throws UndefinedTransformerMethodException {

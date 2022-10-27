@@ -8,7 +8,8 @@
 */
 package eu.etaxonomy.cdm.app.pesi;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.common.PesiDestinations;
@@ -28,8 +29,8 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
  */
 public class PesiExportActivatorEM {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(PesiExportActivatorEM.class);
+    @SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
 
 //	static final ICdmDataSource cdmSource = CdmDestinations.test_cdm_pesi_euroMed();
 	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_euromed();

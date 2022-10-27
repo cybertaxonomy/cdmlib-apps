@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
 import java.sql.ResultSet;
@@ -14,7 +13,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
@@ -32,7 +32,8 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  * @since 12.05.2009
  */
 public final class FaunaEuropaeaTransformer {
-	private static final Logger logger = Logger.getLogger(FaunaEuropaeaTransformer.class);
+
+    private static Logger logger = LogManager.getLogger();
 
 	public static final UUID uuidFauEuArea = UUID.fromString("16325043-e7da-4742-b012-9ce03362a124");
 
@@ -283,7 +284,7 @@ public final class FaunaEuropaeaTransformer {
             	langEnglishUS = Language.NewInstance("english-United States", "english-US", "eng-US");
     			langEnglishUS.setUuid(uuidEnglishUS);
 
-                langEnglishUS = (Language)termService.save(langEnglishUS);
+                langEnglishUS = termService.save(langEnglishUS);
                 languageFK2Language.put(83, langEnglishUS);
             }
         }

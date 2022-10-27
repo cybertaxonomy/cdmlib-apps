@@ -24,7 +24,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -89,7 +90,7 @@ import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
 public class PesiTaxonExport extends PesiExportBase {
 
     private static final long serialVersionUID = -3412722058790200078L;
-    private static final Logger logger = Logger.getLogger(PesiTaxonExport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private static final Class<? extends CdmBase> standardMethodParameter = TaxonBase.class;
 

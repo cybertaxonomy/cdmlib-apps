@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -35,9 +36,10 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 @Component
 public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportBase  {
-    private static final long serialVersionUID = -6734273038256432559L;
 
-    private static final Logger logger = Logger.getLogger(FaunaEuropaeaAdditionalTaxonDataImport.class);
+    private static final long serialVersionUID = -6734273038256432559L;
+    private static Logger logger = LogManager.getLogger();
+
 //	private static final String parentPluralString = "Synonyms";
 	private static final String pluralString = "InfraGenericEpithets";
 	//private static final String acceptedTaxonUUID = "A9C24E42-69F5-4681-9399-041E652CF338"; // any accepted taxon uuid, taken from original fauna europaea database

@@ -13,7 +13,8 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -33,7 +34,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 
     private static final long serialVersionUID = -8504227175493151403L;
-    private static final Logger logger = Logger.getLogger(IndexFungorumSupraGeneraImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private static final String pluralString = "Supragenera";
 	private static final String dbTableName = "tblSupragenericNames";

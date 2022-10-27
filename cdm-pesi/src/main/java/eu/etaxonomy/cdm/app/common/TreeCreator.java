@@ -13,7 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.term.TermNode;
@@ -24,8 +25,9 @@ import eu.etaxonomy.cdm.model.term.TermTree;
  * @since 03.07.2008
  */
 public class TreeCreator {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(TreeCreator.class);
+
+    @SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
 
 	public static TermTree<Feature> flatTree(UUID featureTreeUuid, Map<Integer, Feature> featureMap, Object[] featureKeyList){
 	    TermTree<Feature> result = TermTree.NewFeatureInstance(featureTreeUuid);

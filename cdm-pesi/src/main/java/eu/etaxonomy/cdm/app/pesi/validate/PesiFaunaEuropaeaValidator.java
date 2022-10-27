@@ -15,7 +15,8 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.common.PesiDestinations;
@@ -37,7 +38,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
  */
 public class PesiFaunaEuropaeaValidator extends PesiValidatorBase {
 
-    private static final Logger logger = Logger.getLogger(PesiFaunaEuropaeaValidator.class);
+    private static Logger logger = LogManager.getLogger();
 
     private static final ICdmDataSource defaultSource = CdmDestinations.cdm_test_local_pesi_leer();
 //    private static final ICdmDataSource defaultSource = CdmDestinations.cdm_test_local_pesi_leer();

@@ -9,7 +9,8 @@
 
 package eu.etaxonomy.cdm.app.common;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.config.AccountStore;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -19,8 +20,9 @@ import eu.etaxonomy.cdm.io.common.Source;
  * @since 12.05.2009
  */
 public class PesiSources {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(PesiSources.class);
+
+    @SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
 
 	public static Source faunEu_pesi3(){
 		//	Fauna Europaea auf pesiimport3

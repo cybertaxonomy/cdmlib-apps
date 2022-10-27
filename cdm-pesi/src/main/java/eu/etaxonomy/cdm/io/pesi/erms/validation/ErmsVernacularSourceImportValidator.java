@@ -6,13 +6,12 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.pesi.erms.validation;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
-import eu.etaxonomy.cdm.io.pesi.erms.ErmsImportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsImportState;
 
 /**
@@ -21,12 +20,11 @@ import eu.etaxonomy.cdm.io.pesi.erms.ErmsImportState;
  */
 public class ErmsVernacularSourceImportValidator  implements IOValidator<ErmsImportState>{
 
-    private static final Logger logger = Logger.getLogger(ErmsVernacularSourceImportValidator.class);
+    private static Logger logger = LogManager.getLogger();
 
 	@Override
     public boolean validate(ErmsImportState state){
 		boolean result = true;
-		ErmsImportConfigurator config = state.getConfig();
 		logger.info("Checking for vernacular sources not yet implemented");
 
 		return result;

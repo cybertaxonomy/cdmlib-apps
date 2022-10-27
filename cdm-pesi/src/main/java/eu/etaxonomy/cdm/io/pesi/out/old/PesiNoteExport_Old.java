@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -62,7 +63,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class PesiNoteExport_Old extends PesiExportBase {
 
     private static final long serialVersionUID = 2113856079824112001L;
-    private static final Logger logger = Logger.getLogger(PesiNoteExport_Old.class);
+    private static Logger logger = LogManager.getLogger();
 
     private static final Class<? extends CdmBase> standardMethodParameter = DescriptionElementBase.class;
 

@@ -16,7 +16,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.MultipleAttributeMapperBase;
@@ -39,7 +40,7 @@ public class ExpertsAndLastActionMapper
         implements IDbExportMapper<DbExportStateBase<?, IExportTransformer>, IExportTransformer>{
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(ExpertsAndLastActionMapper.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private static final boolean IS_ACTION_TYPE = true;
 

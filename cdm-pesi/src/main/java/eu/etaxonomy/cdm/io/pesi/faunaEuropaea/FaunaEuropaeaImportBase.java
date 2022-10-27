@@ -18,7 +18,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -38,7 +39,7 @@ public abstract class FaunaEuropaeaImportBase
         extends CdmImportBase<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
         implements ICdmImport<FaunaEuropaeaImportConfigurator,FaunaEuropaeaImportState> {
 
-    private static final Logger logger = Logger.getLogger(FaunaEuropaeaImportBase.class);
+    private static Logger logger = LogManager.getLogger();
 
 //	/* Max number of taxa to retrieve (for test purposes) */
 //	protected static final int maxTaxa = 1000;
@@ -181,7 +182,7 @@ public abstract class FaunaEuropaeaImportBase
                         markerType = MarkerType.NewInstance("Has no last Action", "Has no last action", null);
                         markerType.setUuid(uuid);
                     }
-                    markerType = (MarkerType)getTermService().save(markerType);
+                    markerType = getTermService().save(markerType);
                 }
             }
 

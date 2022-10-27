@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -40,7 +41,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 
     private static final long serialVersionUID = -815842161276543719L;
-    private static final Logger logger = Logger.getLogger(IndexFungorumDistributionImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private static final String pluralString = "distributions";
 	private static final String dbTableName = "[tblPESIfungi]";

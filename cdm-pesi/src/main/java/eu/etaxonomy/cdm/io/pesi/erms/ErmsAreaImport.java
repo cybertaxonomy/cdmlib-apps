@@ -15,7 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
@@ -47,7 +48,7 @@ public class ErmsAreaImport
     private static final long serialVersionUID = 7151312300027994346L;
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(ErmsAreaImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 

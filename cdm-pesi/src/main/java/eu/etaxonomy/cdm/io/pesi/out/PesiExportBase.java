@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
@@ -58,7 +59,7 @@ public abstract class PesiExportBase
               extends DbExportBase<PesiExportConfigurator, PesiExportState, PesiTransformer> {
 
     private static final long serialVersionUID = 6226747017958138156L;
-    private static final Logger logger = Logger.getLogger(PesiExportBase.class);
+    private static Logger logger = LogManager.getLogger();
 
 	protected static final boolean IS_CACHE = true;
 

@@ -12,7 +12,8 @@ package eu.etaxonomy.cdm.io.pesi.erms.validation;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -27,7 +28,8 @@ import eu.etaxonomy.cdm.io.pesi.erms.ErmsImportState;
  * @since 17.02.2010
  */
 public class ErmsReferenceImportValidator implements IOValidator<ErmsImportState>{
-	private static final Logger logger = Logger.getLogger(ErmsReferenceImportValidator.class);
+
+    private static Logger logger = LogManager.getLogger();
 
 	@Override
     public boolean validate(ErmsImportState state){

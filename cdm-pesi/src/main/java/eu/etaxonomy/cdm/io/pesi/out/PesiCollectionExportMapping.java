@@ -10,12 +10,12 @@ package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.mapping.CdmMapperBase;
-import eu.etaxonomy.cdm.io.common.mapping.out.CollectionExportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbSequenceMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IDbExportMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
@@ -27,7 +27,8 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
  * @since 24.02.2010
  */
 public class PesiCollectionExportMapping extends PesiExportMapping {
-	private static final Logger logger = Logger.getLogger(CollectionExportMapping.class);
+
+    private static Logger logger = LogManager.getLogger();
 
 	private IdMapper parentMapper;
 	private DbSequenceMapper sequenceMapper;

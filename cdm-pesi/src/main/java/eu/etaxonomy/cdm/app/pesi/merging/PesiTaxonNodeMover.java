@@ -10,7 +10,8 @@ package eu.etaxonomy.cdm.app.pesi.merging;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.UpdateResult;
@@ -26,8 +27,7 @@ import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 public class PesiTaxonNodeMover {
 
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(PesiFindIdenticalNamesActivator.class);
-
+    private static Logger logger = LogManager.getLogger();
     static final ICdmDataSource pesiSource = CdmDestinations.cdm_pesi2019_final();
 //    static final ICdmDataSource pesiSource = CdmDestinations.cdm_pesi2019_final_test();
 

@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -27,7 +28,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
 
     private static final long serialVersionUID = -2877755674188760685L;
-    private static final Logger logger = Logger.getLogger(IndexFungorumSubSpeciesImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private static final String pluralString = "subSpecies";
 

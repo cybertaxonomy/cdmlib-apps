@@ -18,7 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
@@ -60,7 +61,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
  */
 public final class PesiTransformer extends ExportTransformerBase{
 
-    private static final Logger logger = Logger.getLogger(PesiTransformer.class);
+    private static Logger logger = LogManager.getLogger();
 
 	public static final String AUCT_STRING = "auct.";
 

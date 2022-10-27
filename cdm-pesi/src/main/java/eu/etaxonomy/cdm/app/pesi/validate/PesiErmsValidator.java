@@ -13,7 +13,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.PesiDestinations;
 import eu.etaxonomy.cdm.app.common.PesiSources;
@@ -29,7 +30,7 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
  */
 public class PesiErmsValidator extends PesiValidatorBase {
 
-    private static final Logger logger = Logger.getLogger(PesiErmsValidator.class);
+    private static Logger logger = LogManager.getLogger();
 
     private static final Source defaultSource = PesiSources.PESI2019_ERMS_2019();
 //    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();

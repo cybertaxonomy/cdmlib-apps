@@ -9,12 +9,12 @@
 
 package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -39,7 +39,7 @@ public class FaunaEuropaeaHeterotypicSynonymImport
         implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState> {
 
     private static final long serialVersionUID = -4195183108743873247L;
-    private static final Logger logger = Logger.getLogger(FaunaEuropaeaHeterotypicSynonymImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	@Override
 	protected boolean doCheck(FaunaEuropaeaImportState state) {
@@ -111,7 +111,7 @@ public class FaunaEuropaeaHeterotypicSynonymImport
 						}
 					}
 
-					getTaxonService().save((Collection)taxonSet);
+					getTaxonService().save(taxonSet);
 					taxonSet = null;
 					synonymList = null;
 					commitTransaction(txStatus);

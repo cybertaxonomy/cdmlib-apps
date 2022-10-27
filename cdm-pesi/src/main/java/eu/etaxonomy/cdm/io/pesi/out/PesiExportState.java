@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -30,8 +31,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * @since 12.02.2010
  */
 public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, PesiTransformer>{
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(PesiExportState.class);
+
+    @SuppressWarnings("unused")
+    private static Logger logger = LogManager.getLogger();
 
 	private static List<Integer> processedSourceList = new ArrayList<>();
 

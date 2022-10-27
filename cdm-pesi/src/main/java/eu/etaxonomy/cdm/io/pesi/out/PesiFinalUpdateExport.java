@@ -8,7 +8,8 @@
 */
 package eu.etaxonomy.cdm.io.pesi.out;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -30,7 +31,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class PesiFinalUpdateExport extends PesiExportBase {
 
     private static final long serialVersionUID = 6190569804410237104L;
-    private static final Logger logger = Logger.getLogger(PesiFinalUpdateExport.class);
+    private static Logger logger = LogManager.getLogger();
 
     private static final Class<? extends CdmBase> standardMethodParameter = TaxonBase.class;
 

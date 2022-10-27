@@ -16,7 +16,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -42,7 +43,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 
     private static final long serialVersionUID = -1148034079632876980L;
-    private static final Logger logger = Logger.getLogger(IndexFungorumSpeciesImport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private static final String pluralString = "species";
 	private static final String dbTableName = "[tblPESIfungi-IFdata]";

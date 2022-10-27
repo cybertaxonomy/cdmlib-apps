@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.pesi;
 import java.util.Calendar;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
@@ -36,7 +37,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 public class FauEu2CdmActivator {
 
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(FauEu2CdmActivator.class);
+    private static Logger logger = LogManager.getLogger();
 
     static final ICdmDataSource fauEuSource = CdmDestinations.test_cdm_pesi_fauna_europaea();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_pesi_leer();

@@ -14,7 +14,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
@@ -39,7 +40,7 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 public final class ErmsTransformer extends InputTransformerBase {
 
     private static final long serialVersionUID = 1777919792691129468L;
-    private static final Logger logger = Logger.getLogger(ErmsTransformer.class);
+    private static Logger logger = LogManager.getLogger();
 
 	public static final int SOURCE_USE_ORIGINAL_DESCRIPTION = 1;
 	public static final int SOURCE_USE_BASIS_OF_RECORD = 2;

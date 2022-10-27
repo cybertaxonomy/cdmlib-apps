@@ -12,7 +12,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -34,10 +35,9 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 public class FaunaEuropaeaVernacularNamesImport extends FaunaEuropaeaImportBase {
 
     private static final long serialVersionUID = 168771351441040059L;
+    private static Logger logger = LogManager.getLogger();
 
-    private static final Logger logger = Logger.getLogger(FaunaEuropaeaVernacularNamesImport.class);
-
-	private HashMap<String, Reference> sourceMap = new HashMap<String, Reference>();
+	private HashMap<String, Reference> sourceMap = new HashMap<>();
 	private Reference pesiProject = ReferenceFactory.newDatabase();
 
 	@Override
@@ -287,7 +287,7 @@ public class FaunaEuropaeaVernacularNamesImport extends FaunaEuropaeaImportBase 
 						TermVocabulary<Language> voc = getVocabulary(state, TermType.Language, uuidLanguageVoc, "User Defined Languages", "User Defined Languages", null, null, false, lang);
 						lang = Language.NewInstance("Dummy", "", "");
 						voc.addTerm(lang);
-						lang =(Language)getTermService().save(lang);
+						lang =getTermService().save(lang);
 						FaunaEuropaeaTransformer.languageFK2Language.put(fauEuHelperVernacularName.getLanguageFk(), lang);
 					}
 //					if (lang.getId() == 0){

@@ -11,7 +11,8 @@ package eu.etaxonomy.cdm.app.pesi;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.common.PesiSources;
@@ -30,7 +31,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 public class IndexFungorumImportActivator {
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(IndexFungorumImportActivator.class);
+    private static Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

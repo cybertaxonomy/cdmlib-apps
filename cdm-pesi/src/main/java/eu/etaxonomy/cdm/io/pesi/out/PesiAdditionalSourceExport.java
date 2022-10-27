@@ -14,7 +14,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -38,7 +39,7 @@ import eu.etaxonomy.cdm.profiler.ProfilerController;
 public class PesiAdditionalSourceExport extends PesiExportBase {
 
     private static final long serialVersionUID = -2567615286288369111L;
-    private static final Logger logger = Logger.getLogger(PesiAdditionalSourceExport.class);
+    private static Logger logger = LogManager.getLogger();
 
 	private static final Class<? extends CdmBase> standardMethodParameter = IdentifiableSource.class;
 
