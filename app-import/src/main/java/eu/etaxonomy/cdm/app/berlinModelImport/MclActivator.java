@@ -77,7 +77,7 @@ public class MclActivator {
     static final boolean doTaxonNames = true;
     static final boolean doRelNames = true;
     static final boolean doNameStatus = true;
-    static final boolean doNameFacts = true;
+    static final boolean doNameFacts = false;  //name facts do not exist in MCL
 
     //taxa
     static final boolean doTaxa = true;
