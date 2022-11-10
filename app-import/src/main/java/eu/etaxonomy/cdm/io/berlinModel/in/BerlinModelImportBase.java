@@ -140,7 +140,7 @@ public abstract class BerlinModelImportBase
 			annotatableEntity.addAnnotation(annotation);
 		}else if (config.getEditor().equals(EDITOR.EDITOR_AS_EDITOR)){
 		    User creator;
-		    boolean xmlSourceAdded= addXmlSource(state, rs, annotatableEntity, createdWho, false);
+		    boolean xmlSourceAdded = addXmlSource(state, rs, annotatableEntity, createdWho, false);
 		    if (xmlSourceAdded){
 		        creator = getXmlImporter(state);
 		    }else{
@@ -182,15 +182,6 @@ public abstract class BerlinModelImportBase
         return getUser(state, "import to BM");
     }
 
-
-    /**
-     * @param state
-     * @param rs
-	 * @param annotatableEntity
-	 * @param xmlSourceAdded
-     * @return
-     * @throws SQLException
-     */
     private boolean addXmlSource(BerlinModelImportState state, ResultSet rs, AnnotatableEntity annotatableEntity, String username, boolean existsAlready) throws SQLException {
         if (!state.getConfig().isEuroMed()){
             return false;

@@ -189,7 +189,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 
 
 		if (includeAllClassifications){
-			//add otherdirection
+			//add other direction
 			strQuerySelect = "SELECT PTaxon.PTRefFk, r.RefCache ";
 			strQueryFrom = " FROM RelPTaxon rel " +
 								" INNER JOIN PTaxon AS PTaxon ON rel.PTNameFk1 = PTaxon.PTNameFk AND rel.PTRefFk1 = PTaxon.PTRefFk " +
