@@ -546,6 +546,8 @@ public abstract class BerlinModelImportBase
                 if(username.matches("kapet")){
                     username = "kpet";
                 }
+            }else if (state.getConfig().isMcl()) {
+                username = username.replace(", ", "_");
             }
             return username;
         }

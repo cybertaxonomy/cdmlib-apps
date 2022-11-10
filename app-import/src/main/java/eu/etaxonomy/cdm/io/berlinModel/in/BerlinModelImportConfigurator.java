@@ -63,6 +63,7 @@ public class BerlinModelImportConfigurator
 
 	private boolean isSalvador = false;
 	private boolean isEuroMed = false;
+	private boolean isMcl = false;
 
 	//taxa
 	private boolean doTaxa = true;
@@ -637,6 +638,9 @@ public class BerlinModelImportConfigurator
 
     public boolean isEuroMed() {return isEuroMed;}
     public void setEuroMed(boolean isEuroMed) {this.isEuroMed = isEuroMed;}
+
+    public boolean isMcl() {return isMcl;}
+    public void setMcl(boolean isMcl) {this.isMcl = isMcl;}
 
     public UUID getFeatureTreeUuid() {
         return featureTreeUuid;
