@@ -29,7 +29,6 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
-
 /**
  * Supported attributes:
  * - AuthorId, Abbrev, FirstName, LastName, Dates, AreaOfInterest, NomStandard, createUpdateNotes
