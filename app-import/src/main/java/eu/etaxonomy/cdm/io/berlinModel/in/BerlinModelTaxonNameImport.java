@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -375,6 +376,19 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 							ExtensionType sourceAccExtensionType = getExtensionType(state, BerlinModelTransformer.SOURCE_ACC_UUID, "Source_Acc","Source_Acc","Source_Acc");
 							Extension.NewInstance(taxonName, sourceAcc, sourceAccExtensionType);
 						}
+					}
+
+					if (config.isMoose()) {
+					    String nomRefSource = rs.getString("NomRefSource");
+					    if (StringUtils.isNotBlank(nomRefSource)) {
+					        ExtensionType nomRefExtensionType = getExtensionType(state, BerlinModelTransformer.uuidNomeRefSourceExtensionType, "Reference/author source", "Reference/author source", "Ref src.");
+					        taxonName.addExtension(nomRefSource, nomRefExtensionType);
+					    }
+					    String AC_NA_Y_NB = rs.getString("AC_NA_Y_NB");
+                        if (StringUtils.isNotBlank(AC_NA_Y_NB)) {
+                            ExtensionType acNaYNBExtensionType = getExtensionType(state, BerlinModelTransformer.uuidacNaYNBExtensionType, "Reference/author source", "Reference/author source", "Ref src.");
+                            taxonName.addExtension(nomRefSource, acNaYNBExtensionType);
+                        }
 					}
 
 					//created, notes

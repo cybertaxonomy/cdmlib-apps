@@ -53,11 +53,12 @@ public class MTMooseActivator {
 	static final boolean includeFlatClassifications = true;
 
 	static final String relPTaxonIdQuery = "SELECT * FROM RelPTaxon r " +
-			" WHERE NOT (r.PTRefFk1 <> r.PTRefFk2 AND r.RelQualifierFk = 1)";
+			" WHERE notIntoCdm = 0 "; //(r.PTRefFk1 <> r.PTRefFk2 AND r.RelQualifierFk = 1)
 	static final String taxonTable = "PTaxon WHERE notIntoCdm = 0";
 	static final String authorTable = "v_cdmExport_authors";
 	static final String authorTeamTable = "v_cdmExport_authorTeamsAll";
 	static final String referenceTable = "v_cdmExport_references";
+	static final String nameIdTable = "v_cdmExport_namesAll";
 
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -66,6 +67,7 @@ public class MTMooseActivator {
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICNAFP;
 
 	static final EDITOR editor = EDITOR.EDITOR_AS_EDITOR;
+	static boolean isMoose = true;
 
 // ****************** ALL *****************************************
 
@@ -128,6 +130,7 @@ public class MTMooseActivator {
 		config.setNomenclaturalCode(nomenclaturalCode);
 		config.setEditor(editor);
 		config.setIncludeFlatClassifications(includeFlatClassifications);
+		config.setMoose(isMoose);
 
 		config.setDoAuthors(doAuthors);
 		config.setDoReferences(doReferences);
@@ -153,8 +156,10 @@ public class MTMooseActivator {
 		config.setAuthorFilter(authorTable);
 		config.setAuthorTeamFilter(authorTeamTable);
 		config.setReferenceIdTable(referenceTable);
+		config.setNameIdTable(nameIdTable);
 
 		config.setDbSchemaValidation(hbm2dll);
+		config.setClassificationName(null);
 
 		config.setCheck(check);
 

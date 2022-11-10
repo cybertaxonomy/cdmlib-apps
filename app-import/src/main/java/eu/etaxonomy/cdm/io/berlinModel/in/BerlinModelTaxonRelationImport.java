@@ -36,6 +36,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.common.ResultWrapper;
+import eu.etaxonomy.cdm.format.reference.OriginalSourceFormatter;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelTaxonRelationImportValidator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
@@ -94,7 +95,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	 */
 	private void makeClassifications(BerlinModelImportState state) throws SQLException{
 		logger.info("start make classification ...");
-
+		TransactionStatus tx = this.startTransaction();
 		Set<String> idSet = getTreeReferenceIdSet(state);
 
 		//reference map
@@ -124,7 +125,11 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 						classificationName = refCache;
 					}
 					if (ref != null && StringUtils.isNotBlank(ref.getTitleCache())){
-						classificationName = ref.getTitleCache();
+						if (state.getConfig().isMoose()) {
+						    classificationName = OriginalSourceFormatter.INSTANCE_WITH_YEAR_BRACKETS.format(ref, null);
+						}else {
+						    classificationName = ref.getTitleCache();
+						}
 					}
 					if (isFirst && isNotBlank(state.getConfig().getClassificationName())){
 					    classificationName = state.getConfig().getClassificationName();
@@ -133,6 +138,8 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 					tree.setReference(ref);
 					if (i == 1 && state.getConfig().getClassificationUuid() != null){
 						tree.setUuid(state.getConfig().getClassificationUuid());
+					}else if (state.getConfig().isMoose() && ref != null) {
+					    tree.setUuid(UUID.fromString(ref.getUuid().toString().substring(0,32)+"1a48"));
 					}
 					IdentifiableSource identifiableSource = IdentifiableSource.NewDataImportInstance(ptRefFk, TREE_NAMESPACE);
 					tree.addSource(identifiableSource);
@@ -149,6 +156,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 			logger.error("Error in BerlinModleTaxonRelationImport.makeClassifications: " + e.getMessage());
 			throw e;
 		}
+		commitTransaction(tx);
 		logger.info("end make classification ...");
 
 		return;
@@ -259,7 +267,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 				int relPTaxonId = rs.getInt("RelPTaxonId");
 				Integer taxon1Id = nullSafeInt(rs, "taxon1Id");
 				Integer taxon2Id = nullSafeInt(rs, "taxon2Id");
-				Integer ptRefFk1 = nullSafeInt(rs, "PTRefFk1");
 				Integer ptRefFk2 = nullSafeInt(rs, "PTRefFk2");
 
 				int relQualifierFk = -1;
@@ -278,7 +285,10 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 					String refFk = String.valueOf(relRefFk);
 					Reference citation = refMap.get(refFk);
 
-					String microcitation = null; //does not exist in RelPTaxon
+					String microcitation = null; //does not exist in RelPTaxon, but see RelRefDetail for Moose-import misapplications
+                    if (state.getConfig().isMoose()) {
+                        microcitation = rs.getString("RelRefDetail");
+                    }
 
 					if (taxon2 != null && taxon1 != null){
 						if (!(taxon2 instanceof Taxon)){
@@ -304,7 +314,10 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							}else if (relQualifierFk == TAX_REL_IS_MISAPPLIED_NAME_OF){
 							    boolean isProParte = "p.p.".equals(notes);
 							    if (isProParte){
-								    notes = null;
+								    notes = notes.replace("p.p.", "");
+								    if (notes.startsWith(", ")) {
+								        notes.replace(", ", "");
+								    }
 								}
 							    boolean isDoubtful = "?".equals(notes);
                                 if (isDoubtful){
@@ -403,9 +416,14 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 								}else{
 									Taxon fromTaxon = (Taxon)taxon1;
 									if (isInverse.getValue() == true){
-										Taxon tmp = fromTaxon;
+										//switch taxa
+									    Taxon tmp = fromTaxon;
 										fromTaxon = toTaxon;
 										toTaxon = tmp;
+										//switch refFks
+										int tmpRefFk = fromRefFk;
+										fromRefFk = treeRefFk;
+										treeRefFk = tmpRefFk;
 									}
 									taxonRelationship = fromTaxon.addTaxonRelation(toTaxon, relType, citation, microcitation);
 									handleAllRelatedTaxa(state, toTaxon, classificationMap, treeRefFk);
@@ -423,11 +441,14 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							success = false;
 						}
 
-						if (taxonRelationship != null && isNotBlank(notes)){
-						    doNotes(taxonRelationship, notes);
-						}
 						if (isNotBlank(notes)){
-						    logger.warn("Notes in RelPTaxon should all be handled explicitly and should not exist as notes anymore. RelID: " + relPTaxonId + ". Note: " + notes);
+
+						    if (taxonRelationship != null){
+						        doNotes(taxonRelationship, notes);
+						    }
+						    if (! state.getConfig().isMoose() || ! isConceptRelationship) {
+						        logger.warn("Notes in RelPTaxon should all be handled explicitly and should not exist as notes anymore. RelID: " + relPTaxonId + ". Note: " + notes);
+	                        }
 						}
 						taxaToSave.add(taxon2);
 
@@ -571,13 +592,13 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		}
 		String sql = " SELECT pt.PTRefFk AS secRefFk, pt.RIdentifier " +
 						" FROM PTaxon AS pt " +
-							" LEFT OUTER JOIN RelPTaxon ON pt.PTNameFk = RelPTaxon.PTNameFk2 AND pt.PTRefFk = RelPTaxon.PTRefFk2 " +
-							"  LEFT OUTER JOIN RelPTaxon AS RelPTaxon_1 ON pt.PTNameFk = RelPTaxon_1.PTNameFk1 AND pt.PTRefFk = RelPTaxon_1.PTRefFk1 " +
-						" WHERE (RelPTaxon_1.RelQualifierFk IS NULL) AND (dbo.RelPTaxon.RelQualifierFk IS NULL) " +
+							" LEFT OUTER JOIN RelPTaxon rel2 ON pt.PTNameFk = rel2.PTNameFk2 AND pt.PTRefFk = rel2.PTRefFk2 AND rel2.notIntoCdm = 0 AND rel2.RelQualifierFk <10  " +
+							" LEFT OUTER JOIN RelPTaxon rel1 ON pt.PTNameFk = rel1.PTNameFk1 AND pt.PTRefFk = rel1.PTRefFk1 AND rel1.notIntoCdm = 0 AND rel1.RelQualifierFk <10 " +
+						" WHERE (rel1.RelQualifierFk IS NULL) AND (rel2.RelQualifierFk IS NULL) " +
 						" ORDER BY pt.PTRefFk "	;
-		if ("PTaxon WHERE notIntoCdm = 0".equals(state.getConfig().getTaxonTable())) {
+		if (state.getConfig().isMoose()) {
 		    //Moose
-		    sql = sql.replace("WHERE ", "WHERE notIntoCdm = 0 AND ");
+		    sql = sql.replace(" WHERE ", " WHERE pt.notIntoCdm = 0 AND ");
 		}
 
 		ResultSet rs = state.getConfig().getSource().getResultSet(sql);

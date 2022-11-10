@@ -299,6 +299,8 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 		    }else{
 		        logger.warn("Annotation type not defined for name relationship " + relNameId);
 		    }
+		}else if (config.isMoose() && annotation != null){
+		    //do nothing (there are only 2 relations with notes (12858,13006) and very unclear what they mean
 		}else if (annotation != null){
             logger.warn("Annotation type not defined for name relationship " + relNameId);
 		}
