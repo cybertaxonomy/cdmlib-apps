@@ -95,17 +95,104 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
     @Override
     public void doInvoke(BerlinModelImportState state)  {
-        TermVocabulary<?> voc = getVocabularyService().find(BerlinModelTransformer.uuidVocEuroMedAreas);
-        if (voc == null){
-            try {
-                createEuroMedAreas(state);
-                createCaucasusAreas(state);
-            } catch (SQLException e) {
-                logger.warn("Exception when creating areas: " + e.getMessage());
-                e.printStackTrace();
+        if (state.getConfig().isEuroMed()) {
+            TermVocabulary<?> voc = getVocabularyService().find(BerlinModelTransformer.uuidVocEuroMedAreas);
+            if (voc == null){
+                try {
+                    createEuroMedAreas(state);
+                    createCaucasusAreas(state);
+                } catch (SQLException e) {
+                    logger.warn("Exception when creating areas: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }else if (state.getConfig().isMcl()) {
+            TermVocabulary<?> voc = getVocabularyService().find(BerlinModelTransformer.uuidVocMclAreas);
+            if (voc == null){
+                createMclAreas(state);
             }
         }
         return;
+    }
+
+    private TermVocabulary<NamedArea> createMclAreas(BerlinModelImportState state) {
+        logger.warn("Start creating MCL areas");
+
+        Reference sourceReference = state.getConfig().getSourceReference();
+
+        TransactionStatus txStatus = this.startTransaction();
+        sourceReference = getSourceReference(sourceReference);
+
+        OrderedTermVocabulary<NamedAreaLevel> mclAreaLevelVoc = makeEmptyMclAreaLevelVocabulary();
+        NamedAreaLevel areaLevelTop = getNamedAreaLevel(state, BerlinModelTransformer.uuidMclAreaLevelTop, "MCL top area level",
+                "MCL top area level. This level is only to be used for the area representing the complete MCL area", "mcl top", mclAreaLevelVoc);
+        NamedAreaLevel areaLevelMclMain = getNamedAreaLevel(state, BerlinModelTransformer.uuidMclAreaLevelFirst,
+                "MCL main area level", "MCL main area level", "mcl main", mclAreaLevelVoc);
+
+        OrderedTermVocabulary<NamedArea> mclAreasVoc = makeEmptyMclVocabulary();
+        NamedArea topArea = createMclArea(state, mclAreasVoc, null, areaLevelTop, "MCL", "MCL Area", "f0500f01-0a59-4a6b-83cf-4070182f7266");
+
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "AE", "East Aegean Islands", "e2367915-828b-4151-a3af-1a278abf1cd5");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Ag", "Algeria", "9dea2928-65fc-4999-8a5d-f63552553f9f");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Al", "Albania", "53e87d91-f5a8-434b-86c9-268750c3473b");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "An", "Asiatic Turkey", "96394d80-85b7-4b5d-940e-28772cb8fe46");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Bl", "Balearic Islands", "b9259337-c216-44b2-be26-337e1beebf5f");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Bu", "Bulgaria", "bb85aa3f-18cb-4961-866e-8bdedaf0c41b");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Co", "Corsica", "bcc5a02c-b37f-4639-9f50-e5623da46c95");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Cr", "Crete and Karpathos", "0773529f-e230-4397-8ba5-cd12d5af4172");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Cy", "Cyprus", "3b502256-4db5-47be-96da-c20341f7984e");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Eg", "Egypt", "9564126a-e24c-4ca1-a229-dd5c084dd543");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Ga", "France", "1a0b6e9d-9568-434f-8346-f33cd31b0c5f");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Gr", "Greece", "4a9a0f92-eb51-428a-b82f-96ee7ed77c60");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Hs", "Spain", "29f6ac94-2573-4122-87c7-165710037ff6");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "IJ", "Israel and Jordan", "abaa10ea-7da4-4940-81e3-6a6023b0d6b5");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "It", "Italy", "7003c0d4-ffab-4ee6-888d-47fc483fa8bd");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Ju", "Jugoslavia", "6409b4b8-2b3d-440c-b22c-ef98ed3257f3");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Li", "Libya", "a5418d46-5f3c-4964-8b12-19509bb313e1");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "LS", "Lebanon and Syria", "023f8dba-40f5-4d4e-b2ca-4e3004a25d1c");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Lu", "Portugal", "6b5018ed-d637-4dd2-a08e-e0d2f7633688");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Ma", "Morocco", "b9b85f84-6e3e-4f6c-b3bc-2f42d17bf077");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Me", "Malta", "6394ee61-999c-473e-88ed-aad9259ffa81");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "RK", "Crimea", "60ea0344-0639-451d-81fd-33263014f30f");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Sa", "Sardinia", "c3a7d579-998d-472b-a238-26d893ee03cb");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Si", "Sicily", "5187232e-38d3-4bec-9094-2f90abde78b8");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Sn", "Sinai", "54a53738-2e04-433e-9657-dd1fac45094e");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Tn", "Tunisia", "46d2df14-0b45-4413-bbf0-022d769cb479");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Tu", "Turkey-in-Europe", "aa93af77-033f-4096-a4ca-468ba07c64d9");
+
+        getVocabularyService().saveOrUpdate(mclAreasVoc);
+        try {
+            commitTransaction(txStatus);
+        } catch (Exception e) {
+             e.printStackTrace();
+             logger.error("An exception occurred when trying to commit MCL Areas");
+        }
+        logger.warn("Created MCL areas");
+
+        return mclAreasVoc;
+    }
+
+    private NamedArea createMclArea(BerlinModelImportState state, OrderedTermVocabulary<NamedArea> mclAreasVoc, NamedArea topArea,
+            NamedAreaLevel areaLevel, String abbrev, String label, String uuidStr) {
+        NamedArea namedArea = makeSingleMclArea(state, mclAreasVoc, topArea, areaLevel, UUID.fromString(uuidStr), label, abbrev);
+        state.putNamedArea(namedArea);
+        return namedArea;
+    }
+
+    private NamedArea makeSingleMclArea(@SuppressWarnings("unused") BerlinModelImportState state, OrderedTermVocabulary<NamedArea> voc,
+            NamedArea top, NamedAreaLevel areaLevel, UUID uuid, String label, String labelAbbrev) {
+
+        NamedArea namedArea = NamedArea.NewInstance(label, label, labelAbbrev);
+        namedArea.setUuid(uuid);
+
+        namedArea.setPartOf(top);
+        namedArea.setLevel(areaLevel);
+        namedArea.setIdInVocabulary(labelAbbrev);
+        namedArea.setSymbol(labelAbbrev);
+        namedArea.setSymbol2(labelAbbrev);
+
+        voc.addTerm(namedArea);
+        return namedArea;
     }
 
     private TermVocabulary<NamedArea> createEuroMedAreas(BerlinModelImportState state) throws SQLException {
@@ -353,6 +440,31 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 		return result;
 	}
 
+    private OrderedTermVocabulary<NamedArea> makeEmptyMclVocabulary() {
+        TermType type = TermType.NamedArea;
+        String description = "MCL area vocabulary";
+        String label = "MCL Areas";
+        String abbrev = null;
+        URI termSourceUri = null;
+        OrderedTermVocabulary<NamedArea> result = OrderedTermVocabulary.NewOrderedInstance(type, null, description, label, abbrev, termSourceUri);
+
+        result.setUuid(BerlinModelTransformer.uuidVocMclAreas);
+        getVocabularyService().save(result);
+        return result;
+    }
+
+    private OrderedTermVocabulary<NamedAreaLevel> makeEmptyMclAreaLevelVocabulary() {
+        TermType type = TermType.NamedAreaLevel;
+        String description = "MCL area level vocabulary";
+        String label = "MCL Area Levels";
+        String abbrev = null;
+        URI termSourceUri = null;
+        OrderedTermVocabulary<NamedAreaLevel> result = OrderedTermVocabulary.NewOrderedInstance(type, null, description, label, abbrev, termSourceUri);
+
+        result.setUuid(UUID.randomUUID());
+        getVocabularyService().save(result);
+        return result;
+    }
 
     private void createCaucasusAreas(BerlinModelImportState state) {
         OrderedTermVocabulary<NamedArea> voc = makeEmptyCaucasusVocabulary(state);

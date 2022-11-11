@@ -133,6 +133,8 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
                     " WHERE (1=1)";
 			if (state.getConfig().isSalvador()){
 			    strQuery += " AND " + state.getConfig().getFactFilter().replace("factCategoryFk", "factCategoryId");
+			}else if (state.getConfig().isMcl()) {
+			    strQuery += " AND factCategoryId IN (20, 21) ";
 			}
 
 			ResultSet rs = source.getResultSet(strQuery) ;
@@ -331,6 +333,17 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 							continue;
 						}
 
+                        if (state.getConfig().isMcl()) {
+                            if (categoryFkInt.equals(20)) {
+                                handleMclState(state, taxonDescription, fact);
+                            }else if (categoryFkInt.equals(21)) {
+                                handleMclDistribution(state, taxonDescription, fact);
+                            }else {
+                                throw new RuntimeException("Unhandled fact category: " + categoryFkInt);
+                            }
+                            continue;
+                        }
+
 						//textData
 						TextData textData = null;
 						boolean newTextData = true;
@@ -487,6 +500,94 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		return success;
 	}
 
+    private void handleMclDistribution(BerlinModelImportState state, TaxonDescription taxonDescription, String fact) {
+        String areaStr = fact.substring(0, 2);
+        NamedArea mclArea = mclAreaUuid(state, areaStr);
+        String statusStr = fact.substring(2);
+        PresenceAbsenceTerm status = mclDistributionStatus(statusStr);
+
+        Distribution distribution = Distribution.NewInstance(mclArea, status);
+        taxonDescription.addElement(distribution);
+    }
+
+    private NamedArea mclAreaUuid(BerlinModelImportState state, String areaStr) {
+        UUID uuidArea;
+        if (areaStr.equals("AE")) {uuidArea = UUID.fromString("e2367915-828b-4151-a3af-1a278abf1cd5");}
+        else if (areaStr.equals("Ag")) {uuidArea = UUID.fromString("9dea2928-65fc-4999-8a5d-f63552553f9f");}
+        else if (areaStr.equals("Al")) {uuidArea = UUID.fromString("53e87d91-f5a8-434b-86c9-268750c3473b");}
+        else if (areaStr.equals("An")) {uuidArea = UUID.fromString("96394d80-85b7-4b5d-940e-28772cb8fe46");}
+        else if (areaStr.equals("Bl")) {uuidArea = UUID.fromString("b9259337-c216-44b2-be26-337e1beebf5f");}
+        else if (areaStr.equals("Bu")) {uuidArea = UUID.fromString("bb85aa3f-18cb-4961-866e-8bdedaf0c41b");}
+        else if (areaStr.equals("Co")) {uuidArea = UUID.fromString("bcc5a02c-b37f-4639-9f50-e5623da46c95");}
+        else if (areaStr.equals("Cr")) {uuidArea = UUID.fromString("0773529f-e230-4397-8ba5-cd12d5af4172");}
+        else if (areaStr.equals("Cy")) {uuidArea = UUID.fromString("3b502256-4db5-47be-96da-c20341f7984e");}
+        else if (areaStr.equals("Eg")) {uuidArea = UUID.fromString("9564126a-e24c-4ca1-a229-dd5c084dd543");}
+        else if (areaStr.equals("Ga")) {uuidArea = UUID.fromString("1a0b6e9d-9568-434f-8346-f33cd31b0c5f");}
+        else if (areaStr.equals("Gr")) {uuidArea = UUID.fromString("4a9a0f92-eb51-428a-b82f-96ee7ed77c60");}
+        else if (areaStr.equals("Hs")) {uuidArea = UUID.fromString("29f6ac94-2573-4122-87c7-165710037ff6");}
+        else if (areaStr.equals("IJ")) {uuidArea = UUID.fromString("abaa10ea-7da4-4940-81e3-6a6023b0d6b5");}
+        else if (areaStr.equals("It")) {uuidArea = UUID.fromString("7003c0d4-ffab-4ee6-888d-47fc483fa8bd");}
+        else if (areaStr.equals("Ju")) {uuidArea = UUID.fromString("6409b4b8-2b3d-440c-b22c-ef98ed3257f3");}
+        else if (areaStr.equals("Li")) {uuidArea = UUID.fromString("a5418d46-5f3c-4964-8b12-19509bb313e1");}
+        else if (areaStr.equals("LS")) {uuidArea = UUID.fromString("023f8dba-40f5-4d4e-b2ca-4e3004a25d1c");}
+        else if (areaStr.equals("Lu")) {uuidArea = UUID.fromString("6b5018ed-d637-4dd2-a08e-e0d2f7633688");}
+        else if (areaStr.equals("Ma")) {uuidArea = UUID.fromString("b9b85f84-6e3e-4f6c-b3bc-2f42d17bf077");}
+        else if (areaStr.equals("Me")) {uuidArea = UUID.fromString("6394ee61-999c-473e-88ed-aad9259ffa81");}
+        else if (areaStr.equals("RK")) {uuidArea = UUID.fromString("60ea0344-0639-451d-81fd-33263014f30f");}
+        else if (areaStr.equals("Sa")) {uuidArea = UUID.fromString("c3a7d579-998d-472b-a238-26d893ee03cb");}
+        else if (areaStr.equals("Si")) {uuidArea = UUID.fromString("5187232e-38d3-4bec-9094-2f90abde78b8");}
+        else if (areaStr.equals("Sn")) {uuidArea = UUID.fromString("54a53738-2e04-433e-9657-dd1fac45094e");}
+        else if (areaStr.equals("Tn")) {uuidArea = UUID.fromString("46d2df14-0b45-4413-bbf0-022d769cb479");}
+        else if (areaStr.equals("Tu")) {uuidArea = UUID.fromString("aa93af77-033f-4096-a4ca-468ba07c64d9");}
+        else {
+            throw new RuntimeException("Unknown area" + areaStr);
+        }
+        return state.getNamedArea(uuidArea);
+    }
+
+
+    private PresenceAbsenceTerm mclDistributionStatus(String statusStr) {
+        if (statusStr.equals("+")) {
+            //"present as native"
+            return PresenceAbsenceTerm.NATIVE();
+        }else if (statusStr.equals("?")) {
+            //"doubtfully present"
+            return PresenceAbsenceTerm.PRESENT_DOUBTFULLY();
+        }else if (statusStr.equals("-")) {
+            //"absent but reported in error"
+            return PresenceAbsenceTerm.REPORTED_IN_ERROR();
+        }else if (statusStr.equals("P")) {
+            //"doubtfully naturalized"
+            return PresenceAbsenceTerm.INTRODUCED_DOUBTFULLY_INTRODUCED();
+        }else if (statusStr.equals("D")) {
+            //"doubtfully native"
+            return PresenceAbsenceTerm.NATIVE_DOUBTFULLY_NATIVE();
+        }else if (statusStr.equals("N")) {
+            //"naturalized"
+            return PresenceAbsenceTerm.NATURALISED();
+        }else if (statusStr.equals("A")) {
+            //"casual alien"
+            return PresenceAbsenceTerm.CASUAL();
+        }else if (statusStr.equals("E")) {
+            //"(presumably) extinct"
+            return PresenceAbsenceTerm.NATIVE_FORMERLY_NATIVE();
+        }else {
+            throw new RuntimeException("Unhandled state: " + statusStr);
+        }
+    }
+
+    private void handleMclState(BerlinModelImportState state, TaxonDescription taxonDescription, String fact) {
+        NamedArea mclArea = getNamedArea(state, UUID.fromString("f0500f01-0a59-4a6b-83cf-4070182f7266"), null, null, null, null, null, null, null, null);
+        PresenceAbsenceTerm status;
+        if (fact.equals("E")) {
+            status = PresenceAbsenceTerm.ENDEMIC_FOR_THE_RELEVANT_AREA();
+        }else {
+            status = getPresenceTerm(state, BerlinModelTransformer.uuidStatusXenophyte,
+                    "Xenophyte", "Xenophyte in the overall area", "X", false, PresenceAbsenceTerm.PRESENT().getVocabulary());
+        }
+        Distribution distribution = Distribution.NewInstance(mclArea, status);
+        taxonDescription.addElement(distribution);
+    }
 
     private void mergeSalvadorDistribution(TaxonDescription taxonDescription,
             @NotNull Distribution newDistribution) {

@@ -158,9 +158,9 @@ public class BerlinModelImportConfigurator
 			, BerlinModelNameFactsImport.class
 			, BerlinModelTypesImport.class
 			, BerlinModelTaxonImport.class
+			, BerlinModelAreaImport.class
 			, BerlinModelFactsImport.class
 			, BerlinModelTaxonRelationImport.class
-			, BerlinModelAreaImport.class
 			, BerlinModelOccurrenceImport.class
 			, BerlinModelOccurrenceSourceImport.class
 			, BerlinModelWebMarkerCategoryImport.class
