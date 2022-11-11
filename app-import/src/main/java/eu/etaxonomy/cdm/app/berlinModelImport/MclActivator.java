@@ -8,18 +8,13 @@
 */
 package eu.etaxonomy.cdm.app.berlinModelImport;
 
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.FirstDataInserter;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
-import eu.etaxonomy.cdm.api.service.IGroupService;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -30,19 +25,14 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.metadata.CdmPreference;
 import eu.etaxonomy.cdm.model.metadata.PreferencePredicate;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.permission.GrantedAuthorityImpl;
-import eu.etaxonomy.cdm.model.permission.Group;
-import eu.etaxonomy.cdm.model.permission.User;
-import eu.etaxonomy.cdm.model.taxon.Taxon;
-import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.model.term.Representation;
 import eu.etaxonomy.cdm.model.term.TermTree;
-import eu.etaxonomy.cdm.persistence.permission.Role;
-import eu.etaxonomy.cdm.persistence.query.MatchMode;
 
 /**
  * TODO add the following to a wiki page:
@@ -60,10 +50,11 @@ public class MclActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.mcl();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_medchecklist();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_medchecklist();
-//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_medchecklist();
+  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_medchecklist();
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -83,9 +74,6 @@ public class MclActivator {
     static final boolean doTaxa = true;
     static final boolean doFacts = true;
     static final boolean doRelTaxa = true;
-    static final boolean doOccurrences = true;
-    static final boolean doOccurrenceSources = true;
-    static final boolean doCommonNames = true;
 
     static final boolean doNamedAreas = true;
 
@@ -111,7 +99,7 @@ public class MclActivator {
 	static final boolean useSingleClassification = true;
 	static final String classificationName = "Med-Checklist";
 	static final UUID featureTreeUuid = UUID.fromString("be5851fb-ddb7-4e30-a375-57d98cf30c40");
-	static final Object[] featureKeyList = new Integer[]{1, 31, 4, 98, 41};
+	static final Object[] featureKeyList = new Integer[]{20, 21};
 
 	// set to zero for unlimited nameFacts
 	static final int maximumNumberOfNameFacts = 0;
@@ -125,15 +113,9 @@ public class MclActivator {
 	//NomenclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICNAFP;
 
-	//ignore null
-	static final boolean ignoreNull = false;
-
 	static final boolean switchSpeciesGroup = true;
 
 	static boolean useClassification = true;
-
-	static boolean isSplitTdwgCodes = false;
-//	static boolean useEmAreaVocabulary = true;
 
 	private final boolean removeHttpMapsAnchor = true;
 
@@ -141,7 +123,6 @@ public class MclActivator {
 	static final String infrGenericRankAbbrev = "[unranked]";
 	static final String infrSpecificRankAbbrev = "[unranked]";
 
-	static boolean useLastScrutinyAsSec = false;
 	static boolean warnForDifferingSynonymReference = false;
 
 
@@ -158,7 +139,7 @@ public class MclActivator {
 		config.setClassificationUuid(classificationUuid);
 		config.setSourceSecId(sourceSecId);
 		config.setNomenclaturalCode(nomenclaturalCode);
-		config.setIgnoreNull(ignoreNull);
+		config.setIgnoreNull(false);
 
 		config.setDoAuthors(doAuthors ^ invers);
 		config.setDoReferences(invers ? doReferences.invers() : doReferences);
@@ -166,17 +147,17 @@ public class MclActivator {
 		config.setDoRelNames(doRelNames ^ invers);
 		config.setDoNameStatus(doNameStatus ^ invers);
 		config.setDoTypes(doTypes);  //always false
-		config.setDoNameFacts(doNameFacts ^ invers);
+		config.setDoNameFacts(doNameFacts);//always false
 		config.setDoTaxa(doTaxa ^ invers);
 		config.setDoRelTaxa(doRelTaxa ^ invers);
 		config.setDoFacts(doFacts ^ invers);
-		config.setDoOccurrence(doOccurrences ^ invers);
-		config.setDoOccurrenceSources(doOccurrenceSources ^ invers);
-        config.setDoCommonNames(doCommonNames ^ invers);
+		config.setDoOccurrence(false); //always false
+		config.setDoOccurrenceSources(false); //always false
+        config.setDoCommonNames(false);//always false
         config.setDoNamedAreas(doNamedAreas ^ invers);
 
 		config.setDoMarker(doMarker);
-		config.setDoUser(doUser ^ invers);
+		config.setDoUser(doUser);
 
 		config.setMcl(true);
 		config.setDoSourceNumber(true);
@@ -190,7 +171,6 @@ public class MclActivator {
 		config.setSourceRefUuid(BerlinModelTransformer.uuidSourceRefEuroMed);
 		config.setEditor(editor);
 		config.setDbSchemaValidation(hbm2dll);
-		config.setUseLastScrutinyAsSec(useLastScrutinyAsSec);
 		config.setWarnForDifferingSynonymReference(warnForDifferingSynonymReference);
 
 		// maximum number of name facts to import
@@ -218,10 +198,6 @@ public class MclActivator {
 //		config.setWebMarkerFilter(webMarkerFilter);
 		config.setUseSingleClassification(useSingleClassification);
 
-		//TDWG codes
-		config.setSplitTdwgCodes(isSplitTdwgCodes);
-//		config.setUseEmAreaVocabulary(useEmAreaVocabulary);
-
 		config.setCheck(check);
 		config.setEditor(editor);
 		config.setRecordsPerTransaction(partitionSize);
@@ -234,9 +210,9 @@ public class MclActivator {
 
 //		renameRanks(config, bmImport);
 
-		createFeatureTree(config, bmImport);
+        renamePresenceAbsenceTerms(config, bmImport);
 
-//		changeCommonNameLabel(config, bmImport);
+		createFeatureTree(config, bmImport);
 
 //		createUsersAndRoles(config, bmImport);
 
@@ -246,10 +222,44 @@ public class MclActivator {
 
 //      createPreferences(config, bmImport); => manual
 
-//        markAreasAsHidden(config, bmImport);  //has been moved to BM occurrence import
-
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 	}
+
+
+	private void renamePresenceAbsenceTerms(BerlinModelImportConfigurator config,
+        CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
+
+        ICdmRepository app = bmImport.getCdmAppController();
+        TransactionStatus tx = app.startTransaction();
+        try {
+            renamePresenceAbsenceTerm(app, PresenceAbsenceTerm.uuidNative, "present as native", "+", "");
+            renamePresenceAbsenceTerm(app, PresenceAbsenceTerm.uuidPresentDoubfully, "doubtfully present", "?", "d");
+            renamePresenceAbsenceTerm(app, PresenceAbsenceTerm.uuidReportedInError, "absent but reported in error", "-", "-");
+            renamePresenceAbsenceTerm(app, PresenceAbsenceTerm.uuidIntroducedDoubtfullyIntroduced, "doubtfully naturalized", "P", "p");
+            renamePresenceAbsenceTerm(app, PresenceAbsenceTerm.uuidNativeDoubtfullyNative, "doubtfully native", "D", "d");
+            renamePresenceAbsenceTerm(app, PresenceAbsenceTerm.uuidNaturalised, "naturalized", "N", "n");
+            renamePresenceAbsenceTerm(app, PresenceAbsenceTerm.uuidIntroducedAdventitious, "casual alien", "A", "a");
+            renamePresenceAbsenceTerm(app, PresenceAbsenceTerm.uuidNativeFormerlyNative, "(presumably) extinct", "E", "†");
+
+            app.commitTransaction(tx);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Exception in renameRanks: " + e.getMessage());
+        }
+
+
+	}
+
+    private void renamePresenceAbsenceTerm(ICdmRepository app, UUID uuidTerm, String label, String abbrev, String symbol) {
+        PresenceAbsenceTerm term = (PresenceAbsenceTerm)app.getTermService().find(uuidTerm);
+        Representation repr = term.getRepresentation(Language.ENGLISH());
+        repr.setLabel(label);
+        repr.setAbbreviatedLabel(abbrev);
+        term.setSymbol2(symbol);
+        term.setTitleCache(null, false);  //to definitely update the titleCache also
+        app.getTermService().saveOrUpdate(term);
+    }
+
 
     private void createPreferences(BerlinModelImportConfigurator config,
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
@@ -314,9 +324,7 @@ public class MclActivator {
             CdmPreference showSpecimen = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowSpecimen, "false");
             showSpecimen.setAllowOverride(false);
             app.getPreferenceService().set(showSpecimen);
-
         }
-
     }
 
     //create feature tree
@@ -343,139 +351,6 @@ public class MclActivator {
 		}
     }
 
-
-
-    //4. Create users and assign roles  #3979
-    private void createUsersAndRoles(BerlinModelImportConfigurator config,
-            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
-
-        try {
-            if (config.isDoRelTaxa() && (config.getCheck().isImport())){
-                ICdmRepository app = bmImport.getCdmAppController();
-                TransactionStatus tx = app.startTransaction();
-
-                //eraabstraube
-                String eraabstraube = "e.raabstraube";
-                List<User> users = app.getUserService().listByUsername(eraabstraube, MatchMode.EXACT, null, null, null, null, null);
-                User userEraabStraube;
-                if (users.isEmpty()){
-                    userEraabStraube = User.NewInstance(eraabstraube, eraabstraube);
-                }else{
-                    userEraabStraube = users.get(0);
-                }
-                if (userEraabStraube.getPerson() == null){
-                    Person eckhard = Person.NewInstance();
-                    eckhard.setFamilyName("von Raab-Straube");
-                    eckhard.setGivenName("Eckhard");
-                    eckhard.setPrefix("Dr.");
-                    userEraabStraube.setPerson(eckhard);
-                }
-                app.getUserService().saveOrUpdate(userEraabStraube);
-
-                //groups
-                Group groupEditor = app.getGroupService().load(Group.GROUP_EDITOR_UUID);
-                groupEditor.addMember(userEraabStraube);
-                app.getGroupService().saveOrUpdate(groupEditor);
-
-                Group groupProjectManager = app.getGroupService().load(Group.GROUP_PROJECT_MANAGER_UUID);
-                groupProjectManager.addMember(userEraabStraube);
-                app.getGroupService().saveOrUpdate(groupProjectManager);
-
-                String[] publishRoles = new String[]{Role.ROLE_PUBLISH.toString()};
-                Group groupPublisher = checkGroup(app.getGroupService(), Group.GROUP_PUBLISH_UUID, "Publisher", publishRoles);
-                groupPublisher.addMember(userEraabStraube);
-                app.getGroupService().saveOrUpdate(groupPublisher);
-
-                UUID uuidEuroMedPlantBaseGroup = UUID.fromString("91be42ea-ad04-4458-9836-389277e773db");
-                String[] emPlantBaseRoles = new String[]{"TAXONNODE.[CREATE,READ,UPDATE,DELETE]"};
-                Group euroMedPlantbase = checkGroup(app.getGroupService(), uuidEuroMedPlantBaseGroup, "Euro+Med Plantbase", emPlantBaseRoles);
-                euroMedPlantbase.addMember(userEraabStraube);
-                app.getGroupService().saveOrUpdate(euroMedPlantbase);
-
-                //cichorieae-editor
-                String cichorieaeEditor = "cichorieae-editor";
-                app.getUserService().listByUsername(cichorieaeEditor, MatchMode.EXACT, null, null, null, null, null);
-                User userCichEditor;
-                if (users.isEmpty()){
-                    userCichEditor = User.NewInstance(cichorieaeEditor, cichorieaeEditor);
-                }else{
-                    userCichEditor = users.get(0);
-                }
-                app.getUserService().saveOrUpdate(userCichEditor);
-
-                //groups
-                groupEditor.addMember(userCichEditor);
-                app.getGroupService().saveOrUpdate(groupEditor);
-
-                UUID uuidCichorieaeSubtree = null;
-                UUID uuidCichorieae = UUID.fromString("63c7dbeb-b9a2-48b8-a75f-e3fe5e161f7c");
-                Taxon cich = (Taxon)app.getTaxonService().find(uuidCichorieae);
-                if (cich != null){
-                    if (!cich.getTaxonNodes().isEmpty()){
-                        TaxonNode cichNode = cich.getTaxonNodes().iterator().next();
-                        uuidCichorieaeSubtree = cichNode.getUuid();
-                    }
-                }
-
-                String[] cichorieaeRoles = new String[]{};
-                if (uuidCichorieaeSubtree != null){
-                    cichorieaeRoles = new String[]{"TAXONNODE.[CREATE,READ,UPDATE,DELETE]{"+uuidCichorieaeSubtree.toString()+"}"};
-                }else{
-                    String message = "Cichorieae node could not be found for cichorieae-editor role";
-                    logger.warn(message);
-                    System.out.println(message);
-                }
-                UUID uuidCichorieaeGroup = UUID.fromString("a630938d-dd4f-48c2-9406-91def487b11e");
-                String cichorieaeGroupName = "Cichorieae";
-                Group cichorieaeGroup = checkGroup(app.getGroupService(), uuidCichorieaeGroup, cichorieaeGroupName, cichorieaeRoles);
-                cichorieaeGroup.addMember(userCichEditor);
-                app.getGroupService().saveOrUpdate(cichorieaeGroup);
-
-                app.commitTransaction(tx);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("Exception in createUsersAndRoles: " + e.getMessage());
-        }
-    }
-
-	/**
-	  * copied from {@link FirstDataInserter#checkGroup}
-     */
-    private Group checkGroup(IGroupService groupService, UUID groupUuid, String groupName, String[] requiredAuthorities) {
-        Group group = groupService.load(groupUuid);
-        if(group == null){
-            group = Group.NewInstance();
-            group.setUuid(groupUuid);
-            logger.info("New Group '" + groupName + "' created");
-        }
-        group.setName(groupName); // force name
-
-        Set<GrantedAuthority> grantedAuthorities = group.getGrantedAuthorities();
-
-        for(String a : requiredAuthorities){
-            boolean isMissing = true;
-            for(GrantedAuthority ga : grantedAuthorities){
-                if(a.equals(ga.getAuthority())){
-                    isMissing = false;
-                    break;
-                }
-            }
-            if(isMissing){
-                GrantedAuthorityImpl newGa = GrantedAuthorityImpl.NewInstance(a);
-                group.addGrantedAuthority(newGa);
-                logger.info("New GrantedAuthority '" + a + "' added  to '" + groupName + "'");
-            }
-        }
-        groupService.saveOrUpdate(group);
-        logger.info("Check of group  '" + groupName + "' done");
-        return group;
-    }
-
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		MclActivator importActivator = new MclActivator();
 		Source source = berlinModelSource;
@@ -484,5 +359,4 @@ public class MclActivator {
 		importActivator.importEm2CDM(source, cdmRepository, hbm2dll);
 		System.exit(0);
 	}
-
 }
