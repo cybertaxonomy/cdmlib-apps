@@ -234,7 +234,8 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 		String strQuery =
-			" SELECT RelPTaxon.*, fromTaxon.RIdentifier as taxon1Id, toTaxon.RIdentifier as taxon2Id, toTaxon.PTRefFk as treeRefFk, fromTaxon.PTRefFk as fromRefFk, q.is_concept_relation " +
+			" SELECT RelPTaxon.*, fromTaxon.RIdentifier as taxon1Id, toTaxon.RIdentifier as taxon2Id, toTaxon.PTRefFk as treeRefFk, "
+			+     " fromTaxon.PTRefFk as fromRefFk, q.is_concept_relation " +
 			" FROM PTaxon as fromTaxon " +
               	" INNER JOIN RelPTaxon ON fromTaxon.PTNameFk = relPTaxon.PTNameFk1 AND fromTaxon.PTRefFk = relPTaxon.PTRefFk1 " +
               	" INNER JOIN PTaxon AS toTaxon ON RelPTaxon.PTNameFk2 = ToTaxon.PTNameFk AND RelPTaxon.PTRefFk2 = ToTaxon.PTRefFk " +
@@ -559,12 +560,15 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
         }
     }
 
+    /**
+     * Adds taxon to classification if not yet done.
+     */
     private void handleAllRelatedTaxa(BerlinModelImportState state, Taxon taxon,
             Map<Integer, Classification> classificationMap, Integer secRefFk) {
 		if (taxon.getTaxonNodes().size() > 0){
 			return;
 		}else{
-			Classification classification = getClassificationTree(state, classificationMap, secRefFk);
+			Classification classification = getClassification(state, classificationMap, secRefFk);
 			classification.addChildTaxon(taxon, null, null);
 		}
 	}
@@ -579,9 +583,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-
 	}
-
 
 	private void makeFlatClassificationTaxa(BerlinModelImportState state) {
 		//Note: this part still does not use partitions
@@ -612,7 +614,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 			while (rs.next()){
 				Integer classificationRefFk = rs.getInt("secRefFk");
 				String taxonId = rs.getString("RIdentifier");
-				Classification classification = getClassificationTree(state, classificationMap, classificationRefFk);
+				Classification classification = getClassification(state, classificationMap, classificationRefFk);
 				TaxonBase<?> taxon = taxonMap.get(taxonId);
 				if (taxon == null){
 					String message = "TaxonBase for taxon id (%s) not found in taxonMap";
@@ -787,7 +789,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 
 	private TaxonNode makeTaxonomicallyIncluded(BerlinModelImportState state, Map<Integer, Classification> classificationMap,
 	        int treeRefFk, Taxon child, Taxon parent, Reference citation, String microCitation, Boolean provisional){
-		Classification tree = getClassificationTree(state, classificationMap, treeRefFk);
+		Classification tree = getClassification(state, classificationMap, treeRefFk);
 		TaxonNode result = tree.addParentChild(parent, child, citation, microCitation);
 		if (provisional){
 		    result.setStatus(TaxonNodeStatus.DOUBTFUL);
@@ -795,27 +797,29 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		return result;
 	}
 
-	private Classification getClassificationTree(BerlinModelImportState state, Map<Integer, Classification> classificationMap, int treeRefFk) {
-		if (state.getConfig().isUseSingleClassification()){
+	private Classification getClassification(BerlinModelImportState state,
+	        Map<Integer, Classification> classificationMap, int classificationRefFk) {
+
+	    if (state.getConfig().isUseSingleClassification()){
 			if (state.getConfig().getSourceSecId() != null){
-				treeRefFk = (Integer)state.getConfig().getSourceSecId();
+				classificationRefFk = (Integer)state.getConfig().getSourceSecId();
 			}else{
-				treeRefFk = 1;
+				classificationRefFk = 1;
 			}
 		}
-		Classification tree = classificationMap.get(treeRefFk);
-		if (tree == null){
-			UUID treeUuid = state.getTreeUuidByIntTreeKey(treeRefFk);
-			if (treeUuid == null){
-				throw new IllegalStateException("treeUUID does not exist in state for " + treeRefFk );
+		Classification classification = classificationMap.get(classificationRefFk);
+		if (classification == null){
+			UUID classificationUuid = state.getTreeUuidByIntTreeKey(classificationRefFk);
+			if (classificationUuid == null){
+				throw new IllegalStateException("treeUUID does not exist in state for " + classificationRefFk );
 			}
-			tree = getClassificationService().find(treeUuid);
-			classificationMap.put(treeRefFk, tree);
+			classification = getClassificationService().find(classificationUuid);
+			classificationMap.put(classificationRefFk, classification);
+			if (classification == null){
+			    throw new IllegalStateException("Tree for ToTaxon reference " + classificationRefFk + " does not exist.");
+			}
 		}
-		if (tree == null){
-			throw new IllegalStateException("Tree for ToTaxon reference " + treeRefFk + " does not exist.");
-		}
-		return tree;
+		return classification;
 	}
 
 	@Override

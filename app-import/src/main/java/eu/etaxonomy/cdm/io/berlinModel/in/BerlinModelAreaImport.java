@@ -129,7 +129,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 		NamedAreaLevel areaLevelEm1 = getNamedAreaLevel(state, BerlinModelTransformer.uuidEuroMedAreaLevelFirst, "Euro+Med 1. area level", "Euro+Med 1. area level", "e+m 1.", null);
 		NamedAreaLevel areaLevelEm2 = getNamedAreaLevel(state, BerlinModelTransformer.uuidEuroMedAreaLevelSecond, "Euro+Med 2. area level", "Euro+Med 2. area level", "Euro+Med 1. area level", null);
 
-
 		String sql = "SELECT * , CASE WHEN EMCode = 'EM' THEN 'a' ELSE 'b' END as isEM " +
 				" FROM emArea " +
 				" WHERE areaId not IN (1, 14, 20, 21, 33, 646, 647, 653, 654, 1718) " +
@@ -174,10 +173,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 		return euroMedAreasVoc;
 	}
 
-	/**
-     * @param areaLevelEm2
-	 * @param euroMedAreas2
-     */
     private void emAreaFinetuning(TermVocabulary<NamedArea> euroMedAreas, NamedAreaLevel areaLevelEm2) {
         //CZ
         NamedArea oldArea = euroMedAreas.getTermByIdInvocabulary("Cz");
@@ -239,29 +234,11 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
         }
     }
 
-    /**
-     * @param oldArea
-     * @param namedArea
-     * @param areaLevelEm2
-     */
     private void makeSubterm(NamedArea oldArea, NamedArea namedArea, NamedAreaLevel areaLevelEm2) {
         namedArea.setLevel(areaLevelEm2);
         namedArea.setPartOf(oldArea);
     }
 
-
-	/**
-	 * @param eurMarkerType
-	 * @param euroMedAreaMarkerType
-	 * @param isoCodeExtType
-	 * @param tdwgCodeExtType
-	 * @param mclCodeExtType
-	 * @param rs
-	 * @param areaLevelEm2
-	 * @param areaLevelEm1
-	 * @param areaLevelTop
-	 * @throws SQLException
-	 */
 	private NamedArea makeSingleEuroMedArea(ResultSet rs, MarkerType eurMarkerType,
 			MarkerType euroMedAreaMarkerType, ExtensionType isoCodeExtType,
 			ExtensionType tdwgCodeExtType, ExtensionType mclCodeExtType,
@@ -280,7 +257,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 		String notes = nullSafeTrim(rs.getString("Notes"));
 		String mclCode = nullSafeTrim(rs.getString("MCLCode"));
 		String geoSearch = nullSafeTrim(rs.getString("NameForGeoSearch"));
-
 
 		if (isBlank(emCode)){
 			emCode = unit;
@@ -301,7 +277,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 				logger.warn("Uuid for emCode could not be defined: " + emCode);
 			}
 		}
-
 
 		//code
 		area.setIdInVocabulary(emCode);
@@ -365,9 +340,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 		}
 	}
 
-	/**
-	 *
-	 */
 	private OrderedTermVocabulary<NamedArea> makeEmptyEuroMedVocabulary() {
 		TermType type = TermType.NamedArea;
 		String description = "Euro+Med area vocabulary";
@@ -382,9 +354,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 	}
 
 
-    /**
-     * @param state
-     */
     private void createCaucasusAreas(BerlinModelImportState state) {
         OrderedTermVocabulary<NamedArea> voc = makeEmptyCaucasusVocabulary(state);
         NamedArea last = null;
@@ -444,16 +413,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
         makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc12, "Talysch","T","12","");
     }
 
-	/**
-     * @param state
-	 * @param voc
-     * @param uuidCauc1
-     * @param string
-     * @param string2
-     * @param string3
-     * @param string4
-     * @return
-     */
     private NamedArea makeSingleArea(BerlinModelImportState state, OrderedTermVocabulary<NamedArea> voc, NamedArea last,
             UUID uuid, String label, String labelAbbrev,
             String mainLevel, String subLevel) {
@@ -476,9 +435,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
         return namedArea;
     }
 
-    /**
-     * @param state
-     */
     private OrderedTermVocabulary<NamedArea> makeEmptyCaucasusVocabulary(BerlinModelImportState state) {
         TermType type = TermType.NamedArea;
         String description = "E+M Caucasus area vocabulary";

@@ -118,7 +118,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 		Map<Integer, Feature>  result = state.getConfig().getFeatureMap();
 		Source source = state.getConfig().getSource();
-        boolean createFeatureTree = state.getConfig().isSalvador();  //for some reason feature tree creation does not work for salavdor
+        boolean createFeatureTree = state.getConfig().isSalvador();  //for some reason feature tree creation does not work for salvador
 
         TermTree<Feature> featureTree = (!createFeatureTree) ? null : TermTree.NewFeatureInstance(state.getConfig().getFeatureTreeUuid());
         if (featureTree!= null && createFeatureTree){
@@ -189,11 +189,6 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		}
 	}
 
-
-    /**
-     * @param factCategoryId
-     * @param feature
-     */
     private void adaptNewSalvadorFeature(int factCategoryId, Feature feature) {
         if (factCategoryId == 306){
             addSpanishRepresentationLabel(feature, "Nombre(s) común(es)");
@@ -220,27 +215,16 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         } else if (factCategoryId == 1900){
             addEnglishFactCategoryName(feature, "Editorial notes");
         }
-
     }
 
-
-    /**
-     * @param feature
-     * @param string
-     */
     private void addSpanishRepresentationLabel(TermBase term, String label) {
         term.getRepresentations().add(Representation.NewInstance(label, label, null, Language.SPANISH_CASTILIAN()));
     }
 
-    /**
-     * @param feature
-     * @param string
-     */
     private void addEnglishFactCategoryName(Feature feature, String label) {
         feature.getRepresentations().iterator().next().setLanguage(Language.SPANISH_CASTILIAN());
         feature.getRepresentations().add(Representation.NewInstance(label, label, null, Language.ENGLISH()));
     }
-
 
     @Override
 	protected void doInvoke(BerlinModelImportState state) {
@@ -252,20 +236,13 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		return;
 	}
 
-
-	/**
-     *
-     */
     private void invokeSpanishTermLabels() {
         addSpanishRepresentationLabel(Feature.NOTES(), "Notas");
         addSpanishRepresentationLabel(NamedAreaLevel.DEPARTMENT(), "Departamento");
         addSpanishRepresentationLabel(PresenceAbsenceTerm.NATIVE(), "nativo");
         addSpanishRepresentationLabel(PresenceAbsenceTerm.CULTIVATED(), "cultivado");
         addSpanishRepresentationLabel(PresenceAbsenceTerm.PRESENT(), "presente");
-
-
     }
-
 
     @Override
 	protected String getIdQuery(BerlinModelImportState state) {
@@ -429,6 +406,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 						    }
 						}
 
+
 						//reference
 						Reference citation = null;
 						String factRefFk = String.valueOf(factRefFkInt);
@@ -510,10 +488,6 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 	}
 
 
-	/**
-     * @param taxonDescription
-     * @param salvadorDistribution
-     */
     private void mergeSalvadorDistribution(TaxonDescription taxonDescription,
             @NotNull Distribution newDistribution) {
 
@@ -538,7 +512,6 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
             //do nothing, distribution already exists
         }
     }
-
 
     private Map<String, NamedArea> salvadorAreaMap = null;
     private Distribution salvadorDistributionFromMuestrasDeHerbar(BerlinModelImportState importState, Taxon taxon, String fact) {
