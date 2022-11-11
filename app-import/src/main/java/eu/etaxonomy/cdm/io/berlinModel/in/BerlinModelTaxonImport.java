@@ -170,7 +170,6 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 					uuid = rs.getString("UUID");
 				}
 
-
 				TaxonName taxonName = null;
 				taxonName  = taxonNameMap.get(String.valueOf(nameFk));
 
@@ -260,13 +259,16 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 					//idInSource
 					String idInSource = rs.getString("IdInSource");
 					if (isNotBlank(idInSource)){
-						if(!state.getConfig().isEuroMed()){
+						if(!state.getConfig().isEuroMed() && !state.getConfig().isMcl()){
 						    ExtensionType detailExtensionType = getExtensionType(state, BerlinModelTransformer.ID_IN_SOURCE_EXT_UUID, "Berlin Model IdInSource","Berlin Model IdInSource","BM source id");
 						    Extension.NewInstance(taxonBase, idInSource.trim(), detailExtensionType);
-						}else if(isMclIdentifier(state,rs, idInSource)){
+						}else if(isMclIdentifier(state,rs, idInSource) || state.getConfig().isMcl()){
 						    DefinedTerm identifierType = getIdentiferType(state, BerlinModelTransformer.uuidEM_MCLIdentifierType, "MCL identifier", "Med-Checklist identifier", "MCL ID", null);
 						    Identifier.NewInstance(taxonBase, idInSource.trim(), identifierType);
 						}
+						//maybe we want to handle it as fact in future for MCL
+//						if (state.getConfig().isMcl()) {
+//						}
 					}
 					//namePhrase
 					String namePhrase = rs.getString("NamePhrase");
@@ -374,13 +376,6 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 		return success;
 	}
 
-    /**
-     * @param state
-     * @param rs
-     * @param idInSource
-     * @return
-     * @throws SQLException
-     */
     private boolean isMclIdentifier(BerlinModelImportState state, ResultSet rs, String idInSource) throws SQLException {
         if (idInSource.contains("-")){
             return true;

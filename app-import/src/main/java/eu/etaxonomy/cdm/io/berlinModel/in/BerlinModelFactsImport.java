@@ -333,91 +333,94 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 							continue;
 						}
 
+						DescriptionElementBase deb;
+
                         if (state.getConfig().isMcl()) {
                             if (categoryFkInt.equals(20)) {
-                                handleMclState(state, taxonDescription, fact);
+                                deb = handleMclState(state, taxonDescription, fact);
                             }else if (categoryFkInt.equals(21)) {
-                                handleMclDistribution(state, taxonDescription, fact);
+                                deb = handleMclDistribution(state, taxonDescription, fact);
                             }else {
                                 throw new RuntimeException("Unhandled fact category: " + categoryFkInt);
                             }
                             continue;
+                        }else {
+
+    						//textData
+    						TextData textData = null;
+    						boolean newTextData = true;
+
+    						// For Cichorieae DB: If fact category is 31 (Systematics) and there is already a Systematics TextData
+    						// description element append the fact text to the existing TextData
+    						if(categoryFkInt.equals(31)) {
+    							Set<DescriptionElementBase> descriptionElements = taxonDescription.getElements();
+    							for (DescriptionElementBase descriptionElement : descriptionElements) {
+    								String featureString = descriptionElement.getFeature().getRepresentation(Language.DEFAULT()).getLabel();
+    								if (descriptionElement instanceof TextData && featureString.equals("Systematics")) { // TODO: test
+    									textData = (TextData)descriptionElement;
+    									String factTextStr = textData.getText(Language.DEFAULT());
+    									// FIXME: Removing newlines doesn't work
+    									if (factTextStr.contains("\\r\\n")) {
+    										factTextStr = factTextStr.replaceAll("\\r\\n","");
+    									}
+    									StringBuilder factText = new StringBuilder(factTextStr);
+    									factText.append(fact);
+    									fact = factText.toString();
+    									newTextData = false;
+    									break;
+    								}
+    							}
+    						}
+
+    						if (taxonDescription.isImageGallery()){
+    						    newTextData = false;
+    						    textData = (TextData)taxonDescription.getElements().iterator().next();
+    						}
+    						if(newTextData == true)	{
+    							textData = TextData.NewInstance();
+    						}else if (textData == null){
+    						    throw new RuntimeException("Textdata must not be null");  //does not happen, only to avoid potential NPE warnings
+    						}
+
+
+    						//for diptera database
+    						if (categoryFkInt.equals(99) && notes.contains("<OriginalName>")){
+    							fact = notes + ": " +  fact ;
+    						}
+    						//for E+M maps
+    						if (categoryFkInt.equals(14) && state.getConfig().isRemoveHttpMapsAnchor() && fact.contains("<a href")){
+    							//example <a href="http://euromed.luomus.fi/euromed_map.php?taxon=280629&size=medium">distribution</a>
+    							fact = fact.replace("<a href=\"", "").replace("\">distribution</a>", "");
+    						}
+
+    						//TODO textData.putText(fact, bmiConfig.getFactLanguage());  //doesn't work because  bmiConfig.getFactLanguage() is not not a persistent Language Object
+    						//throws  in thread "main" org.springframework.dao.InvalidDataAccessApiUsageException: object references an unsaved transient instance - save the transient instance before flushing: eu.etaxonomy.cdm.model.common.Language; nested exception is org.hibernate.TransientObjectException: object references an unsaved transient instance - save the transient instance before flushing: eu.etaxonomy.cdm.model.common.Language
+
+    						Language lang = Language.DEFAULT();
+    						if (state.getConfig().isSalvador()){
+    						    lang = getSalvadorFactLanguage(categoryFkInt);
+    						}
+    						if (! taxonDescription.isImageGallery()){
+    							textData.putText(lang, fact);
+    							textData.setFeature(feature);
+    						}
+
+    						deb = textData;
+
+    						if (state.getConfig().isSalvador()){
+    						    if (categoryFkInt == 306){
+    						        NamedArea area = null;  // for now we do not set an area as it can not be disabled in dataportals via css yet
+    						        deb = CommonTaxonName.NewInstance(fact, Language.SPANISH_CASTILIAN(), area);
+    						    }else if (categoryFkInt == 307){
+    						        Distribution salvadorDistribution = salvadorDistributionFromMuestrasDeHerbar(state, (Taxon)taxonBase, fact);
+    						        if (salvadorDistribution != null){
+    						            //id
+    						            doId(state, salvadorDistribution, factId, "Fact");
+    						            mergeSalvadorDistribution(taxonDescription, salvadorDistribution);
+    						        }
+    						    }
+    						}
                         }
-
-						//textData
-						TextData textData = null;
-						boolean newTextData = true;
-
-						// For Cichorieae DB: If fact category is 31 (Systematics) and there is already a Systematics TextData
-						// description element append the fact text to the existing TextData
-						if(categoryFkInt.equals(31)) {
-							Set<DescriptionElementBase> descriptionElements = taxonDescription.getElements();
-							for (DescriptionElementBase descriptionElement : descriptionElements) {
-								String featureString = descriptionElement.getFeature().getRepresentation(Language.DEFAULT()).getLabel();
-								if (descriptionElement instanceof TextData && featureString.equals("Systematics")) { // TODO: test
-									textData = (TextData)descriptionElement;
-									String factTextStr = textData.getText(Language.DEFAULT());
-									// FIXME: Removing newlines doesn't work
-									if (factTextStr.contains("\\r\\n")) {
-										factTextStr = factTextStr.replaceAll("\\r\\n","");
-									}
-									StringBuilder factText = new StringBuilder(factTextStr);
-									factText.append(fact);
-									fact = factText.toString();
-									newTextData = false;
-									break;
-								}
-							}
-						}
-
-						if (taxonDescription.isImageGallery()){
-						    newTextData = false;
-						    textData = (TextData)taxonDescription.getElements().iterator().next();
-						}
-						if(newTextData == true)	{
-							textData = TextData.NewInstance();
-						}else if (textData == null){
-						    throw new RuntimeException("Textdata must not be null");  //does not happen, only to avoid potential NPE warnings
-						}
-
-
-						//for diptera database
-						if (categoryFkInt.equals(99) && notes.contains("<OriginalName>")){
-							fact = notes + ": " +  fact ;
-						}
-						//for E+M maps
-						if (categoryFkInt.equals(14) && state.getConfig().isRemoveHttpMapsAnchor() && fact.contains("<a href")){
-							//example <a href="http://euromed.luomus.fi/euromed_map.php?taxon=280629&size=medium">distribution</a>
-							fact = fact.replace("<a href=\"", "").replace("\">distribution</a>", "");
-						}
-
-						//TODO textData.putText(fact, bmiConfig.getFactLanguage());  //doesn't work because  bmiConfig.getFactLanguage() is not not a persistent Language Object
-						//throws  in thread "main" org.springframework.dao.InvalidDataAccessApiUsageException: object references an unsaved transient instance - save the transient instance before flushing: eu.etaxonomy.cdm.model.common.Language; nested exception is org.hibernate.TransientObjectException: object references an unsaved transient instance - save the transient instance before flushing: eu.etaxonomy.cdm.model.common.Language
-
-						Language lang = Language.DEFAULT();
-						if (state.getConfig().isSalvador()){
-						    lang = getSalvadorFactLanguage(categoryFkInt);
-						}
-						if (! taxonDescription.isImageGallery()){
-							textData.putText(lang, fact);
-							textData.setFeature(feature);
-						}
-
-						DescriptionElementBase deb = textData;
-
-						if (state.getConfig().isSalvador()){
-						    if (categoryFkInt == 306){
-						        NamedArea area = null;  // for now we do not set an area as it can not be disabled in dataportals via css yet
-						        deb = CommonTaxonName.NewInstance(fact, Language.SPANISH_CASTILIAN(), area);
-						    }else if (categoryFkInt == 307){
-						        Distribution salvadorDistribution = salvadorDistributionFromMuestrasDeHerbar(state, (Taxon)taxonBase, fact);
-						        if (salvadorDistribution != null){
-						            //id
-						            doId(state, salvadorDistribution, factId, "Fact");
-						            mergeSalvadorDistribution(taxonDescription, salvadorDistribution);
-						        }
-						    }
-						}
 
 
 						//reference
@@ -500,7 +503,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		return success;
 	}
 
-    private void handleMclDistribution(BerlinModelImportState state, TaxonDescription taxonDescription, String fact) {
+    private Distribution handleMclDistribution(BerlinModelImportState state, TaxonDescription taxonDescription, String fact) {
         String areaStr = fact.substring(0, 2);
         NamedArea mclArea = mclAreaUuid(state, areaStr);
         String statusStr = fact.substring(2);
@@ -508,6 +511,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
         Distribution distribution = Distribution.NewInstance(mclArea, status);
         taxonDescription.addElement(distribution);
+        return distribution;
     }
 
     private NamedArea mclAreaUuid(BerlinModelImportState state, String areaStr) {
@@ -576,17 +580,18 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         }
     }
 
-    private void handleMclState(BerlinModelImportState state, TaxonDescription taxonDescription, String fact) {
+    private Distribution handleMclState(BerlinModelImportState state, TaxonDescription taxonDescription, String fact) {
         NamedArea mclArea = getNamedArea(state, UUID.fromString("f0500f01-0a59-4a6b-83cf-4070182f7266"), null, null, null, null, null, null, null, null);
         PresenceAbsenceTerm status;
         if (fact.equals("E")) {
             status = PresenceAbsenceTerm.ENDEMIC_FOR_THE_RELEVANT_AREA();
         }else {
             status = getPresenceTerm(state, BerlinModelTransformer.uuidStatusXenophyte,
-                    "Xenophyte", "Xenophyte in the overall area", "X", false, PresenceAbsenceTerm.PRESENT().getVocabulary());
+                    "xenophyte", "Xenophyte in the overall area", "X", false, PresenceAbsenceTerm.PRESENT().getVocabulary());
         }
         Distribution distribution = Distribution.NewInstance(mclArea, status);
         taxonDescription.addElement(distribution);
+        return distribution;
     }
 
     private void mergeSalvadorDistribution(TaxonDescription taxonDescription,
@@ -760,15 +765,9 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		return taxonDescription;
 	}
 
-
-    /**
-     * @param categoryFk
-     * @return
-     */
     private boolean isPublicFeature(Integer categoryFk) {
         return ! (categoryFk == 1800 || categoryFk == 1900 || categoryFk == 2000);
     }
-
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
