@@ -16,7 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
-import eu.etaxonomy.cdm.api.application.ICdmRepository;
+import eu.etaxonomy.cdm.api.application.ICdmApplication;
 import eu.etaxonomy.cdm.api.service.UpdateResult;
 import eu.etaxonomy.cdm.api.service.description.AggregationMode;
 import eu.etaxonomy.cdm.api.service.description.DistributionAggregation;
@@ -56,7 +56,7 @@ public class EuroMedDistributionAggregationActivator {
     private void doImport(ICdmDataSource cdmDestination){
 
         logger.info("start");
-        ICdmRepository app = CdmApplicationController.NewInstance(cdmDestination, dbSchemaValidation);
+        ICdmApplication app = CdmApplicationController.NewInstance(cdmDestination, dbSchemaValidation);
 
         DistributionAggregation distributionAggregation = new DistributionAggregation();
 

@@ -16,7 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.ICdmRepository;
+import eu.etaxonomy.cdm.api.application.ICdmApplication;
 import eu.etaxonomy.cdm.app.berlinModelImport.BerlinModelSources;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -187,13 +187,9 @@ public class SalvadorActivator {
 		return result;
 	}
 
-    /**
-     * @param config
-     * @param bmImport
-     */
     private void addUsers(BerlinModelImportConfigurator config, CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
         if (config.isDoUser()){
-            ICdmRepository app = bmImport.getCdmAppController();
+            ICdmApplication app = bmImport.getCdmAppController();
             TransactionStatus tx = app.startTransaction(false);
 
             //admin
@@ -225,11 +221,6 @@ public class SalvadorActivator {
 
     }
 
-
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		SalvadorActivator activator = new SalvadorActivator();
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;

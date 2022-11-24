@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.api.application.ICdmApplication;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -229,7 +230,7 @@ public class MclActivator {
 	private void renamePresenceAbsenceTerms(BerlinModelImportConfigurator config,
         CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
 
-        ICdmRepository app = bmImport.getCdmAppController();
+	    ICdmApplication app = bmImport.getCdmAppController();
         TransactionStatus tx = app.startTransaction();
         try {
             renamePresenceAbsenceTerm(app, PresenceAbsenceTerm.uuidNative, "present as native", "+", "");
@@ -246,8 +247,6 @@ public class MclActivator {
             e.printStackTrace();
             logger.error("Exception in renameRanks: " + e.getMessage());
         }
-
-
 	}
 
     private void renamePresenceAbsenceTerm(ICdmRepository app, UUID uuidTerm, String label, String abbrev, String symbol) {
@@ -332,7 +331,7 @@ public class MclActivator {
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport){
 	    if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
 			try {
-                ICdmRepository app = bmImport.getCdmAppController();
+			    ICdmApplication app = bmImport.getCdmAppController();
                 TransactionStatus tx = app.startTransaction();
 
                 //make feature tree

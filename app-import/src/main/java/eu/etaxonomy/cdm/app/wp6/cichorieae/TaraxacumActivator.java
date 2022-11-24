@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.api.application.ICdmApplication;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.berlinModelImport.BerlinModelSources;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -173,7 +174,7 @@ public class TaraxacumActivator {
 		success = bmImport.invoke(bmImportConfigurator);
 
 		if (bmImportConfigurator.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || bmImportConfigurator.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
-			ICdmRepository app = bmImport.getCdmAppController();
+		    ICdmApplication app = bmImport.getCdmAppController();
 			TransactionStatus tx = app.startTransaction();
 			//make feature tree
 //			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);

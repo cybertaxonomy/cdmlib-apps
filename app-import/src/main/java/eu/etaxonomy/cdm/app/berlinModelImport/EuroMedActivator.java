@@ -28,6 +28,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.FirstDataInserter;
+import eu.etaxonomy.cdm.api.application.ICdmApplication;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.IGroupService;
 import eu.etaxonomy.cdm.api.service.description.AggregationMode;
@@ -375,7 +376,7 @@ public class EuroMedActivator {
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
 
         if (config.isDoTaxonNames() && (config.getCheck().isImport() )  ){
-			ICdmRepository app = bmImport.getCdmAppController();
+            ICdmApplication app = bmImport.getCdmAppController();
 			TransactionStatus tx = app.startTransaction();
 			try {
 				Rank sectBot = (Rank)app.getTermService().find(Rank.SECTION_BOTANY().getUuid());
@@ -404,7 +405,7 @@ public class EuroMedActivator {
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport){
 	    if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
 			try {
-                ICdmRepository app = bmImport.getCdmAppController();
+			    ICdmApplication app = bmImport.getCdmAppController();
                 TransactionStatus tx = app.startTransaction();
 
                 //make feature tree
@@ -428,7 +429,7 @@ public class EuroMedActivator {
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
 	    if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
 	        try {
-                ICdmRepository app = bmImport.getCdmAppController();
+	            ICdmApplication app = bmImport.getCdmAppController();
                 TransactionStatus tx = app.startTransaction();
 
                 DefinedTermBase<?> commonNameFeature = app.getTermService().find(Feature.COMMON_NAME().getUuid());
@@ -450,7 +451,7 @@ public class EuroMedActivator {
 
         if (doRunTransmissionEngine && (config.getCheck().isImport()  )  ){
             try {
-                ICdmRepository app = bmImport.getCdmAppController();
+                ICdmApplication app = bmImport.getCdmAppController();
 
                 final List<String> term_init_strategy = Arrays.asList(new String []{
                         "representations"
@@ -542,7 +543,7 @@ public class EuroMedActivator {
                String wmsLayerName = "euromed_2013";
                Set<UUID> areaUuidSet = null;
 
-               ICdmRepository app = bmImport.getCdmAppController();
+               ICdmApplication app = bmImport.getCdmAppController();
                IEditGeoService geoService = (IEditGeoService)app.getBean("editGeoService");
 
                Map<NamedArea, String> resultMap;
@@ -574,7 +575,7 @@ public class EuroMedActivator {
 
         try {
             if (config.isDoRelTaxa() && (config.getCheck().isImport())){
-                ICdmRepository app = bmImport.getCdmAppController();
+                ICdmApplication app = bmImport.getCdmAppController();
                 TransactionStatus tx = app.startTransaction();
 
                 //eraabstraube
