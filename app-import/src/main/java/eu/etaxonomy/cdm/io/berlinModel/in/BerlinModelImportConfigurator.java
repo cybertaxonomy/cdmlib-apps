@@ -166,7 +166,6 @@ public class BerlinModelImportConfigurator
 			, BerlinModelWebMarkerCategoryImport.class
 			, BerlinModelWebMarkerImport.class
             , BerlinModelCommonNamesImport.class
-
 		};
 	}
 
