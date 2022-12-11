@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.api.application.ICdmApplication;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.eflora.CdmDestinations;
 import eu.etaxonomy.cdm.app.eflora.EfloraSources;
@@ -92,7 +93,7 @@ public class EricaceaeTestUpdateActivator {
 
 		CdmDefaultImport<EfloraImportConfigurator> myImport = new CdmDefaultImport<EfloraImportConfigurator>();
 
-		ICdmRepository app = myImport.getCdmAppController();
+		ICdmApplication app = myImport.getCdmAppController();
 
 		//
 		if (includeEricaceae){

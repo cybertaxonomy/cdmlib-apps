@@ -172,7 +172,7 @@ public class MexicoEfloraFactCategoryImport extends MexicoEfloraImportBase {
             parentFeature = parentFeature == null? feature : parentFeature;
 
             //is state
-            TermVocabulary<State> supportedStates = parentFeature.getSupportedCategoricalEnumerations().stream().findAny().orElse(null);
+            TermVocabulary supportedStates = parentFeature.getSupportedCategoricalEnumerations().stream().findAny().orElse(null);
             if (supportedStates == null) {
                 supportedStates = TermVocabulary.NewInstance(TermType.State, State.class);
                 supportedStates.setTitleCache(parentFeature.getTitleCache(), true);

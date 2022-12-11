@@ -22,8 +22,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 public class CdmDestinations {
 
 	@SuppressWarnings("unused")
-	private static Logger logger = LogManager.getLogger();
-
+    private static final Logger logger = LogManager.getLogger();
 	/**
 	 * Intended to be used for imports
 	 */

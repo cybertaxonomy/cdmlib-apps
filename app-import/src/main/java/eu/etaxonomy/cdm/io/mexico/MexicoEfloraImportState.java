@@ -18,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 
@@ -37,7 +36,7 @@ public class MexicoEfloraImportState
 	private Map<String, DefinedTermBase<?>> dbCdmDefTermMap = new HashMap<>();
 
 	private Map<Integer,Feature> featureMap = new HashMap<>();
-	private Map<Integer,State> stateMap = new HashMap<>();
+	private Map<Integer,DefinedTermBase> stateMap = new HashMap<>();
 	private Map<Integer,NamedArea> areaMap = new HashMap<>();
 	private Map<String,NamedArea> areaLabelMap = new HashMap<>();
 
@@ -69,7 +68,7 @@ public class MexicoEfloraImportState
         return featureMap;
     }
 
-    public Map<Integer,State> getStateMap() {
+    public Map<Integer,DefinedTermBase> getStateMap() {
         return stateMap;
     }
 

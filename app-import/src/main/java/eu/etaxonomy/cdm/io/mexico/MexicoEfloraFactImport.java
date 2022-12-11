@@ -25,11 +25,11 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 
 /**
  * @author a.mueller
@@ -120,7 +120,7 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
                             //merge
                             //add the single new state to the existing categorical data
                             //TODO not fully correct if bibliography differs for the single states;
-                            State newState = categoricalData.getStatesOnly().stream().findFirst().orElse(null);
+                            DefinedTermBase<?> newState = categoricalData.getStatesOnly().stream().findFirst().orElse(null);
                             if (newState != null && !lastFact.hasState(newState)) {
                                 lastFact.addStateData(newState);
                             }
@@ -187,13 +187,13 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
     private CategoricalData makeCategoricalData(MexicoEfloraImportState importState,
             int idCatNombre) {
         Feature feature = getFeature(importState, idCatNombre);
-        State state = getState(importState, idCatNombre);
+        DefinedTermBase<?> state = getState(importState, idCatNombre);
         CategoricalData categoricalData = CategoricalData.NewInstance(state, feature);
         return categoricalData;
     }
 
-    private State getState(MexicoEfloraImportState importState, int idCatNombre) {
-        State result = importState.getStateMap().get(idCatNombre);
+    private DefinedTermBase<?> getState(MexicoEfloraImportState importState, int idCatNombre) {
+        DefinedTermBase<?> result = importState.getStateMap().get(idCatNombre);
         if (result == null) {
             logger.warn("State does not exist: " + idCatNombre);
         }

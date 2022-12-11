@@ -30,7 +30,6 @@ import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.StateData;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
@@ -44,6 +43,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
@@ -174,11 +174,11 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
                 //export feature states
                 Element listenwerte = new Element(BfnXmlConstants.EL_LISTENWERTE);
                 eigenschaft.addContent(listenwerte);
-                Set<TermVocabulary<State>> supportedCategoricalEnumerations = feature.getSupportedCategoricalEnumerations();
-                for (TermVocabulary<State> termVocabulary : supportedCategoricalEnumerations) {
-                    Set<State> featureStates = termVocabulary.getTerms();
+                Set<TermVocabulary<? extends DefinedTermBase>> supportedCategoricalEnumerations = feature.getSupportedCategoricalEnumerations();
+                for (TermVocabulary<? extends DefinedTermBase> termVocabulary : supportedCategoricalEnumerations) {
+                    Set<? extends DefinedTermBase> featureStates = termVocabulary.getTerms();
                     //                    int reihenfolge = 1;
-                    for (State featureState : featureStates) {
+                    for (DefinedTermBase<?> featureState : featureStates) {
                         Element lwert = new Element(BfnXmlConstants.EL_LWERT);
                         //                        lwert.setAttribute(new Attribute(BfnXmlConstants.ATT_REIHENFOLGE, String.valueOf(reihenfolge)));
                         lwert.addContent(featureState.getLabel());

@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.ICdmApplication;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.common.URI;
@@ -171,7 +172,7 @@ public class CentralAfricaEricaceaeActivator {
 
 		if (doSpecimen){
 			logger.warn("Start specimen import");
-			ICdmRepository app = myImport.getCdmAppController();
+			ICdmApplication app = myImport.getCdmAppController();
 			SpecimenCdmExcelImportConfigurator specimenConfig= SpecimenCdmExcelImportConfigurator.NewInstance(specimenSource, cdmDestination);
 			specimenConfig.setCdmAppController(app);
 			specimenConfig.setAreaMatchMode(specimenAreaMatchMode);
@@ -188,7 +189,8 @@ public class CentralAfricaEricaceaeActivator {
 	}
 
 	private void newNamedAreas(CdmDefaultImport<EfloraImportConfigurator> myImport) {
-		ICdmRepository app = myImport.getCdmAppController();
+
+	    ICdmApplication app = myImport.getCdmAppController();
 		if (app == null){
 			app = CdmApplicationController.NewInstance(cdmDestination, hbm2dll, false);
 		}
