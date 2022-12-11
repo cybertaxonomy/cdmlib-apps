@@ -31,6 +31,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.RankClass;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
@@ -583,7 +584,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                         String genus = child.getName().getGenusOrUninomial();
                         UUID parentUuid = taxonMapping.get(genus);
                         parent = getParent(parentUuid, row);
-                    }else if (rank.isLower(Rank.SPECIES())){
+                    }else if (rank.isLowerThan(RankClass.Species)){
                         String speciesName = child.getName().getGenusOrUninomial() + " " + child.getName().getSpecificEpithet();
                         UUID parentUuid = taxonMapping.get(speciesName);
                         parent = getParent(parentUuid, row);

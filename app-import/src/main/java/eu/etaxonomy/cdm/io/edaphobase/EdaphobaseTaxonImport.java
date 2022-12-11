@@ -217,7 +217,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
             setNamePart(grandParentNameStr, parentParentRank, name);
             Rank grandParentParentRank = makeRank(state, grandGrandParentRankStr);
             setNamePart(grandGrandParentNameStr, grandParentParentRank, name);
-            if (grandParentParentRank != null && grandParentParentRank.isLower(Rank.GENUS()) || isBlank(name.getGenusOrUninomial()) && !name.isProtectedNameCache()){
+            if (grandParentParentRank != null && grandParentParentRank.isLowerThan(RankClass.Genus) || isBlank(name.getGenusOrUninomial()) && !name.isProtectedNameCache()){
                 logger.warn("Grand-Grandparent rank is lower than genus for " +
                         name.getTitleCache() + " (edapho-id: " + id + "; cdm-id: " + name.getId() + ")");
             }

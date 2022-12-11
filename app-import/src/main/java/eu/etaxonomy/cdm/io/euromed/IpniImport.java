@@ -236,9 +236,10 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         TaxonNode result = null;
         for (TaxonNode child : genusNode.getChildNodes()){
             Rank childRank = child.getTaxon().getName().getRank();
-            if (childRank.isHigher(Rank.SPECIES())){
+            if (childRank.isSupraSpecific()){
                 result = getSpecies(state, line, taxonName, child);
-            }else if (childRank.isHigher(Rank.SPECIES())){
+            }else if (childRank.isSupraSpecific()){
+                //TODO why do we check for supraSpecific 2x here??
                 //do nothing
             }else if (childRank.equals(Rank.SPECIES()) && specEpi.equals(child.getTaxon().getName().getSpecificEpithet())){
                     result = child;

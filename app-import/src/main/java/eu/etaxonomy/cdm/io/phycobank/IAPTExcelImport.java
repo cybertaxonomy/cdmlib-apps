@@ -394,7 +394,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         // Types
         if(!StringUtils.isEmpty(typeStr)){
 
-            if(taxonName.getRank().isSpecies() || taxonName.getRank().isLower(Rank.SPECIES())) {
+            if(taxonName.getRank().isSpecies() || taxonName.getRank().isLowerThan(RankClass.Species)) {
                 makeSpecimenTypeData(typeStr, taxonName, regNumber, state, false);
             } else {
                 makeNameTypeData(typeStr, taxonName, regNumber, state);
@@ -403,7 +403,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         getTaxonService().save(taxon);
 
-        if(taxonName.getRank().equals(Rank.SPECIES()) || taxonName.getRank().isLower(Rank.SPECIES())){
+        if(taxonName.getRank().equals(Rank.SPECIES()) || taxonName.getRank().isLowerThan(RankClass.Species)){
             // try to find the genus, it should have been imported already, Genera are coming first in the import file
             Taxon genus = ((IAPTImportState)state).getGenusTaxonMap().get(taxonName.getGenusOrUninomial());
             if(genus != null){

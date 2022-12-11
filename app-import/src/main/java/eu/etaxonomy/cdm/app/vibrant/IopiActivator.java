@@ -260,7 +260,7 @@ public class IopiActivator {
 		if (rank.equals(Rank.FAMILY())){
 			family = name.getGenusOrUninomial();
 			taxonName = name.getGenusOrUninomial();
-		}else if (rank.isHigher(Rank.GENUS())){
+		}else if (rank.isSupraGeneric()){
 			taxonName = name.getGenusOrUninomial();
 		}else if (rank.isGenus()){
 			genus = name.getGenusOrUninomial();

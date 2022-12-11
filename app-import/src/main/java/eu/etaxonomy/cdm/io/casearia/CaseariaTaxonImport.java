@@ -31,6 +31,7 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.RankClass;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -377,7 +378,7 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
             }
         }
         if (isBlank(infraSpecRank)){
-            if (rank.isLower(Rank.SPECIES())){
+            if (rank.isLowerThan(RankClass.Species)){
                 logger.warn(row +  "No infraspce marker given but rank is lower than species");
             }
         }else if ("subsp.".equals(infraSpecRank)){
@@ -499,7 +500,7 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
                         String genus = child.getName().getGenusOrUninomial();
                         UUID parentUuid = taxonMapping.get(genus);
                         parent = getParent(parentUuid, row);
-                    }else if (rank.isLower(Rank.SPECIES())){
+                    }else if (rank.isLowerThan(RankClass.Species)){
                         String speciesName = child.getName().getGenusOrUninomial() + " " + child.getName().getSpecificEpithet();
                         UUID parentUuid = taxonMapping.get(speciesName);
                         parent = getParent(parentUuid, row);

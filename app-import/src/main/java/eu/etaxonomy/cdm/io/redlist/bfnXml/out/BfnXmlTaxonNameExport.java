@@ -36,6 +36,7 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.RankClass;
 import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -298,7 +299,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
 
         //epitheton1-2
         addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON1, name.getGenusOrUninomial());
-        if(rank.isLower(Rank.GENUS())){
+        if(rank.isLowerThan(RankClass.Genus)){
             String epitheton2 = name.getInfraGenericEpithet();
             if(epitheton2==null){
                 epitheton2 = name.getSpecificEpithet();
@@ -307,7 +308,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         }
         //epitheton3
         String epitheton3 = null;
-        if(rank.isLower(Rank.SPECIES())){
+        if(rank.isLowerThan(RankClass.Species)){
             epitheton3 = name.getInfraSpecificEpithet();
         }
         if(epitheton3==null){
