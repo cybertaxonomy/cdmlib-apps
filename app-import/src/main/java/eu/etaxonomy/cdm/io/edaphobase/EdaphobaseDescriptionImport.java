@@ -191,17 +191,8 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
 
         //unit_fk
         //TODO
-
     }
 
-
-    /**
-     * @param state
-     * @param list
-     * @param listName
-     * @return
-     * @throws SQLException
-     */
     private TermVocabulary<State> makeCategoricalVocabulary(EdaphobaseImportState state, Integer list, String listName) throws SQLException {
         TermVocabulary<State> result = TermVocabulary.NewInstance(TermType.State,
                 State.class, listName, listName, null, null );
