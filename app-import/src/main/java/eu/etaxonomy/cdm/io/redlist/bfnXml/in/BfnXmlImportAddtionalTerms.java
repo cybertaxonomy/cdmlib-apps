@@ -24,7 +24,6 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
-import eu.etaxonomy.cdm.model.term.OrderedTermBase;
 import eu.etaxonomy.cdm.model.term.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
@@ -249,12 +248,6 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
        }
 	}
 
-
-	/**
-	 * @param vocabularyService
-	 * @param term
-	 * @param vocUUID
-	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private OrderedTermVocabulary createOrUpdateTermVocabulary(TermType termType, IVocabularyService vocabularyService, DefinedTermBase term, String strTermVocabulary) {
 		OrderedTermVocabulary termVocabulary = null;
@@ -284,7 +277,7 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
 				termVocabulary.setUuid(vocUUID);
 			}
 		}
-		termVocabulary.addTerm((OrderedTermBase) term);
+		termVocabulary.addTerm(term);
 		vocabularyService.saveOrUpdate(termVocabulary);
 
 		return termVocabulary;

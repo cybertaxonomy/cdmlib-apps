@@ -27,7 +27,7 @@ import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
-import eu.etaxonomy.cdm.model.term.OrderedTermBase;
+import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 import eu.etaxonomy.cdm.model.term.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.term.TermNode;
 import eu.etaxonomy.cdm.model.term.TermTree;
@@ -405,8 +405,6 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         addStatus(state, "RR", "Range-restricted", "", FloraHellenicaTransformer.uuidStatusRangeRestricted, statusVoc);
         addStatus(state, "?RR", "?Range-restricted", "", FloraHellenicaTransformer.uuidStatusRangeRestrictedDoubtfully, statusVoc);
 
-
-
         this.getVocabularyService().save(statusVoc);
         return;
     }
@@ -482,11 +480,11 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         return newState;
     }
 
-    private OrderedTermBase addStatus(SimpleExcelTaxonImportState<FloraHellenicaImportConfigurator> state,
+    private DefinedTermBase addStatus(SimpleExcelTaxonImportState<FloraHellenicaImportConfigurator> state,
             String abbrev, String stateLabel, String description, UUID uuid,
             OrderedTermVocabulary voc) {
         FloraHellenicaImportConfigurator config = state.getConfig();
-        OrderedTermBase<?> newStatus;
+        DefinedTermBase<?> newStatus;
         if (config.isStatusAsDistribution()){
             newStatus = PresenceAbsenceTerm.NewPresenceInstance( description, stateLabel, abbrev);
         }else{
