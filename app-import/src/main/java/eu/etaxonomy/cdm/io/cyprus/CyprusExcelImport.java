@@ -376,7 +376,6 @@ public class CyprusExcelImport
 		}
 	}
 
-
 	private void makeHeterotypicSynonyms(CyprusImportState state, List<String> heterotypicSynonymList, Taxon mainTaxon) {
 		for (String heterotypicSynonym: heterotypicSynonymList){
 			if (StringUtils.isNotBlank(heterotypicSynonym)){
@@ -385,7 +384,6 @@ public class CyprusExcelImport
 			}
 		}
 	}
-
 
 	private void makeSystematics(String systematicsString, Taxon mainTaxon) {
 		//Systematics

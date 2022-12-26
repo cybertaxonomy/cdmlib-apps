@@ -25,7 +25,6 @@ import eu.etaxonomy.cdm.io.sdd.in.SDDImportConfigurator;
 /**
  * @author h.fradin
  * @since 24.10.2008
- * @version 1.0
  */
 public class CicadActivator {
 

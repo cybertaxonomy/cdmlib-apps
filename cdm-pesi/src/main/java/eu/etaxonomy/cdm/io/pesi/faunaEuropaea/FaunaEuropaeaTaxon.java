@@ -1,12 +1,11 @@
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
 import java.util.UUID;
@@ -14,10 +13,9 @@ import java.util.UUID;
 /**
  * @author a.babadshanjan
  * @since 26.05.2009
- * @version 1.0
  */
 public class FaunaEuropaeaTaxon {
-	
+
 	private UUID uuid;
 	private UUID parentUuid;
 	private int id;
@@ -46,7 +44,7 @@ public class FaunaEuropaeaTaxon {
 	private boolean valid = false;
 //	private int authorId;
 //	private UUID nameUuid;
-	
+
 	/**
 	 * @return the authorName
 	 */
@@ -83,16 +81,16 @@ public class FaunaEuropaeaTaxon {
 		this.originalGenusName = "";
 		this.authorName = "";
 	}
-	
+
 //	public FaunaEuropaeaTaxon(String name, int parentId) {
 //		this(name, parentId, null);
 //	}
-	
+
 //	public FaunaEuropaeaTaxon(String scientificName, int parentId, String reference) {
 //		this.parentId = parentId;
 //		this.localName = scientificName;
 //	}
-	
+
 	/**
 	 * @return the greatGreatGrandParentRankId
 	 */
@@ -149,7 +147,7 @@ public class FaunaEuropaeaTaxon {
 	public void setParentId(int parentId) {
 		this.parentId = parentId;
 	}
-	
+
 	/**
 	 * @return the name
 	 */
