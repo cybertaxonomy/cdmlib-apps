@@ -398,7 +398,7 @@ public class CubaExcelImport
             name.addSource(makeOriginalSource(state));
             NomenclaturalStatus status = NomenclaturalStatus.NewInstance( NomenclaturalStatusType.INVALID());
             name.addStatus(status);
-            Synonym syn = state.getCurrentTaxon().addSynonymName(name, SynonymType.SYNONYM_OF());
+            Synonym syn = state.getCurrentTaxon().addSynonymName(name, SynonymType.SYNONYM_OF);
             syn.addSource(makeOriginalSource(state));
         }else if (sphalmMatcher.matches()){
             String firstPart = sphalmMatcher.group(1);
@@ -407,7 +407,7 @@ public class CubaExcelImport
 //            NomenclaturalStatus status = NomenclaturalStatus.NewInstance( NomenclaturalStatusType.INVALID());
 //            name.addStatus(status);
             name.addSource(makeOriginalSource(state));
-            Synonym syn = state.getCurrentTaxon().addSynonymName(name, SynonymType.SYNONYM_OF());
+            Synonym syn = state.getCurrentTaxon().addSynonymName(name, SynonymType.SYNONYM_OF);
             syn.setAppendedPhrase(sphalmPart);
             syn.setSec(null);
             syn.addSource(makeOriginalSource(state));

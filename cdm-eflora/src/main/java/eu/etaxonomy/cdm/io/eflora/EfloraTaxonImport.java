@@ -1653,9 +1653,9 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	    TaxonName name;
 		if (isSynonym){
 			name = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES(), homotypicalGroup);
-			SynonymType synonymType = SynonymType.HETEROTYPIC_SYNONYM_OF();
+			SynonymType synonymType = SynonymType.HETEROTYPIC_SYNONYM_OF;
 			if (taxon.getHomotypicGroup().equals(homotypicalGroup)){
-				synonymType = SynonymType.HOMOTYPIC_SYNONYM_OF();
+				synonymType = SynonymType.HOMOTYPIC_SYNONYM_OF;
 			}
 			taxon.addSynonymName(name, synonymType);
 		}else{

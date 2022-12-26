@@ -286,10 +286,10 @@ public class TestDatabase {
 		syn12 = Synonym.NewInstance(synName12, sec);
 		syn2 = Synonym.NewInstance(synName2, sec);
 
-		child1.addSynonym(syn11, SynonymType.HOMOTYPIC_SYNONYM_OF());
-		child1.addSynonym(syn12, SynonymType.HETEROTYPIC_SYNONYM_OF());
-		child2.addSynonym(syn2, SynonymType.HETEROTYPIC_SYNONYM_OF());
-		freeT.addSynonym(synFree, SynonymType.HETEROTYPIC_SYNONYM_OF());
+		child1.addSynonym(syn11, SynonymType.HOMOTYPIC_SYNONYM_OF);
+		child1.addSynonym(syn12, SynonymType.HETEROTYPIC_SYNONYM_OF);
+		child2.addSynonym(syn2, SynonymType.HETEROTYPIC_SYNONYM_OF);
+		freeT.addSynonym(synFree, SynonymType.HETEROTYPIC_SYNONYM_OF);
 
 		taxonBases.add(synFree);
 		taxonBases.add(syn11);

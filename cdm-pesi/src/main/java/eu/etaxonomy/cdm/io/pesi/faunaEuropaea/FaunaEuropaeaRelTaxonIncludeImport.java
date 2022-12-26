@@ -898,7 +898,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 				if (synonym != null && acceptedTaxon != null) {
 
 					//TODO: in case original genus exists must add synonym to original genus instead of to accepted taxon
-					acceptedTaxon.addSynonym(synonym, SynonymType.HETEROTYPIC_SYNONYM_OF());
+					acceptedTaxon.addSynonym(synonym, SynonymType.HETEROTYPIC_SYNONYM_OF);
 
 					if (logger.isDebugEnabled()) {
 						logger.debug("Accepted taxon - synonym (" + mappedAcceptedTaxonUuid + " - " + synonymUuid +
@@ -1270,16 +1270,16 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
                                    if (((Synonym)synonym).getAcceptedTaxon() == null ){
                                        IdentifiableSource source = ((Synonym)synonym).getSources().iterator().next();
                                        if (source.getIdNamespace().contains("Potential combination")){
-                                           acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.POTENTIAL_COMBINATION_OF());
+                                           acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.POTENTIAL_COMBINATION_OF);
                                            logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
                                        } else if (source.getIdNamespace().contains("Inferred Genus")){
-                                           acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.INFERRED_GENUS_OF());
+                                           acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.INFERRED_GENUS_OF);
                                            logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
                                        } else if (source.getIdNamespace().contains("Inferred Epithet")){
-                                           acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.INFERRED_EPITHET_OF());
+                                           acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.INFERRED_EPITHET_OF);
                                            logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
                                        } else{
-                                           acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.INFERRED_SYNONYM_OF());
+                                           acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.INFERRED_SYNONYM_OF);
                                            logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
                                        }
 

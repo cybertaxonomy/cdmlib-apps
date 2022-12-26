@@ -545,7 +545,7 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
                     addChild(unresolvedParent(), child, row);
                     getTaxonService().deleteSynonym(syn, new SynonymDeletionConfigurator());
                 }else{
-                    accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF());
+                    accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF);
                 }
             }else if ("Misapplied".equals(status)){
                 Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
@@ -571,7 +571,7 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
                         child = Taxon.NewInstance(syn.getName(), syn.getSec());
                         addChild(unresolvedParent(), child, row);
                     }else{
-                        accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF());
+                        accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF);
                     }
                 }else{
                     addChild(unresolvedParent(), child, row);

@@ -483,7 +483,7 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
                 taxon = getOrphanedSynonymTaxon(state);
                 logger.warn(kewId + "Accepted taxon not found. Added synonym to 'orphaned synonym taxon': " + getValue(record, Kew_Rel_Acc_Name_ID) + line);
             }
-            taxon.addSynonym(CdmBase.deproxy(taxonBase, Synonym.class), SynonymType.SYNONYM_OF());
+            taxon.addSynonym(CdmBase.deproxy(taxonBase, Synonym.class), SynonymType.SYNONYM_OF);
         }else{
             logger.warn("Unhandled");
         }
@@ -606,7 +606,7 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         }else if (secondTaxon.isInstanceOf(Synonym.class)){
             Synonym syn = CdmBase.deproxy(secondTaxon, Synonym.class);
             if (firstTaxon.equals(syn.getAcceptedTaxon())){
-                syn.setType(SynonymType.HOMOTYPIC_SYNONYM_OF());
+                syn.setType(SynonymType.HOMOTYPIC_SYNONYM_OF);
             }
         }
     }

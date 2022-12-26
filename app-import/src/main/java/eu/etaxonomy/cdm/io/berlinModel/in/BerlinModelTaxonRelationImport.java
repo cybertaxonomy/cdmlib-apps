@@ -740,14 +740,14 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		}else if (relQualifierFk == TAX_REL_IS_HETEROTYPIC_SYNONYM_OF ||
 				relQualifierFk == TAX_REL_IS_PROPARTE_HETEROTYPIC_SYNONYM_OF ||
 				relQualifierFk == TAX_REL_IS_PARTIAL_HETEROTYPIC_SYNONYM_OF){
-			toTaxon.addSynonym(synonym, SynonymType.HETEROTYPIC_SYNONYM_OF());
+			toTaxon.addSynonym(synonym, SynonymType.HETEROTYPIC_SYNONYM_OF);
 		}else if (relQualifierFk == TAX_REL_IS_SYNONYM_OF ||
 				relQualifierFk == TAX_REL_IS_PROPARTE_SYN_OF ||
 				relQualifierFk == TAX_REL_IS_PARTIAL_SYN_OF){
-			toTaxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
+			toTaxon.addSynonym(synonym, SynonymType.SYNONYM_OF);
 		}else{
 			logger.warn("SynonymyRelationShipType could not be defined for relQualifierFk " + relQualifierFk + ". 'Unknown'-Type taken instead.");
-			toTaxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
+			toTaxon.addSynonym(synonym, SynonymType.SYNONYM_OF);
 		}
 		return;
 

@@ -238,7 +238,7 @@ public class CentralAfricaFernsTaxonRelationImport
 		if (taxonBase != null){
 			if (taxonBase.isInstanceOf(Taxon.class)){
 				Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
-				taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
+				taxon.addSynonym(synonym, SynonymType.SYNONYM_OF);
 				if ("p.p.".equalsIgnoreCase(nomRemarksString)){
 					logger.error("Pro parte synonyms are currently not handled correctly anymore. Needs to be adapted also in TaxonImport");
 				}

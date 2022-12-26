@@ -111,7 +111,7 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
                                 logger.warn(message);
                                 synonym = synonym.clone();
                             }
-                            taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
+                            taxon.addSynonym(synonym, SynonymType.SYNONYM_OF);
                             state.addSynonymWithAcceptedTaxon(synId);
                             taxaToSave.add(synonym);
                             taxaToSave.add(taxon);

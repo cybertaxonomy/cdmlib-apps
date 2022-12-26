@@ -692,7 +692,7 @@ public final class ErmsTransformer extends InputTransformerBase {
     public RelationshipTermBase<?>[] getSynonymRelationTypesByKey(String unacceptreason, DbImportStateBase<?,?> state) {
 
         RelationshipTermBase<?>[] result = new RelationshipTermBase[4];
-        SynonymType synType = SynonymType.SYNONYM_OF();
+        SynonymType synType = SynonymType.SYNONYM_OF;
         TaxonRelationshipType taxonRelType = getSynTaxonRelType(state);
         NameRelationshipType nameType = null;
 //        HybridRelationshipType hybridType = null;
@@ -708,10 +708,10 @@ public final class ErmsTransformer extends InputTransformerBase {
             handled = true;  //no change
         }else{
             if (unacceptreason.matches("(?i)(.*bas[iy][no].*ny.*|.*homot.*syn.*|objective syny?onym)")){
-                synType = SynonymType.HOMOTYPIC_SYNONYM_OF();
+                synType = SynonymType.HOMOTYPIC_SYNONYM_OF;
                 taxonRelType = getHomoSynTaxonRelType(state);
             }else if (unacceptreason.matches("(?i)(heterotypic|subjective) synonym")){
-                synType = SynonymType.HETEROTYPIC_SYNONYM_OF();
+                synType = SynonymType.HETEROTYPIC_SYNONYM_OF;
 //                taxonRelType = getHeteroSynTaxRelType(state);  //do nothing
             }else if (unacceptreason.matches("(?i)part.*\\s+synonym.*")){
                 synType = null;
@@ -740,7 +740,7 @@ public final class ErmsTransformer extends InputTransformerBase {
                 nameType = NameRelationshipType.BASIONYM();
             }
 
-            if(handled == false && SynonymType.SYNONYM_OF().equals(synType) &&
+            if(handled == false && SynonymType.SYNONYM_OF == synType &&
                     getSynTaxonRelType(state).equals(taxonRelType) && nameType == null){
                 ((ErmsImportState)state).setUnhandledUnacceptReason(unacceptreason);
                 logger.debug("Unaccept reason not yet handled: " + unacceptreason);

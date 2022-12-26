@@ -829,16 +829,16 @@ public class PesiTaxonExport extends PesiExportBase {
 								if (synonym.getAcceptedTaxon() == null ){
 									IdentifiableSource source = synonym.getSources().iterator().next();
 									if (source.getIdNamespace().contains("Potential combination")){
-										acceptedTaxon.addSynonym(synonym, SynonymType.POTENTIAL_COMBINATION_OF());
+										acceptedTaxon.addSynonym(synonym, SynonymType.POTENTIAL_COMBINATION_OF);
 										logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
 									} else if (source.getIdNamespace().contains("Inferred Genus")){
-										acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_GENUS_OF());
+										acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_GENUS_OF);
 										logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
 									} else if (source.getIdNamespace().contains("Inferred Epithet")){
-										acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_EPITHET_OF());
+										acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_EPITHET_OF);
 										logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
 									} else{
-										acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_SYNONYM_OF());
+										acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_SYNONYM_OF);
 										logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
 									}
 

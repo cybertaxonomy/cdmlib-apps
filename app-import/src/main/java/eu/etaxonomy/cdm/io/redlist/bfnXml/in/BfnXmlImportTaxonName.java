@@ -462,7 +462,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 
 						//TODO find best matching Taxa
 						Synonym synonym = Synonym.NewInstance(name, state.getCurrentSecRef());
-						taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
+						taxon.addSynonym(synonym, SynonymType.SYNONYM_OF);
 
 					} catch (UnknownCdmTypeException e) {
 						logger.warn("Name with id " + taxonId + " has unknown nomenclatural code.");

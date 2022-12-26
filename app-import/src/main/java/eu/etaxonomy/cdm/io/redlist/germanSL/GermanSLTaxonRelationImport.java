@@ -88,7 +88,7 @@ public class GermanSLTaxonRelationImport extends GermanSLTaxonImport {
             }else{
                 parent = (Taxon)parentTmp;
                 Synonym synonym = (Synonym)taxonBase;
-                parent.addSynonym(synonym, SynonymType.SYNONYM_OF());
+                parent.addSynonym(synonym, SynonymType.SYNONYM_OF);
             }
         }
         if (taxonNode != null){

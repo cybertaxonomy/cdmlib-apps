@@ -380,7 +380,7 @@ public class CyprusExcelImport
 		for (String heterotypicSynonym: heterotypicSynonymList){
 			if (StringUtils.isNotBlank(heterotypicSynonym)){
 				Synonym synonym = (Synonym)createTaxon(state, null, heterotypicSynonym, Synonym.class, nc);
-				mainTaxon.addSynonym(synonym, SynonymType.HETEROTYPIC_SYNONYM_OF());
+				mainTaxon.addSynonym(synonym, SynonymType.HETEROTYPIC_SYNONYM_OF);
 			}
 		}
 	}

@@ -202,7 +202,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
 
         Synonym synonym = Synonym.NewInstance(name, getSecReference(state));
         synonym.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
-        taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
+        taxon.addSynonym(synonym, SynonymType.SYNONYM_OF);
     }
 
     private void makeInfraSpecific(SimpleExcelTaxonImportState<CONFIG> state, Map<String, String> record, String line,

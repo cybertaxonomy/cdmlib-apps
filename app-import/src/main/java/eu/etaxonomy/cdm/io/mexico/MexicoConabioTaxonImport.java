@@ -458,7 +458,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
                 logger.warn(line + "Accepted taxon is missing: "+ relStr);
             }else{
                 Synonym synonym = (Synonym)taxonBase;
-                parent.addSynonym(synonym, SynonymType.SYNONYM_OF());
+                parent.addSynonym(synonym, SynonymType.SYNONYM_OF);
 //                makeConceptRelation(line, synonym.getName());
             }
         }else{

@@ -115,7 +115,7 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 				            logger.warn(taxonId + ":  Accepted taxon for synonym is not accepted: " + accUuidStr);
 				        }else {
 				            Taxon acc = CdmBase.deproxy(related, Taxon.class);
-				            acc.addSynonym(syn, SynonymType.SYNONYM_OF());
+				            acc.addSynonym(syn, SynonymType.SYNONYM_OF);
 				        }
 				    }else if (taxonBase.isInstanceOf(Taxon.class) && parentUuidStr != null) {
                         Taxon child = CdmBase.deproxy(taxonBase, Taxon.class);

@@ -628,7 +628,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                     addChild(unresolvedParent(), child, row);
                     getTaxonService().deleteSynonym(syn, new SynonymDeletionConfigurator());
                 }else{
-                    accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF());
+                    accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF);
                 }
             }else if ("Unplaced".equals(status)){
                 parent = unresolvedParent();
@@ -640,14 +640,14 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                 if(accTaxon == null){
                     logger.warn(row + "'Orthographic' taxon has no acc taxon");
                 }else{
-                    accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF());
+                    accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF);
                 }
             }else if("Illegitimate".equals(status) || "Invalid".equals(status)){
                 if (hasAccepted){
                     if(accTaxon == null){
                         logger.warn(row + "accepted taxon for illegitimate or invalid taxon not found");
                     }else{
-                        accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF());
+                        accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF);
                     }
                 }else{
                     addChild(unresolvedParent(), child, row);

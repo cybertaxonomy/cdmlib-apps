@@ -315,7 +315,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
                 Synonym syn = CdmBase.deproxy(taxonBase, Synonym.class);
                 Taxon acc = CdmBase.deproxy(acceptedBase, Taxon.class);
                 //TODO synType
-                acc.addSynonym(syn, SynonymType.HETEROTYPIC_SYNONYM_OF());
+                acc.addSynonym(syn, SynonymType.HETEROTYPIC_SYNONYM_OF);
             }
         }else if("S".equals(statusStr)){
             logger.warn(line + "No accepted taxon given for synonym");
@@ -375,7 +375,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
         }else if (secondTaxon.isInstanceOf(Synonym.class)){
             Synonym syn = CdmBase.deproxy(secondTaxon, Synonym.class);
             if (firstTaxon.equals(syn.getAcceptedTaxon())){
-                syn.setType(SynonymType.HOMOTYPIC_SYNONYM_OF());
+                syn.setType(SynonymType.HOMOTYPIC_SYNONYM_OF);
             }
         }
     }

@@ -179,7 +179,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			}
 			name.addBasionym(basionym);
 			Synonym syn = Synonym.NewInstance(basionym, state.getTransactionalSourceReference());
-			taxon.addSynonym(syn, SynonymType.HOMOTYPIC_SYNONYM_OF());
+			taxon.addSynonym(syn, SynonymType.HOMOTYPIC_SYNONYM_OF);
 			getTaxonService().save(syn);
 		}
 	}

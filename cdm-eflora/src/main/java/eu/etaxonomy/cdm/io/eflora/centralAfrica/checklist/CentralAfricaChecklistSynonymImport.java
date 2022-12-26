@@ -141,7 +141,7 @@ public class CentralAfricaChecklistSynonymImport
 		parser.handleAuthors(speciesName, CdmUtils.concat(" ", new String[] {"", genusString, speciesString, authorityString}), authorityString);
 
 		if (taxon != null){
-			taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
+			taxon.addSynonym(synonym, SynonymType.SYNONYM_OF);
 		}else{
 			logger.warn("Taxon (" + accId + ") not available for Synonym " + synonym.getTitleCache());
 		}

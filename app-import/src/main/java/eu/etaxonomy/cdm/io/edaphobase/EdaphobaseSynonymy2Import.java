@@ -188,7 +188,7 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
             }else{
                 Taxon taxon = CdmBase.deproxy(acceptedC, Taxon.class);
                 //TODO
-                SynonymType synType = SynonymType.SYNONYM_OF();
+                SynonymType synType = SynonymType.SYNONYM_OF;
                 taxon.addSynonym(synonym, synType);
                 taxaToSave.add(synonym);
                 taxaToSave.add(taxon);

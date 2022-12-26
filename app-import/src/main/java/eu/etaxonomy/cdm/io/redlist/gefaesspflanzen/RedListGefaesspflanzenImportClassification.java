@@ -301,7 +301,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             //regular synonym
             else{
                 Synonym synonym = (Synonym) taxonBase;
-                parent.addSynonym(synonym, SynonymType.HETEROTYPIC_SYNONYM_OF());
+                parent.addSynonym(synonym, SynonymType.HETEROTYPIC_SYNONYM_OF);
 
                 //TAX_ZUSATZ
                 if(isNotBlank(taxZusatzString)){

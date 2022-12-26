@@ -377,7 +377,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             taxonName.addBasionym(basionym);
 
             Synonym syn = Synonym.NewInstance(basionym, sec);
-            taxon.addSynonym(syn, SynonymType.HOMOTYPIC_SYNONYM_OF());
+            taxon.addSynonym(syn, SynonymType.HOMOTYPIC_SYNONYM_OF);
             getTaxonService().save(syn);
         }
 

@@ -150,7 +150,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 								logger.warn("Accepted taxon (" + acceptedTaxonId + ") not found for synonym "+ specTaxId);
 							}
 						}else{
-							acceptedTaxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
+							acceptedTaxon.addSynonym(synonym, SynonymType.SYNONYM_OF);
 							thisTaxon = synonym;
 						}
 					}else if (specSystaxRank.equals("species")){

@@ -345,10 +345,9 @@ public class CichorieaeImageUpdateActivator {
 
 	private void updateMetadata(ICdmDataSource cdmDestination){
 
-
 	    CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, DbSchemaValidation.VALIDATE);
 
-	    language = DefinedTermBase.getTermByClassAndUUID(Language.class, languageUuid);
+	    language = DefinedTermBase.getTermByUUID(languageUuid, Language.class);
 	    TransactionStatus tx = app.startTransaction();
 
         deduplicationHelper = ImportDeduplicationHelper.NewInstance(app, null);

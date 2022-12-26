@@ -199,7 +199,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
     			replaceNameAuthorsAndReferences(state, synonymName);
     	        synonymName.addSource(makeOriginalSource(state));
     	        Synonym synonym = Synonym.NewInstance(synonymName, accepted.getSec());
-    	        accepted.addSynonym(synonym, SynonymType.SYNONYM_OF());
+    	        accepted.addSynonym(synonym, SynonymType.SYNONYM_OF);
     			synonymName.addSource(makeOriginalSource(state));
     			synonym.addSource(makeOriginalSource(state));
     		}

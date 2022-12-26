@@ -2129,17 +2129,17 @@ public final class PesiTransformer extends ExportTransformerBase{
             return null;
         }
         SynonymType type = synonym.getType();
-        if (type.equals(SynonymType.SYNONYM_OF())) {return IS_SYNONYM_OF;
-        }else if (type.equals(SynonymType.HOMOTYPIC_SYNONYM_OF())) {return IS_HOMOTYPIC_SYNONYM_OF;
-        }else if (type.equals(SynonymType.HETEROTYPIC_SYNONYM_OF())) {return IS_HETEROTYPIC_SYNONYM_OF;
-        }else if (type.equals(SynonymType.INFERRED_EPITHET_OF())) {return IS_INFERRED_EPITHET_FOR;
-        }else if (type.equals(SynonymType.INFERRED_GENUS_OF())) {return IS_INFERRED_GENUS_FOR;
-        }else if (type.equals(SynonymType.POTENTIAL_COMBINATION_OF())) {return IS_POTENTIAL_COMBINATION_FOR;
-        }else if (type.equals(SynonymType.INFERRED_SYNONYM_OF())) {
+        if (type.equals(SynonymType.SYNONYM_OF)) {return IS_SYNONYM_OF;
+        }else if (type.equals(SynonymType.HOMOTYPIC_SYNONYM_OF)) {return IS_HOMOTYPIC_SYNONYM_OF;
+        }else if (type.equals(SynonymType.HETEROTYPIC_SYNONYM_OF)) {return IS_HETEROTYPIC_SYNONYM_OF;
+        }else if (type.equals(SynonymType.INFERRED_EPITHET_OF)) {return IS_INFERRED_EPITHET_FOR;
+        }else if (type.equals(SynonymType.INFERRED_GENUS_OF)) {return IS_INFERRED_GENUS_FOR;
+        }else if (type.equals(SynonymType.POTENTIAL_COMBINATION_OF)) {return IS_POTENTIAL_COMBINATION_FOR;
+        }else if (type.equals(SynonymType.INFERRED_SYNONYM_OF)) {
             logger.warn("Inferred synonynm type not yet implemented. Should it realy exist?");
             return null;
         }else{
-            logger.warn("Unhandled synonym type: " + type.getTitleCache());
+            logger.warn("Unhandled synonym type: " + type.getLabel());
             return null;
         }
 //              return IS_PRO_PARTE_SYNONYM_OF;
@@ -2231,15 +2231,15 @@ public final class PesiTransformer extends ExportTransformerBase{
         if (syn.getAcceptedTaxon() == null) {
             return null;
         }
-        if (syn.getType().equals(SynonymType.HETEROTYPIC_SYNONYM_OF())){
+        if (syn.getType().equals(SynonymType.HETEROTYPIC_SYNONYM_OF)){
             return IS_HETEROTYPIC_SYNONYM_OF;
-        } else if (syn.getType().equals(SynonymType.HOMOTYPIC_SYNONYM_OF())){
+        } else if (syn.getType().equals(SynonymType.HOMOTYPIC_SYNONYM_OF)){
             return IS_HOMOTYPIC_SYNONYM_OF;
-        }else if (syn.getType().equals(SynonymType.INFERRED_EPITHET_OF())) {
+        }else if (syn.getType().equals(SynonymType.INFERRED_EPITHET_OF)) {
             return IS_INFERRED_EPITHET_FOR;
-        } else if (syn.getType().equals(SynonymType.INFERRED_GENUS_OF())) {
+        } else if (syn.getType().equals(SynonymType.INFERRED_GENUS_OF)) {
             return IS_INFERRED_GENUS_FOR;
-        } else if (syn.getType().equals(SynonymType.POTENTIAL_COMBINATION_OF())) {
+        } else if (syn.getType().equals(SynonymType.POTENTIAL_COMBINATION_OF)) {
             return IS_POTENTIAL_COMBINATION_FOR;
         }
         return IS_SYNONYM_OF;
