@@ -159,12 +159,12 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 			//taxon map
 		    String nameSpace = NAMESPACE_SUPRAGENERIC_NAMES ;
 			Map<String, TaxonBase<?>> taxonMap = new HashMap<>();
-			@SuppressWarnings("unchecked")
             List<Taxon> list = getCommonService().getHqlResult(
                       " SELECT t FROM TaxonBase t "
                     + " JOIN t.sources s "
                     + " WHERE s.citation.uuid = ?0 AND t.name.rank.uuid <> ?1",
-                    new Object[]{ PesiTransformer.uuidSourceRefIndexFungorum, Rank.uuidGenus});  //only use index fungorum taxa not being genus (important for partitions not being first partition)
+                    new Object[]{ PesiTransformer.uuidSourceRefIndexFungorum, Rank.uuidGenus},
+                    Taxon.class);  //only use index fungorum taxa not being genus (important for partitions not being first partition)
             for (Taxon taxon : list){
                 String uninomial = CdmBase.deproxy(taxon.getName()).getGenusOrUninomial();
                 TaxonBase<?> existing = taxonMap.put(uninomial, taxon);

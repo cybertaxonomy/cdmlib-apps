@@ -234,8 +234,10 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 			//taxon map
 			nameSpace = IndexFungorumImportBase.NAMESPACE_SUPRAGENERIC_NAMES ;
 			Map<String, TaxonBase<?>> taxonMap = new HashMap<>();
-			@SuppressWarnings("unchecked")
-            List<Taxon> list = getCommonService().getHqlResult("SELECT t FROM Taxon t JOIN t.sources s WHERE s.citation.uuid = ?0", new Object[]{ PesiTransformer.uuidSourceRefIndexFungorum});
+            List<Taxon> list = getCommonService().getHqlResult(
+                    "SELECT t FROM Taxon t JOIN t.sources s WHERE s.citation.uuid = ?0",
+                    new Object[]{ PesiTransformer.uuidSourceRefIndexFungorum},
+                    Taxon.class);
 			for (Taxon taxon : list){
 			    String uninomial = CdmBase.deproxy(taxon.getName()).getGenusOrUninomial();
 				TaxonBase<?> existing = taxonMap.put(uninomial, taxon);
