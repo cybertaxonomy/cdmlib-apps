@@ -23,7 +23,7 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
  * @author a.mueller
  * @since 17.02.2020
  */
-public class CaryoAizoaceaeActivator {
+public class KewCaryoAizoaceaeActivator {
 
     @SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger();
@@ -57,7 +57,7 @@ public class CaryoAizoaceaeActivator {
 
     public static void main(String[] args) {
 
-        CaryoAizoaceaeActivator me = new CaryoAizoaceaeActivator();
+        KewCaryoAizoaceaeActivator me = new KewCaryoAizoaceaeActivator();
         me.invoke(destinationDb);
         System.exit(0);
     }

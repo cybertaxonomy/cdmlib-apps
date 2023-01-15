@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @author a.mueller
  * @since 05.01.2022
  */
-public class CaryophyllaceaeActivator extends SourceBase{
+public class KewCaryophyllaceaeActivator extends SourceBase{
 
 	@SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger();
@@ -85,7 +85,7 @@ public class CaryophyllaceaeActivator extends SourceBase{
 	}
 
 	public static void main(String[] args) {
-		CaryophyllaceaeActivator me = new CaryophyllaceaeActivator();
+		KewCaryophyllaceaeActivator me = new KewCaryophyllaceaeActivator();
 		me.doImport(cdmDestination);
 		System.exit(0);
 	}
