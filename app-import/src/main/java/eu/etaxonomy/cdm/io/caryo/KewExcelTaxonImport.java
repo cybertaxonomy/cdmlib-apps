@@ -64,9 +64,9 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
 
     private static final String NO_SIMPLE_DIFF = "xxxxx";
 
-    private static final String KEW_UNPLACED_NODE = "82a9e3a1-2519-402a-b3c9-ec4c1fddf4d0";
-    private static final String KEW_ACCEPTED_NODE = "b44da8af-6ad8-4b41-98cd-8f4c1a1bd00c";
-    private static final String KEW_ORPHANED_PLACEHOLDER_TAXON = "dccac79b-a967-49ed-b153-5faa83194060";
+//    private static final String KEW_UNPLACED_NODE = "82a9e3a1-2519-402a-b3c9-ec4c1fddf4d0";
+//
+//    private static final String KEW_ORPHANED_PLACEHOLDER_TAXON = "dccac79b-a967-49ed-b153-5faa83194060";
 
     private static final String CDM_Name_UUID = "CDM-Name_UUID";
     private static final String Kew_Name_ID = "Kew-Name-ID";
@@ -402,10 +402,14 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         NomenclaturalStatusType status;
         if (isBlank(nameStatus)){
             status = null;
-        }else if ("Illegitimate".equals(nameStatus)){
+        }else if ("Illegitimate".equals(nameStatus) || "nom. illeg.".equals(nameStatus)){
             status = NomenclaturalStatusType.ILLEGITIMATE();
-        }else if ("Invalid".equals(nameStatus)){
+        }else if ("Invalid".equals(nameStatus) || "nom. inval.".equals(nameStatus)){
             status = NomenclaturalStatusType.INVALID();
+        }else if ("nom. cons.".equals(nameStatus)){
+            status = NomenclaturalStatusType.CONSERVED();
+        }else if ("nom. rej.".equals(nameStatus)){
+            status = NomenclaturalStatusType.REJECTED();
         }else{
             logger.warn(line + "Nom. status not recognized: " + nameStatus);
             status = null;
@@ -473,7 +477,7 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         TaxonName taxonName = taxonBase.getName();
 
         if (taxonBase.isInstanceOf(Taxon.class)){
-            Taxon parent = getParent(record, taxonName, line, kewId);
+            Taxon parent = getParent(state, record, taxonName, line, kewId);
             if (parent != null){
                 classification.addParentChild(parent, CdmBase.deproxy(taxonBase, Taxon.class), null, null);
             }
@@ -509,14 +513,14 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         if (orphanedSynonymTaxon != null) {
             return orphanedSynonymTaxon;
         }
-        UUID orphanedTaxonUuid = UUID.fromString(KEW_ORPHANED_PLACEHOLDER_TAXON);
+        UUID orphanedTaxonUuid = state.getConfig().getOrphanedPlaceholderTaxonUuid();
         orphanedSynonymTaxon = CdmBase.deproxy(getTaxonService().find(orphanedTaxonUuid), Taxon.class);
         if (orphanedSynonymTaxon == null){
             TaxonName placeholderName = TaxonNameFactory.NewBacterialInstance(Rank.SUBFAMILY());
             placeholderName.setTitleCache("Orphaned_Synonyms_KEW", true);
             orphanedSynonymTaxon = Taxon.NewInstance(placeholderName, getSecReference(state, state.getOriginalRecord()));
             orphanedSynonymTaxon.setUuid(orphanedTaxonUuid);
-            Taxon unplacedTaxon = CdmBase.deproxy(getTaxonService().find(UUID.fromString(KEW_UNPLACED_NODE)), Taxon.class);
+            Taxon unplacedTaxon = CdmBase.deproxy(getTaxonService().find(state.getConfig().getUnplacedTaxonUuid()), Taxon.class);
             TaxonNode orphandNode = getClassification(state).addParentChild(unplacedTaxon, orphanedSynonymTaxon, null, null);
             getTaxonNodeService().save(orphandNode);
         }
@@ -552,10 +556,10 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         }
     }
 
-    private Taxon getParent(Map<String, String> record, TaxonName taxonName, String line, String kewId) {
+    private Taxon getParent(SimpleExcelTaxonImportState<CONFIG> state, Map<String, String> record, TaxonName taxonName, String line, String kewId) {
         String statusStr = getValue(record, Kew_Taxonomic_Status);
         if ("Unplaced".equals(statusStr)){
-            return CdmBase.deproxy(getTaxonService().find(UUID.fromString(KEW_UNPLACED_NODE)), Taxon.class);
+            return CdmBase.deproxy(getTaxonService().find(state.getConfig().getUnplacedTaxonUuid()), Taxon.class);
         }else if ("Artificial Hybrid".equals(statusStr)){
             return null ; //getTaxonNodeService().find(UUID.fromString(KEW_HYBRIDS_NODE)); hybrids are handled as synonyms now
         }else if ("Accepted".equals(statusStr)){
@@ -573,7 +577,8 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
                     return null;
                 }
             }else{
-                return CdmBase.deproxy(getTaxonService().find(UUID.fromString(KEW_ACCEPTED_NODE)), Taxon.class);
+                UUID rootTaxonUuid = state.getConfig().getRootTaxonUuid();
+                return CdmBase.deproxy(getTaxonService().find(rootTaxonUuid), Taxon.class);
             }
         }else if ("Synonym".equals(statusStr)){
             //not relevant

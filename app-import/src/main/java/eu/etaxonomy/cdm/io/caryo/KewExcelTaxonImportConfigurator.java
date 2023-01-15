@@ -8,6 +8,8 @@
 */
 package eu.etaxonomy.cdm.io.caryo;
 
+import java.util.UUID;
+
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
@@ -29,6 +31,10 @@ public class KewExcelTaxonImportConfigurator
 
     private static IInputTransformer defaultTransformer = null;
     private Reference secReference;
+
+    private UUID rootTaxonUuid;
+    private UUID unplacedTaxonUuid;
+    private UUID orphanedPlaceholderTaxonUuid;
 
     public static KewExcelTaxonImportConfigurator NewInstance(URI source, ICdmDataSource destination) {
         return new KewExcelTaxonImportConfigurator(source, destination);
@@ -60,5 +66,26 @@ public class KewExcelTaxonImportConfigurator
     }
     public void setSecReference(Reference secReference) {
         this.secReference = secReference;
+    }
+
+    public UUID getRootTaxonUuid() {
+        return rootTaxonUuid;
+    }
+    public void setRootTaxonUuid(UUID rootTaxonUuid) {
+        this.rootTaxonUuid = rootTaxonUuid;
+    }
+
+    public UUID getUnplacedTaxonUuid() {
+        return unplacedTaxonUuid;
+    }
+    public void setUnplacedTaxonUuid(UUID unplacedTaxonUuid) {
+        this.unplacedTaxonUuid = unplacedTaxonUuid;
+    }
+
+    public UUID getOrphanedPlaceholderTaxonUuid() {
+        return orphanedPlaceholderTaxonUuid;
+    }
+    public void setOrphanedPlaceholderTaxonUuid(UUID orphanedPlaceholderTaxonUuid) {
+        this.orphanedPlaceholderTaxonUuid = orphanedPlaceholderTaxonUuid;
     }
 }
