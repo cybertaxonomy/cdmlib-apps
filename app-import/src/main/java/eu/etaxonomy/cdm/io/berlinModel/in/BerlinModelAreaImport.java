@@ -191,6 +191,25 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
         namedArea.setSymbol(labelAbbrev);
         namedArea.setSymbol2(labelAbbrev);
 
+        String geoAbbrev = labelAbbrev;
+        if ("An".equalsIgnoreCase(geoAbbrev)) {
+            geoAbbrev = "Tu(A)";
+        } else if ("Me".equalsIgnoreCase(geoAbbrev)) {
+            geoAbbrev = "Si(M)";
+        } else if ("RK".equalsIgnoreCase(geoAbbrev)) {
+            geoAbbrev = "Cm";
+        } else if ("Si".equalsIgnoreCase(geoAbbrev)) {
+            geoAbbrev = "Si(S)";
+        } else if ("Tu".equalsIgnoreCase(geoAbbrev)) {
+            geoAbbrev = "Tu(E)";
+        }
+
+        String geoMapping = "<?xml version=\"1.0\" ?><mapService xmlns=\"http://www.etaxonomy.eu/cdm\" type=\"editMapService\">"
+                + "<area><layer>euromed_2013</layer><field>EMAREA</field>"
+                + "<value>" + geoAbbrev + "</value></area></mapService>";
+        Annotation geoServiceMapping = Annotation.NewInstance(geoMapping, AnnotationType.TECHNICAL(), Language.UNKNOWN_LANGUAGE());
+        namedArea.addAnnotation(geoServiceMapping);
+
         voc.addTerm(namedArea);
         return namedArea;
     }
