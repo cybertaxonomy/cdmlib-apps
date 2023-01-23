@@ -46,7 +46,7 @@ public class BerlinModelSources {
         String dbms = Source.SQL_SERVER_2008;
         String strServer = "bgbm-sql03";
         String strDB = "EuroPlusMed_Pub2";
-        int port = 1433;  //was 1247
+        int port = 1433;
         String userName = "WebUser";  //was webUser  or pesiexport
         return  makeSource(dbms, strServer, strDB, port, userName, null);
     }
