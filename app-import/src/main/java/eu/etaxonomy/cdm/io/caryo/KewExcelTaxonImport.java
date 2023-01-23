@@ -135,15 +135,17 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         Reference sec = getSecReference(state, record);
 
         //name
-        TaxonName existingName = getExistingName(state, line);
-        if (existingName != null){
-            verifyName(state, existingName, record, line, false);
+        boolean isNewName = true;
+        TaxonName name = getExistingName(state, line);
+        if (name != null){
+            verifyName(state, name, record, line, false);
+            isNewName = false;
         }else{
-            existingName = createName(state, line);
+            name = createName(state, line);
         }
 
         //taxon
-        TaxonBase<?> taxonBase = makeTaxonBase(state, line, record, existingName, sec);
+        TaxonBase<?> taxonBase = makeTaxonBase(state, line, record, name, sec, isNewName);
 
         if (taxonBase != null){
             getTaxonService().saveOrUpdate(taxonBase);
@@ -341,12 +343,14 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
 
     private String verifyField(String expectedValue, Map<String, String> record, String fieldName, String line,
             String noLogIf, String noLogIf2, boolean isNew) {
+
         String value = getValue(record, fieldName);
         if (!CdmUtils.nullSafeEqual(expectedValue, value)){
             String diff = singleDiff(expectedValue, value);
-            String label = isNew ? "New     " : "Existing";
+            String label1 = isNew ? "Parsed  " : "Existing";
+            String label2 = isNew ? "Atomized" : "Kew     ";
             if (!diff.equals(noLogIf) && !diff.equals(noLogIf2) || diff.equals(NO_SIMPLE_DIFF)){
-                System.out.println("   " + line + fieldName + "\n        "+label+": " + expectedValue + "\n        Kew     : " + value);
+                System.out.println("   " + line + fieldName + "\n        "+label1+": " + expectedValue + "\n        "+label2+": " + value);
             }
             return diff;
         }else{
@@ -384,6 +388,7 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
             putName(kewNameId, existingName.getUuid(), line);
             return CdmBase.deproxy(existingName);
         }else{
+            logger.warn(line + "Name with CDM-Name_UUID="+cdmNameUuid+" could not be found in database");
             return null;
         }
     }
@@ -394,7 +399,6 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
             logger.warn(line + "Kew-Name-id already exists: " + kewNameId);
         }
     }
-
 
     private void makeNameStatus(String line, Map<String, String> record,
             TaxonName taxonName) {
@@ -421,11 +425,20 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
 
 
     private TaxonBase<?> makeTaxonBase(SimpleExcelTaxonImportState<CONFIG> state, String line,
-            Map<String, String> record, TaxonName taxonName, Reference sec) {
+            Map<String, String> record, TaxonName taxonName, Reference sec, boolean isNewName) {
 
         TaxonBase<?> taxonBase;
         boolean isUnplaced = false;
         String taxStatusStr = getValue(record, Kew_Taxonomic_Status);
+
+
+        TaxonBase<?> existingTaxon = null;
+        if (!isNewName && !taxonName.getTaxa().isEmpty()) {
+            if (taxonName.getTaxa().size() > 1) {
+                System.out.println("  " + line + "Existing name is used in more than 1 taxon/synonym: " + taxonName.getTitleCache());
+            }
+            existingTaxon = CdmBase.deproxy(taxonName.getTaxa().iterator().next());
+        }
 
         if ("Accepted".equals(taxStatusStr)){
             taxonBase = Taxon.NewInstance(taxonName, sec);
@@ -439,6 +452,11 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
             logger.warn(line + "Status not handled: " + taxStatusStr);
             return null;
         }
+        if (existingTaxon != null && existingTaxon.getClass().equals(taxonBase.getClass())) {
+            taxonBase = existingTaxon;
+        }
+
+
         taxonBase.addSource(makeOriginalSource(state));
         taxonMap.put(getValue(record, Kew_Name_ID), taxonBase.getUuid());
         if (taxonBase instanceof Taxon){
@@ -516,7 +534,7 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         UUID orphanedTaxonUuid = state.getConfig().getOrphanedPlaceholderTaxonUuid();
         orphanedSynonymTaxon = CdmBase.deproxy(getTaxonService().find(orphanedTaxonUuid), Taxon.class);
         if (orphanedSynonymTaxon == null){
-            TaxonName placeholderName = TaxonNameFactory.NewBacterialInstance(Rank.SUBFAMILY());
+            TaxonName placeholderName = TaxonNameFactory.NewBotanicalInstance(Rank.SUBFAMILY());
             placeholderName.setTitleCache("Orphaned_Synonyms_KEW", true);
             orphanedSynonymTaxon = Taxon.NewInstance(placeholderName, getSecReference(state, state.getOriginalRecord()));
             orphanedSynonymTaxon.setUuid(orphanedTaxonUuid);
