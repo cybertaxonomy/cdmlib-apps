@@ -577,7 +577,9 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
     private Taxon getParent(SimpleExcelTaxonImportState<CONFIG> state, Map<String, String> record, TaxonName taxonName, String line, String kewId) {
         String statusStr = getValue(record, Kew_Taxonomic_Status);
         if ("Unplaced".equals(statusStr)){
-            return CdmBase.deproxy(getTaxonService().find(state.getConfig().getUnplacedTaxonUuid()), Taxon.class);
+            Taxon unplaced = CdmBase.deproxy(getTaxonService().find(state.getConfig().getUnplacedTaxonUuid()), Taxon.class);
+            logger.warn(line + "Could not find 'unplaced' taxon with uuid '" + state.getConfig().getUnplacedTaxonUuid() + "'."  );
+            return unplaced;
         }else if ("Artificial Hybrid".equals(statusStr)){
             return null ; //getTaxonNodeService().find(UUID.fromString(KEW_HYBRIDS_NODE)); hybrids are handled as synonyms now
         }else if ("Accepted".equals(statusStr)){
