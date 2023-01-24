@@ -44,7 +44,7 @@ public class CommonNameImportConfigurator extends ExcelImportConfiguratorBase im
     @Override
 	protected void makeIoClassList(){
 		ioClassList = new Class[]{
-				CommonNameExcelImport.class ,
+				CichorieaeCommonNameExcelImport.class ,
 		};
 	}
 
@@ -60,10 +60,6 @@ public class CommonNameImportConfigurator extends ExcelImportConfiguratorBase im
 	   setDestination(destination);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSource()
-	 */
 	@Override
 	public URI getSource() {
 		return super.getSource();
