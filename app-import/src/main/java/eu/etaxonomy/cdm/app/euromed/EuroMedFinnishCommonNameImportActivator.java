@@ -22,8 +22,9 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.fact.commonname.in.CommonNameExcelImportConfigurator;
-import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.TreeIndex;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
 
 /**
  * @author a.mueller
@@ -42,17 +43,20 @@ public class EuroMedFinnishCommonNameImportActivator {
 //   static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
 
     static final UUID sourceRefUuid = UUID.fromString("c239bd59-63b8-442a-b097-4a7a7869b933");
+    static final OriginalSourceType sourceType = OriginalSourceType.PrimaryTaxonomicSource;
 
-    static final UUID finnishUuid = Language.uuidFinnish;
+    static final UUID finnishUuid = UUID.fromString("4606abdf-6dbe-4bfe-b3da-a1fa08f2f1e2");
     static final UUID finland = BerlinModelTransformer.uuidEMAreaCommonNameFinland;
-    static final UUID swedishUuid = Language.uuidSwedish;
+    static final UUID swedishUuid = UUID.fromString("d4541a74-becc-4ba6-874c-510ee0d0a29f");
     static final UUID swedenAndFinland = BerlinModelTransformer.uuidEMAreaCommonNameSwedenAndFinland;
+    static final TreeIndex treeIndexFilter = TreeIndex.NewInstance("#t10#10#56284#"); //Plantae
+    static final boolean allowNameMatch = true;
 
-    static final boolean isSwedish = false;
+    static final boolean isSwedish = true;
 
     static final UUID areaUuid = isSwedish ? swedenAndFinland : finland;
     static final UUID languageUuid = isSwedish ? swedishUuid : finnishUuid;
-    static final String commonNameCol = isSwedish ? "" : "FINNISH_NAME";
+    static final String commonNameCol = isSwedish ? "SWEDISH_NAME" : "FINNISH_NAME";
 
 
     //check - import
@@ -69,11 +73,14 @@ public class EuroMedFinnishCommonNameImportActivator {
             config.setCheck(check);
             config.setNomenclaturalCode(NomenclaturalCode.ICNAFP);
             config.setSourceRefUuid(sourceRefUuid);
+            config.setSourceType(sourceType);
 //            config.setSourceReference(getSourceReference());
             config.setDefaultLanguageUuid(languageUuid);
             config.setDefaultAreaUuid(areaUuid);
             config.setCommonNameColumnLabel(commonNameCol);
             config.setWorksheetName("ACCEPTED");
+            config.setTreeIndexFilter(treeIndexFilter);
+            config.setAllowNameMatching(allowNameMatch);
 
             CdmDefaultImport<CommonNameExcelImportConfigurator> myImport = new CdmDefaultImport<>();
             ImportResult result = myImport.invoke(config);
