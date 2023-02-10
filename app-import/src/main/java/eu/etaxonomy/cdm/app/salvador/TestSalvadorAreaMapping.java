@@ -20,7 +20,7 @@ import org.springframework.aop.support.AopUtils;
 
 import eu.etaxonomy.cdm.api.dto.portal.DistributionInfoDto.InfoPart;
 import eu.etaxonomy.cdm.api.dto.portal.config.DistributionInfoConfiguration;
-import eu.etaxonomy.cdm.api.service.geo.DistributionService;
+import eu.etaxonomy.cdm.api.service.geo.DistributionServiceImpl;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -55,8 +55,8 @@ public class TestSalvadorAreaMapping {
     private void doTest2(CdmIoApplicationController app)  {
         UUID taxonUuid = UUID.fromString("eae896f0-3194-4b7b-a502-ad1d54ec36e6");
 //      Taxon taxon = (Taxon)app.getTaxonService().find(taxonUuid);
-      Object distributionServiceObj = app.getBean("distributionService");
-      DistributionService distributionService;
+      Object distributionServiceObj = app.getBean("distributionServiceImpl");
+      DistributionServiceImpl distributionService;
         try {
             distributionService = getTargetObject(distributionServiceObj);
 
