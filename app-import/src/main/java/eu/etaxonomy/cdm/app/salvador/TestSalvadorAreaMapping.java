@@ -18,11 +18,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
 
-import eu.etaxonomy.cdm.api.service.dto.DistributionInfoDTO.InfoPart;
+import eu.etaxonomy.cdm.api.dto.portal.DistributionInfoDto.InfoPart;
+import eu.etaxonomy.cdm.api.dto.portal.config.DistributionInfoConfiguration;
+import eu.etaxonomy.cdm.api.service.geo.DistributionService;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.ext.geo.EditGeoService;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 
 /**
@@ -54,24 +55,26 @@ public class TestSalvadorAreaMapping {
     private void doTest2(CdmIoApplicationController app)  {
         UUID taxonUuid = UUID.fromString("eae896f0-3194-4b7b-a502-ad1d54ec36e6");
 //      Taxon taxon = (Taxon)app.getTaxonService().find(taxonUuid);
-      Object geoServiceObj = app.getBean("editGeoService");
-      EditGeoService geoService;
+      Object distributionServiceObj = app.getBean("distributionService");
+      DistributionService distributionService;
         try {
-            geoService = getTargetObject(geoServiceObj);
+            distributionService = getTargetObject(distributionServiceObj);
 
 
           Set<InfoPart> partSet = new HashSet<>();
           partSet.add(InfoPart.mapUriParams);
 
           EnumSet<InfoPart> parts = EnumSet.copyOf(partSet);
-          geoService.composeDistributionInfoFor(parts, taxonUuid, false, false, null, true,
-                  null, null,
-                  null, null, null, null, false);
+          DistributionInfoConfiguration distConfig = new DistributionInfoConfiguration();
+          distConfig.setInfoParts(parts);
+          distributionService.composeDistributionInfoFor(distConfig, taxonUuid, false, null,
+                  null, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> T getTargetObject(Object proxy) throws Exception {
         while( (AopUtils.isJdkDynamicProxy(proxy))) {
             return (T) getTargetObject(((Advised)proxy).getTargetSource().getTarget());
@@ -79,10 +82,6 @@ public class TestSalvadorAreaMapping {
         return (T) proxy; // expected to be cglib proxy then, which is simply a specialized class
     }
 
-
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         TestSalvadorAreaMapping me = new TestSalvadorAreaMapping();
         me.doTest(cdmDestination);

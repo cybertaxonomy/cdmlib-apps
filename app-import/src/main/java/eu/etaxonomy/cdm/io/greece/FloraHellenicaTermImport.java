@@ -17,9 +17,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.ITermService;
+import eu.etaxonomy.cdm.api.service.geo.GeoServiceArea;
+import eu.etaxonomy.cdm.api.service.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.common.URI;
-import eu.etaxonomy.cdm.ext.geo.GeoServiceArea;
-import eu.etaxonomy.cdm.ext.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.description.Feature;

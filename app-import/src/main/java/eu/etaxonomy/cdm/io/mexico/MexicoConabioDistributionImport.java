@@ -17,9 +17,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.api.service.geo.GeoServiceArea;
+import eu.etaxonomy.cdm.api.service.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.common.URI;
-import eu.etaxonomy.cdm.ext.geo.GeoServiceArea;
-import eu.etaxonomy.cdm.ext.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;

@@ -15,10 +15,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.api.service.geo.GeoServiceArea;
+import eu.etaxonomy.cdm.api.service.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.common.DOI;
 import eu.etaxonomy.cdm.common.URI;
-import eu.etaxonomy.cdm.ext.geo.GeoServiceArea;
-import eu.etaxonomy.cdm.ext.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -482,13 +482,6 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         return true;
     }
 
-
-    /**
-     * @param cuba
-     * @param mapping_layer
-     * @param mapping_field
-     * @param abbrev
-     */
     private void addMapping(NamedArea area, String mapping_layer, String mapping_field, String abbrev) {
         GeoServiceAreaAnnotatedMapping mapping = (GeoServiceAreaAnnotatedMapping)this.getBean("geoServiceAreaAnnotatedMapping");
         GeoServiceArea geoServiceArea = new GeoServiceArea();
