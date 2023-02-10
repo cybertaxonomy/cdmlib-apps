@@ -8,21 +8,18 @@
 */
 package eu.etaxonomy.cdm.io.caryo;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
-import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
-import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 /**
  * @author a.mueller
@@ -38,9 +35,10 @@ public class CaryoSileneaeSynonymImport extends CaryoSileneaeImportBase {
     private static final String NOMEN_LINK = "Nomen_link";
     private static final String TAXON_LINK = "Taxon_link";
 
-    private Set<String> neglectedRecords = new HashSet<>();
-
-    private SimpleExcelTaxonImportState<CaryoSileneaeImportConfigurator> state;
+    @Override
+    protected String getWorksheetName(CaryoSileneaeImportConfigurator config) {
+        return "Synonyms";
+    }
 
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CaryoSileneaeImportConfigurator> state) {
@@ -50,7 +48,6 @@ public class CaryoSileneaeSynonymImport extends CaryoSileneaeImportBase {
             System.out.println(line);
         }
 
-        this.state = state;
         Map<String, String> record = state.getOriginalRecord();
 
         Integer nomTaxId = Integer.valueOf(getValue(record, NOMTAX_ID));
@@ -60,7 +57,7 @@ public class CaryoSileneaeSynonymImport extends CaryoSileneaeImportBase {
 
         String row = String.valueOf(line) + "("+nomTaxId+"): ";
 
-        TaxonName name = getName(state, nameLinkID);
+        TaxonName name = getName(nameLinkID);
 
         if (name == null) {
             logger.warn(row + "Name does not exist");
@@ -69,26 +66,38 @@ public class CaryoSileneaeSynonymImport extends CaryoSileneaeImportBase {
 
         Synonym synonym = Synonym.NewInstance(name, getSecRef(state));
 
-        Taxon taxon = getTaxon(state, taxonLinkId);
+        Taxon taxon = getTaxon(taxonLinkId);
         if (taxon == null) {
             logger.warn(row + "Taxon does not exist");
             return;
         }
+
         //TODO type (compute homotypics)
+
         taxon.addSynonym(synonym, SynonymType.SYNONYM_OF);
+        orphanedNameMap.remove(nameLinkID);
+        getTaxonService().saveOrUpdate(taxon);  //TODO does with work with session handling? I forgot it for the final import
     }
 
+    boolean first = true;
     @Override
     protected void secondPass(SimpleExcelTaxonImportState<CaryoSileneaeImportConfigurator> state) {
+        if (first) {
+            for (TaxonName taxonName : orphanedNameMap.values()) {
+                Taxon taxon = Taxon.NewInstance(taxonName, getSecRef(state));
+                TaxonNode node = getUnresolvedNode(state).addChildTaxon(taxon, null);
+                getTaxonNodeService().saveOrUpdate(node);
+            }
+            first = false;
+        }
     }
 
-    private boolean hasSameAcceptedTaxon(TaxonBase<?> taxonBase, TaxonBase<?> basionymTaxon) {
-        if (taxonBase.isInstanceOf(Synonym.class)){
-            taxonBase = CdmBase.deproxy(taxonBase, Synonym.class).getAcceptedTaxon();
+    private TaxonNode unresolvedNode;
+    private TaxonNode getUnresolvedNode(SimpleExcelTaxonImportState<CaryoSileneaeImportConfigurator> state) {
+        if (unresolvedNode == null) {
+            unresolvedNode = getTaxonNodeService().find(state.getConfig().getUnresolvedNodeUuid());
         }
-        if (basionymTaxon.isInstanceOf(Synonym.class)){
-            basionymTaxon = CdmBase.deproxy(basionymTaxon, Synonym.class).getAcceptedTaxon();
-        }
-        return taxonBase != null && basionymTaxon != null && taxonBase.equals(basionymTaxon);
+        return unresolvedNode;
     }
+
 }

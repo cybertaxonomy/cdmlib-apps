@@ -31,7 +31,7 @@ public class CaryoSileneaeImportConfigurator extends ExcelImportConfiguratorBase
     private UUID acceptedNodeUuid;
     private UUID unresolvedNodeUuid;
 
-    private static IInputTransformer defaultTransformer = new CaryoAizoaceaeTransformer();
+    private static IInputTransformer defaultTransformer = new CaryoSileneaeTransformer();
 
     public static CaryoSileneaeImportConfigurator NewInstance(URI source, ICdmDataSource destination) {
         return new CaryoSileneaeImportConfigurator(source, destination);
@@ -54,7 +54,10 @@ public class CaryoSileneaeImportConfigurator extends ExcelImportConfiguratorBase
     @Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
-                CaryoSileneaeNameImport.class
+                CaryoSileneaeNameImport.class,
+                CaryoSileneaeNomRefImport.class,
+                CaryoSileneaeTaxonImport.class,
+                CaryoSileneaeSynonymImport.class
         };
     }
 

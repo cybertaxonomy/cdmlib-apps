@@ -8,6 +8,12 @@
 */
 package eu.etaxonomy.cdm.io.caryo;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import eu.etaxonomy.cdm.common.DoubleResult;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.name.TaxonName;
@@ -24,14 +30,35 @@ public abstract class CaryoSileneaeImportBase extends SimpleExcelTaxonImport<Car
 
     private Reference secRef = null;
 
-    protected Taxon getTaxon(SimpleExcelTaxonImportState<CaryoSileneaeImportConfigurator> state, Integer taxonLinkId) {
-        // TODO Auto-generated method stub
-        return null;
+    protected static Map<Integer,TaxonName> nameMap = new HashMap<>();
+
+    private static Map<Integer,Taxon> taxonMap = new HashMap<>();
+
+    protected static Map<Integer,TaxonName> origNameMap = new HashMap<>();
+    protected static Map<Integer,TaxonName> orphanedNameMap = new HashMap<>();
+    protected static Set<TaxonName> origSpellingNames = new HashSet<>();
+
+    protected static Map<Integer, Integer> accIdMap = new HashMap<>();
+
+    protected static Map<Integer,DoubleResult<String,String>> origPublicationMap = new HashMap<>();
+
+
+
+    protected Taxon getTaxon(Integer taxonLinkId) {
+        return taxonMap.get(taxonLinkId);
     }
 
-    protected TaxonName getName(SimpleExcelTaxonImportState<CaryoSileneaeImportConfigurator> state, Integer nameLinkID) {
-        // TODO Auto-generated method stub
-        return null;
+    protected TaxonName getName(Integer nameLinkId) {
+        return nameMap.get(nameLinkId);
+    }
+
+    protected void putToNameMap(Integer id, TaxonName name) {
+        nameMap.put(id, name);
+        origNameMap.put(id, name);
+        orphanedNameMap.put(id, name);
+    }
+    protected void putToTaxonMap(Integer id, Taxon taxon) {
+        taxonMap.put(id, taxon);
     }
 
     protected Reference getSecRef(SimpleExcelTaxonImportState<CaryoSileneaeImportConfigurator> state) {

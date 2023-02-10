@@ -38,7 +38,8 @@ public class SileneaeImportActivator {
     private static final URI source = sileneae();
 
     private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
-    //private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
+//    private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp1();
+//    private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
 
     private static final UUID acceptedUuid = UUID.fromString("8ac4a182-1281-4473-b6a1-c4f681f7dea3");
     private static final UUID unresolvedUuid = UUID.fromString("99ab0e67-4214-4bc7-884d-6af8c2e60c38");
