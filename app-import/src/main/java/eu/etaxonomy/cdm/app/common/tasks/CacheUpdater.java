@@ -16,7 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
-import eu.etaxonomy.cdm.api.service.UpdateResult;
 import eu.etaxonomy.cdm.api.service.config.CacheUpdaterConfigurator;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.monitor.IRemotingProgressMonitor;
@@ -27,6 +26,10 @@ import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 
 /**
+ * Runs cache updater.
+ *
+ * Note: Requires setting the password for authentication
+ *
  * @author a.mueller
  */
 public class CacheUpdater {
@@ -37,7 +40,7 @@ public class CacheUpdater {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview_direct();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_genus();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_int_flora_malesiana();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
 
 
 	static final List<String> classListStrings =  Arrays.asList(new String[]{
@@ -57,16 +60,17 @@ public class CacheUpdater {
 		try {
 
 			CdmApplicationController appCtr = CdmIoApplicationController.NewInstance(destination, DbSchemaValidation.VALIDATE, false);
-			@SuppressWarnings("unused")
-            UpdateResult result2 = appCtr.getOccurrenceService().updateCaches();
+//			@SuppressWarnings("unused")
+//            UpdateResult result2 = appCtr.getOccurrenceService().updateCaches();
 //			@SuppressWarnings("unused")
 //			UpdateResult result3 = appCtr.getTaxonService().updateCaches();
 
 			config = CacheUpdaterConfigurator.NewInstance(classListStrings);
-			//			appCtrInit.authenticate("admin", "xxx");
+			//TODO set correct password here for running, but be careful not to commit it afterwards
+			appCtr.authenticate("admin", "xxx");
 			UUID monitUuid = appCtr.getLongRunningTasksService().monitLongRunningTask(config);
 			IRemotingProgressMonitor monitor = appCtr.getProgressMonitorService().getRemotingMonitor(monitUuid);
-			while(monitor != null && (!monitor.isCanceled() || !monitor.isDone() || !monitor.isFailed())) {
+			while(monitor != null && (!monitor.isCanceled() && !monitor.isDone() && !monitor.isFailed())) {
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e) {
@@ -92,6 +96,7 @@ public class CacheUpdater {
 		System.out.println("Start updating caches for "+ destination.getDatabase() + "...");
 		CacheUpdater me = new CacheUpdater();
 		me.doInvoke(destination);
+		System.exit(0);
 
 	}
 
