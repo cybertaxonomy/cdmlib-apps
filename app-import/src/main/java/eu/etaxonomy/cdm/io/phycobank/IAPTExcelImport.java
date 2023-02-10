@@ -20,9 +20,9 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -1052,7 +1052,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         	}
         	value = CdmUtils.removeDuplicateWhitespace(value.trim()).toString();
             if(doUnescapeHtmlEntities){
-                value = StringEscapeUtils.unescapeHtml(value);
+                value = StringEscapeUtils.unescapeHtml4(value);
             }
         	return value.trim();
         }else{
