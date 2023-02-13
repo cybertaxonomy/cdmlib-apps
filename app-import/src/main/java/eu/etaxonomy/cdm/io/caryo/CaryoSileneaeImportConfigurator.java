@@ -54,10 +54,12 @@ public class CaryoSileneaeImportConfigurator extends ExcelImportConfiguratorBase
     @Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
-                CaryoSileneaeNameImport.class,
-                CaryoSileneaeNomRefImport.class,
-                CaryoSileneaeTaxonImport.class,
-                CaryoSileneaeSynonymImport.class
+//                CaryoSileneaeNameImport.class,
+//                CaryoSileneaeNomRefImport.class,
+//                CaryoSileneaeTaxonImport.class,
+//                CaryoSileneaeSynonymImport.class
+                CaryoSileneaeTaxonSynonymCleanupImport.class,
+                CaryoSileneaeSynonymSynonymCleanupImport.class
         };
     }
 
