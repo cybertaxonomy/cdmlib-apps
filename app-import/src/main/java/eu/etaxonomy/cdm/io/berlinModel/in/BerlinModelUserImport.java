@@ -24,7 +24,6 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.config.Configuration;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelUserImportValidator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
-import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Person;
@@ -64,7 +63,6 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 		BerlinModelImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
 		String dbAttrName;
-		String cdmAttrName;
 
 		logger.info("start make "+pluralString+" ...");
 
@@ -100,12 +98,8 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 					dbAttrName = "RealName";
 					String realName = rs.getString(dbAttrName);
 					if (isNotBlank(realName)){
-					    cdmAttrName = "TitleCache";
 					    Person person = Person.NewInstance();
-					    success &= ImportHelper.addStringValue(rs, person, dbAttrName, cdmAttrName, false);
-					    //only to make deduplication work, due to issue that nomenclaturalTitle does not match because set automatically during save
-					    cdmAttrName = "nomenclaturalTitle";
-					    success &= ImportHelper.addStringValue(rs, person, dbAttrName, cdmAttrName, false);
+					    person.setTitleCache(realName, true);
 
 					    Person dedupPerson = deduplicatePerson(state, person);
 			            if (dedupPerson != person){
@@ -144,7 +138,7 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 
 		this.commitTransaction(tx);
 
-		logger.info("end make "+pluralString+" ..." + getSuccessString(success));;
+		logger.info("end make "+pluralString+" ..." + getSuccessString(success));
 		if (!success){
 			state.setUnsuccessfull();
 		}
