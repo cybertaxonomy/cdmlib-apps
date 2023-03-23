@@ -51,7 +51,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 
 
 /**
@@ -263,7 +263,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 						    ExtensionType detailExtensionType = getExtensionType(state, BerlinModelTransformer.ID_IN_SOURCE_EXT_UUID, "Berlin Model IdInSource","Berlin Model IdInSource","BM source id");
 						    Extension.NewInstance(taxonBase, idInSource.trim(), detailExtensionType);
 						}else if(isMclIdentifier(state,rs, idInSource) || state.getConfig().isMcl()){
-						    DefinedTerm identifierType = getIdentiferType(state, BerlinModelTransformer.uuidEM_MCLIdentifierType, "MCL identifier", "Med-Checklist identifier", "MCL ID", null);
+						    IdentifierType identifierType = getIdentiferType(state, BerlinModelTransformer.uuidEM_MCLIdentifierType, "MCL identifier", "Med-Checklist identifier", "MCL ID", null);
 						    Identifier.NewInstance(taxonBase, idInSource.trim(), identifierType);
 						}
 						//maybe we want to handle it as fact in future for MCL

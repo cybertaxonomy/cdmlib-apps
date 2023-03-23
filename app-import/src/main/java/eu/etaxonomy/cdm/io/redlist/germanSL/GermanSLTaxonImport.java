@@ -37,7 +37,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 import eu.etaxonomy.cdm.model.term.OrderedTermVocabulary;
 
 /**
@@ -139,7 +139,7 @@ public class GermanSLTaxonImport
             UUID idTypeUUID;
             try {
                 idTypeUUID = state.getTransformer().getIdentifierTypeUuid("LETTERCODE");
-                DefinedTerm idType = getIdentiferType(state, idTypeUUID, "GermanSL lettercode", "GermanSL lettercode", "LETTERCODE", null);
+                IdentifierType idType = getIdentiferType(state, idTypeUUID, "GermanSL lettercode", "GermanSL lettercode", "LETTERCODE", null);
                 taxonBase.addIdentifier(lettercode, idType);
             } catch (UndefinedTransformerMethodException e) {
                e.printStackTrace();

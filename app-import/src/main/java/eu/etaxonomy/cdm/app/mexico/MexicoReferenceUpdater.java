@@ -31,7 +31,7 @@ import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 import eu.etaxonomy.cdm.persistence.query.MatchMode;
 
 /**
@@ -50,7 +50,7 @@ public class MexicoReferenceUpdater {
 
         dataSource.checkConnection();
         CdmApplicationController app = CdmApplicationController.NewInstance(dataSource, hbm2dll);
-        DefinedTerm identifierType = (DefinedTerm)app.getTermService().find(MexicoConabioTransformer.uuidConabioTaxonIdIdentifierType);
+        IdentifierType identifierType = (IdentifierType)app.getTermService().find(MexicoConabioTransformer.uuidConabioTaxonIdIdentifierType);
 
         Map<String,Reference> journalMap = getJournalMap(app);
         try {
@@ -76,7 +76,7 @@ public class MexicoReferenceUpdater {
         }
     }
 
-    private void handleRef(CdmApplicationController app, String id, String nomRefStr, DefinedTerm identifierType, Map<String, Reference> journalMap, int line) {
+    private void handleRef(CdmApplicationController app, String id, String nomRefStr, IdentifierType identifierType, Map<String, Reference> journalMap, int line) {
         String lineStr = " " + id +"; line: " + line;
         try {
             List<String> props = Arrays.asList(new String[]{"combinationAuthor.teamMembers","identifiers","nomenclaturalSource.citation.authorTeam.teamMembers"});
@@ -130,7 +130,7 @@ public class MexicoReferenceUpdater {
         }
     }
 
-    private void handleRefs(Map<String, String> newRefs, CdmApplicationController app, DefinedTerm identifierType) {
+    private void handleRefs(Map<String, String> newRefs, CdmApplicationController app, IdentifierType identifierType) {
         List<String> props = Arrays.asList(new String[]{"identifiers","nomenclaturalSource.citation"});
         for (String id : newRefs.keySet()){
             List<IdentifiedEntityDTO<TaxonName>> names = app.getNameService().findByIdentifier(TaxonName.class, id, identifierType, MatchMode.EXACT, true, null, null, props).getRecords();

@@ -19,7 +19,7 @@ import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 import eu.etaxonomy.cdm.strategy.parser.BibliographicAuthorParser;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
@@ -182,7 +182,7 @@ public abstract class MexicoEfloraReferenceImportBase  extends MexicoEfloraImpor
         state.getReferenceUuidMap().put(refId, ref.getUuid());
 
         //.. identifier
-        DefinedTerm conabioIdentifier = getIdentiferType(state, MexicoConabioTransformer.uuidConabioReferenceIdIdentifierType,
+        IdentifierType conabioIdentifier = getIdentiferType(state, MexicoConabioTransformer.uuidConabioReferenceIdIdentifierType,
                 "CONABIO Reference Identifier", "CONABIO Reference Identifier", "CONABIO", null);
         ref.addIdentifier(String.valueOf(refId), conabioIdentifier);
     }

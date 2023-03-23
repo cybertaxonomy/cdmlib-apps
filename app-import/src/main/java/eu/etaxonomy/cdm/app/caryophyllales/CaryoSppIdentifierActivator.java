@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.identifier.IdentifierImportConfigurator;
 import eu.etaxonomy.cdm.model.name.TaxonName;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 
 /**
  * @author a.mueller
@@ -41,7 +41,7 @@ public class CaryoSppIdentifierActivator {
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
 
-    private static final UUID idTypeUuid = DefinedTerm.uuidWfoNameIdentifier;
+    private static final UUID idTypeUuid = IdentifierType.uuidWfoNameIdentifier;
 //    private static final UUID idTypeUuid = DefinedTerm.uuidIpniNameIdentifier;
 
     //check - import

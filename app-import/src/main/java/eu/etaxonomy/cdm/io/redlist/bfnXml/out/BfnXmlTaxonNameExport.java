@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlTransformer;
+import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -42,8 +43,8 @@ import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
@@ -245,7 +246,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
     }
 
     private String getIdentifier(Taxon taxon, UUID identifierUuid) {
-        DefinedTerm identifierType = HibernateProxyHelper.deproxy(getTermService().load(identifierUuid), DefinedTerm.class);
+        IdentifierType identifierType = CdmBase.deproxy(getTermService().load(identifierUuid), IdentifierType.class);
         Set<String> identfiers = taxon.getIdentifierStrings(identifierType);
         if(identfiers.size()==1){
             return identfiers.iterator().next();

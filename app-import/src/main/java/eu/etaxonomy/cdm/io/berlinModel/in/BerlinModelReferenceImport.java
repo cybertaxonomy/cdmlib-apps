@@ -76,7 +76,7 @@ import eu.etaxonomy.cdm.model.reference.IPrintSeries;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 import eu.etaxonomy.cdm.strategy.cache.agent.PersonDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.agent.TeamDefaultCacheStrategy;
@@ -535,28 +535,18 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		return success;
 	}
 
-
-	/**
-     * @param state
-     * @param idInSource
-     * @param reference
-     * @param refId
-     */
     private void makeSourceNumbers(BerlinModelImportState state, String idInSource, Reference reference,
             Integer refId) {
         String[] splits = idInSource.split("\\|");
         for (String split : splits){
             split = split.trim();
             UUID uuid = BerlinModelTransformer.uuidEMReferenceSourceNumber;
-            TermVocabulary<DefinedTerm> voc = null;  //user defined voc
-            DefinedTerm type = getIdentiferType(state, uuid, "E+M Reference Source Number", "Euro+Med Reference Source Number", "E+M Source Number", voc);
+            TermVocabulary<IdentifierType> voc = null;  //user defined voc
+            IdentifierType type = getIdentiferType(state, uuid, "E+M Reference Source Number", "Euro+Med Reference Source Number", "E+M Source Number", voc);
             Identifier.NewInstance(reference, split, type);
         }
     }
 
-    /**
-     * @param reference
-     */
     private void handleEdition(Reference reference) {
         if (reference.getEdition()!= null && reference.getEdition().startsWith("ed. ")){
             reference.setEdition(reference.getEdition().substring(4));

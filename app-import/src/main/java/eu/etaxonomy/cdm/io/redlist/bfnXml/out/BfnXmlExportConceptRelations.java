@@ -18,14 +18,14 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlTransformer;
+import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 
 /**
  * @author pplitzner
@@ -48,7 +48,7 @@ public class BfnXmlExportConceptRelations extends BfnXmlExportBase {
 	    Document document = state.getConfig().getDocument();
 	    Element konzeptbeziehungen = null;
 	    List<Classification> list = getClassificationService().list(Classification.class, null, null, null, null);
-	    DefinedTerm taxNrIdentifierType = HibernateProxyHelper.deproxy(getTermService().load(BfnXmlTransformer.UUID_TAX_NR_IDENTIFIER_TYPE), DefinedTerm.class);
+	    IdentifierType taxNrIdentifierType = CdmBase.deproxy(getTermService().load(BfnXmlTransformer.UUID_TAX_NR_IDENTIFIER_TYPE), IdentifierType.class);
 	    for (Classification classification : list) {
             List<TaxonNode> childNodes = classification.getChildNodes();
             for (TaxonNode taxonNode : childNodes) {
@@ -92,7 +92,7 @@ public class BfnXmlExportConceptRelations extends BfnXmlExportBase {
 
 	}
 
-    private void addConceptTaxonym(DefinedTerm taxNrIdentifierType, Element taxonym, Taxon taxon) {
+    private void addConceptTaxonym(IdentifierType taxNrIdentifierType, Element taxonym, Taxon taxon) {
         String taxNr = getTaxNr(taxon, taxNrIdentifierType);
         if(taxon.getTaxonNodes().size()>1){
             logger.error(taxon+" has more than one taxon node. First one is used");
@@ -103,7 +103,7 @@ public class BfnXmlExportConceptRelations extends BfnXmlExportBase {
         addIwert(taxonym, BfnXmlConstants.ATT_NAME, taxon.getName().getTitleCache());
     }
 
-    private String getTaxNr(Taxon taxon, DefinedTerm taxNrIdentifierType) {
+    private String getTaxNr(Taxon taxon, IdentifierType taxNrIdentifierType) {
         String taxNr = null;
         Set<String> identifiers = taxon.getIdentifierStrings(taxNrIdentifierType);
         if(identifiers.size()==1){

@@ -40,7 +40,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -273,7 +273,7 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
             logger.warn("null");
         }
 
-        DefinedTerm conabioIdentifier = getIdentiferType(state, MexicoConabioTransformer.uuidConabioTaxonIdIdentifierType,
+        IdentifierType conabioIdentifier = getIdentiferType(state, MexicoConabioTransformer.uuidConabioTaxonIdIdentifierType,
                 "CONABIO Taxon Identifier", "CONABIO Taxon Identifier", "CONABIO", null);
         result.addIdentifier(taxonId, conabioIdentifier);
 

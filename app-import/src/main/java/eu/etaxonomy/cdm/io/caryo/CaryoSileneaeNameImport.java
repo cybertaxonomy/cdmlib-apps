@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationType;
 import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
@@ -136,11 +136,11 @@ public class CaryoSileneaeNameImport extends CaryoSileneaeImportBase {
 
             //ipni ID
             if (isNotBlank(ipniId)) {
-                name.addIdentifier(ipniId, DefinedTerm.IDENTIFIER_NAME_IPNI());
+                name.addIdentifier(ipniId, IdentifierType.IDENTIFIER_NAME_IPNI());
             }
 
             //add ID
-            DefinedTerm sileneaeInfoNameIdType = getIdentiferType(state,
+            IdentifierType sileneaeInfoNameIdType = getIdentiferType(state,
                     uuidSileneaeInfoNameIdType, null, null, null, null);
             name.addIdentifier(nomenId.toString(), sileneaeInfoNameIdType);
 

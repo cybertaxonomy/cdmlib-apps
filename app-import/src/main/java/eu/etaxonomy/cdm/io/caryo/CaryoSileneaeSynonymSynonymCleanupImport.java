@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 import eu.etaxonomy.cdm.persistence.query.MatchMode;
 
 /**
@@ -131,7 +131,7 @@ public class CaryoSileneaeSynonymSynonymCleanupImport extends CaryoSileneaeImpor
 
     private TaxonName getNameFromDb(SimpleExcelTaxonImportState<CaryoSileneaeImportConfigurator> state, Integer nameId, String row) {
         try {
-            DefinedTerm sileneaeInfoNameIdType = getIdentiferType(state,
+            IdentifierType sileneaeInfoNameIdType = getIdentiferType(state,
                     uuidSileneaeInfoNameIdType, null, null, null, null);
             Pager<IdentifiedEntityDTO<TaxonName>> list = getNameService().findByIdentifier(TaxonName.class, nameId.toString(),
                     sileneaeInfoNameIdType, MatchMode.EXACT, true, null, null, null);

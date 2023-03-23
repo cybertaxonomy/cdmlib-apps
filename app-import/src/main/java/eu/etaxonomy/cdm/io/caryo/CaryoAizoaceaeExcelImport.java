@@ -40,7 +40,7 @@ import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
@@ -214,7 +214,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
             }
 
             if (!isBlank(ipniId)){
-                DefinedTerm ipniIdIdentifierType = DefinedTerm.IDENTIFIER_NAME_IPNI();
+                IdentifierType ipniIdIdentifierType = IdentifierType.IDENTIFIER_NAME_IPNI();
                 name.addIdentifier(ipniId, ipniIdIdentifierType);
             }else{
                 logger.warn(row + "IPNI id is missing.");

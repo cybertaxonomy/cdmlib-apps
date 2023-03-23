@@ -36,7 +36,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
@@ -224,9 +224,9 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         String tropicosId = record.get("OutputNameID");
         if (isNotBlank(tropicosId)){
             String tropicosIdTypeLabel = "Tropicos Name Identifier";
-            UUID uuid = DefinedTerm.uuidTropicosNameIdentifier;
-            TermVocabulary<DefinedTerm> voc = null;  //for now it goes to user defined voc
-            DefinedTerm identifierType = this.getIdentiferType(state, uuid, tropicosIdTypeLabel, tropicosIdTypeLabel, null, voc);
+            UUID uuid = IdentifierType.uuidTropicosNameIdentifier;
+            TermVocabulary<IdentifierType> voc = null;  //for now it goes to user defined voc
+            IdentifierType identifierType = this.getIdentiferType(state, uuid, tropicosIdTypeLabel, tropicosIdTypeLabel, null, voc);
             Identifier identifier = Identifier.NewInstance(tropicosId, identifierType);
             name.addIdentifier(identifier);
         }

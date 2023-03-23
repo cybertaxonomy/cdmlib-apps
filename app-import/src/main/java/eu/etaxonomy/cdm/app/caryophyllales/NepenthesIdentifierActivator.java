@@ -23,7 +23,7 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.identifier.IdentifierImportConfigurator;
 import eu.etaxonomy.cdm.model.name.TaxonName;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 
 /**
  * @author a.mueller
@@ -49,7 +49,7 @@ public class NepenthesIdentifierActivator {
         InputStreamReader source = getNepenthesIdentifier();
         IdentifierImportConfigurator config= IdentifierImportConfigurator.NewInstance(source, cdmDestination);
         config.setDbSchemaValidation(dbSchemaValidation);
-        config.setIdentifierTypeUuid(DefinedTerm.uuidWfoNameIdentifier);
+        config.setIdentifierTypeUuid(IdentifierType.uuidWfoNameIdentifier);
         config.setCdmClass(TaxonName.class);
         config.setCheck(check);
 

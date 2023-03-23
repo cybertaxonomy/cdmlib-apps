@@ -49,7 +49,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
-import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
@@ -168,8 +168,8 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         taxonIdMap.put(idCat, taxonBase);
     }
 
-    private DefinedTerm getConabioIdIdentifierType(SimpleExcelTaxonImportState<CONFIG> state) {
-        DefinedTerm conabioIdIdentifierType = getIdentiferType(state, MexicoConabioTransformer.uuidConabioTaxonIdIdentifierType, "Conabio name identifier", "Conabio name identifier", "CONABIO ID", null);
+    private IdentifierType getConabioIdIdentifierType(SimpleExcelTaxonImportState<CONFIG> state) {
+        IdentifierType conabioIdIdentifierType = getIdentiferType(state, MexicoConabioTransformer.uuidConabioTaxonIdIdentifierType, "Conabio name identifier", "Conabio name identifier", "CONABIO ID", null);
         return conabioIdIdentifierType;
     }
 
