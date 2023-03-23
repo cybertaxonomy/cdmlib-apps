@@ -217,7 +217,7 @@ public class TestTransaction {
 
 	    	TransactionStatus txStatOne = appCtr.startTransaction();
 	    	appCtr.commitTransaction(txStatOne);
-	    	// set CdmApplicationController = debug in log4j.properties to see the transaction properties
+	    	// set CdmApplicationController = debug in log4j2.xml to see the transaction properties
 	    	appCtr.close();
 			logger.info("End test ask session for objects");
 
