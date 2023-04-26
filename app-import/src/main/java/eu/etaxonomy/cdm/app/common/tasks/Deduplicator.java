@@ -37,7 +37,7 @@ public class Deduplicator {
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cichorieae();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_caryo_spp();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_flora_cuba();
     //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
 
