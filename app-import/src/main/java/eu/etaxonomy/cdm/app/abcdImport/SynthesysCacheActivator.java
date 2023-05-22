@@ -14,7 +14,6 @@ import java.net.URISyntaxException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -36,9 +35,8 @@ public class SynthesysCacheActivator {
 //    final static String xmlSource = "/home/pkelbert/workspace/proibiosphere/cdmlib-io/target/test-classes/eu/etaxonomy/cdm/io/specimen/excel/in/ExcelImportConfiguratorTest-input.xls";
     final static String xmlSource = "/home/pkelbert/Documents/Proibiosphere/ChenopodiumQuentin/GBIF data etc.xls";
 
-//  static final ICdmDataSource cdmDestination = CdmDestinations.mon_cdm();
-//    static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_proibiosphere_chenopodium();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_proibiosphere_chenopodium();
+    static final ICdmDataSource cdmDestination = null;
     static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 

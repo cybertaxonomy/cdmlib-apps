@@ -14,7 +14,6 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -36,7 +35,9 @@ public class SpecimenImportActivator {
 
     //	final static String xmlSource = "C:\\localCopy\\eclipse\\cdmlib\\app-import\\src\\main\\resources\\specimenABCD\\CDMtabular9c04a474e2_23_09_08.xls";
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_proibiosphere_chenopodium();
+    //static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_proibiosphere_chenopodium();
+    static final ICdmDataSource cdmDestination = null;
+
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
