@@ -8,6 +8,7 @@
 */
 package eu.etaxonomy.cdm.app.additivity;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -22,6 +23,7 @@ import eu.etaxonomy.cdm.io.cdm2cdm.Cdm2CdmImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.term.VocabularyEnum;
 
 /**
  * @author a.mueller
@@ -32,19 +34,15 @@ public class OntologyExportActivator {
     @SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger();
 
-//    static final ICdmDataSource source = CdmDestinations.cdm_production_greece_bupleurum();
     static final ICdmDataSource source = CdmDestinations.cdm_local_greece_bupleurum();
+//    static final ICdmDataSource source = CdmDestinations.cdm_production_greece_bupleurum();
 
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_terms();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cdmterms();
 
-//    static final String sourceRefTitle = "Flora of Greece";
 //    static final UUID sourceRefUuid = UUID.fromString("f88e33e5-1f6a-463e-b6fd-220d5e93d810");
 
     static final DbSchemaValidation schemaValidation = DbSchemaValidation.VALIDATE;
-
-    static final UUID uuidGenericStructures = UUID.fromString("4c13949e-50f5-461b-83df-21fec53437e8");
-    static final UUID uuidTermporalModifiers = UUID.fromString("004a0b82-feb1-4c96-8542-26f72c740555");
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -72,14 +70,16 @@ public class OntologyExportActivator {
 
         Cdm2CdmImportConfigurator config = Cdm2CdmImportConfigurator.NewInstace(source, destination);
         VocabularyFilter vocFilter = VocabularyFilter.NewInstance();
-        vocFilter.orVocabulary(uuidGenericStructures);
-//        vocFilter.orVocabulary(uuidTermporalModifiers);
+        addVocFilters(vocFilter, VocabularyEnum.ontologyStructureVocabularyUuids());
+        addVocFilters(vocFilter, VocabularyEnum.ontologyPropertyVocabularyUuids());
+        addVocFilters(vocFilter, VocabularyEnum.ontologyStateVocabularyUuids());
+        addVocFilters(vocFilter, VocabularyEnum.ontologyModifierVocabularyUuids());
         config.setVocabularyFilter(vocFilter);
-
 
         config.setDoTaxa(doTaxa);
         config.setDoDescriptions(doDescriptions);
         config.setDoVocabularies(doVocabularies);
+
         config.setAddSources(addSources);
         config.setSourceReference(getSourceRefNull());
         config.setRemoveImportSources(removeImportSources);
@@ -101,6 +101,13 @@ public class OntologyExportActivator {
 
         System.out.println("End" + importFrom);
     }
+
+    private void addVocFilters(VocabularyFilter vocFilter, List<UUID> vocUuids) {
+        for (UUID vocUuid : vocUuids) {
+            vocFilter.orVocabulary(vocUuid);
+        }
+    }
+
 
 
     private Reference getSourceRefNull() {
