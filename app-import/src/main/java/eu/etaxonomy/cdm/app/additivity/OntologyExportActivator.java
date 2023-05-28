@@ -8,6 +8,7 @@
 */
 package eu.etaxonomy.cdm.app.additivity;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.filter.VocabularyFilter;
@@ -34,11 +34,11 @@ public class OntologyExportActivator {
     @SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger();
 
-    static final ICdmDataSource source = CdmDestinations.cdm_local_greece_bupleurum();
-//    static final ICdmDataSource source = CdmDestinations.cdm_production_greece_bupleurum();
-
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_terms();
+    static final ICdmDataSource source = CdmDestinations.cdm_local_terms();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cdmterms();
+
+    static final ICdmDataSource destination = CdmDestinations.cdm_local_greece();
+//    static final ICdmDataSource source = CdmDestinations.cdm_production_greece_bupleurum();
 
 //    static final UUID sourceRefUuid = UUID.fromString("f88e33e5-1f6a-463e-b6fd-220d5e93d810");
 
@@ -59,6 +59,11 @@ public class OntologyExportActivator {
     static final boolean doConcurrent = false;
     static final boolean registerAuditing = true;
 
+
+    static final UUID uuidStructuresTree = UUID.fromString("17941710-059e-4e0b-a617-6439d66a39a6");
+    static final UUID uuidPropertiesTree = UUID.fromString("a4598d3f-0acf-4ad1-a6c9-0c31485da535");
+    static final UUID uuidStatesTree = UUID.fromString("fa9e8602-65b8-4f29-89f3-79132df994ca");
+
 // ***************** ALL ************************************************//
 
 //    UUID uuidBupleurumTaxonNodeFilter = UUID.fromString("51e768cf-321b-4108-8bee-46143996b033");
@@ -70,11 +75,14 @@ public class OntologyExportActivator {
 
         Cdm2CdmImportConfigurator config = Cdm2CdmImportConfigurator.NewInstace(source, destination);
         VocabularyFilter vocFilter = VocabularyFilter.NewInstance();
-        addVocFilters(vocFilter, VocabularyEnum.ontologyStructureVocabularyUuids());
-        addVocFilters(vocFilter, VocabularyEnum.ontologyPropertyVocabularyUuids());
-        addVocFilters(vocFilter, VocabularyEnum.ontologyStateVocabularyUuids());
+//        addVocFilters(vocFilter, VocabularyEnum.ontologyStructureVocabularyUuids());
+//        addVocFilters(vocFilter, VocabularyEnum.ontologyPropertyVocabularyUuids());
+//        addVocFilters(vocFilter, VocabularyEnum.ontologyStateVocabularyUuids());
         addVocFilters(vocFilter, VocabularyEnum.ontologyModifierVocabularyUuids());
         config.setVocabularyFilter(vocFilter);
+
+        Collection<UUID> graphFilter = getGraphFilter();
+        config.setGraphFilter(graphFilter);
 
         config.setDoTaxa(doTaxa);
         config.setDoDescriptions(doDescriptions);
@@ -84,14 +92,11 @@ public class OntologyExportActivator {
         config.setSourceReference(getSourceRefNull());
         config.setRemoveImportSources(removeImportSources);
 
-        IProgressMonitor monitor = config.getProgressMonitor();
-
         config.setDbSchemaValidation(hbm2dll);
 //        config.getTaxonNodeFilter().orSubtree(uuidBupleurumTaxonNodeFilter);
 //        config.getTaxonNodeFilter().setOrder(ORDER.TREEINDEX);
 
         config.setCheck(check);
-//        config.setRecordsPerTransaction(partitionSize);
 
         config.setRegisterAuditing(registerAuditing);
 
@@ -102,12 +107,15 @@ public class OntologyExportActivator {
         System.out.println("End" + importFrom);
     }
 
+    private List<UUID> getGraphFilter() {
+        return VocabularyEnum.ontologyTreeUuids();
+    }
+
     private void addVocFilters(VocabularyFilter vocFilter, List<UUID> vocUuids) {
         for (UUID vocUuid : vocUuids) {
             vocFilter.orVocabulary(vocUuid);
         }
     }
-
 
 
     private Reference getSourceRefNull() {
@@ -122,7 +130,7 @@ public class OntologyExportActivator {
 //    }
 
     public static void main(String[] args) {
-        ICdmDataSource cdmDB = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
+        ICdmDataSource cdmDB = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : destination;
         OntologyExportActivator myImport = new OntologyExportActivator();
         myImport.doImport(source, cdmDB, schemaValidation);
         System.exit(0);
