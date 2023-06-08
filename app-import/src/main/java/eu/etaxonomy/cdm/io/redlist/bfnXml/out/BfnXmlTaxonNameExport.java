@@ -45,6 +45,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 import eu.etaxonomy.cdm.model.term.IdentifierType;
+import eu.etaxonomy.cdm.model.term.TermCollection;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
@@ -175,9 +176,9 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
                 //export feature states
                 Element listenwerte = new Element(BfnXmlConstants.EL_LISTENWERTE);
                 eigenschaft.addContent(listenwerte);
-                Set<TermVocabulary<? extends DefinedTermBase>> supportedCategoricalEnumerations = feature.getSupportedCategoricalEnumerations();
-                for (TermVocabulary<? extends DefinedTermBase> termVocabulary : supportedCategoricalEnumerations) {
-                    Set<? extends DefinedTermBase> featureStates = termVocabulary.getTerms();
+                Set<TermCollection<? extends DefinedTermBase,?>> supportedCategoricalEnumerations = feature.getSupportedCategoricalEnumerations();
+                for (TermCollection<? extends DefinedTermBase,?> termVocabulary : supportedCategoricalEnumerations) {
+                    Set<? extends DefinedTermBase> featureStates = termVocabulary.getDistinctTerms();
                     //                    int reihenfolge = 1;
                     for (DefinedTermBase<?> featureState : featureStates) {
                         Element lwert = new Element(BfnXmlConstants.EL_LWERT);
