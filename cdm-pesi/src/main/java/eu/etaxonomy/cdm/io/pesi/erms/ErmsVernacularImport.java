@@ -170,10 +170,10 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
     }
 
     private void persistLanguage(Language language) {
-        if(!language.isPersited()){
+        if(!language.isPersisted()){
             getTermService().saveOrUpdate(language);
         }
-        if (!language.getVocabulary().isPersited()){
+        if (!language.getVocabulary().isPersisted()){
             getVocabularyService().saveOrUpdate(language.getVocabulary());
         }
     }

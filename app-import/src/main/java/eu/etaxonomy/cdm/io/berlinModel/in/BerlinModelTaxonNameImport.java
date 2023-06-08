@@ -930,7 +930,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
         }else if (matchingCandidates.size() == 1){
             ReferenceCandidate single = matchingCandidates.iterator().next().candidate;
             addAuthorAndDetail(state, refDetailId, taxonName, single);
-            if (single.ref.isPersited()){
+            if (single.ref.isPersisted()){
                 printResult(MatchType.SINGLE_FULL_MATCH, unparsedAndName(fullNomRefCache, taxonName));
             }else{
 //                single.ref.addImportSource(String.valueOf(refDetailId), BerlinModelRefDetailImport.REFDETAIL_NAMESPACE,
@@ -1186,14 +1186,14 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
         if (refCand.ref.getSources().isEmpty()){
             refCand.ref.addImportSource(String.valueOf(refDetailId), BerlinModelRefDetailImport.REFDETAIL_NAMESPACE, state.getTransactionalSourceReference(), null);
         }
-//        if (!refCand.ref.isPersited()){
+//        if (!refCand.ref.isPersisted()){
 //            getReferenceService().save(refCand.ref);
 //        }
 
         Reference nomRef = state.getDeduplicationHelper().getExistingReference(refCand.ref, true);
         if (nomRef != refCand.ref){
             System.out.println("Ref deduplicated: " + nomRef.getTitleCache() + "(RefDetId: " + refDetailId + ")");
-            if (nomRef.isPersited() && !getSession().contains(nomRef)){
+            if (nomRef.isPersisted() && !getSession().contains(nomRef)){
                 System.out.println("Start load with uuid: " + nomRef.getUuid() + ")");
                 nomRef = getReferenceService().find(nomRef.getUuid());
             }
@@ -1403,7 +1403,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
     private Set<FinalCandidate> findPersistentMatch(TaxonName taxonName, Set<FinalCandidate> finalCandidates) throws MatchException {
         Set<FinalCandidate> result = new HashSet<>();
         for (FinalCandidate cand : finalCandidates){
-            if (cand.candidate.ref.isPersited()){
+            if (cand.candidate.ref.isPersisted()){
                 result.add(cand);
             }
         }

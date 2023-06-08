@@ -197,7 +197,7 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 		            String uuid = null;
 		            if (resultSetHasColumn(rs,"UUID")){
 		                uuid = rs.getString("UUID");
-		                if (uuid != null && !author.isPersited()){
+		                if (uuid != null && !author.isPersisted()){
 		                    author.setUuid(UUID.fromString(uuid));
 		                }
 		            }
