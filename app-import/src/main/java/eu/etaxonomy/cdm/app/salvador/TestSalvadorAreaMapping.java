@@ -55,19 +55,19 @@ public class TestSalvadorAreaMapping {
     private void doTest2(CdmIoApplicationController app)  {
         UUID taxonUuid = UUID.fromString("eae896f0-3194-4b7b-a502-ad1d54ec36e6");
 //      Taxon taxon = (Taxon)app.getTaxonService().find(taxonUuid);
-      Object distributionServiceObj = app.getBean("distributionServiceImpl");
-      DistributionServiceImpl distributionService;
+        Object distributionServiceObj = app.getBean("distributionServiceImpl");
+        DistributionServiceImpl distributionService;
         try {
             distributionService = getTargetObject(distributionServiceObj);
 
 
-          Set<InfoPart> partSet = new HashSet<>();
-          partSet.add(InfoPart.mapUriParams);
+            Set<InfoPart> partSet = new HashSet<>();
+            partSet.add(InfoPart.mapUriParams);
 
-          EnumSet<InfoPart> parts = EnumSet.copyOf(partSet);
-          DistributionInfoConfiguration distConfig = new DistributionInfoConfiguration();
-          distConfig.setInfoParts(parts);
-          distributionService.composeDistributionInfoFor(distConfig, taxonUuid, false, null,
+            EnumSet<InfoPart> parts = EnumSet.copyOf(partSet);
+            DistributionInfoConfiguration distConfig = new DistributionInfoConfiguration();
+            distConfig.setInfoParts(parts);
+            distributionService.composeDistributionInfoFor(distConfig, taxonUuid, false, null,
                   null, null);
         } catch (Exception e) {
             e.printStackTrace();
