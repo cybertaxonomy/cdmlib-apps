@@ -13,7 +13,6 @@ import eu.etaxonomy.cdm.io.common.mapping.out.ExportTransformerBase;
 /**
  * @author pplitzner
  * @since May 3, 2016
- *
  */
 public class BfnXmlExportTransformer extends ExportTransformerBase {
 
