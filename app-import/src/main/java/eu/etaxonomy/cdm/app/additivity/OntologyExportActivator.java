@@ -35,23 +35,23 @@ public class OntologyExportActivator {
     private static final Logger logger = LogManager.getLogger();
 
     static final ICdmDataSource source = CdmDestinations.cdm_local_terms();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cdmterms();
+//    static final ICdmDataSource source = CdmDestinations.cdm_production_cdmterms();
 
     static final ICdmDataSource destination = CdmDestinations.cdm_local_greece();
-//    static final ICdmDataSource source = CdmDestinations.cdm_production_greece_bupleurum();
+//      static final ICdmDataSource destination = CdmDestinations.cdm_local_cichorieae();
 
-//    static final UUID sourceRefUuid = UUID.fromString("f88e33e5-1f6a-463e-b6fd-220d5e93d810");
+//    static final ICdmDataSource destination = CdmDestinations.cdm_production_greece_checklist();
+//    static final ICdmDataSource destination = CdmDestinations.cdm_production_cichorieae();
 
     static final DbSchemaValidation schemaValidation = DbSchemaValidation.VALIDATE;
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
-    static final int partitionSize = 5000;
-
     static final boolean doVocabularies = true;
     static final boolean addSources = false;
     static final boolean removeImportSources = true;
+    static final boolean externallyManaged = true;
 
     //defaults
     static final boolean doTaxa = false;
@@ -59,10 +59,6 @@ public class OntologyExportActivator {
     static final boolean doConcurrent = false;
     static final boolean registerAuditing = true;
 
-
-    static final UUID uuidStructuresTree = UUID.fromString("17941710-059e-4e0b-a617-6439d66a39a6");
-    static final UUID uuidPropertiesTree = UUID.fromString("a4598d3f-0acf-4ad1-a6c9-0c31485da535");
-    static final UUID uuidStatesTree = UUID.fromString("fa9e8602-65b8-4f29-89f3-79132df994ca");
 
 // ***************** ALL ************************************************//
 
@@ -75,12 +71,10 @@ public class OntologyExportActivator {
 
         Cdm2CdmImportConfigurator config = Cdm2CdmImportConfigurator.NewInstace(source, destination);
         VocabularyFilter vocFilter = VocabularyFilter.NewInstance();
-//        addVocFilters(vocFilter, VocabularyEnum.ontologyStructureVocabularyUuids());
-//        addVocFilters(vocFilter, VocabularyEnum.ontologyPropertyVocabularyUuids());
-//        addVocFilters(vocFilter, VocabularyEnum.ontologyStateVocabularyUuids());
+        //modifier filter
         addVocFilters(vocFilter, VocabularyEnum.ontologyModifierVocabularyUuids());
         config.setVocabularyFilter(vocFilter);
-
+        //structures, properties and states
         Collection<UUID> graphFilter = getGraphFilter();
         config.setGraphFilter(graphFilter);
 
@@ -91,6 +85,8 @@ public class OntologyExportActivator {
         config.setAddSources(addSources);
         config.setSourceReference(getSourceRefNull());
         config.setRemoveImportSources(removeImportSources);
+
+        config.setExternallyManaged(externallyManaged);
 
         config.setDbSchemaValidation(hbm2dll);
 //        config.getTaxonNodeFilter().orSubtree(uuidBupleurumTaxonNodeFilter);
@@ -116,7 +112,6 @@ public class OntologyExportActivator {
             vocFilter.orVocabulary(vocUuid);
         }
     }
-
 
     private Reference getSourceRefNull() {
         return null;
