@@ -30,10 +30,15 @@ public class NonReferencedObjectsDeleteActivator {
 		//database validation status (create, update, validate ...)
 		static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 //		static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo();
-        static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
+//        static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
+        static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
+//        static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
 
-        boolean doAuthors = true;
+        boolean doReportOnly = false;
+
+        boolean doAuthors = false;
         boolean doReferences = true;
+        boolean doTaxonNames = false;
 
 		private ImportResult doInvoke(ICdmDataSource destination){
 		    ImportResult result = new ImportResult();
@@ -42,6 +47,8 @@ public class NonReferencedObjectsDeleteActivator {
 			config.setDbSchemaValidation(hbm2dll);
 			config.setDoReferences(doReferences);
 			config.setDoAuthors(doAuthors);
+			config.setDoTaxonNames(doTaxonNames);
+			config.setDoOnlyReport(doReportOnly);
 
 			// invoke import
 			CdmDefaultImport<NonReferencedObjectsDeleterConfigurator> myImport = new CdmDefaultImport<>();
