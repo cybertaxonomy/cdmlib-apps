@@ -50,9 +50,6 @@ public class BerlinModelClassificationExport extends BerlinModelExportBase<Relat
 		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelExportState state){
 		boolean result = true;

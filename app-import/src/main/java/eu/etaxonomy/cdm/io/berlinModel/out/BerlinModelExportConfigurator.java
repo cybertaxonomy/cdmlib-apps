@@ -74,14 +74,8 @@ public class BerlinModelExportConfigurator
 				, BerlinModelFactExport.class
 //				, BerlinModelOccurrenceImport.class
 		};
-
 	}
 
-	/**
-	 * @param berlinModelSource
-	 * @param sourceReference
-	 * @param destination
-	 */
 	private BerlinModelExportConfigurator(Source destination, ICdmDataSource cdmSource) {
 	   super(defaultTransformer);
 	   setSource(cdmSource);
@@ -103,14 +97,10 @@ public class BerlinModelExportConfigurator
 		this.isHomotypicId = isHomotypicId;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IExportConfigurator#getNewState()
-	 */
 	@Override
     public BerlinModelExportState getNewState() {
 		return new BerlinModelExportState(this);
 	}
-
 
 	/**
 	 * Import name relationships yes/no?.
