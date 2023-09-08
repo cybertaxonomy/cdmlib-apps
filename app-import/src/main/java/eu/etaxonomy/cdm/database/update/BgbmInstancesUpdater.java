@@ -76,6 +76,9 @@ public class BgbmInstancesUpdater {
     };
 
 	private static String[] productionDatabases = new String[]{
+	    "cdm_production_georgia",
+	    "cdm_production_armenia",
+        "cdm_production_azerbaijan",
 	    "cdm_production_col",
 	    "cdm_production_algaterra",
 	    "cdm_production_algaterranew",
@@ -83,15 +86,14 @@ public class BgbmInstancesUpdater {
 	    "cdm_production_bromeliaceae",
 	    "cdm_production_buxales",
 	    "cdm_production_campanulaceae",
-	    "cdm_production_caryo_amaranthaceae",
 	    "cdm_production_caryo_nepenthaceae",
+	    "cdm_production_caryophyllales_genera",
 	    "cdm_production_caryophyllales",
-	    "cdm_production_caryophyllales_spp",
 	    "cdm_production_casearia",
 	    "cdm_production_caucasus",
 	    "cdm_production_cdmterms",
 	    "cdm_production_cichorieae",
-	    "cdm_production_corvidae",
+//	    "cdm_production_corvidae",
 	    "cdm_production_cyprus",
 	    "cdm_production_diptera",
 	    "cdm_production_edaphobase",
@@ -114,7 +116,7 @@ public class BgbmInstancesUpdater {
 	    "cdm_production_palmae",
 	    "cdm_production_rl_animalia",
 	    "cdm_production_rl_animalia_final",
-	    "cdm_production_rl_armeria_demo",
+//	    "cdm_production_rl_armeria_demo",
 	    "cdm_production_rl_german_sl",
 	    "cdm_production_rl_lumbricidae",
 	    "cdm_production_rl_mammalia",
@@ -123,10 +125,10 @@ public class BgbmInstancesUpdater {
 	    "cdm_production_rl_standardliste",
 	    "cdm_production_rubiaceae_mexico",
 	    "cdm_production_salvador",
-	    "cdm_production_vibrant_index"
+//	    "cdm_production_vibrant_index"
 	};
 
-    static BgbmServer bgbmServer = BgbmServer.TEST;
+    static BgbmServer bgbmServer = BgbmServer.PRODUCTION;
 
 	static String username = "edit";
 
