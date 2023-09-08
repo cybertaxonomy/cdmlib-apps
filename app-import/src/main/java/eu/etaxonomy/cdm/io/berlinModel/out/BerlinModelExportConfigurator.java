@@ -33,6 +33,8 @@ public class BerlinModelExportConfigurator
 //	TODO
 	private static IExportTransformer defaultTransformer = null;
 
+	//im-/export uses Classification for is_taxonomically_included_in relationships
+    private boolean useClassification = true;
 
 	//ID for the isHomotypic relationship in RelName, if not exist null
 	private Integer isHomotypicId = null;
@@ -177,8 +179,10 @@ public class BerlinModelExportConfigurator
 		this.doRelTaxa = doRelTaxa;
 	}
 
-
-
-
-
+    public boolean isUseClassification() {
+        return useClassification;
+    }
+    public void setUseClassification(boolean useClassification) {
+        this.useClassification = useClassification;
+    }
 }

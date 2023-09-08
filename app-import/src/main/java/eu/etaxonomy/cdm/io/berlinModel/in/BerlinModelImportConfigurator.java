@@ -40,6 +40,9 @@ public class BerlinModelImportConfigurator
 			return new BerlinModelImportConfigurator(berlinModelSource, destination);
 	}
 
+	//im-/export uses Classification for is_taxonomically_included_in relationships
+    private boolean useClassification = true;
+
 	private PublishMarkerChooser taxonPublishMarker = PublishMarkerChooser.ALL;
 
 	//TODO
@@ -721,6 +724,13 @@ public class BerlinModelImportConfigurator
     }
     public void setIncludeMANsForOldNameCheck(boolean includeMANsForOldNameCheck) {
         this.includeMANsForOldNameCheck = includeMANsForOldNameCheck;
+    }
+
+    public boolean isUseClassification() {
+        return useClassification;
+    }
+    public void setUseClassification(boolean useClassification) {
+        this.useClassification = useClassification;
     }
 
 }
