@@ -28,6 +28,7 @@ import eu.etaxonomy.cdm.model.term.IdentifierType;
 
 /**
  * @author a.mueller
+ * @since 2021-11-03
  */
 public class DianthusIdentifierActivator {
 

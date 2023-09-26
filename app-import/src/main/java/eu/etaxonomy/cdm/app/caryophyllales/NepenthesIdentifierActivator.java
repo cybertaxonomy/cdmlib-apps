@@ -28,7 +28,6 @@ import eu.etaxonomy.cdm.model.term.IdentifierType;
 /**
  * @author a.mueller
  * @since 25.03.2017
- *
  */
 public class NepenthesIdentifierActivator {
 
