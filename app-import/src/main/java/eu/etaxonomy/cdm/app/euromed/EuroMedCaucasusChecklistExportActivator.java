@@ -9,7 +9,6 @@
 package eu.etaxonomy.cdm.app.euromed;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,19 +24,22 @@ import eu.etaxonomy.cdm.common.DoubleResult;
 import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.filter.LogicFilter;
 import eu.etaxonomy.cdm.filter.TaxonNodeFilter;
 import eu.etaxonomy.cdm.filter.TaxonNodeFilter.ORDER;
 import eu.etaxonomy.cdm.filter.VocabularyFilter;
 import eu.etaxonomy.cdm.io.cdm2cdm.Cdm2CdmImportConfigurator;
+import eu.etaxonomy.cdm.io.cdm2cdm.Cdm2CdmImportState;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
-import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import eu.etaxonomy.cdm.model.taxon.Synonym;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 
@@ -47,21 +49,18 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
  */
 public class EuroMedCaucasusChecklistExportActivator {
 
-    @SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger();
 
     static final DbSchemaValidation schemaValidation = DbSchemaValidation.VALIDATE;
 
     static final ICdmDataSource source = CdmDestinations.cdm_local_euromed();
+//    static final ICdmDataSource source = CdmDestinations.cdm_production_euromed();
     static final ICdmDataSource sourceConspectus = CdmDestinations.cdm_local_euromed_caucasus();
 
     static boolean isProduction = false;
     static final DB db = DB.GEORGIA;
 
-    static final boolean doTaxa = false;
-    static final boolean doVocabularies = false;
-    static final boolean doDescriptions = false;
-    static final boolean doConspectusAreas = true;
+    static final IMPORT importType = IMPORT.CONSPECTUS_VOC;
 
     static ICdmDataSource cdmDestination = !isProduction ?
             (db == DB.GEORGIA ? CdmDestinations.cdm_local_georgia() :
@@ -71,13 +70,15 @@ public class EuroMedCaucasusChecklistExportActivator {
              db == DB.ARMENIA ? CdmDestinations.cdm_production_armenia() :
                                 CdmDestinations.cdm_production_azerbaijan());
 
-    static final String sourceRefTitle = "Euro+Med Plantbase";
+    static final String sourceRefTitle = "Euro+Med PlantBase";
     static final UUID sourceRefUuid = UUID.fromString("65e22d20-a206-426e-9851-e874cf79ed7d");
+
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
     private enum DB{GEORGIA, ARMENIA,AZERBAIJAN}
+    private enum IMPORT{TAXA, VOCABULARY, DESCRIPTION, CONSPECTUS_VOC}
 
     static final int partitionSize = 5000;
 
@@ -119,7 +120,7 @@ public class EuroMedCaucasusChecklistExportActivator {
         String importFrom = " import from "+ source.getDatabase() + " to "+ destination.getDatabase() + " ...";
         System.out.println("Start" + importFrom);
 
-        if (doConspectusAreas) {
+        if (importType == IMPORT.CONSPECTUS_VOC) {
             source = sourceConspectus;
         }
         Cdm2CdmImportConfigurator config = Cdm2CdmImportConfigurator.NewInstace(source, destination);
@@ -131,7 +132,7 @@ public class EuroMedCaucasusChecklistExportActivator {
         config.setRemoveImportSources(removeImportSources);
         config.setAddSources(addSource);
 
-        if (doConspectusAreas) {
+        if (importType == IMPORT.CONSPECTUS_VOC) {
             VocabularyFilter vocFilter = VocabularyFilter.NewInstance();
             vocFilter.orVocabulary(UUID.fromString("3ef82b77-23cb-4b60-a4b3-edc7e4775ddb"));  //Conspectus areas
             config.setVocabularyFilter(vocFilter);
@@ -148,15 +149,15 @@ public class EuroMedCaucasusChecklistExportActivator {
         myImport.invoke(config);
     }
 
-    private void doImport(ICdmDataSource source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
+    private void doImport(ICdmDataSource source, ICdmDataSource destination, DbSchemaValidation hbm2dll) throws NoSuchMethodException, SecurityException{
 
         String importFrom = " import from "+ source.getDatabase() + " to "+ destination.getDatabase() + " ...";
         System.out.println("Start" + importFrom);
 
         Cdm2CdmImportConfigurator config = Cdm2CdmImportConfigurator.NewInstace(source, destination);
-        config.setDoTaxa(doTaxa);
-        config.setDoDescriptions(doDescriptions);
-        config.setDoVocabularies(doVocabularies);
+        config.setDoTaxa(importType == IMPORT.TAXA);
+        config.setDoDescriptions(importType == IMPORT.DESCRIPTION);
+        config.setDoVocabularies(importType == IMPORT.VOCABULARY);
         config.setSourceReference(getSourceRef());
         config.setDistributionFilterFromAreaFilter(distributionFilterFromAreaFilter);
         config.setAddAncestors(addAncestorTaxa);
@@ -201,8 +202,9 @@ public class EuroMedCaucasusChecklistExportActivator {
             taxonNodeFilter.orArea(UUID.fromString("5fad859b-7929-4d5f-b92c-95e3e0469bb2"));  //Gg(A)
             taxonNodeFilter.orArea(UUID.fromString("6091c975-b946-4ef3-a18f-2e148eae6a06"));  //Gg(D)
             taxonNodeFilter.orArea(UUID.fromString("048799b0-d7b9-44c6-b2d1-5ca2a49fa175"));  //Gg(G)
-            commonNameLanguageFilter.add(UUID.fromString("fb64b07c-c079-4fda-a803-212a0beca61b"));  //Georgian
 
+            commonNameLanguageFilter = new HashSet<>();
+            commonNameLanguageFilter.add(UUID.fromString("fb64b07c-c079-4fda-a803-212a0beca61b"));  //Georgian
         } else if (db==DB.ARMENIA) {
             //Armenia
             mainArea = UUID.fromString("535fed1e-3ec9-4563-af55-e753aefcfbfe");   //Ar
@@ -219,10 +221,12 @@ public class EuroMedCaucasusChecklistExportActivator {
         }else {
             throw new RuntimeException("Unhandled DB");
         }
+        config.setSynonymFilter((t,st)->getSynonymFilter(t,st));
         config.setUuidEndemicRelevantArea(mainArea);
         taxonNodeFilter.setOrder(ORDER.TREEINDEX);
 
         config.setEndemismHandler(getEndemismHandler(taxonNodeFilter));
+//        config.setEndemismReference(getEndemismReference());
 
         config.setCommonNameLanguageFilter(commonNameLanguageFilter);
 
@@ -235,6 +239,14 @@ public class EuroMedCaucasusChecklistExportActivator {
 
         System.out.println("End" + importFrom);
     }
+
+//    private Reference getEndemismReference() {
+//        Reference ref = ReferenceFactory.newWebPage();
+//        ref.setTitle("Euro+Med PlantBase");
+//        ref.setAccessed(DateTime.now());
+//        ref.setUuid(endemismReferenceUuid);
+//        return ref;
+//    }
 
     private Function<DoubleResult<Taxon,DefinedTermBase<?>[]>,Distribution> getEndemismHandler(TaxonNodeFilter taxonNodeFilter) {
         Set<UUID> emAreas = new HashSet<>();
@@ -310,19 +322,52 @@ public class EuroMedCaucasusChecklistExportActivator {
     private Reference getSourceRef() {
         Reference ref = ReferenceFactory.newDatabase();
         ref.setTitle(sourceRefTitle);
-        ref.setDatePublished(VerbatimTimePeriod.NewVerbatimInstance(Calendar.getInstance()));
+//        ref.setDatePublished(VerbatimTimePeriod.NewVerbatimInstance(Calendar.getInstance()));
+//        ref.setAccessed(DateTime.now());
         ref.setUuid(sourceRefUuid);
         return ref;
+    }
+
+    private static boolean getSynonymFilter(Synonym synonym, Cdm2CdmImportState state){
+        boolean homotypicGroup = synonym.getName().getHomotypicalGroup().equals(synonym.getAcceptedTaxon().getName().getHomotypicalGroup());
+        boolean homotypic = synonym.getType().equals(SynonymType.HOMOTYPIC_SYNONYM_OF);
+        if (homotypicGroup != homotypic) {
+            logger.warn("homotypic not equal: " + homotypicGroup + ", " + synonym.getName().getTitleCache() + "<->" + synonym.getAcceptedTaxon().getName().getTitleCache());
+        }
+        if (homotypicGroup) {
+            return false;
+        }else {
+            List<LogicFilter<NamedArea>> areaFilter = state.getConfig().getTaxonNodeFilter().getAreaFilter();
+            Set<UUID> areaUuids = areaFilter.stream().map(lf->lf.getUuid()).collect(Collectors.toSet());
+            Set<Distribution> distributions = synonym.getAcceptedTaxon().getDescriptionItems(Feature.DISTRIBUTION(), Distribution.class);
+            boolean exists = false;
+            for (Distribution dist : distributions) {
+                if (areaUuids.contains(dist.getArea().getUuid())){
+                    Set<UUID> usedNameIds = dist.getSources().stream()
+                            .filter(s->s.getNameUsedInSource() != null)
+                            .map(s->s.getNameUsedInSource().getUuid()).collect(Collectors.toSet());
+                    if (usedNameIds.contains(synonym.getName().getUuid())) {
+                        exists = true;
+                        break;
+                    }
+                }
+            }
+            return !exists;
+        }
     }
 
     public static void main(String[] args) {
         ICdmDataSource cdmDB = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
         EuroMedCaucasusChecklistExportActivator myImport = new EuroMedCaucasusChecklistExportActivator();
-        if (doVocabularies || doConspectusAreas) {
+        if (importType == IMPORT.VOCABULARY || importType == IMPORT.CONSPECTUS_VOC) {
             myImport.doImportVocs(source, cdmDB, schemaValidation);
         }
-        if (doTaxa || doDescriptions) {
-            myImport.doImport(source, cdmDB, schemaValidation);
+        if (importType == IMPORT.TAXA || importType == IMPORT.DESCRIPTION) {
+            try {
+                myImport.doImport(source, cdmDB, schemaValidation);
+            } catch (NoSuchMethodException | SecurityException e) {
+                e.printStackTrace();
+            }
         }
         System.exit(0);
     }
