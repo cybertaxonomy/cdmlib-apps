@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.model.term.IdentifierType;
 
 /**
  * @author a.mueller
- * @since 2021-11-03
+ * @since 2023-09-25
  */
 public class CaseariaIdentifierActivator {
 
@@ -42,7 +42,7 @@ public class CaseariaIdentifierActivator {
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_casearia();
 
     static final UUID identifierUuid = IdentifierType.uuidWfoNameIdentifier;
-    String filename = "Salicaceae_WFOIDs.xlsx";
+    String filename = "Salicaceae_WFOIDs.csv";
     boolean warnAndDoNotOverrideIfExists = true;
 
     //check - import
