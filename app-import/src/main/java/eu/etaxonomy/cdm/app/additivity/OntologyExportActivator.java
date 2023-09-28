@@ -38,12 +38,15 @@ public class OntologyExportActivator {
 //    static final ICdmDataSource source = CdmDestinations.cdm_production_cdmterms();
 
     static final ICdmDataSource destination = CdmDestinations.cdm_local_greece();
-//      static final ICdmDataSource destination = CdmDestinations.cdm_local_cichorieae();
+//    static final ICdmDataSource destination = CdmDestinations.cdm_local_cichorieae();
 
 //    static final ICdmDataSource destination = CdmDestinations.cdm_production_greece_checklist();
 //    static final ICdmDataSource destination = CdmDestinations.cdm_production_cichorieae();
 
     static final DbSchemaValidation schemaValidation = DbSchemaValidation.VALIDATE;
+
+    //allow updating
+    static final boolean updateExistingTermCollections = true;
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -85,6 +88,7 @@ public class OntologyExportActivator {
         config.setAddSources(addSources);
         config.setSourceReference(getSourceRefNull());
         config.setRemoveImportSources(removeImportSources);
+        config.setAddMissingTerms(updateExistingTermCollections);
 
         config.setExternallyManaged(externallyManaged);
 
