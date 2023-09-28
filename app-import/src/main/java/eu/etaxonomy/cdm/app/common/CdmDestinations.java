@@ -698,7 +698,6 @@ public class CdmDestinations {
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
 
-
 	public static ICdmDataSource localH2(){
 		return CdmDataSource.NewH2EmbeddedInstance("cdm", "sa", "");
 	}

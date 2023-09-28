@@ -33,7 +33,8 @@ import eu.etaxonomy.cdm.io.common.ExportResultType;
  * @since 24.03.2017
  */
 public class CdmLightExportActivator {
-private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_caryophyllales_nepenthaceae();
+	
+	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_caryophyllales_nepenthaceae();
 
     private static final Logger logger = LogManager.getLogger();
 
