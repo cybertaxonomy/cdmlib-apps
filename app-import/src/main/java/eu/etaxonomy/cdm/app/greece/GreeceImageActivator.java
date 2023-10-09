@@ -28,7 +28,6 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
- *
  * Import for new images for the Flora of Greece.
  *
  * https://dev.e-taxonomy.eu/redmine/issues/7075
@@ -68,11 +67,11 @@ public class GreeceImageActivator {
     static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
-//    private static final UUID sourceUuid = UUID.fromString("3ed9756b-35c0-4d1b-936d-720d4c9d4dce");
-    private static final UUID sourceUuid = UUID.fromString("74a805b0-17cb-4d8c-8a55-9414a7597e79");
+    private static final UUID sourceUuid = UUID.fromString("a5f11fe9-7bd6-4dff-abb0-1b147ed49c34");
+//    private static final UUID sourceUuid = UUID.fromString("74a805b0-17cb-4d8c-8a55-9414a7597e79");
 
-    private static final String fileName = "images-20-04-23_v2.xlsx";
-//    private static final String fileName = "metadata_FoG_AK_Willing_correct.xlsx";
+//    private static final String fileName = "images-20-04-23_v2.xlsx";
+    private static final String fileName = "images-08-10-23_Franzen.xlsx";
 
 
 //    NOTE!!: Darauf achten, dass die Header case sensitiv sind und keine Leerzeichen am Ende sein sollten, trim funktioniert seltsamerweise nicht immer
