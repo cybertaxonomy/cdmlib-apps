@@ -57,7 +57,7 @@ public class SpecimenImport {
 //
             specimenImportConfigurator.setReuseExistingTaxaWhenPossible(true);
 //
-            specimenImportConfigurator.setAddIndividualsAssociationsSuchAsSpecimenAndObservations(true);
+            specimenImportConfigurator.setAddIndividualsAssociations(true);
             specimenImportConfigurator.setUseClassification(true);
             specimenImportConfigurator.setInteractWithUser(true);
 //
