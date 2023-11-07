@@ -6,15 +6,13 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
-package eu.etaxonomy.cdm.io.wp6;
+package eu.etaxonomy.cdm.io.cichorieae;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
@@ -26,7 +24,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @author a.mueller
  * @since 20.03.2008
  */
-public class CommonNameImportConfigurator extends ExcelImportConfiguratorBase implements IImportConfigurator{
+public class CommonNameImportConfigurator extends ExcelImportConfiguratorBase{
 
     private static final long serialVersionUID = 1L;
     @SuppressWarnings("unused")
@@ -48,7 +46,8 @@ public class CommonNameImportConfigurator extends ExcelImportConfiguratorBase im
 		};
 	}
 
-	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
 	public ImportStateBase getNewState() {
 		return new CichorieaeCommonNameImportState(this);
 	}

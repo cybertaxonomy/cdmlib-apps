@@ -1,4 +1,4 @@
-package eu.etaxonomy.cdm.io.wp6;
+package eu.etaxonomy.cdm.io.cichorieae;
 
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
 import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;

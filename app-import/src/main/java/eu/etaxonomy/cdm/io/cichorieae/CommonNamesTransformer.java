@@ -6,8 +6,7 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
-package eu.etaxonomy.cdm.io.wp6;
+package eu.etaxonomy.cdm.io.cichorieae;
 
 import java.util.UUID;
 
@@ -30,7 +29,6 @@ public final class CommonNamesTransformer extends InputTransformerBase {
     private static final long serialVersionUID = 1L;
     @SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger();
-
 
 	//named area
 	public static final UUID uuidCentralAfrica =  UUID.fromString("45f4e8a4-5145-4d87-af39-122495c08fe3");
@@ -93,14 +91,9 @@ public final class CommonNamesTransformer extends InputTransformerBase {
 	public static final UUID uuidKilur =  UUID.fromString("89f1286f-e869-4f10-a43a-d86ef729833e");
 	public static final UUID uuidNgwaka =  UUID.fromString("67dfc889-0084-4932-9b21-ed54bbfe341f");
 
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getMarkerTypeByKey(java.lang.String)
-	 */
 	@Override
 	public NamedArea getNamedAreaByKey(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (CdmUtils.isBlank(key)){return null;
 //		}else if (key.equalsIgnoreCase("Australia")){return Country.AUSTRALIACOMMONWEALTHOF();
 		}else if (key.equalsIgnoreCase("Azores")){return TdwgAreaProvider.getAreaByTdwgAbbreviation("AZO-OO");
 		}else if (key.equalsIgnoreCase("Canary Islands")){return TdwgAreaProvider.getAreaByTdwgAbbreviation("CNY-OO");
@@ -114,7 +107,7 @@ public final class CommonNamesTransformer extends InputTransformerBase {
 
 	@Override
 	public UUID getNamedAreaUuid(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (CdmUtils.isBlank(key)){return null;
 		}else if (key.equalsIgnoreCase("Central Africa")){return uuidCentralAfrica;
 		}else if (key.equalsIgnoreCase("Central and East Africa")){return uuidCentralAndEastAfrica;
 		}else if (key.equalsIgnoreCase("Central Asia and Middle East")){return uuidCentralAsiaAndMiddleEast;
@@ -137,20 +130,14 @@ public final class CommonNamesTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Western and Eastern Africa")){return uuidWesternAndEasternAfrica;
 		}else if (key.equalsIgnoreCase("Western Central Africa")){return uuidWestAndCentralAfrica;
 
-
 		}else{
 			return null;
 		}
-
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getLanguageByKey(java.lang.String)
-	 */
 	@Override
 	public Language getLanguageByKey(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (CdmUtils.isBlank(key)){return null;
 		}else if (key.equals("age")){return Language.NewInstance(uuidAge, "Angal", key);
 		}else if (key.equals("arb")){return Language.NewInstance(uuidArb, "Standard Arabic", key);
 		}else if (key.equals("bnc")){return Language.NewInstance(uuidBnc, "Bontok", key);
@@ -198,25 +185,15 @@ public final class CommonNamesTransformer extends InputTransformerBase {
 		}
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getLanguageUuid(java.lang.String)
-	 */
 	@Override
 	public UUID getLanguageUuid(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (CdmUtils.isBlank(key)){return null;
 		}else if (key.equalsIgnoreCase("Babua")){return uuidBabua;
 		}else if (key.equalsIgnoreCase("Kilur")){return uuidKilur;
 		}else if (key.equalsIgnoreCase("Ngwaka")){return uuidNgwaka;
 		}else if (key.equalsIgnoreCase("Gur")){return uuidGur;
-
 		}else{
 			return null;
 		}
-
 	}
-
-
-
 }
