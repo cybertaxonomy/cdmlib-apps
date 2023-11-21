@@ -9,9 +9,10 @@
 package eu.etaxonomy.cdm.app.caryophyllales;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -28,7 +29,8 @@ import eu.etaxonomy.cdm.model.term.IdentifierType;
 
 /**
  * @author a.mueller
- * @since 18.10.2017
+ * @since 2017-10-18 (updated 2023-11-21)
+ *
  */
 public class CaryophyllalesIdentifierActivator {
 
@@ -38,11 +40,14 @@ public class CaryophyllalesIdentifierActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales();
 
     private static final UUID idTypeUuid = IdentifierType.uuidWfoNameIdentifier;
 //    private static final UUID idTypeUuid = DefinedTerm.uuidIpniNameIdentifier;
+
+    private static String fileName = "";
+    boolean warnAndDoNotOverrideIfExists = true;
 
     //check - import
     static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -51,8 +56,9 @@ public class CaryophyllalesIdentifierActivator {
 
         InputStreamReader source = getIdentifierStream();
         IdentifierImportConfigurator config= IdentifierImportConfigurator.NewInstance(source, cdmDestination);
-        config.setDbSchemaValidation(dbSchemaValidation);
+        config.setWarnAndDoNotOverrideIfExists(warnAndDoNotOverrideIfExists);
         config.setIdentifierTypeUuid(idTypeUuid);
+        config.setDbSchemaValidation(dbSchemaValidation);
         config.setCdmClass(TaxonName.class);
         config.setCheck(check);
         config.setIgnoreEmptyIdentifier(true);
@@ -62,17 +68,17 @@ public class CaryophyllalesIdentifierActivator {
     }
 
     private InputStreamReader getIdentifierStream() {
-        String filename = "Cactaceae-SpeciesAndBelowWithoutWFO-ID3.csv";
-
-//        URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol14_final2.xml")
-        String path = "C://opt//data//Caryophyllales";
-        File file = new File(path + File.separator + filename);
+        String path = "E://data//Caryophyllales";
+        File file = new File(path + File.separator + fileName);
         if (!file.exists()){
             System.exit(-1);
             return null;
         }
         try {
-            InputStreamReader input = new FileReader(file);
+            URL url = file.toURI().toURL();
+            InputStream stream = url.openStream();
+            InputStreamReader input = new InputStreamReader(stream, "UTF8");
+//            InputStreamReader input = new FileReader(file);
             return input;
         } catch (IOException e) {
             e.printStackTrace();
