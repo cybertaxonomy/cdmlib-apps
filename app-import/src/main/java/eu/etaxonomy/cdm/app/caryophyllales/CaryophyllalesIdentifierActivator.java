@@ -10,7 +10,6 @@ package eu.etaxonomy.cdm.app.caryophyllales;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.UUID;
@@ -30,7 +29,6 @@ import eu.etaxonomy.cdm.model.term.IdentifierType;
 /**
  * @author a.mueller
  * @since 2017-10-18 (updated 2023-11-21)
- *
  */
 public class CaryophyllalesIdentifierActivator {
 
@@ -75,10 +73,8 @@ public class CaryophyllalesIdentifierActivator {
             return null;
         }
         try {
-            URL url = file.toURI().toURL();
-            InputStream stream = url.openStream();
-            InputStreamReader input = new InputStreamReader(stream, "UTF8");
-//            InputStreamReader input = new FileReader(file);
+            URL url = file.toURI().toURL(); //official way to map a file to URL
+            InputStreamReader input = new InputStreamReader(url.openStream(), "UTF8");
             return input;
         } catch (IOException e) {
             e.printStackTrace();
