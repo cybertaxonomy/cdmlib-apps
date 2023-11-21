@@ -39,7 +39,7 @@ public class PlumbaginaceaeIdentifierActivator {
     static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales();
 
 //    private static final UUID idTypeUuid = DefinedTerm.uuidWfoNameIdentifier;
     private static final UUID idTypeUuid = IdentifierType.uuidIpniNameIdentifier;

@@ -39,7 +39,7 @@ public class CactaceaeIdentifierActivator {
     static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales();
 
     static final UUID identifierUuid = IdentifierType.uuidWfoNameIdentifier;
     String filename = "Cactaceae_last_WFOIDs.txt";

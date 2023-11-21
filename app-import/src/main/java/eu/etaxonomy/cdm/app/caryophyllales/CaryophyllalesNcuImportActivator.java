@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @author a.mueller
  * @since 16.10.2012
  */
-public class CaryoActivator extends SourceBase{
+public class CaryophyllalesNcuImportActivator extends SourceBase{
 
     private static final Logger logger = LogManager.getLogger();
 
@@ -102,7 +102,7 @@ public class CaryoActivator extends SourceBase{
 	}
 
 	public static void main(String[] args) {
-		CaryoActivator me = new CaryoActivator();
+		CaryophyllalesNcuImportActivator me = new CaryophyllalesNcuImportActivator();
 		me.doImport(cdmDestination);
 	    System.exit(0);
 	}

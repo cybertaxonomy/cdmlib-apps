@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.caryophyllales;
 
 import java.io.File;
@@ -18,8 +17,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.URI;
-
-
 
 /**
  * @author k.luther
@@ -52,7 +49,6 @@ public class XlsSources {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	public static String xls_nyctaginaceae(){
@@ -62,8 +58,5 @@ public class XlsSources {
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
-
 	}
-
-
 }

@@ -41,7 +41,7 @@ public class WfoAccessActivator {
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_test1();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
 
     static int transactionLineCount = 1000;

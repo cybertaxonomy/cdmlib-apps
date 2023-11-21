@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.term.IdentifierType;
  * @author a.mueller
  * @since 18.10.2017
  */
-public class CaryoSppIdentifierActivator {
+public class CaryophyllalesIdentifierActivator {
 
     @SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger();
@@ -59,7 +59,6 @@ public class CaryoSppIdentifierActivator {
 
         CdmDefaultImport<IdentifierImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
-
     }
 
     private InputStreamReader getIdentifierStream() {
@@ -82,11 +81,8 @@ public class CaryoSppIdentifierActivator {
         }
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
-        CaryoSppIdentifierActivator me = new CaryoSppIdentifierActivator();
+        CaryophyllalesIdentifierActivator me = new CaryophyllalesIdentifierActivator();
         me.doImport(cdmDestination);
         System.exit(0);
     }
