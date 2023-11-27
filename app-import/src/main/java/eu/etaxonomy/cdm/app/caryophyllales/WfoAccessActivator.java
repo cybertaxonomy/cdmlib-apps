@@ -29,7 +29,6 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @since 18.10.2017
- *
  */
 public class WfoAccessActivator {
 
@@ -95,10 +94,6 @@ public class WfoAccessActivator {
         return result;
     }
 
-
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         WfoAccessActivator me = new WfoAccessActivator();
         me.doImport(cdmDestination);

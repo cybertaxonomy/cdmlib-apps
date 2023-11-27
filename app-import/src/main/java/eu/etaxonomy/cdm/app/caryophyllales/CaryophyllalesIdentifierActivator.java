@@ -38,8 +38,8 @@ public class CaryophyllalesIdentifierActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales();
 
     private static final UUID idTypeUuid = IdentifierType.uuidWfoNameIdentifier;
 //    private static final UUID idTypeUuid = DefinedTerm.uuidIpniNameIdentifier;
