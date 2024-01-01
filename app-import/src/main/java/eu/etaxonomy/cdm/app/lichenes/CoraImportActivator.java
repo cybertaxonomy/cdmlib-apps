@@ -20,12 +20,9 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.lichenes.CoraImportConfigurator;
-import eu.etaxonomy.cdm.model.agent.Person;
-import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
  *
@@ -91,36 +88,8 @@ public class CoraImportActivator {
         if (secRef != null){
             return secRef;
         }
-        System.out.println("Sec Ref data still need to be updated");
-        Reference result = ReferenceFactory.newArticle();
-        result.setTitle("Corrections and amendments to the 2016 classification of lichenized fungi in the Ascomycota and Basidiomycota");
-        result.setDatePublished(TimePeriodParser.parseStringVerbatim("2016"));
-
-        Team team = Team.NewInstance();
-
-        Person person = Person.NewInstance();
-        person.setInitials("R.");
-        person.setFamilyName("Lücking");
-        team.addTeamMember(person);
-
-        person = Person.NewInstance();
-        person.setInitials("B.P.");
-        person.setFamilyName("Hodkinson");
-        team.addTeamMember(person);
-
-        person = Person.NewInstance();
-        person.setInitials("S.D.");
-        person.setFamilyName("Leavitt");
-        team.addTeamMember(person);
-
-        result.setAuthorship(team);
-
-//        result.setPublisher("Berlin: Botanic Garden and Botanical Museum Berlin-Dahlem; Athens: Hellenic Botanical Society.");
-
-        result.setVolume("120(1)");
-        Reference journal = ReferenceFactory.newJournal();
-        journal.setTitle("The Bryologist");
-        result.setInReference(journal);
+        Reference result = ReferenceFactory.newGeneric();
+        result.setTitle("Default sec-reference for Cora");
         secRef = result;
 
         secRef.setUuid(secRefUuid);

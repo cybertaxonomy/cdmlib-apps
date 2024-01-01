@@ -154,7 +154,6 @@ public class CoraTaxonImport<CONFIG extends CoraImportConfigurator>
         //Index Fungorum identifier
         if (isNotBlank(ifIdentifierStr)) {
             IdentifierType indexFungorumIdType = getIdentiferType(state, IdentifierType.uuidIndexFungorumIdentifier, null, null, null, null);
-            //TODO implement in term loading
             indexFungorumIdType.setUrlPattern("https://www.indexfungorum.org/names/NamesRecord.asp?RecordID={@ID}");
             taxonName.addIdentifier(ifIdentifierStr, indexFungorumIdType);
         }
@@ -310,7 +309,6 @@ public class CoraTaxonImport<CONFIG extends CoraImportConfigurator>
                 nomRef = referenceMap.get(referenceUniqueStr);
             }
             if (nomRef == null) {
-                //TODO deduplicate
                 if (isNotBlank(bookTitleStr)) {
                     nomRef = ReferenceFactory.newBook();
                     nomRef.setTitle(bookTitleStr);
@@ -366,11 +364,8 @@ public class CoraTaxonImport<CONFIG extends CoraImportConfigurator>
                 secRef = referenceMap.get(secRefStr);
             }
             if (secRef == null) {
-                //TODO books
-                //TODO deduplicate
                 secRef = ReferenceFactory.newArticle();
                 secRef.setTitle(secTitleStr);
-                //TODO secRef year
                 String secRefYearStr = secRefStr.substring(secRefStr.length()-4);
                 secRef.setDatePublished(TimePeriodParser.parseStringVerbatim(secRefYearStr));
                 TeamOrPersonBase<?> author = parseBiblioAuthors(secAuthorsStr);
