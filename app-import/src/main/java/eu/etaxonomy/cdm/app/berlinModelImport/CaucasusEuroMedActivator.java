@@ -52,12 +52,10 @@ import eu.etaxonomy.cdm.persistence.query.MatchMode;
 
 
 /**
- * TODO add the following to a wiki page:
- * HINT: If you are about to import into a mysql data base running under windows and if you wish to
- * dump and restore the resulting data bas under another operation systen
- * you must set the mysql system variable lower_case_table_names = 0 in order to create data base with table compatible names.
+ * Export for preliminary EuroMed - Caucasus DB.
  *
  * @author a.mueller
+ * @since 2018-11-29
  */
 public class CaucasusEuroMedActivator {
 
@@ -175,12 +173,7 @@ public class CaucasusEuroMedActivator {
 	static String authorTeamFilter =  " authorTeamId IN (SELECT drvTab.authorTeamId FROM (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) as drvTab) ";
 	static String authorFilter = " authorId IN (SELECT drvTab.authorId FROM (SELECT authorId FROM v_cdm_exp_authorsAll) as drvTab) ";
 
-
-
 // **************** ALL *********************
-
-
-
 
 	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") to " + cdmDestination.getDatabase() + " ...");

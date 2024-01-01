@@ -209,14 +209,9 @@ public class DwcaImportActivator {
 		return sourceUrl;
 	}
 
-
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		DwcaImportActivator me = new DwcaImportActivator();
 		me.doImport(cdmDestination);
+        System.exit(0);
 	}
-
 }

@@ -31,8 +31,9 @@ import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.InstitutionalMembership;
 import eu.etaxonomy.cdm.model.agent.Person;
 
-
 /**
+ * Activator for running a DwC-A export.
+ *
  * @author a.mueller
  */
 public class DwcaExportActivator {
@@ -97,7 +98,7 @@ public class DwcaExportActivator {
 	private boolean doMetaData = true;
 	private boolean doEml = false;
 
-	public ExportResult 	doExport(ICdmDataSource source){
+	public ExportResult doExport(ICdmDataSource source){
 		System.out.println("Start export to DWC-A ("+ fileDestination + ") ...");
 
 //		CdmUpdater su = CdmUpdater.NewInstance();
@@ -136,8 +137,8 @@ public class DwcaExportActivator {
 
 		config.setFeatureExclusions(featureExclusions);
 		// invoke import
-		CdmDefaultExport<DwcaTaxExportConfigurator> bmExport = new CdmDefaultExport<>();
-		ExportResult result = bmExport.invoke(config);
+		CdmDefaultExport<DwcaTaxExportConfigurator> dwcaExport = new CdmDefaultExport<>();
+		ExportResult result = dwcaExport.invoke(config);
 
 		System.out.println("End export to DWC-A ("+ fileDestination + ")..." + "("+result.getState().toString()+")");
 		return result;
@@ -174,5 +175,6 @@ public class DwcaExportActivator {
 		DwcaExportActivator ex = new DwcaExportActivator();
 		ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
 		ex.doExport(source);
+        System.exit(0);
 	}
 }

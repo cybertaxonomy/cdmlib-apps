@@ -109,9 +109,6 @@ public class EdaphobaseActivator {
         return result;
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         EdaphobaseActivator me = new EdaphobaseActivator();
         me.doImport(edaphoSource, cdmDestination);
