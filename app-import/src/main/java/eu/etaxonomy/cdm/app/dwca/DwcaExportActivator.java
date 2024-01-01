@@ -22,6 +22,7 @@ import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.filter.TaxonNodeFilter;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.ExportResult;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.CHECK;
@@ -42,12 +43,11 @@ public class DwcaExportActivator {
     private static final Logger logger = LogManager.getLogger();
 
 	//database validation status (create, update, validate ...)
-	private static final String fileDestination = "C:\\tmp\\dwcaTmp\\cyprus\\";
-//	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_cichorieae();
+	private static final String fileDestination = "C:\\Users\\muellera\\tmp\\export\\Cichorieae\\dwca-export.zip";
+	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_cichorieae();
 //	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
 //	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cichorieae();
-//	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_flora_central_africa_production();
-	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cyprus();
+//	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cyprus();
 
 	private IProgressMonitor monitor = DefaultProgressMonitor.NewInstance();
 
@@ -58,6 +58,9 @@ public class DwcaExportActivator {
 		"accessed ["+date+"].";
 
 	private static final String taxonSourceDefault = "http://wp6-cichorieae.e-taxonomy.eu/portal/?q=cdm_dataportal/taxon/{id}";
+
+	//Cichorioideae subtree / standard view
+	private static final UUID subtreeUuid = UUID.fromString("a523a752-aa7c-4efd-b733-64bf3bf580e9");
 
 	//check - import
 	private static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
@@ -118,6 +121,9 @@ public class DwcaExportActivator {
 		DwcaEmlRecord emlRecord = getEmlRecord();
 
 		DwcaTaxExportConfigurator config = DwcaTaxExportConfigurator.NewInstance(source, new File(destination), emlRecord);
+
+		TaxonNodeFilter taxonNodeFilter = TaxonNodeFilter.NewSubtreeInstance(subtreeUuid);
+		config.setTaxonNodeFilter(taxonNodeFilter);
 
 		config.setDoTaxa(doTaxa);
 		config.setDoResourceRelations(doResourceRelation);
