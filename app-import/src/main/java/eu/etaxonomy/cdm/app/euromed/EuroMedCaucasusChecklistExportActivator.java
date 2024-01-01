@@ -44,6 +44,8 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 
 /**
+ * Export E+M to Caucasus databases. See #10324.
+ *
  * @author a.mueller
  * @since 2022-11-08
  */
@@ -51,16 +53,17 @@ public class EuroMedCaucasusChecklistExportActivator {
 
     private static final Logger logger = LogManager.getLogger();
 
+    //NOTE: CAUTION: Schema creation may currently not work here!!
     static final DbSchemaValidation schemaValidation = DbSchemaValidation.VALIDATE;
 
-    static final ICdmDataSource source = CdmDestinations.cdm_local_euromed();
-//    static final ICdmDataSource source = CdmDestinations.cdm_production_euromed();
+//    static final ICdmDataSource source = CdmDestinations.cdm_local_euromed();
+    static final ICdmDataSource source = CdmDestinations.cdm_production_euromed();
     static final ICdmDataSource sourceConspectus = CdmDestinations.cdm_local_euromed_caucasus();
 
     static boolean isProduction = false;
-    static final DB db = DB.GEORGIA;
+    static final DB db = DB.AZERBAIJAN;
 
-    static final IMPORT importType = IMPORT.CONSPECTUS_VOC;
+    static final IMPORT importType = IMPORT.I1_TAXA;
 
     static ICdmDataSource cdmDestination = !isProduction ?
             (db == DB.GEORGIA ? CdmDestinations.cdm_local_georgia() :
@@ -78,7 +81,7 @@ public class EuroMedCaucasusChecklistExportActivator {
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
     private enum DB{GEORGIA, ARMENIA,AZERBAIJAN}
-    private enum IMPORT{TAXA, VOCABULARY, DESCRIPTION, CONSPECTUS_VOC}
+    private enum IMPORT{I1_TAXA, I2_VOCABULARY, I3_DESCRIPTION, I4_CONSPECTUS_VOC}
 
     static final int partitionSize = 5000;
 
@@ -98,15 +101,6 @@ public class EuroMedCaucasusChecklistExportActivator {
     //Compositae subtree
 //    private UUID uuidEuroMedTaxonNodeFilter = UUID.fromString("a45f6945-9b66-499e-b4f2-33b06caf6634");
 
-    static final Set<UUID> commonNameLanguageFilter = new HashSet<>(Arrays.asList(new UUID[] {
-//            UUID.fromString("7a0fde13-26e9-4382-a5c9-5640fc2b3334"),  //Armenian
-//            UUID.fromString("2fc29072-908d-4bd3-b12f-cd2587ab8d75"),  //Azerbaijani
-//            UUID.fromString("fb64b07c-c079-4fda-a803-212a0beca61b"),  //Georgian
-//            UUID.fromString("e9f8cdb7-6819-44e8-95d3-e2d0690c3523"),  //English
-            UUID.fromString("64ea9354-cbf8-40de-9f6e-387d24896f50"),  //Russian
-//            UUID.fromString("ecf81f98-177d-49a6-ad0f-f6d89944c76b"),  //Turkish
-    }));
-
     static final boolean removeImportSources = true;
     static final boolean addSource = true;
 
@@ -120,7 +114,7 @@ public class EuroMedCaucasusChecklistExportActivator {
         String importFrom = " import from "+ source.getDatabase() + " to "+ destination.getDatabase() + " ...";
         System.out.println("Start" + importFrom);
 
-        if (importType == IMPORT.CONSPECTUS_VOC) {
+        if (importType == IMPORT.I4_CONSPECTUS_VOC) {
             source = sourceConspectus;
         }
         Cdm2CdmImportConfigurator config = Cdm2CdmImportConfigurator.NewInstace(source, destination);
@@ -132,7 +126,7 @@ public class EuroMedCaucasusChecklistExportActivator {
         config.setRemoveImportSources(removeImportSources);
         config.setAddSources(addSource);
 
-        if (importType == IMPORT.CONSPECTUS_VOC) {
+        if (importType == IMPORT.I4_CONSPECTUS_VOC) {
             VocabularyFilter vocFilter = VocabularyFilter.NewInstance();
             vocFilter.orVocabulary(UUID.fromString("3ef82b77-23cb-4b60-a4b3-edc7e4775ddb"));  //Conspectus areas
             config.setVocabularyFilter(vocFilter);
@@ -155,9 +149,9 @@ public class EuroMedCaucasusChecklistExportActivator {
         System.out.println("Start" + importFrom);
 
         Cdm2CdmImportConfigurator config = Cdm2CdmImportConfigurator.NewInstace(source, destination);
-        config.setDoTaxa(importType == IMPORT.TAXA);
-        config.setDoDescriptions(importType == IMPORT.DESCRIPTION);
-        config.setDoVocabularies(importType == IMPORT.VOCABULARY);
+        config.setDoTaxa(importType == IMPORT.I1_TAXA);
+        config.setDoDescriptions(importType == IMPORT.I3_DESCRIPTION);
+        config.setDoVocabularies(importType == IMPORT.I2_VOCABULARY);
         config.setSourceReference(getSourceRef());
         config.setDistributionFilterFromAreaFilter(distributionFilterFromAreaFilter);
         config.setAddAncestors(addAncestorTaxa);
@@ -185,14 +179,14 @@ public class EuroMedCaucasusChecklistExportActivator {
 
         taxonNodeFilter.setIncludeAbsentDistributions(includeAbsentDistributions);
 
-        Set<UUID> commonNameLanguageFilter = new HashSet<>(Arrays.asList(new UUID[] {
-                UUID.fromString("64ea9354-cbf8-40de-9f6e-387d24896f50"),  //Russian
-                UUID.fromString("e9f8cdb7-6819-44e8-95d3-e2d0690c3523"),  //English
+        Set<UUID> commonNameLanguageFilter = new HashSet<>(); //Arrays.asList(new UUID[] {};
+//                UUID.fromString("64ea9354-cbf8-40de-9f6e-387d24896f50"),  //Russian
+//                UUID.fromString("e9f8cdb7-6819-44e8-95d3-e2d0690c3523"),  //English
 //              UUID.fromString("7a0fde13-26e9-4382-a5c9-5640fc2b3334"),  //Armenian
 //              UUID.fromString("2fc29072-908d-4bd3-b12f-cd2587ab8d75"),  //Azerbaijani
 //              UUID.fromString("fb64b07c-c079-4fda-a803-212a0beca61b"),  //Georgian
 //              UUID.fromString("ecf81f98-177d-49a6-ad0f-f6d89944c76b"),  //Turkish
-        }));
+//        }));
 
         UUID mainArea;
         if (db==DB.GEORGIA) {
@@ -214,9 +208,9 @@ public class EuroMedCaucasusChecklistExportActivator {
             //Azerbaijan
             mainArea = UUID.fromString("d3744c2d-2777-4e85-98bf-04d2fd589ebf");  //Ab
             taxonNodeFilter.orArea(mainArea);
-
             taxonNodeFilter.orArea(UUID.fromString("0f4c98bf-af7b-4cda-b62c-ad6a1909bfa0"));    //Ab(A)
             taxonNodeFilter.orArea(UUID.fromString("aa75b0ca-49c9-4f8e-8cc2-2a343eb2fff4"));    //Ab(N)
+
             commonNameLanguageFilter.add(UUID.fromString("2fc29072-908d-4bd3-b12f-cd2587ab8d75"));  //Azerbaijanian
         }else {
             throw new RuntimeException("Unhandled DB");
@@ -359,10 +353,10 @@ public class EuroMedCaucasusChecklistExportActivator {
     public static void main(String[] args) {
         ICdmDataSource cdmDB = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
         EuroMedCaucasusChecklistExportActivator myImport = new EuroMedCaucasusChecklistExportActivator();
-        if (importType == IMPORT.VOCABULARY || importType == IMPORT.CONSPECTUS_VOC) {
+        if (importType == IMPORT.I2_VOCABULARY || importType == IMPORT.I4_CONSPECTUS_VOC) {
             myImport.doImportVocs(source, cdmDB, schemaValidation);
         }
-        if (importType == IMPORT.TAXA || importType == IMPORT.DESCRIPTION) {
+        if (importType == IMPORT.I1_TAXA || importType == IMPORT.I3_DESCRIPTION) {
             try {
                 myImport.doImport(source, cdmDB, schemaValidation);
             } catch (NoSuchMethodException | SecurityException e) {
