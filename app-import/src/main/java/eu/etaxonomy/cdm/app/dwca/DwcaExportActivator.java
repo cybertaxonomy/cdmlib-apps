@@ -33,7 +33,9 @@ import eu.etaxonomy.cdm.model.agent.InstitutionalMembership;
 import eu.etaxonomy.cdm.model.agent.Person;
 
 /**
- * Activator for running a DwC-A export.
+ * Activator for running a general DwC-A export.
+ *
+ * Note: there is a specific version for Cichorieae in the Cichorieae folder.
  *
  * @author a.mueller
  */
@@ -44,9 +46,9 @@ public class DwcaExportActivator {
 
 	//database validation status (create, update, validate ...)
 	private static final String fileDestination = "C:\\Users\\muellera\\tmp\\export\\Cichorieae\\dwca-export.zip";
-	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_cichorieae();
+//	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_cichorieae();
 //	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
-//	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cichorieae();
+	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cichorieae();
 //	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cyprus();
 
 	private IProgressMonitor monitor = DefaultProgressMonitor.NewInstance();
@@ -54,7 +56,7 @@ public class DwcaExportActivator {
 	private static DateTime dateTime = new DateTime();
 	private static String date = dateTime.getYear() + "-" + dateTime.getMonthOfYear() + "-" + dateTime.getDayOfMonth();
 
-	private static final String defaultBibliographicCitation = "ICN (Hand, R., Kilian, N. & Raab-Straube, E. von; general editors) 2009+ (continuously updated): International Cichorieae Network: Cichorieae Portal. Published on the Internet at http://wp6-cichorieae.e-taxonomy.eu/portal/; " +
+	private static final String defaultBibliographicCitation = "xxx; " +
 		"accessed ["+date+"].";
 
 	private static final String taxonSourceDefault = "http://wp6-cichorieae.e-taxonomy.eu/portal/?q=cdm_dataportal/taxon/{id}";
@@ -91,15 +93,15 @@ public class DwcaExportActivator {
 // ************************ NONE **************************************** //
 
 	private boolean doTaxa = true;
-	private boolean doResourceRelation = false;
-	private boolean doTypesAndSpecimen = false;
-	private boolean doVernacularNames = false;
-	private boolean doReferences = false;
-	private boolean doDescription = false;
-	private boolean doDistributions = false;
+	private boolean doResourceRelation = true;
+	private boolean doTypesAndSpecimen = true;
+	private boolean doVernacularNames = true;
+	private boolean doReferences = true;
+	private boolean doDescription = true;
+	private boolean doDistributions = true;
 	private boolean doImages = false;
 	private boolean doMetaData = true;
-	private boolean doEml = false;
+	private boolean doEml = true;
 
 	public ExportResult doExport(ICdmDataSource source){
 		System.out.println("Start export to DWC-A ("+ fileDestination + ") ...");
