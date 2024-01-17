@@ -58,6 +58,7 @@ public class EuroMedCaucasusChecklistExportActivator {
 
 //    static final ICdmDataSource source = CdmDestinations.cdm_local_euromed();
     static final ICdmDataSource source = CdmDestinations.cdm_production_euromed();
+    //NOTE: after running the final import check the "After import" notes in #10324
     static final ICdmDataSource sourceConspectus = CdmDestinations.cdm_local_euromed_caucasus();
 
     static boolean isProduction = false;

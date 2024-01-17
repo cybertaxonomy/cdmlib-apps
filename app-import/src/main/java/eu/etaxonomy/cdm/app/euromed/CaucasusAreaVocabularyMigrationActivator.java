@@ -48,8 +48,8 @@ public class CaucasusAreaVocabularyMigrationActivator {
     @SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger();
 
-//    static final ICdmDataSource source = CdmDestinations.cdm_local_azerbaijan_old();
-    static final ICdmDataSource source = CdmDestinations.cdm_production_azerbaijan_old();
+    static final ICdmDataSource source = CdmDestinations.cdm_local_azerbaijan(); //_old
+//    static final ICdmDataSource source = CdmDestinations.cdm_production_azerbaijan_old();
 
     static boolean isProduction = true;
     static final DB db = DB.AZERBAIJAN;
