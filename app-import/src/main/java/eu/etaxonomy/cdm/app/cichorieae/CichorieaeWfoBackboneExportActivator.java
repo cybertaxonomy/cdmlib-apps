@@ -19,7 +19,7 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
-import eu.etaxonomy.cdm.io.wfo.out.WfoExportConfigurator;
+import eu.etaxonomy.cdm.io.wfo.out.WfoBackboneExportConfigurator;
 import eu.etaxonomy.cdm.model.term.IdentifierType;
 
 /**
@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.model.term.IdentifierType;
  * @author a.mueller
  * @since 2023-12-09
  */
-public class CichorieaeWfoClassificationExportActivator {
+public class CichorieaeWfoBackboneExportActivator {
 
     @SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger();
@@ -40,7 +40,7 @@ public class CichorieaeWfoClassificationExportActivator {
 //    static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cichorieae();
 
     static final UUID identifierUuid = IdentifierType.uuidWfoNameIdentifier;
-    String fileName = "CichorieaeWfoExport.csv";  //TODO add date
+    String fileName = "CichorieaeWfoBackboneExport.csv";  //TODO add date
 
     //check - import
     static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -48,10 +48,10 @@ public class CichorieaeWfoClassificationExportActivator {
     private void doImport(ICdmDataSource cdmSource){
 
         File fileDestination = getCichorieaeExport();
-        WfoExportConfigurator config= WfoExportConfigurator.NewInstance(cdmSource, fileDestination);
+        WfoBackboneExportConfigurator config= WfoBackboneExportConfigurator.NewInstance(cdmSource, fileDestination);
         config.setDbSchemaValidation(dbSchemaValidation);
 
-        CdmDefaultExport<WfoExportConfigurator> myImport = new CdmDefaultExport<>();
+        CdmDefaultExport<WfoBackboneExportConfigurator> myImport = new CdmDefaultExport<>();
         myImport.invoke(config);
     }
 
@@ -63,7 +63,7 @@ public class CichorieaeWfoClassificationExportActivator {
     }
 
     public static void main(String[] args) {
-        CichorieaeWfoClassificationExportActivator me = new CichorieaeWfoClassificationExportActivator();
+        CichorieaeWfoBackboneExportActivator me = new CichorieaeWfoBackboneExportActivator();
         me.doImport(cdmSource);
         System.exit(0);
     }
