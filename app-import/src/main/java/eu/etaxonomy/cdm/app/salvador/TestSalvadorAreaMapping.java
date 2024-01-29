@@ -67,6 +67,8 @@ public class TestSalvadorAreaMapping {
             EnumSet<InfoPart> parts = EnumSet.copyOf(partSet);
             DistributionInfoConfiguration distConfig = new DistributionInfoConfiguration();
             distConfig.setInfoParts(parts);
+            //not really relevant as it is only a test
+            distConfig.setIncludeUnpublished(true);
             distributionService.composeDistributionInfoFor(distConfig, taxonUuid, false, null,
                   null, null);
         } catch (Exception e) {
