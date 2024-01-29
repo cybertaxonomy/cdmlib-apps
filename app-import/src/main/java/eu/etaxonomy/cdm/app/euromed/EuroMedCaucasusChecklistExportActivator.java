@@ -62,7 +62,7 @@ public class EuroMedCaucasusChecklistExportActivator {
     static final ICdmDataSource sourceConspectus = CdmDestinations.cdm_local_euromed_caucasus();
 
     static boolean isProduction = false;
-    static final DB db = DB.AZERBAIJAN;
+    static final DB db = DB.ARMENIA;
 
     static final IMPORT importType = IMPORT.I1_TAXA;
 
