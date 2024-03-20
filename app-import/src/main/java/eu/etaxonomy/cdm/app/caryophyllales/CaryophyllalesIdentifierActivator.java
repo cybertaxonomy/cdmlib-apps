@@ -66,7 +66,7 @@ public class CaryophyllalesIdentifierActivator {
     }
 
     private InputStreamReader getIdentifierStream() {
-        String path = "E://data//Caryophyllales";
+        String path = "E://data//Caryophyllales//wfo";
         File file = new File(path + File.separator + fileName);
         if (!file.exists()){
             System.exit(-1);
