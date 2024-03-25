@@ -69,6 +69,7 @@ public class TestDatabase {
 		logger.info("Setting DB " + dbname);
 		String password = AccountStore.readOrStorePassword(dbname, server, username, null);
 		ICdmDataSource datasource = CdmDataSource.NewMySqlInstance(server, dbname, username, password);
+//		ICdmDataSource datasource = CdmDestinations.cdm_production_flora_cuba();
 		return datasource;
 	}
 
@@ -321,7 +322,6 @@ public class TestDatabase {
 		*/
 		//
 
-
 		taxonBases.add(root1T);
 		taxonBases.add(root2T);
 		taxonBases.add(freeT);
@@ -342,8 +342,12 @@ public class TestDatabase {
 		dataSet.setTaxonomicNames(taxonomicNames);
 		dataSet.setTaxonBases((List)taxonBases);
 
-
 		return dataSet;
+	}
 
+	public static void main(String[] args) {
+	    DbSchemaValidation schemaValidation = DbSchemaValidation.VALIDATE;
+	    initDb(CDM_DB(null), schemaValidation, false);
+	    System.exit(0);
 	}
 }
