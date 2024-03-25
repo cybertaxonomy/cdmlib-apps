@@ -3,7 +3,7 @@
 * European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
 */
-package eu.etaxonomy.cdm.app.util;
+package eu.etaxonomy.cdm.app.common.tasks;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

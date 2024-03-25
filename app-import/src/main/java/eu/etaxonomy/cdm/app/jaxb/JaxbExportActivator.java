@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.app.util.TestDatabase;
+import eu.etaxonomy.cdm.app.common.tasks.TestDatabase;
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;

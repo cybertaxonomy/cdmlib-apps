@@ -68,9 +68,6 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml;
 //		assertTrue("Return value for import.invoke should be true", result);
 
 
-
-
-
 //		List<Classification> classificationList = classificationService.list(Classification.class, null, null, null, null);
 //		if(classificationList != null && !classificationList.isEmpty()){
 //			for(Classification classification:classificationList){

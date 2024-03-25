@@ -38,7 +38,7 @@ public class BuxalesExportActivator {
     @SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger();
 
-    static final ICdmDataSource cubaSource = CdmDestinations.cdm_production_cuba();
+    static final ICdmDataSource cubaSource = CdmDestinations.cdm_production_flora_cuba();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_buxales();
 
