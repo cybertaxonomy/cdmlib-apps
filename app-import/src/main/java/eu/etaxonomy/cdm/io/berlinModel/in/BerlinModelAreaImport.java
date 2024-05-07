@@ -313,17 +313,17 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
         try {
 
-            MarkerType hiddenAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidHiddenArea,
+            MarkerType fallbackAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidHiddenArea,
                     "Hidden Area","Used to hide distributions for the named areas in publications", null, getEuroMedMarkerTypeVoc(state));
 
             //Add hidden area marker to Rs(C) and Rs(N)
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs);
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_B);
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_C);
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_E);
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_N);
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_K);
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_W);
+            hideArea(euroMedAreasVoc, fallbackAreaMarkerType, BerlinModelTransformer.uuidRs);
+            hideArea(euroMedAreasVoc, fallbackAreaMarkerType, BerlinModelTransformer.uuidRs_B);
+            hideArea(euroMedAreasVoc, fallbackAreaMarkerType, BerlinModelTransformer.uuidRs_C);
+            hideArea(euroMedAreasVoc, fallbackAreaMarkerType, BerlinModelTransformer.uuidRs_E);
+            hideArea(euroMedAreasVoc, fallbackAreaMarkerType, BerlinModelTransformer.uuidRs_N);
+            hideArea(euroMedAreasVoc, fallbackAreaMarkerType, BerlinModelTransformer.uuidRs_K);
+            hideArea(euroMedAreasVoc, fallbackAreaMarkerType, BerlinModelTransformer.uuidRs_W);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("Exception in markAreasAsHidden: " + e.getMessage());
@@ -331,10 +331,10 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
     }
 
-    private void hideArea(TermVocabulary<NamedArea> euroMedAreasVoc, MarkerType hiddenAreaMarkerType, UUID areaUuid) {
+    private void hideArea(TermVocabulary<NamedArea> euroMedAreasVoc, MarkerType fallbackAreaMarkerType, UUID areaUuid) {
         for (NamedArea namedArea : euroMedAreasVoc.getTerms()){
             if (namedArea.getUuid().equals(areaUuid)){
-                namedArea.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
+                namedArea.addMarker(Marker.NewInstance(fallbackAreaMarkerType, true));
                 return;
             }
         }

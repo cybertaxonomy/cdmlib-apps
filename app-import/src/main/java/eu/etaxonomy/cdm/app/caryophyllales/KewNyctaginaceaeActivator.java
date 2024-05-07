@@ -40,7 +40,7 @@ public class KewNyctaginaceaeActivator extends SourceBase{
 	private static final DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	private static final URI source = nyctaginaceae();
 
-	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
+	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo();
 //    private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
 
 

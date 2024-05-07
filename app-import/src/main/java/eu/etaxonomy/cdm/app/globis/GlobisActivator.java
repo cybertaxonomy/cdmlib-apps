@@ -41,8 +41,7 @@ public class GlobisActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source globisSource = CdmImportSources.GLOBIS_MDB_20140113_PESIIMPORT_SQLSERVER();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_globis();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_globis();
 
 

@@ -28,7 +28,8 @@ public class TaxonExcelCaryophyllalesActivator {
     @SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger();
 
-	private static final ICdmDataSource destinationDb = CdmDestinations.cdm_production_caryophyllales_genus();
+//	private static final ICdmDataSource destinationDb = CdmDestinations.cdm_production_caryophyllales_genus();
+    private static final ICdmDataSource destinationDb = CdmDestinations.cdm_local_caryo();
 
     public static void main(String[] args) {
 

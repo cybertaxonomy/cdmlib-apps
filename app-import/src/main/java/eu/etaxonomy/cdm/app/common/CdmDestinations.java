@@ -616,14 +616,6 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-	public static ICdmDataSource cdm_test_globis(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.175";
-		String cdmDB = "cdm_edit_globis";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
     public static ICdmDataSource cdm_local_edaphobase(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "127.0.0.1";
@@ -648,31 +640,6 @@ public class CdmDestinations {
         String cdmUserName = "edaphobase";
         int port = 5432;
         return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
-    }
-
-    public static ICdmDataSource cdm_test_postgres__ssh_edaphobase(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.PostgreSQL;
-        String cdmServer = "localhost";
-        String cdmDB = "cdm_edaphobase";
-        String cdmUserName = "edaphobase";
-        int port = 13306;
-        return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
-    }
-
-    public static ICdmDataSource cdm_local_caryo_spp(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-        String cdmServer = "127.0.0.1";
-        String cdmDB = "cdm_local_caryophyllales_spp";
-        String cdmUserName = "edit";
-        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-    }
-
-    public static ICdmDataSource cdm_local_caryo_spp1(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-        String cdmServer = "127.0.0.1";
-        String cdmDB = "cdm_local_caryophyllales_spp1";
-        String cdmUserName = "edit";
-        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
 
 	public static ICdmDataSource cdm_local_globis(){
@@ -849,14 +816,6 @@ public class CdmDestinations {
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_rl_standardliste";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
-	public static ICdmDataSource cdm_production_caryophyllales_genus(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.171";
-		String cdmDB = "cdm_production_caryophyllales_genera";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}

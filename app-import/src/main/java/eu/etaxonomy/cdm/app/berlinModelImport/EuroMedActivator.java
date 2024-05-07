@@ -298,8 +298,6 @@ public class EuroMedActivator {
 
 //      createPreferences(config, bmImport); => manual
 
-//        markAreasAsHidden(config, bmImport);  //has been moved to BM occurrence import
-
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 	}
 
@@ -486,50 +484,6 @@ public class EuroMedActivator {
             }
         }
     }
-
-//    //5.Mark areas to be hidden #3979 .5
-//    private void markAreasAsHidden(BerlinModelImportConfigurator config,
-//            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
-//
-//        if (config.isDoOccurrence() && (config.getCheck().isImport())){
-//	        try {
-//                ICdmRepository app = bmImport.getCdmAppController();
-//                TransactionStatus tx = app.startTransaction();
-//
-//                MarkerType hiddenAreaMarkerType = MarkerType.NewInstance("Used to hide distributions for the named areas in publications", "Hidden Area", null);
-//                hiddenAreaMarkerType.setUuid(BerlinModelTransformer.uuidHiddenArea);
-//                @SuppressWarnings("unchecked")
-//                TermVocabulary<MarkerType> vocUserDefinedMarkerTypes = app.getVocabularyService().find(CdmImportBase.uuidUserDefinedMarkerTypeVocabulary);
-//                if (vocUserDefinedMarkerTypes == null){
-//                    String message = "Marker type vocabulary could not be found. Hidden areas not added.";
-//                    logger.error(message);
-//                    System.out.println(message);
-//                }else{
-//                    vocUserDefinedMarkerTypes.addTerm(hiddenAreaMarkerType);
-//                    app.getVocabularyService().saveOrUpdate(vocUserDefinedMarkerTypes);
-//
-//                    //Add hidden area marker to Rs(C) and Rs(N)
-//                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs);
-//                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_B);
-//                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_C);
-//                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_E);
-//                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_N);
-//                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_K);
-//                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_W);
-//                 }
-//                app.commitTransaction(tx);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                logger.error("Exception in markAreasAsHidden: " + e.getMessage());
-//            }
-//	    }
-//    }
-//
-//    private void hideArea(ICdmRepository app, MarkerType hiddenAreaMarkerType, UUID areaUuid) {
-//        NamedArea area = (NamedArea)app.getTermService().find(areaUuid);
-//        area.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
-//        app.getTermService().saveOrUpdate(area);
-//    }
 
     //2. import shapefile attributes #3979 .2
     private void importShapefile(BerlinModelImportConfigurator config,
