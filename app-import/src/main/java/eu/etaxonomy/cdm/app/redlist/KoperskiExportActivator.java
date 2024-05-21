@@ -8,21 +8,15 @@
 */
 package eu.etaxonomy.cdm.app.redlist;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.google.common.io.Files;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
@@ -56,7 +50,7 @@ public class KoperskiExportActivator {
     	KoperskiExportConfigurator config = KoperskiExportConfigurator.NewInstance();
         TaxonNodeFilter filter = TaxonNodeFilter.NewClassificationInstance(KoperskiImportActivator.classificationUuid);
         config.setTaxonNodeFilter(filter);
-        
+
         //export
     	CdmDefaultExport<KoperskiExportConfigurator> export = new CdmDefaultExport<>();
         config.setCreateZipFile(true);
@@ -66,7 +60,7 @@ public class KoperskiExportActivator {
         handleResult(result, uri);
         return;
     }
-    
+
 	private void handleResult(ExportResult result, URI uri) {
 		try {
 			ExportResultType type = result.getExportData().getType();
@@ -76,12 +70,12 @@ public class KoperskiExportActivator {
 			    for (String key:map.keySet()){
 			        byte[] data =map.get(key);
 			        String fileEnding =".csv";
-			        
+
 //			        File myFile = new File(destination() + File.separator + key + fileEnding);
 			        File file = new File("C:\\Users\\muellera\\tmp\\export\\"+exportFileName+ File.separator + key + fileEnding);
 			        boolean ex = file.exists();
 			        if (!ex) {
-			        	file.createNewFile();       	
+			        	file.createNewFile();
 			        }
 //			        FileOutputStream fos = new FileOutputStream(file);
 			        try {
@@ -106,7 +100,7 @@ public class KoperskiExportActivator {
 			e.printStackTrace();
 		}
 	}
-    
+
     private static URI destination(){
     	File file = new File("C:\\Users\\muellera\\tmp\\export\\" + exportFileName );
         return URI.fromFile(file);

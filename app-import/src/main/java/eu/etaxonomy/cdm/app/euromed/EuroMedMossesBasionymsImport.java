@@ -29,9 +29,6 @@ import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
-import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
@@ -214,29 +211,6 @@ public class EuroMedMossesBasionymsImport {
             logger.warn("Rank not yet handled "+ rankStr);
             return null;
         }
-    }
-
-    private static void runScript_old(CdmApplicationController app) {
-        TransactionStatus txStatus = app.startTransaction();
-
-        List<Taxon> taxa = app.getTaxonService().list(Taxon.class, null, null, null, null);
-        taxa.forEach(t->{
-            Set<TextData> facts = t.getDescriptionItems(Feature.ETYMOLOGY(), TextData.class);
-            if (facts.size() > 1) {
-                logger.warn("More then 1 etymology fact exists for " + t.getTitleCache() + "/" + t.getUuid());
-            }
-            facts.forEach(f->{
-                f.getInDescription().removeElement(f);
-                TextData clone = f.clone();
-                if (t.getName().getDescriptions().isEmpty()) {
-                   TaxonNameDescription d = TaxonNameDescription.NewInstance(t.getName());
-                   d.setTitleCache("Etymology fact moved from taxon to name", true);
-                }
-                t.getName().getDescriptions().iterator().next().addElement(clone);
-            });
-        });
-
-        app.commitTransaction(txStatus);
     }
 
     public static void main(String[] args) {

@@ -16,19 +16,14 @@ import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
-import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.redlist.moose.KoperskiImportConfigurator;
-import eu.etaxonomy.cdm.io.uzbekistan.UzbekistanTaxonImportConfigurator;
-import eu.etaxonomy.cdm.model.agent.Person;
-import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
  * Import activator for Koperski & al., Referenzliste der Moose Deutschlands.
@@ -44,7 +39,7 @@ public class KoperskiImportActivator {
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_moose();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql_moose();
 
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //    static DbSchemaValidation hbm2dll =  cdmDestination.getDatabaseType() == DatabaseTypeEnum.H2 ? DbSchemaValidation.CREATE : DbSchemaValidation.VALIDATE;
