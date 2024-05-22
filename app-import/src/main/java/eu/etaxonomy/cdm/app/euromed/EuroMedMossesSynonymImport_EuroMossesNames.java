@@ -15,8 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import com.microsoft.sqlserver.jdbc.StringUtils;
-
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -24,13 +22,12 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.strategy.homotypicgroup.BasionymRelationCreator;
 import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
@@ -55,7 +52,7 @@ public class EuroMedMossesSynonymImport_EuroMossesNames {
     private static void runScript(CdmApplicationController app) {
         INonViralNameParser<TaxonName> parser = (INonViralNameParser)NonViralNameParserImpl.NewInstance();
 
-        String sql = "SELECT * FROM synonyms ORDER BY id";
+        String sql = "SELECT * FROM synonyms ORDER BY acc";
         Source source = new Source(Source.MYSQL, "160.45.63.171",
                 "cdm_production_euromed_mosses_syn2acc", 3306);
         //XXXXXXXXXXXXXXXXXXX
@@ -68,21 +65,32 @@ public class EuroMedMossesSynonymImport_EuroMossesNames {
             while (rs.next()) {
                 String lineStr = line + ": ";
                 UUID taxonUuid = UUID.fromString(rs.getString("accUuid"));
-                String scientificname = rs.getString("scientificname");
-                String authorship = rs.getString("authorship");
+//                String pureName = rs.getString("pure_name");
+//                String acc = rs.getString("acc");
                 String fullName = rs.getString("Fullname");
 
                 Taxon taxon = (Taxon)app.getTaxonService().findTaxonByUuid(taxonUuid, null);
-                TaxonName synonymName = parser.parseFullName(fullName, NomenclaturalCode.ICNAFP, null);
+                TaxonName newSynonymName = parser.parseFullName(fullName, NomenclaturalCode.ICNAFP, null);
 
-                Synonym newSynonym = taxon.addSynonymName(synonymName, SynonymType.SYNONYM_OF);
-                if (synonymName.getBasionymAuthorship() != null) {
-                    String basionymAuthorStr = synonymName.getBasionymAuthorship().getNomenclaturalTitleCache();
-                    checkIsBasionym(lineStr, basionymAuthorStr, taxon.getName().getCombinationAuthorship(), synonymName.getTitleCache());
-                    for (TaxonName syn : taxon.getSynonymNames()) {
-                        checkIsBasionym(lineStr, basionymAuthorStr, syn.getCombinationAuthorship(), synonymName.getTitleCache());
+                boolean hasBasionym = false;
+                if (newSynonymName.getBasionymAuthorship() != null) {
+                    hasBasionym = checkIsBasionym(lineStr, taxon.getName(), newSynonymName);
+                    if (!hasBasionym) {
+                        for (TaxonName syn : taxon.getSynonymNames()) {
+                            hasBasionym = checkIsBasionym(lineStr, syn, newSynonymName);
+                            if (hasBasionym) {
+                                break;
+                            }
+                        }
+                    }
+                    if (!hasBasionym) {
+                        logger.warn(lineStr + "New synonym has basionym author but no existing basionym found: " + newSynonymName.getTitleCache() + "; acc: " + taxon.getName().getTitleCache());
                     }
                 }
+                SynonymType synonymType = (newSynonymName.getHomotypicalGroup().equals(taxon.getName().getHomotypicalGroup())) ?
+                        SynonymType.HOMOTYPIC_SYNONYM_OF : SynonymType.HETEROTYPIC_SYNONYM_OF;
+
+                Synonym newSynonym = taxon.addSynonymName(newSynonymName, synonymType);
 
 
                 app.getTaxonService().save(newSynonym);
@@ -95,38 +103,24 @@ public class EuroMedMossesSynonymImport_EuroMossesNames {
         }
     }
 
-    private static void checkIsBasionym(String line, String basionymAuthorStr, TeamOrPersonBase<?> combinationAuthorship, String taxonNameStr) {
-        String candidateAuthor = combinationAuthorship.getNomenclaturalTitleCache();
-        if (basionymAuthorStr.replace(" ", "").equalsIgnoreCase(CdmUtils.Nz(candidateAuthor).replace(" ", ""))) {
-            logger.warn(line + "Basionym may exist already: " +  taxonNameStr);
+    private static boolean checkIsBasionym(String line, TaxonName basionymCandidate, TaxonName combinationCandidate) {
+        if (basionymCandidate.getCombinationAuthorship() == null) {
+            return false;
         }
-    }
-
-    private static Rank getRank(String rankStr) {
-        if (StringUtils.isEmpty(rankStr)) {
-            return null;
-        }else if ("subgenus".equals(rankStr)) {
-            return Rank.SUBGENUS();
-        }else if ("species".equals(rankStr)) {
-            return Rank.SPECIES();
-        }else if ("variety".equals(rankStr)) {
-            return Rank.VARIETY();
-        }else if ("infrageneric name".equals(rankStr)) {
-            return Rank.INFRAGENERICTAXON();
-        }else if ("section botany".equals(rankStr)) {
-            return Rank.SECTION_BOTANY();
-        }else if ("subsection botany".equals(rankStr)) {
-            return Rank.SUBSECTION_BOTANY();
-        }else if ("subspecies".equals(rankStr)) {
-            return Rank.SUBSPECIES();
-        }else if ("form".equals(rankStr)) {
-            return Rank.FORM();
-        }else if ("infraspecific name".equals(rankStr)) {
-            return Rank.INFRASPECIFICTAXON();
-        }else {
-            logger.warn("Rank not yet handled "+ rankStr);
-            return null;
+        String basionymCandidateAuthorStr = basionymCandidate.getCombinationAuthorship().getNomenclaturalTitleCache();
+        String combinationAuthorshipStr = combinationCandidate.getBasionymAuthorship().getNomenclaturalTitleCache();
+        if (CdmUtils.Nz(basionymCandidateAuthorStr.replace(" ", "")).equalsIgnoreCase(CdmUtils.Nz(combinationAuthorshipStr).replace(" ", ""))) {
+            boolean lastEpiMatches = BasionymRelationCreator.matchLastNamePart(basionymCandidate, combinationCandidate);
+            if (lastEpiMatches) {
+                logger.warn(line + "Basionym seems to exist already. Added name to homotypic group: " +  combinationCandidate.getTitleCache() +  "->" + basionymCandidate.getTitleCache());
+                combinationCandidate.setHomotypicalGroup(basionymCandidate.getHomotypicalGroup());
+                combinationCandidate.addBasionym(basionymCandidate);
+                return true;
+            }else {
+                logger.warn(line + "Authors could be basionym authors, but epithets differ: " +  combinationCandidate.getTitleCache() +  ", " + basionymCandidate.getTitleCache());
+            }
         }
+        return false;
     }
 
     public static void main(String[] args) {
