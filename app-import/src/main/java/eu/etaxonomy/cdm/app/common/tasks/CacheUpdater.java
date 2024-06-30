@@ -83,7 +83,7 @@ public class CacheUpdater {
 			//String successString = success ? "successful" : " with errors ";
 			//System.out.println("End updating caches for "+ destination.getDatabase() + "..." +  successString);
 			return result;
-		} catch (ClassNotFoundException e) {
+		} catch (Exception e) {
 			logger.error(e);
 			result.addException(e);
 			return result;
@@ -95,7 +95,9 @@ public class CacheUpdater {
 
 		System.out.println("Start updating caches for "+ destination.getDatabase() + "...");
 		CacheUpdater me = new CacheUpdater();
-		me.doInvoke(destination);
+		ImportResult result = me.doInvoke(destination);
+		StringBuffer report = result.createReport();
+		System.out.println("\nREPORT\n" + report.toString());
 		System.exit(0);
 
 	}
@@ -148,6 +150,4 @@ public class CacheUpdater {
 //	static final boolean doTermVocabulary = true;
 //	static final boolean doDefinedTermBase = true;
 //
-
-
 }

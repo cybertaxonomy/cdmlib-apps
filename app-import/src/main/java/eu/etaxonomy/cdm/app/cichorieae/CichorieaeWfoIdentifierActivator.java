@@ -44,9 +44,7 @@ public class CichorieaeWfoIdentifierActivator {
 
     static final UUID identifierUuid = IdentifierType.uuidWfoNameIdentifier;
 //    static final String fileName = "Cichorieae_Syn_WFOID_Matches.csv";
-    static final String fileName = "Cichorieae_Syn_WFOID_Matches_2.csv";
-//    static final String fileName = "Cichorieae_Syn_WFOID_Incorrect.csv";
-//    static final String fileName = "Cichorieae_Syn_WFOID_NewToWfo.csv";
+    static final String fileName = "Cichorieae_Syn_WFOID_ExactMatches_2024_06_28.csv";
 
     boolean warnAndDoNotOverrideIfExists = true;
 
