@@ -24,8 +24,12 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
+import eu.etaxonomy.cdm.model.agent.Team;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.TaxonName;
+import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -35,7 +39,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  * @author muellera
- * @since 06.05.2024
+ * @since 22.05.2024
  */
 public class EuroMedMossesSynonymImport_KoperskiSynonyms {
 
@@ -63,6 +67,11 @@ public class EuroMedMossesSynonymImport_KoperskiSynonyms {
 
         TransactionStatus tx = app.startTransaction();
         ResultSet rs = source.getResultSet(sql);
+        Reference sourceRef = ReferenceFactory.newBook();
+        sourceRef.setTitle("Referenzliste der Moose Deutschlands");
+        sourceRef.setAuthorship(Team.NewTitledInstance("Monika Koperski, Michael Sauer, Walther Braun, und S. Rob Gradstein", null));
+        sourceRef.setDatePublished(VerbatimTimePeriod.NewVerbatimInstance(2000));
+        app.getReferenceService().save(sourceRef);
         try {
             int line = 1;
             while (rs.next()) {
@@ -73,6 +82,7 @@ public class EuroMedMossesSynonymImport_KoperskiSynonyms {
                 Taxon taxon = (Taxon)app.getTaxonService().findTaxonByUuid(taxonUuid, null);
                 TaxonName newSynonymName = parser.parseFullName(synName, NomenclaturalCode.ICNAFP, null);
                 dedupHelper.replaceAuthorNamesAndNomRef(newSynonymName);
+                newSynonymName.addImportSource(null, null, sourceRef, null);
 
                 boolean hasBasionym = false;
                 if (newSynonymName.getBasionymAuthorship() != null) {
@@ -93,7 +103,7 @@ public class EuroMedMossesSynonymImport_KoperskiSynonyms {
                         SynonymType.HOMOTYPIC_SYNONYM_OF : SynonymType.HETEROTYPIC_SYNONYM_OF;
 
                 Synonym newSynonym = taxon.addSynonymName(newSynonymName, synonymType);
-
+                newSynonym.addImportSource(null, null, sourceRef, null);
                 app.getTaxonService().save(newSynonym);
 
                 line++;
