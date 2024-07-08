@@ -296,7 +296,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                         "\n -  '" + LITSTRING + "': "+ nomRefStr +
                         "\n -  '" + TYPE + "': " + typeStr +
                         "\n -  '" + REGISTRATION  + "': " + regStr
-                , AnnotationType.TECHNICAL(), Language.DEFAULT()));
+                , AnnotationType.INTERNAL(), Language.DEFAULT()));
 
         if(restoreOriginalReference){
             taxonName.setNomenclaturalReference(bookVariedadesTradicionales);

@@ -878,7 +878,7 @@ public class CubaExcelImport
         }else{
             Annotation annotation = Annotation.NewDefaultLanguageInstance(notesStr);
             //TODO
-            annotation.setAnnotationType(AnnotationType.TECHNICAL());
+            annotation.setAnnotationType(AnnotationType.INTERNAL());
             state.getCurrentTaxon().addAnnotation(annotation);
         }
     }

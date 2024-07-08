@@ -424,7 +424,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 //save hybrid formula
                 if(CdmUtils.isNotBlank(formelString)){
                     Annotation annotation = Annotation.NewDefaultLanguageInstance(formelString);
-                    annotation.setAnnotationType(AnnotationType.TECHNICAL());
+                    annotation.setAnnotationType(AnnotationType.INTERNAL());
                     name.addAnnotation(annotation);
                 }
             }

@@ -207,7 +207,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
         String geoMapping = "<?xml version=\"1.0\" ?><mapService xmlns=\"http://www.etaxonomy.eu/cdm\" type=\"editMapService\">"
                 + "<area><layer>euromed_2013</layer><field>EMAREA</field>"
                 + "<value>" + geoAbbrev + "</value></area></mapService>";
-        Annotation geoServiceMapping = Annotation.NewInstance(geoMapping, AnnotationType.TECHNICAL(), Language.UNKNOWN_LANGUAGE());
+        Annotation geoServiceMapping = Annotation.NewInstance(geoMapping, AnnotationType.INTERNAL(), Language.UNKNOWN_LANGUAGE());
         namedArea.addAnnotation(geoServiceMapping);
 
         voc.addTerm(namedArea);

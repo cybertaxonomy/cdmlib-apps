@@ -229,7 +229,7 @@ public class CaryoSileneaeNameImport extends CaryoSileneaeImportBase {
         //annotation
         if (isNotBlank(notes)) {
             Annotation annotation = Annotation.NewDefaultLanguageInstance(notes);
-            annotation.setAnnotationType(AnnotationType.TECHNICAL());
+            annotation.setAnnotationType(AnnotationType.INTERNAL());
             name.addAnnotation(annotation);
         }
 

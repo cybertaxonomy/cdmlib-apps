@@ -135,7 +135,7 @@ public abstract class BerlinModelImportBase
 			Annotation annotation = Annotation.NewInstance(createdAnnotationString, Language.DEFAULT());
 			//TODO make transaction compatible, same as common sec reference
 			annotation.setCommentator(config.getCommentator());
-			annotation.setAnnotationType(AnnotationType.TECHNICAL());
+			annotation.setAnnotationType(AnnotationType.INTERNAL());
 			annotatableEntity.addAnnotation(annotation);
 		}else if (config.getEditor().equals(EDITOR.EDITOR_AS_EDITOR)){
 		    User creator;

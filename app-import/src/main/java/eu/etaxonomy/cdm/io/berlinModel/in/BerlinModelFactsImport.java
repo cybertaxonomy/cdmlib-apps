@@ -459,7 +459,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 							strSequence = SEQUENCE_PREFIX + strSequence;
 							//TODO make it an Extension when possible
 							//Extension datesExtension = Extension.NewInstance(textData, strSequence, ExtensionType.ORDER());
-							Annotation annotation = Annotation.NewInstance(strSequence, AnnotationType.TECHNICAL(), Language.ENGLISH());
+							Annotation annotation = Annotation.NewInstance(strSequence, AnnotationType.INTERNAL(), Language.ENGLISH());
 							deb.addAnnotation(annotation);
 						}
 

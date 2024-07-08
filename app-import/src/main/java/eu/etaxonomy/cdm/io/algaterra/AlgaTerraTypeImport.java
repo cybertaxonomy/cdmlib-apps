@@ -223,7 +223,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 					}
 
 					//ID: Type designations do not allow OriginalSources
-					designation.addAnnotation(Annotation.NewInstance("Id in BerlinModel-TypeDesignation: " + String.valueOf(typeDesignationId), AnnotationType.TECHNICAL(), Language.UNDETERMINED()));
+					designation.addAnnotation(Annotation.NewInstance("Id in BerlinModel-TypeDesignation: " + String.valueOf(typeDesignationId), AnnotationType.INTERNAL(), Language.UNDETERMINED()));
 
 					if (restrictedFlag != null &&restrictedFlag.equals(true)){
 						logger.warn("Restricted Flag is expected to be null or 0. TypeDesignationId" + typeDesignationId);
@@ -290,7 +290,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 			}
 			Annotation annotation = Annotation.NewInstance(createdAnnotationString, Language.DEFAULT());
 			annotation.setCommentator(config.getCommentator());
-			annotation.setAnnotationType(AnnotationType.TECHNICAL());
+			annotation.setAnnotationType(AnnotationType.INTERNAL());
 			annotatableEntity.addAnnotation(annotation);
 		}else if (config.getEditor().equals(EDITOR.EDITOR_AS_EDITOR)){
 			User creator = getUser(state, createdWho);

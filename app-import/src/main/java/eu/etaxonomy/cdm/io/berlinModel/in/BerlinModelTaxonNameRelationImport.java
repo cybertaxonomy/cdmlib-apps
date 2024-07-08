@@ -293,9 +293,9 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 		Annotation annotation = doNotes(nameRelationship, notes);
 		if (config.isEuroMed() && annotation != null){
 		    if (relQualifierFk == NAME_REL_IS_BASIONYM_FOR){
-		        annotation.setAnnotationType(AnnotationType.TECHNICAL());
+		        annotation.setAnnotationType(AnnotationType.INTERNAL());
 		    }else if ((relQualifierFk == NAME_REL_IS_LECTOTYPE_OF) && !notes.contains("designated")){
-		        annotation.setAnnotationType(AnnotationType.TECHNICAL());
+		        annotation.setAnnotationType(AnnotationType.INTERNAL());
 		    }else{
 		        logger.warn("Annotation type not defined for name relationship " + relNameId);
 		    }

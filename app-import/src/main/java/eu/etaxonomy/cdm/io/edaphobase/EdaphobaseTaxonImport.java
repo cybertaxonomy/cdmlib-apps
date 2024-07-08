@@ -325,7 +325,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         }
 
         //remarks
-        doNotes(taxonBase, remark, AnnotationType.TECHNICAL());
+        doNotes(taxonBase, remark, AnnotationType.INTERNAL());
         doNotes(taxonBase, officialRemark, AnnotationType.EDITORIAL());
 
         //id
