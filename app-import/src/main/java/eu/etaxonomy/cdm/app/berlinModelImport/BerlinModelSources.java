@@ -1,4 +1,3 @@
-
 /**
 * Copyright (C) 2007 EDIT
 * European Distributed Institute of Taxonomy
@@ -10,15 +9,16 @@
 
 package eu.etaxonomy.cdm.app.berlinModelImport;
 
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.config.AccountStore;
 import eu.etaxonomy.cdm.io.common.Source;
 
-
 public class BerlinModelSources {
-	@SuppressWarnings("unused")
+
+    @SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger();
 
 	public static Source euroMed_PESI3(){
