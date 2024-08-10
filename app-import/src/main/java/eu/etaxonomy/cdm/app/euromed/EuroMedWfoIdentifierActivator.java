@@ -39,8 +39,8 @@ public class EuroMedWfoIdentifierActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
 
     static final UUID identifierUuid = IdentifierType.uuidWfoNameIdentifier;
 //    static final String fileName = "Cichorieae_Syn_WFOID_Matches.csv";
