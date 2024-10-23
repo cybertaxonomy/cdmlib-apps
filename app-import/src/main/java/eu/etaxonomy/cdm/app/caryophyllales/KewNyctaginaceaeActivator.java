@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
- * Import Kew WCVP Nyctabinaceae data to CDM Caryophyllales.
+ * Import Kew WCVP Nyctaginaceae data to CDM Caryophyllales.
  *
  * @author a.mueller
  * @since 12.01.2023
