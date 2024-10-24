@@ -43,8 +43,8 @@ public class EuroMedWfoIdentifierActivator {
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
 
     static final UUID identifierUuid = IdentifierType.uuidWfoNameIdentifier;
-//    static final String fileName = "Cichorieae_Syn_WFOID_Matches.csv";
-    static final String fileName = "EuroMed_WFOID_2024-08-01.csv";
+    static final String fileName = "xxx";
+    static final char sep = ';';
 
     boolean warnAndDoNotOverrideIfExists = true;
 
@@ -61,6 +61,7 @@ public class EuroMedWfoIdentifierActivator {
         config.setCdmClass(TaxonName.class);
         config.setCheck(check);
         config.setIgnoreEmptyIdentifier(true);
+        config.setSeparator(sep);
 
         CdmDefaultImport<IdentifierImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
