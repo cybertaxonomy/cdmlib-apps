@@ -34,8 +34,8 @@ public class MexicoVocabularyImportActivator {
 
     static final ICdmDataSource source = CdmDestinations.cdm_local_mexico();
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo();
-  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_caryophyllales();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo();
+//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_caryophyllales();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales();
 
 //    static boolean isProduction = true;
@@ -48,6 +48,7 @@ public class MexicoVocabularyImportActivator {
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
     static final DbSchemaValidation schemaValidation = DbSchemaValidation.VALIDATE;
 
+    static final boolean addMissingTerms = true; //allows updating a term collection
     static final boolean removeImportSources = true;
     static final boolean addSource = false;
     static final boolean externallyManaged = true;
@@ -69,6 +70,7 @@ public class MexicoVocabularyImportActivator {
 
         config.setRemoveImportSources(removeImportSources);
         config.setAddSources(addSource);
+        config.setAddAncestors(addMissingTerms);
 
         VocabularyFilter vocFilter = VocabularyFilter.NewInstance();
         //languages
@@ -103,6 +105,7 @@ public class MexicoVocabularyImportActivator {
 
         config.setRemoveImportSources(removeImportSources);
         config.setAddSources(addSource);
+        config.setAddMissingTerms(addMissingTerms);
 
         List<UUID> trees = Arrays.asList(new UUID[] {
             eFloraMexEditingFeatureTree, //eFloraMex editing feature tree
