@@ -14,12 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.lang.model.type.ReferenceType;
+
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -38,9 +40,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
-import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
@@ -404,16 +404,31 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
             TaxonName taxonName) {
         String nameStatus = getValue(record, Kew_Nomencl_Status);
         NomenclaturalStatusType status;
+        if (nameStatus != null) {
+            nameStatus = status.replace(", ", "");
+        }
         if (isBlank(nameStatus)){
             status = null;
-        }else if ("Illegitimate".equals(nameStatus) || "nom. illeg.".equals(nameStatus)){
+        } else if ("Illegitimate".equals(nameStatus) || "nom. illeg.".equals(nameStatus)){
             status = NomenclaturalStatusType.ILLEGITIMATE();
-        }else if ("Invalid".equals(nameStatus) || "nom. inval.".equals(nameStatus)){
+        }else if ("Invalid".equals(nameStatus) || "nom. inval.".equals(nameStatus)
+                || "not validly publ.".equals(nameStatus)
+                || "no Latin descr.".equals(nameStatus)){
             status = NomenclaturalStatusType.INVALID();
         }else if ("nom. cons.".equals(nameStatus)){
             status = NomenclaturalStatusType.CONSERVED();
         }else if ("nom. rej.".equals(nameStatus)){
             status = NomenclaturalStatusType.REJECTED();
+        }else if ("nom. nud.".equals(nameStatus)){
+            status = NomenclaturalStatusType.NUDUS();
+        }else if ("nom. superfl.".equals(nameStatus)){
+            status = NomenclaturalStatusType.SUPERFLOUS();
+        }else if ("opus utique oppr.".equals(nameStatus)){
+            status = NomenclaturalStatusType.UTIQUE_REJECTED();
+        }else if ("orth. var.".equals(nameStatus)){
+            status = NomenclaturalStatusType.ORTH_VAR();
+        }else if ("pro syn.".equals(nameStatus)){
+            status = NomenclaturalStatusType.PRO_SYNONYMO();
         }else{
             logger.warn(line + "Nom. status not recognized: " + nameStatus);
             status = null;
