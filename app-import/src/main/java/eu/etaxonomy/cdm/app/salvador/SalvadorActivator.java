@@ -49,9 +49,9 @@ public class SalvadorActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.El_Salvador();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_preview();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_salvador();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_salvador_dendroflora();
 	static final UUID treeUuid = UUID.fromString("b010c84d-6049-45f4-9f13-c065101eaa26");
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;

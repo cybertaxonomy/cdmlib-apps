@@ -608,6 +608,14 @@ public class CdmDestinations {
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
 
+    public static ICdmDataSource cdm_local_salvador(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "127.0.0.1";
+        String cdmDB = "cdm_local_salvador";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+
 	public static ICdmDataSource cdm_local_algaterranew(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
@@ -756,10 +764,18 @@ public class CdmDestinations {
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
 
-    public static ICdmDataSource cdm_production_salvador(){
+    public static ICdmDataSource cdm_production_salvador_flora(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "160.45.63.171";
-        String cdmDB = "cdm_production_salvador";
+        String cdmDB = "cdm_production_salvador_flora";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+
+    public static ICdmDataSource cdm_production_salvador_dendroflora(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "160.45.63.171";
+        String cdmDB = "cdm_production_salvador_dendroflora";
         String cdmUserName = "edit";
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
