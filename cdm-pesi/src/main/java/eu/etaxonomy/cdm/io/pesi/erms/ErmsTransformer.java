@@ -195,7 +195,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidStraitOfGibraltar = UUID.fromString("0cdd58d4-cf46-4ea2-b841-bcfcb1ee2195");
 	public static final UUID uuidSweden = UUID.fromString("dade7b65-d408-4017-a16c-f5ea7aeb3783");
 	public static final UUID uuidTunisia = UUID.fromString("e7caa4b3-cf79-4ea0-8468-2438c2a201c6");
-	public static final UUID uuidTurkey = UUID.fromString("0fbbf26a-7743-44d3-a7e4-2783016a37ed");
+	public static final UUID uuidTürkiye = UUID.fromString("0fbbf26a-7743-44d3-a7e4-2783016a37ed");
 	public static final UUID uuidTyrrhenianSea = UUID.fromString("26c39604-b7fd-425a-93a5-958774261d04");
 	public static final UUID uuidUnitedKingdom = UUID.fromString("a066c48c-6821-4acb-a454-3e1564e17cfe");
 	public static final UUID uuidUnitedStates = UUID.fromString("44d0c16c-b9d0-4db2-8776-34d230222caa");
@@ -536,7 +536,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guName.equalsIgnoreCase("Strait of Gibraltar")){ return uuidStraitOfGibraltar;
 		}else if (guName.equalsIgnoreCase("Sweden")){ return uuidSweden;
 		}else if (guName.equalsIgnoreCase("Tunisia")){ return uuidTunisia;
-		}else if (guName.equalsIgnoreCase("Turkey")){ return uuidTurkey;
+		}else if (guName.equalsIgnoreCase("Türkiye")){ return uuidTürkiye;
 		}else if (guName.equalsIgnoreCase("United Kingdom")){ return uuidUnitedKingdom;
         }else if (guName.equalsIgnoreCase("United States")){ return uuidUnitedStates;
 		}else if (guName.equalsIgnoreCase("United States Exclusive Economic Zone (Alaska)")){ return uuidUnitedStatesExclusiveEconomicZone_Alaska;
