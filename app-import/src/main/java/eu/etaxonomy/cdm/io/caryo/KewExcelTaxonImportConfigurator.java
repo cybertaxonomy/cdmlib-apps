@@ -35,6 +35,7 @@ public class KewExcelTaxonImportConfigurator
     private UUID rootTaxonUuid;
     private UUID unplacedTaxonUuid;
     private UUID orphanedPlaceholderTaxonUuid;
+    private boolean addPersonInitials = false;
 
     public static KewExcelTaxonImportConfigurator NewInstance(URI source, ICdmDataSource destination) {
         return new KewExcelTaxonImportConfigurator(source, destination);
@@ -87,5 +88,12 @@ public class KewExcelTaxonImportConfigurator
     }
     public void setOrphanedPlaceholderTaxonUuid(UUID orphanedPlaceholderTaxonUuid) {
         this.orphanedPlaceholderTaxonUuid = orphanedPlaceholderTaxonUuid;
+    }
+
+    public boolean isAddPersonInitials() {
+        return addPersonInitials;
+    }
+    public void setAddPersonInitials(boolean addPersonInitials) {
+        this.addPersonInitials = addPersonInitials;
     }
 }
