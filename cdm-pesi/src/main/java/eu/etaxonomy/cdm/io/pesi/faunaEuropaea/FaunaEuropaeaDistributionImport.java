@@ -563,7 +563,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
        state.putNamedArea(area);
        faunaEuAreaVocabulary.addTerm(area);
        area = NamedArea.NewInstance("Incl. Imroz I. - Gökçeada, but not those in the Sea of Marmara",
-               "European Turkey", "TR-TUE");
+               "European Türkiye", "TR-TUE");
        area.setUuid(UUID.randomUUID());
        area.setIdInVocabulary("TR-TUE");
        state.putNamedArea(area);
@@ -613,7 +613,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
        area.setIdInVocabulary("NEO");
        state.putNamedArea(area);
        faunaEuAreaVocabulary.addTerm(area);
-       area = NamedArea.NewInstance("Asian Turkey, Caucasian Russian republics, Georgia, Armenia, Azerbaijan, "
+       area = NamedArea.NewInstance("Asian Türkiye, Caucasian Russian republics, Georgia, Armenia, Azerbaijan, "
                + "Lebanon, Syria, Israel, Jordan, Sinai Peninsula (Egypt), Arabian peninsula, Iran, Iraq",
                "Near East", "NRE");
        area.setUuid(UUID.randomUUID());

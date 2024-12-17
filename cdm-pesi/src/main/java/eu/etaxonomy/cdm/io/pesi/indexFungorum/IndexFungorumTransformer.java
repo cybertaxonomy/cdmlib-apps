@@ -88,7 +88,7 @@ public final class IndexFungorumTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("RU")){return Country.RUSSIANFEDERATION();
 		}else if (key.equalsIgnoreCase("UA")){return Country.UKRAINE();
 		}else if (key.equalsIgnoreCase("GE")){return Country.GEORGIA();
-		}else if (key.equalsIgnoreCase("TR")){return Country.TÜRKIYEREPUBLICOF();
+		}else if (key.equalsIgnoreCase("TR")){return Country.TUERKIYEREPUBLICOF();
 
 		} else {
 			logger.warn("Area not yet mapped: " +  key);

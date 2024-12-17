@@ -61,6 +61,8 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
  */
 public final class PesiTransformer extends ExportTransformerBase{
 
+    private static final long serialVersionUID = 1L;
+
     private static Logger logger = LogManager.getLogger();
 
 	public static final String AUCT_STRING = "auct.";
@@ -491,7 +493,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int AREA_SERBIA_WITH_MONTENEGRO = 104;
 	private static int AREA_SERBIA_INCLUDING_VOJVODINA_AND_WITH_KOSOVO = 105;
 	private static int AREA_SWEDEN = 106;
-	private static int AREA_EUROPEAN_TURKEY = 107;
+	private static int AREA_EUROPEAN_TUERKIYE = 107;
 	private static int AREA_UKRAINE_INCLUDING_CRIMEA = 108;
 	private static int AREA_CRIMEA = 109;
 	private static int AREA_UKRAINE = 110;
@@ -522,8 +524,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int AREA_SINAI = 135;
 	private static int AREA_SYRIA = 136;
 	private static int AREA_TUNISIA = 137;
-	private static int AREA_ASIATIC_TÜRKIYE = 138;
-	private static int AREA_TÜRKIYE = 139;
+	private static int AREA_ASIATIC_TUERKIYE = 138;
+	private static int AREA_TUERKIYE = 139;
 	private static int AREA_NORTHERN_AFRICA = 140;
 	private static int AREA_AFRO_TROPICAL_REGION = 141;
 	private static int AREA_AUSTRALIAN_REGION = 142;
@@ -591,7 +593,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	private static int AREA_UNITED_KINGDOM = 203;
 	private static int AREA_DENMARK_COUNTRY = 204;
-	private static int AREA_TÜRKIYE_COUNTRY = 205;
+	private static int AREA_TUERKIYE_COUNTRY = 205;
 	private static int AREA_SPAIN_COUNTRY = 206;
 	private static int AREA_GREECE_COUNTRY = 207;
 	private static int AREA_PORTUGAL_COUNTRY = 208;
@@ -971,7 +973,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (namedArea.equals(Country.RUSSIANFEDERATION())) { return AREA_THE_RUSSIAN_FEDERATION; }
 			else if (namedArea.equals(Country.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND())) { return AREA_UNITED_KINGDOM; }
 			else if (namedArea.equals(Country.DENMARKKINGDOMOF())) { return AREA_DENMARK_COUNTRY; }
-			else if (namedArea.equals(Country.TURKEYREPUBLICOF())) { return AREA_TÜRKIYE_COUNTRY; }
+			else if (namedArea.equals(Country.TUERKIYEREPUBLICOF())) { return AREA_TUERKIYE_COUNTRY; }
 			else {
 				logger.warn("Unknown Country: " + area.getTitleCache());
 			}
@@ -1117,9 +1119,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSy)) { return AREA_SYRIA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTcs)) { return AREA_TRANSCAUCASUS; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTn)) { return AREA_TUNISIA; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTu)) { return AREA_TÜRKIYE; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTu_A)) { return AREA_ASIATIC_TÜRKIYE; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTu_E)) { return AREA_EUROPEAN_TURKEY; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTu)) { return AREA_TUERKIYE; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTu_A)) { return AREA_ASIATIC_TUERKIYE; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTu_E)) { return AREA_EUROPEAN_TUERKIYE; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUk)) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUk_K)) { return AREA_CRIMEA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUk_U)) { return AREA_UKRAINE; }
@@ -1190,7 +1192,7 @@ public final class PesiTransformer extends ExportTransformerBase{
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameSwitzerland)) { return AREA_SWITZERLAND; }
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameSyria)) { return AREA_SYRIA; }
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameTenerife)) { return AREA_TENERIFE; }
-            else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameTurkey)) { return AREA_TÜRKIYE; }  //??
+            else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameTuerkiye)) { return AREA_TUERKIYE; }  //??
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameUkraine)) { return AREA_UKRAINE; }  //??
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameWales)) { return AREA_WALES; }
             else {
@@ -1272,7 +1274,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(uuidAreaSI)) { return AREA_SLOVENIA; }
 			else if (uuidArea.equals(uuidAreaSK)) { return AREA_SLOVAKIA; }
 			else if (uuidArea.equals(uuidAreaSM)) { return AREA_SAN_MARINO; }
-			else if (uuidArea.equals(uuidAreaTR_TUE)) { return AREA_EUROPEAN_TURKEY; }
+			else if (uuidArea.equals(uuidAreaTR_TUE)) { return AREA_EUROPEAN_TUERKIYE; }
 			else if (uuidArea.equals(uuidAreaUA)) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
 			else if (uuidArea.equals(uuidAreaVA)) { return AREA_VATICAN_CITY; }
 			else if (uuidArea.equals(uuidAreaYU)) { return AREA_FORMER_JUGOSLAVIA; }
@@ -1411,7 +1413,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidStraitOfGibraltar)) { return 283; }
 			else if (uuidArea.equals(ErmsTransformer.uuidSweden)) { return 284; }
 			else if (uuidArea.equals(ErmsTransformer.uuidTunisia)) { return 285; }
-			else if (uuidArea.equals(ErmsTransformer.uuidTürkiye)) { return 286; }
+			else if (uuidArea.equals(ErmsTransformer.uuidTuerkiye)) { return 286; }
 			else if (uuidArea.equals(ErmsTransformer.uuidTyrrhenianSea)) { return 287; }
 			else if (uuidArea.equals(ErmsTransformer.uuidUnitedKingdom)) { return 288; }
 	        else if (uuidArea.equals(ErmsTransformer.uuidUnitedStates)) { return 291; }

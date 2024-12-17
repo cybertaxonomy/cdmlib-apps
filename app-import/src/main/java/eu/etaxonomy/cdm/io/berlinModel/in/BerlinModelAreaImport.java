@@ -135,7 +135,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
         createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "AE", "East Aegean Islands", "e2367915-828b-4151-a3af-1a278abf1cd5");
         createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Ag", "Algeria", "9dea2928-65fc-4999-8a5d-f63552553f9f");
         createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Al", "Albania", "53e87d91-f5a8-434b-86c9-268750c3473b");
-        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "An", "Asiatic Turkey", "96394d80-85b7-4b5d-940e-28772cb8fe46");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "An", "Asiatic Türkiye", "96394d80-85b7-4b5d-940e-28772cb8fe46");
         createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Bl", "Balearic Islands", "b9259337-c216-44b2-be26-337e1beebf5f");
         createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Bu", "Bulgaria", "bb85aa3f-18cb-4961-866e-8bdedaf0c41b");
         createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Co", "Corsica", "bcc5a02c-b37f-4639-9f50-e5623da46c95");
@@ -158,7 +158,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
         createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Si", "Sicily", "5187232e-38d3-4bec-9094-2f90abde78b8");
         createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Sn", "Sinai", "54a53738-2e04-433e-9657-dd1fac45094e");
         createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Tn", "Tunisia", "46d2df14-0b45-4413-bbf0-022d769cb479");
-        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Tu", "Turkey-in-Europe", "aa93af77-033f-4096-a4ca-468ba07c64d9");
+        createMclArea(state, mclAreasVoc, topArea, areaLevelMclMain, "Tu", "Türkiye-in-Europe", "aa93af77-033f-4096-a4ca-468ba07c64d9");
 
         getVocabularyService().saveOrUpdate(mclAreasVoc);
         try {

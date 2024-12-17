@@ -426,7 +426,7 @@ public abstract class BerlinModelImportBase
 		}else if("AE(T)".equals(em)){
 			return getNamedArea(state, BerlinModelTransformer.uuidTurkishEastAegeanIslands, "Turkish East Aegean Islands", "Euro+Med area 'Turkish East Aegean Islands'", "AE(T)", null, null);
 		}else if("Tu".equals(em)){
-			return getNamedArea(state, BerlinModelTransformer.uuidTurkey, "Turkey", "Euro+Med area 'Turkey' (without AE(T))", "Tu", null, null);
+			return getNamedArea(state, BerlinModelTransformer.uuidTuerkiye, "Türkiye", "Euro+Med area 'Türkiye' (without AE(T))", "Tu", null, null);
 
 		//TODO Azores, Canary Is.
 		}else if("Md(D)".equals(em)){

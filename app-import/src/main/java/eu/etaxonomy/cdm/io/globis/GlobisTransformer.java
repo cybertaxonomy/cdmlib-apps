@@ -158,7 +158,7 @@ public final class GlobisTransformer extends InputTransformerBase {
 
 		}else if (area.equals("Switzerland")){return Country.SWITZERLANDSWISSCONFEDERATION();
 		}else if (area.equals("Syria")){return Country.SYRIANARABREPUBLIC();
-		}else if (area.equals("Turkey")){return Country.TURKEYREPUBLICOF();
+		}else if (area.equals("Turkey")){return Country.TUERKIYEREPUBLICOF();
 		}else if (area.equals("Cambodia")){return Country.CAMBODIAKINGDOMOF();
 		}else if (area.equals("Bangladesh")){return Country.BANGLADESHPEOPLESREPUBLICOF();
 
@@ -187,7 +187,7 @@ public final class GlobisTransformer extends InputTransformerBase {
 		}else if (area.equals("Dominica")){return Country.DOMINICACOMMONWEALTHOF();
 		}else if (area.equals("Liechtenstein")){return Country.LIECHTENSTEINPRINCIPALITYOF();
 		}else if (area.matches("B(y)?elarus")){return Country.BELARUS();
-		}else if (area.equals("Turkey")){return Country.TURKEYREPUBLICOF();
+		}else if (area.equals("Turkey")){return Country.TUERKIYEREPUBLICOF();
 		}else if (area.equals("Turkmenistan")){return Country.TURKMENISTAN();
 
 		}else if (area.matches("United States: Alaska")){ return TdwgAreaProvider.getAreaByTdwgAbbreviation("ASK");

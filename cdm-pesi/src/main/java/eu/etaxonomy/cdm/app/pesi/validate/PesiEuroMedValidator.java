@@ -842,7 +842,7 @@ public class PesiEuroMedValidator extends PesiValidatorBase {
         }else if ("Svalbard".equals(area)){return "Svalbard with Björnöya and Jan Mayen";
         }else if ("Norway".equals(area)){return "Norwegian mainland";
         }else if ("Ukraine".equals(area)){return "Ukraine including Crimea";
-        }else if ("Türkiye-in-Europe".equals(area)){return "European Turkey";
+        }else if ("Türkiye-in-Europe".equals(area)){return "European Türkiye";
         }else if ("Azerbaijan".equals(area)){return "Azerbaijan including Nakhichevan";
         }else if ("Ireland".equals(area)){return "Republic of Ireland";
         }else if ("France".equals(area)){return "French mainland";
