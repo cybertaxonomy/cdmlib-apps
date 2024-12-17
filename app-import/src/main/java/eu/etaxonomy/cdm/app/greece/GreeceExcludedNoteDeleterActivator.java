@@ -52,8 +52,8 @@ public class GreeceExcludedNoteDeleterActivator {
 
         List<TaxonNode> list = app.getTaxonNodeService().list(TaxonNode.class, null, null, null, null);
         for (TaxonNode taxonNode : list){
-            if (!taxonNode.getStatusNote().isEmpty()){
-                Collection<LanguageString> nodeNotes = taxonNode.getStatusNote().values();
+            if (!taxonNode.getPlacementNote().isEmpty()){
+                Collection<LanguageString> nodeNotes = taxonNode.getPlacementNote().values();
                 if (nodeNotes.size() > 1){
                     logger.warn("More than 1 language reprepresentation exists. Taxon not handled. NodeId: " + taxonNode.getId());
                 }else{
