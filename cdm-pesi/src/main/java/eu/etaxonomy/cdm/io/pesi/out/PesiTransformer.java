@@ -27,7 +27,6 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.ExportTransformerBase;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
-import eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer;
 import eu.etaxonomy.cdm.io.pesi.out.PesiExportBase.PesiSource;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -53,6 +52,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
+import eu.etaxonomy.cdm.pesi.archive.io.faunaEuropaea.FaunaEuropaeaTransformer;
 
 /**
  * @author e.-m.lee
