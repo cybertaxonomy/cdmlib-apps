@@ -46,9 +46,9 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.common.IRelationshipType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.MarkerType;
-import eu.etaxonomy.cdm.model.common.RelationshipTermBase;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -377,7 +377,7 @@ public class ErmsTaxonImport
         TaxonBase<?> taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
         TaxonName taxonName = taxon.getName();
         String unacceptreason = rs.getString("tu_unacceptreason");
-        RelationshipTermBase<?>[] rels = state.getTransformer().getSynonymRelationTypesByKey(unacceptreason, state);
+        IRelationshipType[] rels = state.getTransformer().getSynonymRelationTypesByKey(unacceptreason, state);
         if (rels[1]!= null && rels[1].equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())){
             taxon.setAppendedPhrase(taxonName.getAuthorshipCache());
             taxon.setSec(null);

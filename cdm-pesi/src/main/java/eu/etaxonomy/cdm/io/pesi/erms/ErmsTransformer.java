@@ -21,8 +21,8 @@ import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.common.IRelationshipType;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.common.RelationshipTermBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
@@ -689,9 +689,9 @@ public final class ErmsTransformer extends InputTransformerBase {
 	}
 
     @Override
-    public RelationshipTermBase<?>[] getSynonymRelationTypesByKey(String unacceptreason, DbImportStateBase<?,?> state) {
+    public IRelationshipType[] getSynonymRelationTypesByKey(String unacceptreason, DbImportStateBase<?,?> state) {
 
-        RelationshipTermBase<?>[] result = new RelationshipTermBase[4];
+        IRelationshipType[] result = new IRelationshipType[4];
         SynonymType synType = SynonymType.SYNONYM_OF;
         TaxonRelationshipType taxonRelType = getSynTaxonRelType(state);
         NameRelationshipType nameType = null;

@@ -207,7 +207,8 @@ public class FaunaEuErmsMergeActivator extends PesiMergeBase{
 			features.add(Feature.DISTRIBUTION());
 			List<String> propertyPaths = new ArrayList<>();
 			propertyPaths.add("inDescription.Taxon.*");
-			List<Distribution> distributions = appCtrInit.getDescriptionService().getDescriptionElementsForTaxon(taxonFaunaEu, features, Distribution.class, 10, 0, null);
+			List<Distribution> distributions = appCtrInit.getDescriptionService()
+			        .listDescriptionElementsForTaxon(taxonFaunaEu, features, Distribution.class, false, 10, 0, null);
 
 
 			for(Distribution distribution: distributions){
@@ -267,8 +268,11 @@ public class FaunaEuErmsMergeActivator extends PesiMergeBase{
 		for (List<String> row: ermsAccFaEuSyn){
 			synFaunaEu = (Synonym)appCtrInit.getTaxonService().find(UUID.fromString(row.get(faunaEuUuid)));
 			taxonErms = (Taxon)appCtrInit.getTaxonService().find(UUID.fromString(row.get(ermsUuid)));
-			List<NameRelationship> relSynFaunaEu = appCtrInit.getNameService().listToNameRelationships(synFaunaEu.getName(), null, 100, 0, null, null);
-			List<NameRelationship> relTaxonErms = appCtrInit.getNameService().listToNameRelationships(taxonErms.getName(), null, 100, 0, null, null);
+			logger.warn("Still check correct direction after change to undeprecated method");
+			List<NameRelationship> relSynFaunaEu = appCtrInit.getNameService()
+			        .listNameRelationships(synFaunaEu.getName(), NameRelationship.Direction.relatedTo, null, 100, 0, null, null);
+			List<NameRelationship> relTaxonErms = appCtrInit.getNameService()
+			        .listNameRelationships(taxonErms.getName(), NameRelationship.Direction.relatedTo, null, 100, 0, null, null);
 
 			List<NameRelationship> deleteRel = new ArrayList<>();
 			for (NameRelationship relFauEu: relSynFaunaEu){

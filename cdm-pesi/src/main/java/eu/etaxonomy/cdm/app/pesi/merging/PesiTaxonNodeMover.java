@@ -19,6 +19,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
+import eu.etaxonomy.cdm.model.metadata.SecReferenceHandlingEnum;
 
 /**
  * @author a.mueller
@@ -43,7 +44,8 @@ public class PesiTaxonNodeMover {
         String uuidStrMergeRoot = "3e9e97ac-b317-42f2-ab8c-f491a539792f";
         UUID newParentTaxonNodeUuid = UUID.fromString(uuidStrBiotaErms);
         int movingType = 0;
-        UpdateResult result = app.getTaxonNodeService().moveTaxonNode(taxonNodeUuid, newParentTaxonNodeUuid, movingType);
+        SecReferenceHandlingEnum secHandling = SecReferenceHandlingEnum.KeepOrWarn;
+        UpdateResult result = app.getTaxonNodeService().moveTaxonNode(taxonNodeUuid, newParentTaxonNodeUuid, movingType, secHandling, null);
     }
 
     public static void main(String[] args) {

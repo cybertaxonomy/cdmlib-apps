@@ -144,7 +144,8 @@ public class PesiNoteExport_Old extends PesiExportBase {
 		TransactionStatus txStatus = startTransaction(true);
 		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + pageSize + ") ...");
 		List<String> propPath = Arrays.asList(new String[]{"inDescription.taxon"});
-		while ((list = getDescriptionService().listDescriptionElements(null, null, null, pageSize, pageNumber, propPath)).size() > 0) {
+		while ((list = getDescriptionService().listDescriptionElements(null, null, null,
+		        null, false, pageSize, pageNumber, propPath)).size() > 0) {
 
 			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			for (DescriptionElementBase descriptionElement : list) {

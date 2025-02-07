@@ -206,7 +206,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 			}
 			Annotation annotation = Annotation.NewInstance(createdAnnotationString, Language.DEFAULT());
 			annotation.setCommentator(config.getCommentator());
-			annotation.setAnnotationType(AnnotationType.TECHNICAL());
+			annotation.setAnnotationType(AnnotationType.INTERNAL());
 			annotatableEntity.addAnnotation(annotation);
 		}else if (config.getEditor().equals(EDITOR.EDITOR_AS_EDITOR)){
 			User creator = getUser(createdWho, state);

@@ -106,7 +106,8 @@ public class PesiNoteSourceExport_Old extends PesiExportBase {
 			// Start transaction
 			txStatus = startTransaction(true);
 			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + pageSize + ") ...");
-			while ((list = getDescriptionService().listDescriptionElements(null, null, null, pageSize, pageNumber, null)).size() > 0) {
+			while ((list = getDescriptionService().listDescriptionElements(null, null, null, null, false,
+			        pageSize, pageNumber, null)).size() > 0) {
 
 				logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 				for (DescriptionElementBase descriptionElement : list) {
