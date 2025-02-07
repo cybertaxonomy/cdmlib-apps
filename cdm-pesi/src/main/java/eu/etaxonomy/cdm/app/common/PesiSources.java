@@ -105,6 +105,16 @@ public class PesiSources {
         return  makeSource(dbms, strServer, strDB, port, userName, null);
     }
 
+    public static Source PESI2025_ERMS_2023(){
+        //  BerlinModel - Pesi-ERMS
+        String dbms = Source.SQL_SERVER_2008;
+        String strServer = "BGBM-PESISQL\\SQLEXPRESS";
+        String strDB = "erms_2023_12_21";
+        int port = 1434;
+        String userName = "pesiimport";
+        return  makeSource(dbms, strServer, strDB, port, userName, null);
+    }
+
 	public static Source PESI3_IF(){
 		//	BerlinModel - Pesi-ERMS
 		String dbms = Source.SQL_SERVER_2008;

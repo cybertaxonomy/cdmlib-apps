@@ -32,7 +32,7 @@ public class PesiExportActivatorERMS {
     @SuppressWarnings("unused")
     private static Logger logger = LogManager.getLogger();
 
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_erms();
 //    static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms2();
 
 	//database validation status (create, update, validate ...)

@@ -72,7 +72,7 @@ public class CdmDestinations {
         String cdmUserName = "edit";
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
-	public static ICdmDataSource cdm_test_local_mysql_erms(){
+	public static ICdmDataSource cdm_local_erms(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
 		String cdmDB = "cdm_pesi_erms";
