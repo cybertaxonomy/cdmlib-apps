@@ -62,6 +62,15 @@ public class ErmsReferenceImport
 	}
 
 	@Override
+    protected String getIdQuery() {
+        return super.getIdQuery() +
+                " WHERE id IN (SELECT source_id FROM tu_sources)"
+                + "  OR id IN (SELECT source_id FROM vernaculars_sources)"
+                + "  OR id IN (SELECT source_id FROM notes_sources)"
+                + "  OR id IN (SELECT source_id FROM dr)";
+    }
+
+    @Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strRecordQuery =
 			" SELECT * " +
