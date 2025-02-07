@@ -20,6 +20,7 @@ import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStanding;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.term.DefinedTerm;
@@ -264,7 +265,9 @@ public final class FaunaEuropaeaTransformer {
 		if (nomStatusTempNamed == null){
 			nomStatusTempNamed = (NomenclaturalStatusType)termService.find(PesiTransformer.uuidNomStatusTemporaryName);
 			if (nomStatusTempNamed == null){
-				nomStatusTempNamed = NomenclaturalStatusType.NewInstance("temporary named", "temporary named", "temp. named", Language.ENGLISH());
+			    //FIXME should never be null
+			    NomenclaturalStanding nomenclaturalStanding = null;
+				nomStatusTempNamed = NomenclaturalStatusType.NewInstance("temporary named", "temporary named", "temp. named", Language.ENGLISH(), nomenclaturalStanding);
 				Representation repLatin = Representation.NewInstance("", "", "", Language.LATIN());
 				nomStatusTempNamed.addRepresentation(repLatin);
 				nomStatusTempNamed.setUuid(PesiTransformer.uuidNomStatusTemporaryName);

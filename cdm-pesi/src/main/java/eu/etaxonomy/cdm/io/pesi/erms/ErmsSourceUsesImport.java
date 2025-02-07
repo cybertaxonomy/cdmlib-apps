@@ -316,7 +316,6 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 
 	}
 
-
     @Override
     protected DbImportMapping<?, ?> getMapping() {
         logger.info("getMapping not implemented for EmrsSourceUsesImport");
