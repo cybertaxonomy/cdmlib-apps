@@ -58,5 +58,4 @@ public class EuroMedSourceActivator {
         euromedSourceImport.doImport(cdmDB);
         System.exit(0);
     }
-
 }

@@ -38,6 +38,8 @@ public class EuroMedSourcesImport
         List<String> propPath = Arrays.asList(new String[]{"sources"});
         TransactionStatus tx = startTransaction();
         Reference sourceRef = getSourceRef(state);
+
+        //references
         List<Reference> references = getReferenceService().list(null, null, null, null, propPath);
         for (Reference reference : references){
             reference.addImportSource(String.valueOf(reference.getId()),
@@ -47,6 +49,7 @@ public class EuroMedSourcesImport
         references = null;
         commitTransaction(tx);
         logger.info(count + " references imported");
+
         //taxa
         tx = startTransaction();
         sourceRef = getSourceRef(state);
@@ -72,7 +75,6 @@ public class EuroMedSourcesImport
         names = null;
         commitTransaction(tx);
         logger.info(count + " names imported");
-
     }
 
     private Reference getSourceRef(EuroMedSourcesImportState state) {
