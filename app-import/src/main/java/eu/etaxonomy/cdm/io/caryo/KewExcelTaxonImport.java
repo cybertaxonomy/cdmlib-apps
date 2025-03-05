@@ -47,6 +47,9 @@ import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.persistence.query.MatchMode;
+import eu.etaxonomy.cdm.strategy.cache.TaggedTextFormatter;
+import eu.etaxonomy.cdm.strategy.cache.name.TaxonNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
@@ -92,6 +95,9 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
     private static final String PubTypeABSG = "pubtypeabsg";
     private static final String Sec_Ref_CDM_UUID = "sec_ref_cdm_uuid";
 
+    private static final String row_no = "row_no";
+
+
     //Salvador / non-family related imports
     private static final String Kew_Rel_Parent_Name_ID = "kew_rel_parent_name_id";
     private static final String WCVP_FamilyName = "wcvp_familyname";
@@ -109,6 +115,9 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
     private static List<String> expectedNonFamilyKeys= Arrays.asList(new String[]{
             Kew_Rel_Parent_Name_ID, WCVP_FamilyName
     });
+    private static List<String> rowNoKeys= Arrays.asList(new String[]{
+            row_no
+    });
 
     private Reference sourceReference;
     private Reference secReference;
@@ -123,13 +132,14 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
 
-        String line = getLine(state, 50);
-//        System.out.println(line);
         Map<String, String> record = state.getOriginalRecord();
+        String rowNo = record.get(row_no);
+        String line = StringUtils.isEmpty(rowNo) ? getLine(state, 50) : "Row No. " + rowNo + ": " ;
+//        System.out.println(line);
 
         Set<String> keys = record.keySet();
         for (String key: keys) {
-            if (! expectedKeys.contains(key) && !expectedNonFamilyKeys.contains(key)){
+            if (! expectedKeys.contains(key) && !expectedNonFamilyKeys.contains(key) && !rowNoKeys.contains(key)){
                 logger.warn(line + "Unexpected Key: " + key);
             }
         }
@@ -146,31 +156,33 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         boolean isNewName = true;
         TaxonName name = getExistingName(state, line);
         if (name != null){
-            line += "" + name.getTitleCache()+ ": ";
-            verifyName(state.getConfig(), name, null, record, line, false);
+            line += name.getTitleCache()+ ": ";
+            verifyName(state, name, null, record, line, false);
             isNewName = false;
         }else{
-            name = createName(state, line);
-            line += "" + name.getTitleCache()+ ": ";
+            name = createName(state, line, false);
+            line += name.getTitleCache()+ ": ";
         }
 
         //taxon
         TaxonBase<?> taxonBase = makeTaxonBase(state, line, record, name, sec, isNewName);
 
         if (taxonBase != null){
+            Set<CdmBase> transientEntities = NonViralNameParserImpl.getTransientEntitiesOfParsedName(taxonBase.getName());
+            transientEntities.forEach(te->getCommonService().save(te));
             getTaxonService().saveOrUpdate(taxonBase);
         }
 
         return;
     }
 
-    private TaxonName createName(SimpleExcelTaxonImportState<CONFIG> state, String line) {
+    private TaxonName createName(SimpleExcelTaxonImportState<CONFIG> state, String line, boolean onlyForNomRef) {
 
         CONFIG config = state.getConfig();
         //parse
         String fullTitle = getValue(state, Kew_Name_Citation);
         String kewNameId = getValue(state, Kew_Name_ID);
-        line += fullTitle;
+        line += fullTitle + ": ";
 
         fullTitle = droseraceaeFullTitle(fullTitle, state);
 //        fullTitle = replaceBookSectionAuthor(state, fullTitle);
@@ -178,15 +190,21 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         TaxonName newName = parser.parseReferencedName(fullTitle, NomenclaturalCode.ICNAFP, Rank.SPECIES());
         handleBookSectionAuthor(newName, state, line);
 
-        putName(kewNameId, newName.getUuid(), line);
+        if (!onlyForNomRef) {
+            putName(kewNameId, newName.getUuid(), line);
+        }
         //name status
         makeNameStatus(line, state.getOriginalRecord(), newName);
         addSpaceToAuthorInitials(config, newName, line);
-        verifyName(config, newName, fullTitle, state.getOriginalRecord(), line, true);
+        if (!onlyForNomRef) {
+            verifyName(state, newName, fullTitle, state.getOriginalRecord(), line, true);
+        }
         //deduplication
         replaceNameAuthorsAndReferences(state, newName);
-        newName.addSource(makeOriginalSource(state));
-        getNameService().saveOrUpdate(newName);
+        if (!onlyForNomRef) {
+            newName.addSource(makeOriginalSource(state));
+            getNameService().saveOrUpdate(newName);
+        }
         //Kew-Nomencl-Status
         return newName;
     }
@@ -328,9 +346,10 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         return fullTitle;
     }
 
-    private void verifyName(CONFIG config, TaxonName taxonName,
+    private void verifyName(SimpleExcelTaxonImportState<CONFIG> state, TaxonName taxonName,
             String fullName, Map<String, String> record, String line, boolean isNew) {
 
+        CONFIG config = state.getConfig();
         if (isNew){
             fullName = fullName == null? record.get(Kew_Name_Citation) : fullName;
             boolean parsed = checkParsed(taxonName, fullName, null, line);
@@ -346,13 +365,28 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         verifyField(config, existingBasionymAuthor, record, parenthetical_author, line, null, isNew);
         String existingCombinationAuthor = authorAndExAuthor(taxonName.getCombinationAuthorship(), taxonName.getExCombinationAuthorship());
         verifyField(config, existingCombinationAuthor, record, primary_author, line, null, isNew);
+        String existingNomStatus = nomStatus(taxonName);
+        verifyField(config, existingNomStatus, record, Kew_Nomencl_Status, line, null, isNew);
 
         //reference
         Reference nomRef = taxonName.getNomenclaturalReference();
         if (nomRef == null){
             if (!isNew) {
-                logger.warn(line + "no nom.ref. exists in existing name");
+                if (config.isUseNewNomRefIfNotExists()) {
+                    TaxonName newName = createName(state, line, true);
+                    Reference newNomRef = newName.getNomenclaturalReference();
+                    if (newNomRef != null) {
+                        taxonName.setNomenclaturalReference(newNomRef);
+                        taxonName.setNomenclaturalMicroReference(newName.getNomenclaturalMicroReference());
+                        logger.warn(line + "new nom.ref. created for existing name.");
+                    }else {
+                        logger.warn(line + "no nom.ref. exists in existing name and could also not be created from new data.");
+                    }
+                }else {
+                    logger.warn(line + "no nom.ref. exists in existing name.");
+                }
             }
+
         }else{
 
             //place of publication
@@ -374,6 +408,12 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
             //pub type
             verifyField(config, abbrefRefType(nomRef.getType()), record, PubTypeABSG, line, null, isNew);
         }
+    }
+
+    private String nomStatus(TaxonName taxonName) {
+        TaxonNameDefaultCacheStrategy formatter = TaxonNameDefaultCacheStrategy.NewInstance();
+        String nomStatus = TaggedTextFormatter.createString(formatter.getNomStatusTags(taxonName, true, false));
+        return CdmUtils.Ne(nomStatus);
     }
 
     private String getVolume(Reference nomRef) {
@@ -583,7 +623,9 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
     protected void secondPass(SimpleExcelTaxonImportState<CONFIG> state) {
 
         String kewId = getValue(state, Kew_Name_ID) + ": ";
-        String line = " (line: " + state.getCurrentLine() + ")";
+        Map<String, String> record = state.getOriginalRecord();
+        String rowNo = record.get(row_no);
+        String line = StringUtils.isEmpty(rowNo) ? getLine(state, 50) : "Row No. " + rowNo + ": " ;
 //        System.out.println(line);
         if (c2++ % 100 == 0){
             this.commitTransaction(state.getTransactionStatus());
@@ -595,7 +637,6 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
             state.setTransactionStatus(tx);
             logger.info(line + "New transaction started.");
         }
-        Map<String, String> record = state.getOriginalRecord();
 
         Classification classification = getClassification(state);
         TaxonBase<?> taxonBase = getTaxon(record);
@@ -691,11 +732,14 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
         String statusStr = getValue(record, Kew_Taxonomic_Status);
         if ("Unplaced".equals(statusStr)){
             Taxon unplaced = CdmBase.deproxy(getTaxonService().find(state.getConfig().getUnplacedTaxonUuid()), Taxon.class);
-            logger.warn(line + "Could not find 'unplaced' taxon with uuid '" + state.getConfig().getUnplacedTaxonUuid() + "'."  );
+            if (unplaced == null) {
+                logger.warn(line + "Could not find 'unplaced' taxon with uuid '" + state.getConfig().getUnplacedTaxonUuid() + "'."  );
+            }
             return unplaced;
         }else if ("Artificial Hybrid".equals(statusStr)){
             return null ; //getTaxonNodeService().find(UUID.fromString(KEW_HYBRIDS_NODE)); hybrids are handled as synonyms now
         }else if ("Accepted".equals(statusStr)){
+            taxonName = CdmBase.deproxy(taxonName);
             String higherName = getHigherRankName(taxonName);
             UUID parentTaxonUuid = higherName == null ? null : taxonMap.get(higherName);
             if (parentTaxonUuid != null){
@@ -710,8 +754,43 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
                     return null;
                 }
             }else{
-                UUID rootTaxonUuid = state.getConfig().getRootTaxonUuid();
-                return CdmBase.deproxy(getTaxonService().find(rootTaxonUuid), Taxon.class);
+                String familyNameStr = record.get(WCVP_FamilyName);
+                if (familyNameStr == null) {
+                    UUID rootTaxonUuid = state.getConfig().getRootTaxonUuid();
+                    return CdmBase.deproxy(getTaxonService().find(rootTaxonUuid), Taxon.class);
+                } else {
+                    UUID familyTaxonUuid = taxonMap.get(familyNameStr);
+                    Taxon familyTaxon = null;
+                    if (familyTaxonUuid != null) {
+                        familyTaxon = (Taxon)getTaxonService().findTaxonByUuid(familyTaxonUuid, null);
+                    }
+
+                    if (familyTaxon == null){
+                        List<TaxonName> familyNames = getNameService().findNamesByTitleCache(familyNameStr, MatchMode.EXACT, null);
+                        if (familyNames.size() > 1) {
+                            logger.warn(line + "More than 1 family name for " +  familyNameStr);
+                        }
+                        TaxonName familyName = familyNames.isEmpty() ? null : familyNames.get(0);
+                        if (familyName == null) {
+                            logger.warn(line + "Family name does not exist: " + familyNameStr);
+                            familyName = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
+                            familyName.setGenusOrUninomial(familyNameStr);
+                            getNameService().save(familyName);
+                        }
+                        if (familyName.getTaxa().isEmpty()) {
+                            logger.warn(line + "Family taxon does not exist: " + familyNameStr);
+                            familyTaxon = Taxon.NewInstance(familyName, secReference);
+                            getTaxonService().save(familyTaxon);
+                        }else {
+                            if (familyName.getTaxa().size() > 1) {
+                                logger.warn(line + "Family name has more than 1 taxon" + familyNameStr);
+                            }
+                            familyTaxon = familyName.getTaxa().iterator().next();
+                        }
+                        taxonMap.put(familyNameStr, familyTaxon.getUuid());
+                    }
+                    return familyTaxon;
+                }
             }
         }else if ("Synonym".equals(statusStr)){
             //not relevant
@@ -782,6 +861,11 @@ public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
             secReference = getReferenceService().load(UUID.fromString(secUuid));
             if (this.secReference == null){
                 logger.warn("Sec ref is null");
+            }
+        }else {
+            String secUuid = record.get(Sec_Ref_CDM_UUID);
+            if (!this.secReference.getUuid().toString().equals(secUuid)) {
+                logger.warn("Unexpected sec uuid: " + secUuid);
             }
         }
         return this.secReference;

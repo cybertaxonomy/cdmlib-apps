@@ -53,7 +53,10 @@ public class SalvadorWcvpImportActivator extends SourceBase{
 	//for orphaned synonyms
 	//for Salvador we use the same as unplaced
 	static final UUID orphanedPlaceholderTaxonUuid = UUID.fromString("ab5d37a2-6101-428d-8720-c298cb79b4d3");
-	static final String sourceReferenceTitle = "Import_4_Flora-El-Salvador.xlsx";
+	static final String fileName = "Import_4_Flora-El-Salvador-v2.xlsx";
+//    static final String fileName = "Import_4_Flora-El-Salvador-v2_test.xlsx";
+	static final String sourceReferenceTitle = fileName;
+	static final boolean useNewNomRefIfNotExists = true;
 
 	//sec uuid = "403474fd-c31c-4c4e-a960-fbcf2d625e20"
 
@@ -76,6 +79,7 @@ public class SalvadorWcvpImportActivator extends SourceBase{
 //		config.setDoTaxa(doTaxa);
 		config.setDbSchemaValidation(hbm2dll);
 		config.setSourceReferenceTitle(sourceReferenceTitle);
+		config.setUseNewNomRefIfNotExists(useNewNomRefIfNotExists);
 
 		CdmDefaultImport<KewExcelTaxonImportConfigurator> myImport = new CdmDefaultImport<>();
 
@@ -96,7 +100,6 @@ public class SalvadorWcvpImportActivator extends SourceBase{
 
 
 	public static URI wcvpSalvador(){
-      String fileName = "Import_4_Flora-El-Salvador.xlsx";
       File file = new File("E://data/Salvador/" +  fileName);
       if (!file.exists()) {
           System.exit(0);

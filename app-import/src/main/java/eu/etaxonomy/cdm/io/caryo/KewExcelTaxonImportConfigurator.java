@@ -36,6 +36,7 @@ public class KewExcelTaxonImportConfigurator
     private UUID unplacedTaxonUuid;
     private UUID orphanedPlaceholderTaxonUuid;
     private boolean addPersonInitials = false;
+    private boolean useNewNomRefIfNotExists = false;
 
     public static KewExcelTaxonImportConfigurator NewInstance(URI source, ICdmDataSource destination) {
         return new KewExcelTaxonImportConfigurator(source, destination);
@@ -95,5 +96,12 @@ public class KewExcelTaxonImportConfigurator
     }
     public void setAddPersonInitials(boolean addPersonInitials) {
         this.addPersonInitials = addPersonInitials;
+    }
+
+    public boolean isUseNewNomRefIfNotExists() {
+        return useNewNomRefIfNotExists;
+    }
+    public void setUseNewNomRefIfNotExists(boolean useNewNomRefIfNotExists) {
+        this.useNewNomRefIfNotExists = useNewNomRefIfNotExists;
     }
 }
