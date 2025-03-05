@@ -18,7 +18,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.caryo.KewExcelTaxonImportConfigurator;
+import eu.etaxonomy.cdm.io.caryo.WcvpExcelTaxonImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -53,14 +53,14 @@ public class KewCaryophyllaceaeActivator extends SourceBase{
 	private void doImport(ICdmDataSource cdmDestination){
 
 		//make Source
-	    KewExcelTaxonImportConfigurator config= KewExcelTaxonImportConfigurator.NewInstance(source, cdmDestination);
+	    WcvpExcelTaxonImportConfigurator config= WcvpExcelTaxonImportConfigurator.NewInstance(source, cdmDestination);
 		config.setClassificationUuid(classificationUuid);
 		config.setCheck(check);
 //		config.setDoTaxa(doTaxa);
 		config.setDbSchemaValidation(hbm2dll);
 		config.setSourceReferenceTitle("WCVP2CDM-Caryophyllaceae.xlsx");
 
-		CdmDefaultImport<KewExcelTaxonImportConfigurator> myImport = new CdmDefaultImport<>();
+		CdmDefaultImport<WcvpExcelTaxonImportConfigurator> myImport = new CdmDefaultImport<>();
 
 		//...
 		if (true){

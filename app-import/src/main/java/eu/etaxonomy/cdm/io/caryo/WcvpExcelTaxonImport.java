@@ -59,7 +59,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  * @since 05.01.2022
  */
 @Component
-public class KewExcelTaxonImport<CONFIG extends KewExcelTaxonImportConfigurator>
+public class WcvpExcelTaxonImport<CONFIG extends WcvpExcelTaxonImportConfigurator>
             extends SimpleExcelTaxonImport<CONFIG>{
 
     private static final long serialVersionUID = 1081966876789613803L;

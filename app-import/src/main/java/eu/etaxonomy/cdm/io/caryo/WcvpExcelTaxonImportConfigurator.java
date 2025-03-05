@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  * @author a.mueller
  * @since 05.01.2022
  */
-public class KewExcelTaxonImportConfigurator
+public class WcvpExcelTaxonImportConfigurator
         extends ExcelImportConfiguratorBase{
 
     private static final long serialVersionUID = -1819917445326422841L;
@@ -38,11 +38,11 @@ public class KewExcelTaxonImportConfigurator
     private boolean addPersonInitials = false;
     private boolean useNewNomRefIfNotExists = false;
 
-    public static KewExcelTaxonImportConfigurator NewInstance(URI source, ICdmDataSource destination) {
-        return new KewExcelTaxonImportConfigurator(source, destination);
+    public static WcvpExcelTaxonImportConfigurator NewInstance(URI source, ICdmDataSource destination) {
+        return new WcvpExcelTaxonImportConfigurator(source, destination);
     }
 
-    private KewExcelTaxonImportConfigurator(URI source, ICdmDataSource destination) {
+    private WcvpExcelTaxonImportConfigurator(URI source, ICdmDataSource destination) {
         super(source, destination, defaultTransformer);
         setNomenclaturalCode(NomenclaturalCode.ICNAFP);
         setSource(source);
@@ -59,7 +59,7 @@ public class KewExcelTaxonImportConfigurator
 	@Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
-                KewExcelTaxonImport.class,
+                WcvpExcelTaxonImport.class,
         };
     }
 

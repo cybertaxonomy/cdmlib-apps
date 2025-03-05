@@ -19,7 +19,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.caryo.KewExcelTaxonImportConfigurator;
+import eu.etaxonomy.cdm.io.caryo.WcvpExcelTaxonImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -63,7 +63,7 @@ public class KewNyctaginaceaeActivator extends SourceBase{
 	private void doImport(ICdmDataSource cdmDestination){
 
 		//make Source
-	    KewExcelTaxonImportConfigurator config= KewExcelTaxonImportConfigurator.NewInstance(source, cdmDestination);
+	    WcvpExcelTaxonImportConfigurator config= WcvpExcelTaxonImportConfigurator.NewInstance(source, cdmDestination);
 		config.setClassificationUuid(classificationUuid);
 		config.setRootTaxonUuid(rootTaxonUuid);
 		config.setUnplacedTaxonUuid(unplacedTaxonUuid);
@@ -73,7 +73,7 @@ public class KewNyctaginaceaeActivator extends SourceBase{
 		config.setDbSchemaValidation(hbm2dll);
 		config.setSourceReferenceTitle("Nyctaginaceae_Export_Kew4CDM-Import.xlsx");
 
-		CdmDefaultImport<KewExcelTaxonImportConfigurator> myImport = new CdmDefaultImport<>();
+		CdmDefaultImport<WcvpExcelTaxonImportConfigurator> myImport = new CdmDefaultImport<>();
 
 		//...
 		if (true){
