@@ -41,7 +41,7 @@ public class FauEu2CdmActivator {
 
     static final ICdmDataSource fauEuSource = CdmDestinations.test_cdm_pesi_fauna_europaea();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_pesi_leer();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2019_final();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2025_final();
 
     static final boolean doTaxa = true;
     static final boolean doDescriptions = false;
