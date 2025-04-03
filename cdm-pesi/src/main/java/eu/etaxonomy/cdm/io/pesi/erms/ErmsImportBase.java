@@ -42,7 +42,10 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.permission.User;
+import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
@@ -132,10 +135,40 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		}
 
 		partitioner.startDoSave();
+		saveNonCascadingObjects(objectsToSave);
 		getCommonService().save(objectsToSave);
 		return success;
 	}
 
+
+    /**
+     * Saves objects that do not cascade since #10524
+     */
+    protected void saveNonCascadingObjects(Set<CdmBase> objectsToSave) {
+        objectsToSave.forEach(o->saveNonCascading(o));
+    }
+
+    private void saveNonCascading(CdmBase o) {
+
+        if (o.isInstanceOf(TaxonName.class)) {
+            CdmBase.deproxy(o, TaxonName.class)
+                    .getTypeDesignations().stream()
+                    .filter(td->!td.isPersisted())
+                    .forEach(td->getCommonService().save(td));
+        }else if (o.isInstanceOf(TaxonBase.class)) {
+            CdmBase.deproxy(o, TaxonBase.class)
+                .getName()
+                .getTypeDesignations().stream()  //TODO pot. NPE
+                .filter(td->!td.isPersisted())
+                .forEach(td->getCommonService().save(td));
+        }else if (o.isInstanceOf(DescriptionElementBase.class)) {
+            DescriptionElementBase deb = CdmBase.deproxy(o, DescriptionElementBase.class);
+            if (!deb.getInDescription().isPersisted()) {
+                getCommonService().save(deb.getInDescription());
+            }
+        }
+        return;
+    }
 
     /**
      * Returns <code>true</code> if the current

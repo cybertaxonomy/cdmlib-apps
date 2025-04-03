@@ -61,6 +61,11 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidRankSuperdomain = UUID.fromString("66d4d773-4946-4e02-b758-8903563eaa26");
     public static final UUID uuidRankSubterclass = UUID.fromString("39257363-913b-4b3a-a536-b415360dfc8c");
     public static final UUID uuidRankParvorder = UUID.fromString("d26b8cae-96f9-4aee-81f2-98e36f1db7c3");
+    public static final UUID uuidRankParvphylum = UUID.fromString("1cdfac29-3abf-4435-bb42-a80de50c3444");
+    public static final UUID uuidRankGigaclass = UUID.fromString("18ca03ef-d219-423b-b946-6cd61507e871");
+    public static final UUID uuidRankMegaclass = UUID.fromString("1201fd28-c6df-45ee-99c1-ae3729f6093b");
+    public static final UUID uuidRankEpifamily = UUID.fromString("609af382-9fb7-4a57-927a-696a3149177d");
+    public static final UUID uuidRankMutatio = UUID.fromString("a63de3c4-8f5c-40a6-8f11-f4e62602bce9");
 
 	//area uuids
     public static final UUID uuidVocErmsAreas = UUID.fromString("7e6daf5e-f536-4c0c-8967-1400a45f7b4a");
@@ -202,6 +207,37 @@ public final class ErmsTransformer extends InputTransformerBase {
     public static final UUID uuidUnitedStatesExclusiveEconomicZone_Alaska = UUID.fromString("2d7d93fe-68ac-43d1-9d3a-92ccb8000ae6");
 	public static final UUID uuidVenezuela = UUID.fromString("c19956af-02e6-4868-97ef-135db405cc75");
 
+	public static final UUID uuidCelticSea = UUID.fromString("6741c141-3d98-4fb8-84e5-9f79624d336b");
+	public static final UUID uuidTurkishAegeanSea = UUID.fromString("60b58206-1b60-4535-8baf-12df52caf97e");
+	public static final UUID uuidRomanianExclusiveEconomicZone = UUID.fromString("5e82d626-d97e-4a42-acbe-0bb6db82a426");
+	public static final UUID uuidBritishExclusiveEconomicZone = UUID.fromString("8a6089d3-0f72-4cc1-b0c5-07aedecd622f");
+	public static final UUID uuidAlgerianExclusiveEconomicZone = UUID.fromString("f4816949-4d21-4b1e-8eb7-788f88945c29");
+	public static final UUID uuidSierraLeoneanExclusiveEconomicZone = UUID.fromString("cfd9e51b-d65d-4161-8f81-49e3a6182b35");
+	public static final UUID uuidSaoTomeanExclusiveEconomicZone = UUID.fromString("9a8f000a-f6ef-4992-8970-239df692ab95");
+	public static final UUID uuidBritishExclusiveEconomicZoneBermuda = UUID.fromString("ee43054e-e799-4b17-9d5f-d0037592b5a6");
+	public static final UUID uuidBahamianExclusiveEconomicZone = UUID.fromString("dd8a86c0-05a2-4791-a92c-5f495d2a41f8");
+	public static final UUID uuidCubanExclusiveEconomicZone = UUID.fromString("ac780dd5-7799-4127-a14c-fa1e294d07f0");
+	public static final UUID uuidBritishExclusiveEconomicZoneCaymanIslands = UUID.fromString("21b8ec19-77df-4c13-b0c0-6823bcce850d");
+	public static final UUID uuidUnitedStatesExclusiveEconomicZonePuertoRico = UUID.fromString("7ed1c2dd-aa6e-45c0-b0e1-705e440c70f6");
+	public static final UUID uuidBritishExclusiveEconomicZoneBritishVirginIslands = UUID.fromString("52dbed7b-a18c-4918-a078-2be4e7e2ef7a");
+	public static final UUID uuidVenezuelanExclusiveEconomicZone = UUID.fromString("539ebe05-a133-49f0-9c95-b26bbfe6b7ad");
+	public static final UUID uuidFrenchExclusiveEconomicZoneGuadeloupe = UUID.fromString("316ab71d-2ed9-4f3d-9a72-b6252e146c97");
+	public static final UUID uuidBelizeanExclusiveEconomicZone = UUID.fromString("f0bea01c-e04d-44d3-9234-621bf8dd9cf9");
+	public static final UUID uuidJamaicanExclusiveEconomicZone = UUID.fromString("e5b9290e-e920-41b0-931c-d9ae180caf10");
+	public static final UUID uuidAngolanExclusiveEconomicZone = UUID.fromString("cc831842-e3fe-41c7-be39-343b9079667c");
+	public static final UUID uuidSingaporeanExclusiveEconomicZone = UUID.fromString("a1771934-2819-4fd7-94ba-da24368002fb");
+	public static final UUID uuidColombianExclusiveEconomicZone = UUID.fromString(  "95ba028f-2057-4fc8-a2d0-6fe2538c7433");
+    public static final UUID uuidGhanaianExclusiveEconomicZone = UUID.fromString("225a2dfd-4da3-499b-af8b-9727ddd370b9");
+    public static final UUID uuidCostaRicanExclusiveEconomicZone = UUID.fromString("e98bee75-fba0-4e76-8c1b-088159497982");
+    public static final UUID uuidDanishExclusiveEconomicZoneFaeroe = UUID.fromString("c32295f0-fad5-49dc-928e-f665da3bccdb");
+    public static final UUID uuidNorwegianExclusiveEconomicZoneJanMayen = UUID.fromString("3173ecf0-3147-48d8-844a-e70a81147da7");
+    public static final UUID uuidDutchExclusiveEconomicZoneCuraçao = UUID.fromString("96c66a5e-b5c9-44d6-863a-eed5af37e857");
+    public static final UUID uuidDutchExclusiveEconomicZoneAruba = UUID.fromString("92803bd0-b6ea-4f17-b6e9-d893f9e0010a");
+    public static final UUID uuidDutchExclusiveEconomicZoneBonaire = UUID.fromString("e74b2f09-aa90-4d2b-9b8b-2f4c603d34c0");
+    public static final UUID uuidCyprioteExclusiveEconomicZone = UUID.fromString("019edf16-3baf-4952-bc3e-3ea6f40305aa");
+    public static final UUID uuidNorwegianExclusiveEconomicZoneSvalbard = UUID.fromString("dc91cbef-7020-411b-b5e6-4301d1fc45e5");
+    public static final UUID uuidFrenchExclusiveEconomicZoneMartinique = UUID.fromString("f8b341dc-64f0-4881-8656-e1138580b75b");
+
 	//feature uuids
 	public static final UUID uuidRemark = UUID.fromString("648eab77-8469-4139-bbf4-3fb26ec15864");
 	public static final UUID uuidAdditionalinformation = UUID.fromString("ef00c304-ce33-45ef-9543-0b9336a2b6eb");
@@ -248,6 +284,7 @@ public final class ErmsTransformer extends InputTransformerBase {
     public static final UUID uuidEditorsComment = UUID.fromString("b46ad912-8c61-4c76-ad89-d38451d650e9");
     public static final UUID uuidSyntype = UUID.fromString("6d0989a1-7467-43ec-a087-4838fa8246de");
     public static final UUID uuidBiology = UUID.fromString("af5c6832-74f3-4b87-bac9-6fdfc68ffada");
+    public static final UUID uuidEtymology = UUID.fromString("4b17f86f-f264-4550-bc08-510939340156");
 
 	//extension type uuids
 	public static final UUID uuidPesiTaxonStatus = UUID.fromString("859eee7f-5240-48a0-8edc-7af63557fa6e");
@@ -541,6 +578,37 @@ public final class ErmsTransformer extends InputTransformerBase {
         }else if (guName.equalsIgnoreCase("United States")){ return uuidUnitedStates;
 		}else if (guName.equalsIgnoreCase("United States Exclusive Economic Zone (Alaska)")){ return uuidUnitedStatesExclusiveEconomicZone_Alaska;
 		}else if (guName.equalsIgnoreCase("Venezuela")){ return uuidVenezuela;
+        }else if (guName.equalsIgnoreCase("Celtic Sea")){ return uuidCelticSea;
+        }else if (guName.equalsIgnoreCase("Turkish part of the Aegean Sea")){ return uuidTurkishAegeanSea;
+        }else if (guName.equalsIgnoreCase("Romanian Exclusive Economic Zone")){ return uuidRomanianExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("British Exclusive Economic Zone")){ return uuidBritishExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("Algerian Exclusive Economic Zone")){ return uuidAlgerianExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("Sierra Leonean Exclusive Economic Zone")){ return uuidSierraLeoneanExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("São Toméan Exclusive Economic Zone")){ return uuidSaoTomeanExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("British Exclusive Economic Zone (Bermuda)")){ return uuidBritishExclusiveEconomicZoneBermuda;
+        }else if (guName.equalsIgnoreCase("Bahamian Exclusive Economic Zone")){ return uuidBahamianExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("Cuban Exclusive Economic Zone")){ return uuidCubanExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("British Exclusive Economic Zone (Cayman Islands)")){ return uuidBritishExclusiveEconomicZoneCaymanIslands;
+        }else if (guName.equalsIgnoreCase("United States Exclusive Economic Zone (Puerto Rico)")){ return uuidUnitedStatesExclusiveEconomicZonePuertoRico;
+        }else if (guName.equalsIgnoreCase("British Exclusive Economic Zone (British Virgin Islands)")){ return uuidBritishExclusiveEconomicZoneBritishVirginIslands;
+        }else if (guName.equalsIgnoreCase("Venezuelan Exclusive Economic Zone")){ return uuidVenezuelanExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("French Exclusive Economic Zone (Guadeloupe)")){ return uuidFrenchExclusiveEconomicZoneGuadeloupe;
+        }else if (guName.equalsIgnoreCase("Belizean Exclusive Economic Zone")){ return uuidBelizeanExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("Jamaican Exclusive Economic Zone")){ return uuidJamaicanExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("Angolan Exclusive Economic Zone")){ return uuidAngolanExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("Singaporean Exclusive Economic Zone")){ return uuidSingaporeanExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("Colombian Exclusive Economic Zone")){ return uuidColombianExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("Ghanaian Exclusive Economic Zone")){ return uuidGhanaianExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("Costa Rican Exclusive Economic Zone")){ return uuidCostaRicanExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("Danish Exclusive Economic Zone (Faeroe)")){ return uuidDanishExclusiveEconomicZoneFaeroe;
+        }else if (guName.equalsIgnoreCase("Norwegian Exclusive Economic Zone (Jan Mayen)")){ return uuidNorwegianExclusiveEconomicZoneJanMayen;
+        }else if (guName.equalsIgnoreCase("Dutch Exclusive Economic Zone (Curaçao)")){ return uuidDutchExclusiveEconomicZoneCuraçao;
+        }else if (guName.equalsIgnoreCase("Dutch Exclusive Economic Zone (Aruba)")){ return uuidDutchExclusiveEconomicZoneAruba;
+        }else if (guName.equalsIgnoreCase("Dutch Exclusive Economic Zone (Bonaire)")){ return uuidDutchExclusiveEconomicZoneBonaire;
+        }else if (guName.equalsIgnoreCase("Cypriote Exclusive Economic Zone")){ return uuidCyprioteExclusiveEconomicZone;
+        }else if (guName.equalsIgnoreCase("Norwegian Exclusive Economic Zone (Svalbard)")){ return uuidNorwegianExclusiveEconomicZoneSvalbard;
+        }else if (guName.equalsIgnoreCase("French Exclusive Economic Zone (Martinique)")){ return uuidFrenchExclusiveEconomicZoneMartinique;
+
 
 		}else{
 			throw new IllegalArgumentException("Unknown area " + guName);
@@ -650,6 +718,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 	    }else if (key.equalsIgnoreCase("Original description")){return uuidOriginalDescription;
 	    }else if (key.equalsIgnoreCase("Syntype")){return uuidSyntype;
 	    }else if (key.equalsIgnoreCase("Biology")){return uuidBiology;
+	    }else if (key.equalsIgnoreCase("Etymology")){return uuidEtymology;
 
 		}else{
 			logger.warn("Feature key " + key + " not yet supported by ERMS transformer");

@@ -80,7 +80,17 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
                             if (rankId == 85){
                                 rank = getRank(state, ErmsTransformer.uuidRankSubterclass, "Subterclass", "Subterclass", null, voc, Rank.INFRACLASS(), RankClass.Suprageneric);
                             }else if (rankId == 122){
-                                rank = getRank(state, ErmsTransformer.uuidRankParvorder, "Parvorder", "Parvorder", null, voc, Rank.INFRACLASS(), RankClass.Suprageneric);
+                                rank = getRank(state, ErmsTransformer.uuidRankParvorder, "Parvorder", "Parvorder", null, voc, Rank.INFRAORDER(), RankClass.Suprageneric);
+                            }else if (rankId == 46){
+                                rank = getRank(state, ErmsTransformer.uuidRankParvphylum, "Parvphylum", "Parvphylum", null, voc, Rank.INFRAPHYLUM(), RankClass.Suprageneric);
+                            }else if (rankId == 48){
+                                rank = getRank(state, ErmsTransformer.uuidRankGigaclass, "Gigaclass", "Gigaclass", null, voc, Rank.INFRAPHYLUM(), RankClass.Suprageneric);
+                            }else if (rankId == 49){
+                                rank = getRank(state, ErmsTransformer.uuidRankMegaclass, "Megaclass", "Megaclass", null, voc, Rank.INFRAPHYLUM(), RankClass.Suprageneric);
+                            }else if (rankId == 135){
+                                rank = getRank(state, ErmsTransformer.uuidRankEpifamily, "Epifamily", "Epifamily", null, voc, Rank.SUPERFAMILY(), RankClass.Suprageneric);
+                            }else if (rankId == 280){
+                                rank = getRank(state, ErmsTransformer.uuidRankMutatio, "Mutatio", "Mutatio", null, voc, Rank.FORM(), RankClass.Infraspecific);
                             }
                         }
 

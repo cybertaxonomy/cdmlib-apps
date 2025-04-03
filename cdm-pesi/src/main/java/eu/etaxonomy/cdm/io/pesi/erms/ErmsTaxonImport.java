@@ -50,6 +50,7 @@ import eu.etaxonomy.cdm.model.common.IRelationshipType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStanding;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
@@ -277,16 +278,22 @@ public class ErmsTaxonImport
         //the order is bottom up from SQL script as their values are overridden from top to bottom
         if (tuStatus == 8){
             //species inquirenda
-            nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusSpeciesInquirenda, "species inquirenda", "species inquirenda", null, Language.LATIN(), null);
+            //TODO nom. standing unclear
+            NomenclaturalStanding nomenclaturalStanding = NomenclaturalStanding.INVALID;
+            nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusSpeciesInquirenda, "species inquirenda", "species inquirenda", null, nomenclaturalStanding, Language.LATIN(), null);
         }else if (tuStatus == 7){
             //temporary name
-            nomStatus = getNomenclaturalStatusType(state, PesiTransformer.uuidNomStatusTemporaryName, "temporary name", "temporary name", null, Language.ENGLISH(), null);
+            //TODO nom. standing unclear
+            NomenclaturalStanding nomenclaturalStanding = NomenclaturalStanding.INVALID;
+            nomStatus = getNomenclaturalStatusType(state, PesiTransformer.uuidNomStatusTemporaryName, "temporary name", "temporary name", null, nomenclaturalStanding, Language.ENGLISH(), null);
         }else if (tuStatus == 6){
             //nomen dubium
             nomStatus = NomenclaturalStatusType.DOUBTFUL();
         }else if (tuStatus == 5){
             //"alternate representation"
-            nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusAlternateRepresentation, "alternate representation", "alternate representation", null, Language.ENGLISH(), null);
+            //TODO nom. standing unclear
+            NomenclaturalStanding nomenclaturalStanding = NomenclaturalStanding.VALID;
+            nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusAlternateRepresentation, "alternate representation", "alternate representation", null, nomenclaturalStanding, Language.ENGLISH(), null);
         }else if (tuStatus == 3){
             //nomen nudum
             nomStatus = NomenclaturalStatusType.NUDUM();
@@ -449,6 +456,15 @@ public class ErmsTaxonImport
             taxon.setDoubtful(true);  //nomen dubium, taxon inquirendum, uncertain
         }else if (statusId == 9){
             addPesiStatus(taxon, PesiTransformer.T_STATUS_UNACCEPTED, pesiStatusType);         //interim unpublished, we should better not yet publish, but will be probably accepted in future
+        }else if (statusId == 21){
+            //added for PESI 2025
+            addPesiStatus(taxon, PesiTransformer.T_STATUS_UNACCEPTED, pesiStatusType);   //unavailable name, Not compliant with the relevant ICZN or ICN code
+        }else if (statusId == 22){
+            //added for PESI 2025
+            addPesiStatus(taxon, PesiTransformer.T_STATUS_UNACCEPTED, pesiStatusType);   //unassessed, Name coming from nomenclator (lists of names) or from, e.g., museum collection database, where the status might be known in the published literature, but for which the status has not yet been researched, assessed and documented
+        }else if (statusId == 23){
+            //added for PESI 2025, mapping still to be discussed
+            addPesiStatus(taxon, PesiTransformer.T_STATUS_UNACCEPTED, pesiStatusType);  //unreplaced junior homonym, To indicate the unreplaced invalid status of the junior, or later established name, or in the case of simultaneous establishment, the name not given precedence by a first reviser or by an ICZN or ICN ruling
         }else{
             logger.error("Unhandled statusId "+ statusId);
         }
