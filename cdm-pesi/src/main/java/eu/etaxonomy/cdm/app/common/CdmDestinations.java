@@ -33,10 +33,10 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-	public static ICdmDataSource cdm_test_local_faunaEu_mysql(){
+	public static ICdmDataSource cdm_local_pesi_faunaEu(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_fauna_europaea";
+		String cdmDB = "cdm_pesi_fauna_europaea";
 		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
@@ -114,6 +114,15 @@ public class CdmDestinations {
         return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
     }
 
+    public static ICdmDataSource cdm_pesi2025_final(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "127.0.0.1";
+        String cdmDB = "cdm_pesi_2025_final";
+        String cdmUserName = "edit";
+        int port = 3306;
+        return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
+    }
+
 	public static ICdmDataSource cdm_test_local_mysql_test(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
@@ -125,7 +134,6 @@ public class CdmDestinations {
 	public static ICdmDataSource NULL(){
 		return null;
 	}
-
 
 	public static ICdmDataSource localH2(){
 		return CdmDataSource.NewH2EmbeddedInstance("cdm", "sa", "");
@@ -229,4 +237,3 @@ public class CdmDestinations {
 		return null;
 	}
 }
-
