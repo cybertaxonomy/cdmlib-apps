@@ -28,8 +28,11 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * Import Kew WCVP data to CDM Salvador dendroflora.
  *
+ * NOTE !!: After import WGB mentioned that the merging/deduplication of the taxa of existing names
+ *          has disadvantages and should maybe switched of next time.
+ *
  * @author a.mueller
- * @since 12.01.2023
+ * @since 03.03.2025
  */
 public class SalvadorWcvpImportActivator extends SourceBase{
 
