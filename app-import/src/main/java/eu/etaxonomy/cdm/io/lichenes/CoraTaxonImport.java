@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -316,7 +317,10 @@ public class CoraTaxonImport<CONFIG extends CoraImportConfigurator>
                     String placePublished = publisherStr.split(",")[1].trim();
                     nomRef.setPublisher(publisher);
                     nomRef.setPlacePublished(placePublished);
-                    nomRef.setEditor(bookEditorsStr);
+                    if (StringUtils.isNotBlank(bookEditorsStr)) {
+                        logger.error("Reference.editor does not exist anymore but exists in data");
+//                        nomRef.setEditor(bookEditorsStr);
+                    }
                     if (isNotBlank(titleStr)) {
                         Reference bookSection = ReferenceFactory.newBookSection();
                         bookSection.setTitle(titleStr);

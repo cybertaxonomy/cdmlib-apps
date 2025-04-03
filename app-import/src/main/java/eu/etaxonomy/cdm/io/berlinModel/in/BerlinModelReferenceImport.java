@@ -865,7 +865,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		}else{
 			book.setInSeries(printSeries);
 		}
-		book.setEditor(null);
 
 		return book;
 
