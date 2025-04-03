@@ -33,7 +33,7 @@ public class PesiExportActivatorERMS {
     private static Logger logger = LogManager.getLogger();
 
 	static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_erms();
-//    static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms2();
+//    static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_erms2();
 
 	//database validation status (create, update, validate ...)
 	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();

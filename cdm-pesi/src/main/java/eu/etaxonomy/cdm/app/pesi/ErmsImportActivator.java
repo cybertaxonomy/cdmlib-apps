@@ -34,13 +34,13 @@ public class ErmsImportActivator {
 
     private static Logger logger = LogManager.getLogger();
 
-	static final Source ermsSource = PesiSources.PESI2025_ERMS_2023();
+	static final Source ermsSource = PesiSources.PESI2025_ERMS_2025();
 //	static final Source ermsSource = PesiSources.PESI2019_ERMS_2019();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.test_cdm_pesi_erms();
 
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_erms();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_erms2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2019_final();
 
 
@@ -51,7 +51,7 @@ public class ErmsImportActivator {
 	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2()    ;
 
 	static final UUID classificationUuid = UUID.fromString("6fa988a9-10b7-48b0-a370-2586fbc066eb");
-	static final String classificationName = "ERMS 2023";
+	static final String classificationName = "ERMS 2025";
 	static final String sourceRefTitle = "ERMS export for PESI";
 
 	//check - import
