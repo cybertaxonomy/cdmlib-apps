@@ -15,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
-import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.common.PesiSources;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -40,7 +39,7 @@ public class FaunaEuropaeaActivator {
     private static Logger logger = LogManager.getLogger();
 
 	static final Source faunaEuropaeaSource = PesiSources.mfn_faunEu_pesi3();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_faunaEu_mysql();
+	static final ICdmDataSource cdmDestination = null;
 	//static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_fauna_europaea();
 
 

@@ -32,7 +32,7 @@ public class PesiExportActivator {
     @SuppressWarnings("unused")
     private static Logger logger = LogManager.getLogger();
 
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_faunaEu_mysql();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_pesi_faunaEu();
 //	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_test();
 
