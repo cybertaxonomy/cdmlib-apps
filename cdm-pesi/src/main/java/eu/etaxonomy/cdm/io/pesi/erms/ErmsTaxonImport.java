@@ -376,7 +376,7 @@ public class ErmsTaxonImport
 
     private static boolean isErroneousSubgenus(TaxonName taxonName, String displayName) {
         //this is an error in ERMS formatting in v2019 for ICNafp names, that hopefully soon will be corrected
-        return (Rank.SPECIES().equals(taxonName.getRank()) && displayName.contains(" subg. "));
+        return (taxonName.isSpecies() && displayName.contains(" subg. "));
     }
 
     @SuppressWarnings("unused")  //used by MethodMapper
