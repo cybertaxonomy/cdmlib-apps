@@ -50,7 +50,7 @@ public class ErmsTaxonImportValidator implements IOValidator<ErmsImportState>{
                       " parentAcc.tu_status AS Expr1 " +
                 " FROM status AS parentAccStatus INNER JOIN " +
                       " tu AS parentAcc ON parentAccStatus.status_id = parentAcc.tu_status RIGHT OUTER JOIN " +
-                      " tu AS parent ON parentAcc.id = parent.tu_accfinal RIGHT OUTER JOIN " +
+                      " tu AS parent ON parentAcc.id = parent.tu_acctaxon RIGHT OUTER JOIN " +
                       " tu AS myTaxon ON parent.id = myTaxon.tu_parent LEFT OUTER JOIN " +
                       " status AS parentStatus ON parent.tu_status = parentStatus.status_id LEFT OUTER JOIN " +
                       " status AS childStatus ON myTaxon.tu_status = childStatus.status_id " +
@@ -63,7 +63,7 @@ public class ErmsTaxonImportValidator implements IOValidator<ErmsImportState>{
 				i++;
 				if (firstRow){
 					System.out.println("========================================================");
-					System.out.println("There are accepted taxa that have an unaccepted parent and also the parents accepted taxon (tu_accfinal) is not accepted. ");
+					System.out.println("There are accepted taxa that have an unaccepted parent and also the parents accepted taxon (tu_acctaxon) is not accepted. ");
 					System.out.println("========================================================");
 				}
 				int childId = rs.getInt("childId");
@@ -102,7 +102,7 @@ public class ErmsTaxonImportValidator implements IOValidator<ErmsImportState>{
 				" SELECT    myTaxon.id AS synonymId, myTaxon.tu_displayname AS synonymName, synonymStatus.status_name AS synonymStatus, " +
 					" accTaxon.id AS acceptedId, accTaxon.tu_displayname AS acceptedName, acceptedStatus.status_name AS acceptedStatus " +
 				" FROM tu AS myTaxon INNER JOIN " +
-                    " tu AS accTaxon ON myTaxon.tu_accfinal = accTaxon.id INNER JOIN " +
+                    " tu AS accTaxon ON myTaxon.tu_acctaxon = accTaxon.id INNER JOIN " +
                     " status AS synonymStatus ON myTaxon.tu_status = synonymStatus.status_id INNER JOIN " +
                     " status AS acceptedStatus ON accTaxon.tu_status = acceptedStatus.status_id " +
                 " WHERE (myTaxon.tu_status <> 1) AND (accTaxon.tu_status <> 1) " +

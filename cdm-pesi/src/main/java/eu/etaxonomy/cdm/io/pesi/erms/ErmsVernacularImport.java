@@ -62,7 +62,7 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strRecordQuery =
-			" SELECT v.*, tu.tu_accfinal, tu.id, l.*, " +
+			" SELECT v.*, tu.tu_acctaxon, tu.id, l.*, " +
 			       " s.sessiondate lastActionDate, a.action_name lastAction, s.ExpertName " +
 			" FROM vernaculars v INNER JOIN tu ON v.tu_id = tu.id " +
 			"     LEFT OUTER JOIN languages l ON l.LanID = v.lan_id " +

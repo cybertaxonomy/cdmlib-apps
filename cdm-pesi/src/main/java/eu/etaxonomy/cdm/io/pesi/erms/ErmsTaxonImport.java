@@ -204,13 +204,13 @@ public class ErmsTaxonImport
 		String distributionTable = "dr";
 		String notesTable = "notes";
 		String sql =
-                "          SELECT id FROM tu WHERE tu_accfinal is NULL" //id of taxa not having accepted taxon
-                + " UNION  SELECT DISTINCT tu_accfinal FROM tu "  //fk to accepted taxon (either the accepted taxon or the taxon itself, if accepted)
+                "          SELECT id FROM tu WHERE tu_acctaxon is NULL" //id of taxa not having accepted taxon
+                + " UNION  SELECT DISTINCT tu_acctaxon FROM tu "  //fk to accepted taxon (either the accepted taxon or the taxon itself, if accepted)
                 + " UNION  SELECT id FROM tu WHERE trim(tu.tu_unacceptreason) like 'misidentification' OR trim(tu.tu_unacceptreason) like 'misidentifications' OR "
                             + " tu.tu_unacceptreason like 'misapplied %%name' OR "
                             + " tu.tu_unacceptreason like '%%misapplication%%' OR "
                             + " tu.tu_unacceptreason like 'incorrect identification%%'" //Misapplications, see ErmsTransformer.getSynonymRelationTypesByKey
-                + " UNION  SELECT syn.id FROM tu syn INNER JOIN tu acc ON syn.tu_accfinal = acc.id WHERE syn.id = acc.tu_parent AND acc.id <> syn.id "  //see also ErmsTaxonRelationImport.isAccepted, there are some autonyms being the accepted taxon of there own parents
+                + " UNION  SELECT syn.id FROM tu syn INNER JOIN tu acc ON syn.tu_acctaxon = acc.id WHERE syn.id = acc.tu_parent AND acc.id <> syn.id "  //see also ErmsTaxonRelationImport.isAccepted, there are some autonyms being the accepted taxon of there own parents
                 + " UNION  SELECT DISTINCT %s FROM %s " //vernaculars
                 + " UNION  SELECT DISTINCT %s FROM %s "  //distributions
                 + " UNION  SELECT DISTINCT %s FROM %s ";  //notes
@@ -243,7 +243,7 @@ public class ErmsTaxonImport
 	public TaxonBase<?> createObject(ResultSet rs, ErmsImportState state) throws SQLException {
 		int statusId = rs.getInt("status_id");
 		Integer meId = rs.getInt("id");
-		Integer accFinal = nullSafeInt(rs, "tu_accfinal");
+		Integer accFinal = nullSafeInt(rs, "tu_acctaxon");
 
         TaxonName taxonName = getTaxonName(rs, state);
 		fillTaxonName(taxonName, rs, state, meId);
@@ -259,12 +259,12 @@ public class ErmsTaxonImport
 			if (statusId != 1){
 				logger.info("Taxon created as taxon but has status <> 1 ("+statusId+"): " + meId);
 				boolean idsDiffer = accFinal != null && !meId.equals(accFinal);
-				handleNotAcceptedTaxonStatus(taxon, statusId, idsDiffer, accFinal == null, state, rs);
+				handleNotAcceptedTaxonStatus(taxon, statusId, idsDiffer, state, rs);
 			}
 			result = taxon;
 		}else{
 			result = Synonym.NewInstance(taxonName, citation);
-			//real synonyms (id <> tu_accfinal) are always handled as "synonym" or "pro parte synonym"
+			//real synonyms (id <> tu_acctaxon) are always handled as "synonym" or "pro parte synonym"
 //			handleNotAcceptedTaxonStatus(result, statusId, state, rs);
 		}
 
@@ -440,7 +440,7 @@ public class ErmsTaxonImport
         return result.trim();
     }
 
-    private void handleNotAcceptedTaxonStatus(Taxon taxon, int statusId, boolean idsDiffer, boolean accIdNull, ErmsImportState state, ResultSet rs) throws SQLException {
+    private void handleNotAcceptedTaxonStatus(Taxon taxon, int statusId, boolean idsDiffer, ErmsImportState state, ResultSet rs) throws SQLException {
 		ExtensionType pesiStatusType = getExtensionType(state, ErmsTransformer.uuidPesiTaxonStatus, "PESI taxon status", "PESI taxon status", "status", null);
 
 		if(idsDiffer){
@@ -448,7 +448,7 @@ public class ErmsTaxonImport
 		    addPesiStatus(taxon, PesiTransformer.T_STATUS_SYNONYM, pesiStatusType);
 		}else if(statusId == 1){
             //nothing to do, not expected to happen
-		}else if (statusId > 1 && statusId < 6 || statusId == 7){ //unaccepted, nomen nudum, alternate representation, temporary name       they have sometimes no tu_accfinal or are handled incorrect
+		}else if (statusId > 1 && statusId < 6 || statusId == 7){ //unaccepted, nomen nudum, alternate representation, temporary name       they have sometimes no tu_acctaxon or are handled incorrect
 		    //TODO discuss alternate representations, at the very end of the PESI export unaccepted taxa with relationship "is alternative name for" are set to status "accepted". Need to check if this is true for the PESI taxa too (do they have such a relationship?)
 		    //Note: in SQL script, also the tu_unacceptreason was checked to be NOT LIKE '%syno%', this is not always correct and the few real synonyms should better data cleaned
 		    addPesiStatus(taxon, PesiTransformer.T_STATUS_UNACCEPTED, pesiStatusType);

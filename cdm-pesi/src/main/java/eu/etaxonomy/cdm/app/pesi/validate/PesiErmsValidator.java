@@ -236,8 +236,8 @@ public class PesiErmsValidator extends PesiValidatorBase {
         return equals("CommonName count ", countSrc, countDest, String.valueOf(-1));
     }
 
-    private final String countSynonymRelation = "SELECT count(*) FROM tu syn LEFT JOIN tu acc ON syn.tu_accfinal = acc.id WHERE (syn.id <> acc.id AND syn.tu_accfinal IS NOT NULL AND syn.id <> acc.tu_parent) AND syn.id " + moneraFilter;
-    private final String countParentRelation  = "SELECT count(*)-1 FROM tu syn LEFT JOIN tu acc ON syn.tu_accfinal = acc.id WHERE (syn.id =  acc.id OR  syn.tu_accfinal IS  NULL OR  syn.id =  acc.tu_parent) AND syn.id " + moneraFilter;
+    private final String countSynonymRelation = "SELECT count(*) FROM tu syn LEFT JOIN tu acc ON syn.tu_acctaxon = acc.id WHERE (syn.id <> acc.id AND syn.tu_acctaxon IS NOT NULL AND syn.id <> acc.tu_parent) AND syn.id " + moneraFilter;
+    private final String countParentRelation  = "SELECT count(*)-1 FROM tu syn LEFT JOIN tu acc ON syn.tu_acctaxon = acc.id WHERE (syn.id =  acc.id OR  syn.tu_acctaxon IS  NULL OR  syn.id =  acc.tu_parent) AND syn.id " + moneraFilter;
 
     private final String countTaxon = "SELECT count(*) FROM tu WHERE id " + moneraFilter;
     private boolean testTaxaCount() {
@@ -262,7 +262,7 @@ public class PesiErmsValidator extends PesiValidatorBase {
     private boolean testSingleTaxa(int n) throws SQLException {
         boolean success = true;
         ResultSet srcRS = source.getResultSet(""
-                + " SELECT t.*, pt.tu_name pt_name, pt.id pId, pt.tu_accfinal pAccId, "
+                + " SELECT t.*, pt.tu_name pt_name, pt.id pId, pt.tu_acctaxon pAccId, "
                 + "        acc.tu_sp as acc_sp, accP.id accPId, "
                 + "        r.rank_name, st.status_name, "
                 + "        type.tu_displayname typename, type.tu_authority typeauthor, "
@@ -270,7 +270,7 @@ public class PesiErmsValidator extends PesiValidatorBase {
                 + " FROM tu t "
                 + " LEFT JOIN tu as pt on t.tu_parent = pt.id "
                 + " LEFT JOIN (SELECT DISTINCT rank_id, rank_name FROM ranks WHERE NOT(rank_id = 30 AND rank_name = 'Phylum (Division)' OR rank_id = 40 AND rank_name = 'Subphylum (Subdivision)' OR rank_id = 122 AND rank_name='Subsection')) as r ON t.tu_rank = r.rank_id "
-                + " LEFT JOIN tu acc ON acc.id = t.tu_accfinal "
+                + " LEFT JOIN tu acc ON acc.id = t.tu_acctaxon "
                 + " LEFT JOIN tu accP ON acc.tu_parent = accP.id "
                 + " LEFT JOIN status st ON st.status_id = t.tu_status "
                 + " LEFT JOIN tu type ON type.id = t.tu_typetaxon "
@@ -366,7 +366,7 @@ public class PesiErmsValidator extends PesiValidatorBase {
 
     private Integer srcParentTaxonFk(ResultSet srcRS) throws SQLException {
         Integer id = nullSafeInt(srcRS,"id");
-        Integer accId = nullSafeInt(srcRS, "tu_accfinal");
+        Integer accId = nullSafeInt(srcRS, "tu_acctaxon");
         Integer pId = nullSafeInt(srcRS, "pId");
         Integer pAccId = nullSafeInt(srcRS, "pAccId");
         Integer accPId = nullSafeInt(srcRS, "accPId");  //parent of accepted taxon
@@ -392,7 +392,7 @@ public class PesiErmsValidator extends PesiValidatorBase {
 
     private Integer normalizeTaxonStatusFk(ResultSet srcRS) throws SQLException {
         int id = srcRS.getInt("id");
-        Integer accFinal = nullSafeInt(srcRS, "tu_accfinal");
+        Integer accFinal = nullSafeInt(srcRS, "tu_acctaxon");
         boolean accFinalDiffers = accFinal != null && !accFinal.equals(id);
 
         if (accFinalDiffers){
@@ -572,7 +572,7 @@ public class PesiErmsValidator extends PesiValidatorBase {
         ResultSet srcRS = source.getResultSet(""
                 + " SELECT t.* "
                 + " FROM tu t "
-                + " WHERE t.id "+ moneraFilter + " AND tu_accfinal <> id "
+                + " WHERE t.id "+ moneraFilter + " AND tu_acctaxon <> id "
                 + " ORDER BY CAST(t.id as nvarchar(20)) ");
         ResultSet destRS = destination.getResultSet("SELECT rel.*, t1.IdInSource t1Id, t2.IdInSource t2Id "
                 + " FROM RelTaxon rel "
@@ -592,7 +592,7 @@ public class PesiErmsValidator extends PesiValidatorBase {
     private boolean testSingleTaxonRelation(ResultSet srcRS, ResultSet destRS) throws SQLException {
         String id = String.valueOf(srcRS.getInt("id"));
         boolean success = equals("Taxon relation taxon1", "tu_id: " + srcRS.getInt("id"), destRS.getString("t1Id"), id);
-        success &= equals("Taxon relation taxon2", "tu_id: " + srcRS.getInt("tu_accfinal"), destRS.getString("t2Id"), id);
+        success &= equals("Taxon relation taxon2", "tu_id: " + srcRS.getInt("tu_acctaxon"), destRS.getString("t2Id"), id);
         success &= equals("Taxon relation qualifier fk", PesiTransformer.IS_SYNONYM_OF, destRS.getInt("RelTaxonQualifierFk"), id);
         success &= equals("Taxon relation qualifier cache", "is synonym of", destRS.getString("RelQualifierCache"), id);
         success &= isNull("notes", destRS, id);
@@ -691,11 +691,11 @@ public class PesiErmsValidator extends PesiValidatorBase {
 
     private boolean testSingleDistributions(int n) throws SQLException {
         boolean success = true;
-        ResultSet srcRs = source.getResultSet("SELECT CAST(ISNULL(tu.tu_accfinal, tu.id) as nvarchar(20)) tuId,"
+        ResultSet srcRs = source.getResultSet("SELECT CAST(ISNULL(tu.tu_acctaxon, tu.id) as nvarchar(20)) tuId,"
                 + " gu.gazetteer_id, dr.*, gu.id guId, gu.gu_name "
                 + " FROM dr INNER JOIN tu ON dr.tu_id = tu.id "
                 + "    LEFT JOIN gu ON gu.id = dr.gu_id "
-                + " ORDER BY CAST(ISNULL(tu.tu_accfinal, tu.id) as nvarchar(20)), gu.gazetteer_id, gu.gu_name, dr.noteSortable ");  //, dr.note (not possible because ntext
+                + " ORDER BY CAST(ISNULL(tu.tu_acctaxon, tu.id) as nvarchar(20)), gu.gazetteer_id, gu.gu_name, dr.noteSortable ");  //, dr.note (not possible because ntext
         ResultSet destRs = destination.getResultSet("SELECT t.IdInSource, a.AreaERMSGazetteerId, oc.*, a.AreaName "
                 + " FROM Occurrence oc INNER JOIN Taxon t ON t.TaxonId = oc.TaxonFk "
                 + "    LEFT JOIN Area a ON a.AreaId = oc.AreaFk "
