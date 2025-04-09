@@ -12,6 +12,7 @@ package eu.etaxonomy.cdm.io.pesi.erms;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -418,11 +419,32 @@ public class ErmsTaxonImport
         String expectedTitleCache = getExpectedTitleCache(rs);
         //TODO check titleCache, but beware of autonyms
         if (!titleCache.equals(expectedTitleCache) && !isErroneousSubgenus(taxonName, displayName)){
-            int pos = CdmUtils.diffIndex(titleCache, expectedTitleCache);
-            logger.warn("Computed title cache differs at "+pos+".\n Computed             : " + titleCache + "\n DisplayName+Authority: " + expectedTitleCache);
-            taxonName.setNameCache(displayName, true);
+            if (onlyAutonymDiffers(titleCache, expectedTitleCache, taxonName)){
+                //TODO do
+            }else {
+                int pos = CdmUtils.diffIndex(titleCache, expectedTitleCache);
+                logger.warn("Computed title cache differs at "+pos+".\n Computed             : " + titleCache + "\n DisplayName+Authority: " + expectedTitleCache);
+                taxonName.setNameCache(displayName, true);
+            }
         }
         return taxon;
+    }
+
+    /**
+     * Checks if 2 name strings represent autonyms and differ only in the way where the author is put
+     */
+    private static boolean onlyAutonymDiffers(String titleCache, String expectedTitleCache, TaxonName taxonName) {
+        if (! taxonName.isAutonym()) {
+            return false;
+        }else {
+            List<String> computed = Arrays.asList(titleCache.split(" "));
+            computed.sort(new StringComparator());
+            List<String> expected = Arrays.asList(expectedTitleCache.split(" "));
+            expected.sort(new StringComparator());
+            return computed.equals(expected);
+
+//          boolean sameWords = WordUtils.containsAllWords(expectedTitleCache, titleCache.split(" "));  //throws exceptions due to brackets
+        }
     }
 
     //see also PesiErmsValidation.srcFullName()
