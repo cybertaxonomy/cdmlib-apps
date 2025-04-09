@@ -38,8 +38,8 @@ public class IndexFungorumImportActivator {
 
 	static final Source indexFungorumSource = PesiSources.PESI3_IF();
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_indexFungorum();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_indexFungorum2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_indexFungorum();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_indexFungorum2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2019_final();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2019_final_test();
 

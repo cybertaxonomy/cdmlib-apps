@@ -32,7 +32,7 @@ public class PesiExportActivatorIF {
     @SuppressWarnings("unused")
     private static Logger logger = LogManager.getLogger();
 
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_indexFungorum2();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_pesi_indexFungorum2();
 	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_IF2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_IF2PESI_2();
 
