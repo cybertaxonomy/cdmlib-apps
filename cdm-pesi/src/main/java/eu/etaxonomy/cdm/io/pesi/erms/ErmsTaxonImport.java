@@ -478,6 +478,8 @@ public class ErmsTaxonImport
             taxon.setDoubtful(true);  //nomen dubium, taxon inquirendum, uncertain
         }else if (statusId == 9){
             addPesiStatus(taxon, PesiTransformer.T_STATUS_UNACCEPTED, pesiStatusType);         //interim unpublished, we should better not yet publish, but will be probably accepted in future
+        }else if (statusId == 11 || statusId == 12){
+            addPesiStatus(taxon, PesiTransformer.T_STATUS_SYNONYM, pesiStatusType);         //superseded combination and junior synonym, see #10683 description
         }else if (statusId == 21){
             //added for PESI 2025
             addPesiStatus(taxon, PesiTransformer.T_STATUS_UNACCEPTED, pesiStatusType);   //unavailable name, Not compliant with the relevant ICZN or ICN code
