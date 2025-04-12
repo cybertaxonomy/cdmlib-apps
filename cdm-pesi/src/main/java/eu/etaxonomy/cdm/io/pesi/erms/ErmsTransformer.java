@@ -287,6 +287,7 @@ public final class ErmsTransformer extends InputTransformerBase {
     public static final UUID uuidEtymology = UUID.fromString("4b17f86f-f264-4550-bc08-510939340156");
 
 	//extension type uuids
+    public static final UUID ermsExtensionTypeVocabularyUuid = UUID.fromString("27c68dd3-95e1-4690-998d-451d016fc6f7");
 	public static final UUID uuidPesiTaxonStatus = UUID.fromString("859eee7f-5240-48a0-8edc-7af63557fa6e");
 	public static final UUID uuidExtGazetteer = UUID.fromString("dcfa124a-1028-49cd-aea5-fdf9bd396c1a");
 	public static final UUID uuidExtImis = UUID.fromString("ee2ac2ca-b60c-4e6f-9cad-720fcdb0a6ae");
@@ -302,9 +303,11 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidExtErmsLink = UUID.fromString("b2d6ee54-1363-4641-9658-75a1843b84ff");
 
 	//AnnotationType
+    public static final UUID ermsAnnotationTypeVocabularyUuid = UUID.fromString("6d59385b-3065-4a15-b3ed-ffcd0087419d");
 	public static final UUID uuidAnnSpeciesExpertName = UUID.fromString("4d8abf02-3d92-4c65-b30b-0393a1f4818b");
 
 	//MarkerTypes
+	public static final UUID ermsMarkerTypeVocabularyUuid = UUID.fromString("c716ad33-839a-4303-820d-6f178c19391a");
 	public static final UUID uuidMarkerMarine = UUID.fromString("5da78a28-5668-4ed5-b788-10c69343f91e");
 	public static final UUID uuidMarkerBrackish = UUID.fromString("2da39f5d-67d6-4779-b40d-923dca85fe14");
 	public static final UUID uuidMarkerFreshwater = UUID.fromString("1190b182-e1d3-4986-8cc3-a6de3c115cf7");

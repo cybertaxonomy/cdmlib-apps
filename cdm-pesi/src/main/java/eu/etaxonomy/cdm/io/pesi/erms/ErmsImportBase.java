@@ -45,6 +45,9 @@ import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.permission.User;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.term.DefinedTermBase;
+import eu.etaxonomy.cdm.model.term.TermType;
+import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
  * @author a.mueller
@@ -391,6 +394,10 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		if (extensionType == null){
 			extensionType = ExtensionType.NewInstance(text, label, labelAbbrev);
 			extensionType.setUuid(uuid);
+			UUID vocUuid = ErmsTransformer.ermsExtensionTypeVocabularyUuid;
+            TermVocabulary<ExtensionType> voc = getVocabulary(TermType.ExtensionType,
+                    vocUuid, "Erms Extenion Type Vocabulary", ExtensionType.class);
+            voc.addTerm(extensionType);
 			getTermService().save(extensionType);
 		}
 		return extensionType;
@@ -401,6 +408,10 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		if (markerType == null){
 			markerType = MarkerType.NewInstance(label, text, labelAbbrev);
 			markerType.setUuid(uuid);
+			UUID vocUuid = ErmsTransformer.ermsMarkerTypeVocabularyUuid;
+            TermVocabulary<MarkerType> voc = getVocabulary(TermType.MarkerType,
+                    vocUuid, "Erms Marker Type Vocabulary", MarkerType.class);
+            voc.addTerm(markerType);
 			getTermService().save(markerType);
 		}
 		return markerType;
@@ -411,12 +422,26 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
         if (annotationType == null){
             annotationType = AnnotationType.NewInstance(label, text, labelAbbrev);
             annotationType.setUuid(uuid);
+            UUID vocUuid = ErmsTransformer.ermsAnnotationTypeVocabularyUuid;
+            TermVocabulary<AnnotationType> voc = getVocabulary(TermType.AnnotationType,
+                    vocUuid, "Erms Annotation Type Vocabulary", AnnotationType.class);
+            voc.addTerm(annotationType);
             getTermService().save(annotationType);
         }
         return annotationType;
     }
 
-	/**
+    private <T extends DefinedTermBase<T>> TermVocabulary<T> getVocabulary(TermType termType, UUID vocUuid,
+            String label, Class<T> clazz) {
+
+        TermVocabulary<T> voc = getVocabularyService().find(vocUuid);
+        if (voc == null) {
+            voc = TermVocabulary.NewInstance(termType, clazz, label, label, null, null);
+        }
+        return voc;
+    }
+
+    /**
 	 * Reads a foreign key field from the result set and adds its value to the idSet.
 	 */
 	protected void handleForeignKey(ResultSet rs, Set<String> idSet, String attributeName)
