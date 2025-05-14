@@ -24,10 +24,10 @@ public class CdmDestinations {
 	@SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger();
 
-    public static ICdmDataSource cdm_pesi2019_final(){
+    public static ICdmDataSource cdm_pesi_2025_final(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "127.0.0.1";
-        String cdmDB = "cdm_pesi_2019final";
+        String cdmDB = "cdm_pesi_2025_final";
         String cdmUserName = "edit";
         int port = 3306;
         return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
@@ -159,7 +159,7 @@ public class CdmDestinations {
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
 		String cdmDB = "test";
-		String cdmUserName = "edit";     //root on pesiimport2
+		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
@@ -295,15 +295,6 @@ public class CdmDestinations {
         String cdmUserName = "edit";
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
-
-
-	public static ICdmDataSource cdm_local_EDITImport(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "EDITImport";
-		String cdmUserName = "edit";     //root on pesiimport2
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
 
 	public static ICdmDataSource cdm_test_euroMed(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;

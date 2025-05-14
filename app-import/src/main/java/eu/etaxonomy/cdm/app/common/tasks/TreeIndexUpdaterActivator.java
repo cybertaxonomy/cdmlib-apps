@@ -36,7 +36,7 @@ public class TreeIndexUpdaterActivator {
      static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
     //  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2019_final();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_2025_final();
 
     private void doInvoke(ICdmDataSource destination){
 
