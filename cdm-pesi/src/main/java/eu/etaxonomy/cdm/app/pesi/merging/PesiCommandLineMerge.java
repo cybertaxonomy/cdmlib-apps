@@ -49,6 +49,13 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 
 /**
+ * The file format is
+ *
+ * col1: uuid or id of taxon 1
+ * col2: uuid or id of taxon 2
+ * col3: number of preferred taxon (usually 1)
+ * col4: number of preferred taxon name (optional, if empty, same as preferred taxon)
+ *
  * @author a.mueller
  * @since 20.01.2020
  */
@@ -56,7 +63,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
 
     private static Logger logger = LogManager.getLogger();
 
-    static final ICdmDataSource pesiSource = CdmDestinations.cdm_pesi2019_final();
+    static final ICdmDataSource pesiSource = CdmDestinations.cdm_pesi2025_final();
 
     private CdmIoApplicationController app;
 
@@ -180,7 +187,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
             }else{
                 taxonInformation.nameToUse = nameToUse;
             }
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             taxonInformation = null;
         }
