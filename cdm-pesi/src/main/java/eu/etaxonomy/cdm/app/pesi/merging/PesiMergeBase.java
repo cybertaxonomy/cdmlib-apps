@@ -17,6 +17,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import au.com.bytecode.opencsv.CSVReader;
+import eu.etaxonomy.cdm.common.CdmUtils;
 
 /**
  * Base class for PESI merge classes.
@@ -38,6 +39,15 @@ public abstract class PesiMergeBase {
         } catch (IOException e1) {
             e1.printStackTrace();
             return null;
+        }
+        return result;
+    }
+
+    protected List<List<String>> getFileData() {
+        List<List<String>> result = null;
+        while(result == null){
+            String input = CdmUtils.readInputLine("Path and filename: ");
+            result = readCsvFile(input);
         }
         return result;
     }

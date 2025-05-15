@@ -188,15 +188,6 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         return taxonInformation;
     }
 
-    private List<List<String>> getFileData() {
-        List<List<String>> result = null;
-        while(result == null){
-            String input = CdmUtils.readInputLine("Path and filename: ");
-            result = readCsvFile(input);
-        }
-        return result;
-    }
-
     private String nextMerge(List<List<String>> fileData) {
         if (fileData != null){
             return "f";
