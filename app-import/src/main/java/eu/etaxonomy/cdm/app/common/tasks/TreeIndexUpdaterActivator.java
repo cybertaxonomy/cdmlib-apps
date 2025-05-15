@@ -62,6 +62,6 @@ public class TreeIndexUpdaterActivator {
         System.out.println("Start updating caches for "+ destination.getDatabase() + "...");
         TreeIndexUpdaterActivator me = new TreeIndexUpdaterActivator();
         me.doInvoke(destination);
-
+        System.out.println("End updating caches for "+ destination.getDatabase() + "...");
     }
 }
