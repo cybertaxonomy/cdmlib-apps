@@ -37,6 +37,7 @@ import eu.etaxonomy.cdm.model.common.Credit;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
+import eu.etaxonomy.cdm.model.common.Identifier;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.metadata.SecReferenceHandlingEnum;
@@ -47,6 +48,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 
 /**
  * The file format is
@@ -306,6 +308,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
                 stayTaxon.setName(stayName);
             }
             //TODO unclear if name information should be merged at all
+            mergeIdentifiers(removeName, stayName);
             mergeSources(removeName, stayName);
             mergeAnnotations(removeName, stayName);
             mergeMarkers(removeName, stayName);
@@ -475,6 +478,31 @@ public class PesiCommandLineMerge extends PesiMergeBase {
             System.out.println("Move "+className+" credit: " + credit.toString());
             stayEntity.addCredit(credit.clone());
         }
+    }
+
+    private void mergeIdentifiers(IdentifiableEntity<?> removeEntity, IdentifiableEntity<?>  stayEntity) throws CloneNotSupportedException {
+        String className = removeEntity.getClass().getSimpleName();
+        for (Identifier identifier: removeEntity.getIdentifiers()){
+            if (!filterIdentifier(identifier, removeEntity, stayEntity)){
+                System.out.println("Move "+className+" identifier: " + identifier.getType().getTitleCache() + ": " + identifier.getIdentifier());
+
+                IdentifiableEntity<?> thisStayEntity = selectStay(removeEntity, stayEntity, "Identifier");
+                if (thisStayEntity != null){
+                    thisStayEntity.addIdentifier(identifier.clone());
+                }
+            }
+        }
+    }
+
+    private boolean filterIdentifier(Identifier identifier,
+            @SuppressWarnings("unused") IdentifiableEntity<?> removeEntity,
+            @SuppressWarnings("unused") IdentifiableEntity<?> stayEntity) {
+
+        if (identifier.getType().getUuid().equals(IdentifierType.uuidWfoNameIdentifier)){
+            //for now we export only WFO IDs
+            return false;
+        }
+        return true;
     }
 
     private void mergeExtensions(IdentifiableEntity<?> removeEntity,
