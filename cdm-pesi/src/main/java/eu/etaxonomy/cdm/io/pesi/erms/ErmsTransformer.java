@@ -859,10 +859,10 @@ public final class ErmsTransformer extends InputTransformerBase {
                 TaxonRelationshipType.uuidSynonymOfTaxonRelationship,
                 "is taxon synonym of",
                 "is synonym of relation used by synonym that are of class Taxon as they can not be handled differently",
-                null,
+                "tso",
                 "has taxon synonym",
                 "is accepted taxon of synonym relation used by synonym that are of class Taxon as they can not be handled differently",
-                null,
+                "has tso",
                 null);
         return result;
     }
@@ -873,8 +873,8 @@ public final class ErmsTransformer extends InputTransformerBase {
         @SuppressWarnings("unchecked")
         TaxonRelationshipType result = state.getCurrentIO().getTaxonRelationshipType(
                 state, TaxonRelationshipType.uuidHomotypicSynonymTaxonRelationship,
-                labelHomoRel, labelHomoRel, null,
-                inverseLabelHomoRel, inverseLabelHomoRel, null,
+                labelHomoRel, labelHomoRel, "htso",
+                inverseLabelHomoRel, inverseLabelHomoRel, "has htso",
                 null);
         return result;
     }
