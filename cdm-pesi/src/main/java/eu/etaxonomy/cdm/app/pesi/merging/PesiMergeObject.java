@@ -23,6 +23,8 @@ public class PesiMergeObject {
 
 	private String author;
 
+	private String year;
+
 	private String rank;
 
 	private String nomenclaturalReference;
@@ -42,6 +44,8 @@ public class PesiMergeObject {
 	private String parentString;
 
 	private String parentRankString;
+
+	private boolean isMisapplication;
 
 //************************ FACTORY *******************/
 
@@ -92,6 +96,13 @@ public class PesiMergeObject {
 	public void setStatus(boolean status) {
 		this.isStatus = status;
 	}
+
+    public String getYear() {
+        return year;
+    }
+    public void setYear(String year) {
+        this.year = year;
+    }
 
 	public String getAuthor() {
 		return author;
@@ -216,5 +227,19 @@ public class PesiMergeObject {
     }
     public void setNomenclaturalReference(String nomenclaturalReference) {
         this.nomenclaturalReference = nomenclaturalReference;
+    }
+
+    public boolean isMisapplication() {
+        return isMisapplication;
+    }
+
+    public void setMisapplication(boolean isMisapplication) {
+        this.isMisapplication = isMisapplication;
+    }
+
+    @Override
+    public String toString() {
+        return "PesiMergeObject [uuidSource=" + uuidSource + ", uuidName=" + uuidName + ", uuidTaxon=" + uuidTaxon
+                + ", nameCache=" + nameCache + ", author=" + author + (isMisapplication? ", MAN": "") + "]";
     }
 }

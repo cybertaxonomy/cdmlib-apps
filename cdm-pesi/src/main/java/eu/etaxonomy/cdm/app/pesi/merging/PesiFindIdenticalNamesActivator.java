@@ -31,9 +31,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
+import au.com.bytecode.opencsv.CSVReader;
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.SetMap;
 import eu.etaxonomy.cdm.common.StringComparator;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -85,9 +87,9 @@ public class PesiFindIdenticalNamesActivator {
 
     static {
         sourceRefUuids.addAll(Arrays.asList(new UUID[]{
-//                emSourceUuid,
-                ermsSourceUuid
-                ,faunaEuSourceUuid
+//                emSourceUuid
+                  faunaEuSourceUuid
+               , ermsSourceUuid
 //              ,  ifSourceUuid
         }));
         sourcesLabels.put(emSourceUuid, "E+M");
@@ -100,6 +102,104 @@ public class PesiFindIdenticalNamesActivator {
 
         CdmApplicationController app = CdmIoApplicationController.NewInstance(source, DbSchemaValidation.VALIDATE, false);
 
+        System.out.println("Start getIdenticalNames...");
+        List<Map<UUID, List<PesiMergeObject>>> mergingObjects = fetchData(app);
+
+        boolean resultOK = true;
+
+        System.out.println("Start creating csv files");
+        resultOK = writeCsvFiles(mergingObjects, resultOK);
+
+        System.out.println("End find identical names for PESI: " + resultOK + ". Results written to " + path);
+	}
+
+    private boolean writeCsvFiles(List<Map<UUID, List<PesiMergeObject>>> mergingObjects, boolean resultOK) {
+
+        resultOK &= writeSameNamesToCsvFile(mergingObjects, path + "_namesAll.csv", path + "_namesAll_knownHomonyms.csv");
+        resultOK &= writeSameNamesDifferentAuthorToCsv(mergingObjects, path + "_authors.csv");
+        resultOK &= writeSameNamesDifferentStatusToCsv(mergingObjects, path + "_status.csv");
+        resultOK &= writeSameNamesDifferentPhylumToCsv(mergingObjects, path + "_phylum.csv");
+        resultOK &= writeSameNamesDifferentParentToCsv(mergingObjects, path + "_parent.csv");
+        resultOK &= writeSameNamesDifferentRankToCsv(mergingObjects, path + "_rank.csv");
+        return resultOK;
+    }
+
+    private List<Map<UUID, List<PesiMergeObject>>> fetchData(CdmApplicationController app) {
+
+        Map<String, Map<UUID, Set<TaxonName>>> namesOfIdenticalTaxa;
+        List<String> propertyPaths = makePropertyPath();
+
+        TransactionStatus tx = app.startTransaction(true);
+
+        try {
+            namesOfIdenticalTaxa = app.getTaxonService().findIdenticalTaxonNames(sourceRefUuids, propertyPaths);
+        } catch (Exception e) {
+            e.printStackTrace();
+            //TODO error handling
+            return new ArrayList<>();
+        }
+
+        System.out.println("Start creating merging objects");
+        List<Map<UUID, List<PesiMergeObject>>> mergingObjects = createMergeObjects(namesOfIdenticalTaxa, app);
+        app.commitTransaction(tx);
+        return mergingObjects;
+    }
+
+
+    private static SetMap<String, KnownHomonym> knownHomonyms = null;
+
+    private static SetMap<String, KnownHomonym> getKnownHomonyms(){
+        if (knownHomonyms == null) {
+            knownHomonyms = readKnownHomonyms();
+        }
+        return knownHomonyms;
+    }
+
+    private static SetMap<String, KnownHomonym> readKnownHomonyms() {
+        SetMap<String, KnownHomonym> knownHomonyms = new SetMap<>();
+        try (CSVReader csvReader = new CSVReader(CdmUtils.getUtf8ResourceReader("pesi/knownHomonyms.csv"), ';')) {
+            List<String[]> list = csvReader.readAll();
+            list.remove(0); //remove comment
+            list.remove(0); //remove header
+            list.forEach(ar->{
+                if (ar.length !=3 && ar.length != 5) {
+                    System.out.println("Homonym has incorrect size: " + ar[0]);
+                }else {
+                    KnownHomonym knownHomonym = KnownHomonym.fromArray(ar);
+                    knownHomonyms.putItem(knownHomonym.nameCache, knownHomonym);
+                }
+            });
+            csvReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return knownHomonyms;
+    }
+
+    private static class KnownHomonym{
+        String nameCache;
+        String author1;
+        String author2;
+        String rank1;
+        String rank2;
+        static KnownHomonym fromArray(String[] array) {
+            KnownHomonym result = new KnownHomonym();
+            result.nameCache = array[0];
+            result.author1 = array[1];
+            result.author2 = array[2];
+            if (array.length > 3) {
+                result.rank1 = array[3];
+                result.rank2 = array[4];
+            }
+            return result;
+        }
+        @Override
+        public String toString() {
+            return "[nameCache=" + nameCache + ", " + author1 + " <-> " + author2 + ", " + rank1 + "<->" + rank2 + "]";
+        }
+    }
+
+    private List<String> makePropertyPath() {
         List<String> propertyPaths = new ArrayList<>();
         propertyPaths.add("sources.*");
         propertyPaths.add("sources.idInSource");
@@ -114,92 +214,74 @@ public class PesiFindIdenticalNamesActivator {
         propertyPaths.add("taxonBases.acceptedTaxon.taxonNodes.*");
         propertyPaths.add("taxonBases.acceptedTaxon.taxonNodes.childNodes.*");
         propertyPaths.add("taxonBases.acceptedTaxon.taxonNodes.childNodes.classification.rootNode.childNodes.*");
-        System.out.println("Start getIdenticalNames...");
-
-        Map<String, Map<UUID, Set<TaxonName>>> namesOfIdenticalTaxa;
-        TransactionStatus tx = app.startTransaction(true);
-        try {
-            namesOfIdenticalTaxa = app.getTaxonService().findIdenticalTaxonNames(sourceRefUuids, propertyPaths);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        System.out.println("Start creating merging objects");
-        List<Map<UUID, List<PesiMergeObject>>> mergingObjects = createMergeObjects(namesOfIdenticalTaxa, app);
-        app.commitTransaction(tx);
-
-        boolean resultOK = true;
-        System.out.println("Start creating csv files");
-        resultOK &= writeSameNamesToCsvFile(mergingObjects, path + "_namesAll.csv");
-        resultOK &= writeSameNamesDifferentAuthorToCsv(mergingObjects, path + "_authors.csv");
-        resultOK &= writeSameNamesDifferentStatusToCsv(mergingObjects, path + "_status.csv");
-        resultOK &= writeSameNamesDifferentPhylumToCsv(mergingObjects, path + "_phylum.csv");
-        resultOK &= writeSameNamesDifferentParentToCsv(mergingObjects, path + "_parent.csv");
-        resultOK &= writeSameNamesDifferentRankToCsv(mergingObjects, path + "_rank.csv");
-
-        System.out.println("End find identical names for PESI: " + resultOK + ". Results written to " + path);
-	}
+        return propertyPaths;
+    }
 
 	private boolean writeSameNamesToCsvFile(
-			List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String sFileName) {
+			List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String pathAndFileName, String homonymsFileName) {
 
 	    String header = "same names (all)";
         String methodName = null;
-        return writeDifference(header, methodName, mergingObjects, sFileName);
+        return writeDifference(header, methodName, mergingObjects, pathAndFileName, homonymsFileName);
 	}
 
 	private boolean writeSameNamesDifferentPhylumToCsv(
-	        List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String sFileName){
+	        List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String pathAndFileName){
 
 	    String header = "same names but different phylum";
 	    String methodName = "getPhylum";
-	    return writeDifference(header, methodName, mergingObjects, sFileName);
+	    return writeDifference(header, methodName, mergingObjects, pathAndFileName, null);
 	}
 
     private boolean writeSameNamesDifferentParentToCsv(
-	        List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String sFileName){
+	        List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String pathAndFileName){
 
 		    String header = "same names but different parent";
 	        String methodName = "getParentString";
-	        return writeDifference(header, methodName, mergingObjects, sFileName);
+	        return writeDifference(header, methodName, mergingObjects, pathAndFileName, null);
 	}
 
 	private boolean writeSameNamesDifferentRankToCsv(
-	        List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String sFileName){
+	        List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String pathAndFileName){
 
         String header = "same names but different rank";
         String methodName = "getRank";
-        return writeDifference(header, methodName, mergingObjects, sFileName);
+        return writeDifference(header, methodName, mergingObjects, pathAndFileName, null);
 	}
 
     private boolean writeSameNamesDifferentStatusToCsv(
-            List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String sFileName){
+            List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String pathAndFileName){
 
         String header = "same names but different status";
         String methodName = "isStatus";
-        return writeDifference(header, methodName, mergingObjects, sFileName);
+        return writeDifference(header, methodName, mergingObjects, pathAndFileName, null);
     }
 
     private boolean writeSameNamesDifferentAuthorToCsv(
-            List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String sFileName){
+            List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String pathAndFileName){
 
         String header = "same names but different author";
-        String methodName = "getAuthor";
-        return writeDifference(header, methodName, mergingObjects, sFileName);
+        String filterMethodName = "getAuthor";
+        return writeDifference(header, filterMethodName, mergingObjects, pathAndFileName, null);
     }
 
     private boolean writeDifference(String header,
-            String methodName,
+            String filterMethodName,
             List<Map<UUID,List<PesiMergeObject>>> mergingObjects,
-            String sFileName) {
+            String pathAndFileName,
+            String homonymsPathAndFileName) {
 
         try{
-            Method method = methodName == null? null : PesiMergeObject.class.getMethod(methodName);
+            Method filterMethod = filterMethodName == null? null : PesiMergeObject.class.getMethod(filterMethodName);
 
-            Writer writer = new OutputStreamWriter(new FileOutputStream(new File(sFileName)), StandardCharsets.UTF_8);
+            Writer writer = new OutputStreamWriter(new FileOutputStream(new File(pathAndFileName)), StandardCharsets.UTF_8);
+            Writer homonymWriter = homonymsPathAndFileName == null ? null : new OutputStreamWriter(new FileOutputStream(new File(homonymsPathAndFileName)), StandardCharsets.UTF_8);
 
             //create Header
             createHeader(writer, header);
+            if (homonymWriter != null) {
+                createHeader(homonymWriter, header);
+            }
 
             //write data
             for (Map<UUID,List<PesiMergeObject>> merging : mergingObjects){
@@ -212,15 +294,20 @@ public class PesiFindIdenticalNamesActivator {
                         List<PesiMergeObject> mergeList2 = merging.get(mySources.get(j));
                         for (PesiMergeObject merge1 : mergeList1){
                             for (PesiMergeObject merge2 : mergeList2){
-                                differenceExists |= isDifferent(merge1, merge2, method);
+                                differenceExists |= isDifferent(merge1, merge2, filterMethod);
                             }
                         }
-                        int combinations = mergeList1.size() * mergeList2.size();
+                        String combinations = mergeList1.size() + "-" + mergeList2.size();
                         if (differenceExists){
                             for (PesiMergeObject merge1 : mergeList1){
                                 for (PesiMergeObject merge2 : mergeList2){
-                                    writeCsvLine(writer, merge1, merge2, method, isNextNameCache, combinations);
-                                    isNextNameCache = false;
+                                    boolean areHomonyms = areHomonyms(merge1, merge2);
+                                    if (! areHomonyms) {
+                                        writeCsvLine(writer, merge1, merge2, filterMethod, isNextNameCache, combinations);
+                                        isNextNameCache = false;
+                                    }else if (homonymWriter != null){
+                                        writeCsvLine(homonymWriter, merge1, merge2, filterMethod, isNextNameCache, combinations);
+                                    }
                                 }
                             }
                         }
@@ -236,14 +323,14 @@ public class PesiFindIdenticalNamesActivator {
         }
     }
 
-    private boolean isDifferent(PesiMergeObject merge1, PesiMergeObject merge2, Method method){
+    private boolean isDifferent(PesiMergeObject merge1, PesiMergeObject merge2, Method filterMethod){
 
         try {
-            if (method == null){
+            if (filterMethod == null){
                 return !merge1.getIdTaxon().equals(merge2.getIdTaxon());
             }
-            Object value1 = method.invoke(merge1);
-            Object value2 = method.invoke(merge2);
+            Object value1 = filterMethod.invoke(merge1);
+            Object value2 = filterMethod.invoke(merge2);
             return !CdmUtils.nullSafeEqual(value1, value2);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
@@ -258,6 +345,7 @@ public class PesiFindIdenticalNamesActivator {
             writeHeaderPair(writer, "tid");
             writer.append("use;");
             writer.append("nameUse;");
+            writer.append("comment;");
             writer.append("combinations;");
             writer.append("diff;");
             writeHeaderPair(writer, "src");
@@ -301,15 +389,16 @@ public class PesiFindIdenticalNamesActivator {
     //needs to be synchronized with writeHeader()
     private void writeCsvLine(Writer writer,
            PesiMergeObject merge1, PesiMergeObject merge2,
-           Method method, boolean isNextNameCache, int combinations){  //isNextNameCache probably not needed anymore
+           Method filterMethod, boolean isNextNameCache, String combinations){  //isNextNameCache probably not needed anymore
 
         writePair(writer, merge1, merge2, "IdTaxon", Compare.NO);
-        writeSingleValue(writer, "");
-        writeSingleValue(writer, "");
+        writeSingleValue(writer, "");   //taxonUse
+        writeSingleValue(writer, "");   //nameUse
+        writeSingleValue(writer, "");   //comment
 //        writeSingleValue(writer, isNextNameCache?"1":"0");
-        writeSingleValue(writer, String.valueOf(combinations));
-        boolean different = isDifferent(merge1,  merge2, method);
-        writeSingleValue(writer, different?"1":"0");
+        writeSingleValue(writer, combinations);
+        boolean doFilter = isDifferent(merge1,  merge2, filterMethod);
+        writeSingleValue(writer, doFilter?"1":"0");
         writeSingleValue(writer, sourcesLabels.get(UUID.fromString(merge1.getUuidSource())));
         writeSingleValue(writer, sourcesLabels.get(UUID.fromString(merge2.getUuidSource())));
 //        writePair(writer, merge1, merge2, "UuidName");
@@ -338,7 +427,6 @@ public class PesiFindIdenticalNamesActivator {
         writeSingleValue(writer, merge1.getOrderCache());
         writeSingleValue(writer, merge1.getFamilyCache());
         writeSingleValue(writer, merge1.getStatusStr());
-
 
         try {
             writer.append('\n');
@@ -388,17 +476,18 @@ public class PesiFindIdenticalNamesActivator {
     }
 
     private List<Map<UUID,List<PesiMergeObject>>> createMergeObjects(
-            Map<String, Map<UUID, Set<TaxonName>>> identicalNames,
+            Map<String, Map<UUID, Set<TaxonName>>> identicalNamesMap,
 	        CdmApplicationController appCtr){
 
-		List<Map<UUID,List<PesiMergeObject>>> merge = new ArrayList<>();
+		List<Map<UUID,List<PesiMergeObject>>> mergeObjectsPerNameCache = new ArrayList<>();
 
-		List<String> nameCaches = new ArrayList<>(identicalNames.keySet());
+		List<String> nameCaches = new ArrayList<>(identicalNamesMap.keySet());
 		nameCaches.sort(StringComparator.Instance);
 		for (String nameCache: nameCaches){
-		    createSingleMergeObject(appCtr, merge, identicalNames.get(nameCache));
+		    Map<UUID, Set<TaxonName>> identicalName = identicalNamesMap.get(nameCache);
+		    createSingleMergeObject(appCtr, mergeObjectsPerNameCache, identicalName);
 		}
-		return merge;
+		return mergeObjectsPerNameCache;
 	}
 
     private void createSingleMergeObject(CdmApplicationController appCtr,
@@ -438,6 +527,9 @@ public class PesiFindIdenticalNamesActivator {
 
                     //authorship
                     mergeObject.setAuthor(name.getAuthorshipCache());
+
+                    //year
+                    mergeObject.setYear(getYear(name));
 
                     //nom.ref.
                     mergeObject.setNomenclaturalReference(name.getNomenclaturalReference()== null?null: name.getNomenclaturalReference().getAbbrevTitleCache());
@@ -481,6 +573,11 @@ public class PesiFindIdenticalNamesActivator {
                         mergeObject.setIdInSource(idInSource);
                     }
 
+                    if (taxonBase.isInstanceOf(Taxon.class)){
+                        boolean isMAN = CdmBase.deproxy(taxonBase, Taxon.class).isMisapplicationOnly();
+                        mergeObject.setMisapplication(isMAN);
+                    }
+
                     //status and parent
                     makeStatusAndParent(name, mergeObject);
                 }
@@ -513,8 +610,50 @@ public class PesiFindIdenticalNamesActivator {
             mergeObject.setParentRankStringInFaunaEu(parentName.getRank().getLabel());
             mergeObject.setParentStringInFaunaEu(parentName.getNameCache());
         }*/
+    }
 
+    private String getYear(TaxonName name) {
+        if (name.getPublicationYear() != null) {
+            return String.valueOf(name.getPublicationYear());
+        }else if (name.getReferenceYear() != null) {
+            return name.getReferenceYear();
+        }else {
+            return null;
+        }
+    }
 
+    private boolean areHomonyms(PesiMergeObject pmo1, PesiMergeObject pmo2) {
+
+        Set<KnownHomonym> khs = getKnownHomonyms().get(pmo1.getNameCache());
+        for (KnownHomonym kh: khs) {
+            if (areHomonyms(pmo1, pmo2, kh)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean areHomonyms(PesiMergeObject pmo1, PesiMergeObject pmo2, KnownHomonym kh) {
+
+        if (kh.nameCache.equals(pmo1.getNameCache()) && kh.nameCache.equals(pmo2.getNameCache())
+                && ( Nz(pmo1.getAuthor()).equals(kh.author1)
+                            && Nz(pmo2.getAuthor()).equals(kh.author2)
+                      || (Nz(pmo1.getAuthor()).equals(kh.author2)
+                            && Nz(pmo2.getAuthor()).equals(kh.author1))
+                   )
+            ) {
+            if (kh.rank1 != null
+                && !( Nz(pmo1.getRank()).equals(kh.rank1)
+                        && Nz(pmo2.getRank()).equals(kh.rank2)
+                  || (Nz(pmo1.getRank()).equals(kh.rank2)
+                        && Nz(pmo2.getRank()).equals(kh.rank1))
+                )){
+                return false;
+            }
+
+            return true;
+        }
+        return false;
     }
 
     private void makeStatusAndParent(TaxonName name, PesiMergeObject mergeObject) {
