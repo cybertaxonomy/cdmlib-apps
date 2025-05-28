@@ -78,10 +78,10 @@ public class ErmsImportActivator {
 //
 //	static final boolean doSourceUse = false;
 //	static final boolean doCommonNames = false;
-//  static final boolean doNotes = false;
-//  static final boolean doDistributions = false;
+//	static final boolean doNotes = false;
+//	static final boolean doDistributions = false;
 //	static final boolean doLinks = false;
-//	static final boolean doImages = false;
+//	static final boolean doImages = true;
 
 //	private static DbSchemaValidation hbm2dll = (doReferences ==  DO_REFERENCES.ALL)? DbSchemaValidation.CREATE:DbSchemaValidation.VALIDATE;
 	private static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

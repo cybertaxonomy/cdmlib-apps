@@ -178,6 +178,7 @@ public class ErmsTaxonImport
 
 	@Override
 	protected void doInvoke(ErmsImportState state) {
+
 		state.setAcceptedTaxaKeys(getAcceptedTaxaKeys(state));
 
 		//first path
@@ -198,7 +199,8 @@ public class ErmsTaxonImport
     }
 
 	private Set<Integer> getAcceptedTaxaKeys(ErmsImportState state) {
-		Set<Integer> result = new HashSet<>();
+
+	    Set<Integer> result = new HashSet<>();
 		String idCol = " id ";
 		String tuFk = "tu_id";
 		String vernacularsTable = "vernaculars";

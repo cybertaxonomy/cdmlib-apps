@@ -1,3 +1,11 @@
+/**
+* Copyright (C) 2020 EDIT
+* European Distributed Institute of Taxonomy
+* http://www.e-taxonomy.eu
+*
+* The contents of this file are subject to the Mozilla Public License Version 1.1
+* See LICENSE.TXT at the top of this package for the full license terms.
+*/
 package eu.etaxonomy.cdm.app.pesi.merging;
 
 import java.io.File;
@@ -45,7 +53,7 @@ import eu.etaxonomy.cdm.persistence.dto.TaxonNodeDto;
 
 /**
  * Finds taxa with identical {@link TaxonName#getNameCache() name cache} but from different
- * sources (import source) and writes them into multiple csv file.
+ * sources (import source) and writes them into multiple csv files.
  * All cases are stored in file xxx_namesAll, some prefiltered files are created for e.g.
  * those having different parents or different authors.
  * Taxa are pairwise compared. If a name appears in 3 sources for each of the 3 pairs 1 record
@@ -54,7 +62,7 @@ import eu.etaxonomy.cdm.persistence.dto.TaxonNodeDto;
  * record.
  * <BR><BR>
  *
- * TODO is is necessary to create these extra files? Filters can also be appied in Excel.
+ * TODO is it necessary to create these extra files? Filters can also be applied in Excel.
  *
  * @author a.mueller
  * @since 22.01.2020
@@ -64,7 +72,7 @@ public class PesiFindIdenticalNamesActivator {
     private static Logger logger = LogManager.getLogger();
 
     //static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.localH2();
-	static final ICdmDataSource pesiSource = CdmDestinations.cdm_pesi2019_final();
+	static final ICdmDataSource pesiSource = CdmDestinations.cdm_pesi2025_final();
 
 	static final String path = System.getProperty("user.home")+File.separator+".cdmLibrary"+File.separator+"pesi"+File.separator+"pesimerge";
 
