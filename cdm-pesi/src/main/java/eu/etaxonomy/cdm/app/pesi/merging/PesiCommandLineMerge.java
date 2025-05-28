@@ -155,7 +155,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         taxonInformation.taxon2 = taxonByString(line.get(1));
 
         if (taxonInformation.taxon1 == null || taxonInformation.taxon2 == null){
-            boolean cancel = booleanAnswer("Taxon1 or Taxon2 could not be read from DB! Cancel record");
+            boolean cancel = booleanAnswer("Taxon1 "+line.get(0)+" or Taxon2 "+line.get(1)+" could not be read from DB! Cancel record");
             if (cancel){
                 fileData.remove(0);
             }
@@ -306,6 +306,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
                 removeName = CdmBase.deproxy(stayTaxon.getName());
                 stayName = CdmBase.deproxy(removeTaxon.getName());
                 stayTaxon.setName(stayName);
+                stayTaxon.resetTitleCache();  //in case in command line mode listeners don't work
             }
             //TODO unclear if name information should be merged at all
             mergeIdentifiers(removeName, stayName);
@@ -328,6 +329,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
             return false;
         }
     }
+
 
     private boolean isTaxonSynonym(Taxon removeAccTaxon) {
         for (TaxonRelationship rel:  removeAccTaxon.getRelationsFromThisTaxon()){

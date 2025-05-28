@@ -437,6 +437,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
         TermVocabulary<T> voc = getVocabularyService().find(vocUuid);
         if (voc == null) {
             voc = TermVocabulary.NewInstance(termType, clazz, label, label, null, null);
+            getVocabularyService().save(voc);
         }
         return voc;
     }
