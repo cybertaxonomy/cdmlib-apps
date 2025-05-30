@@ -29,6 +29,7 @@ Antennaria;Link;Gaertn.
 Antennularia;Rchb.;Lamarck, 1816
 Anthelia;(Dumort.) Dumort.;Lamarck, 1816
 Apogon;Rondani, 1856;Lacepède, 1801
+Aporhynchidae;;Poche, 1926
 Arenaria;L.;Brisson, 1760
 Argentina;Hill;Linnaeus, 1758
 Ariadna;Audouin, 1826;P. Fischer, 1864
@@ -49,7 +50,8 @@ Aurelia;J. Gay;Lamarck, 1816
 Aureliania;Fain, 1958;Gosse, 1860
 Autonoe;(Webb & Berthel.) Speta;Bruzelius, 1859
 Axia;Hübner, 1821;Luther, 1955
-Axia;Hübner, 1821;Ferguson, 1954Bartramia;Hedw.;Lesson, 1831
+Axia;Hübner, 1821;Ferguson, 1954
+Bartramia;Hedw.;Lesson, 1831
 Bassia;All.;L. Agassiz, 1862
 Berenice;Salisb.;Péron & Lesueur, 1810
 Beauchampiella;Remane, 1929;Luther, 1955
@@ -83,6 +85,7 @@ Catenula;Duges, 1832;C. Mereschkowsky, 1903
 Cavernularia;Degel.;Valenciennes in Milne Edwards & Haime, 1850
 Cellularia;;Pallas, 1766;Subphylum;Genus
 Cenia;Juss.;Alder & Hancock, 1848
+Cepheidae;;Agassiz, 1862
 Ceratina;Latreille, 1802;Goës, 1894
 Ceratocephala;Moench;[misspelling of Ceratocephale]
 Cereus;Mill.;Ilmoni, 1830
@@ -132,10 +135,17 @@ Cuspidaria;Link;Nardo, 1840
 Cuspidaria;(DC.) Besser;Nardo, 1840
 Cyclops;Muller, 1785;Montfort, 1810
 Cyclotrichium;(Boiss.) Manden. & Scheng.;Meunier, 1910
+Cylindra;Illiger, 1825;Schumacher, 1817
 Cymatocarpus;O. E. Schulz;Looss, 1899
+Cymba;Seidlitz, 1875;Quoy & Gaimard, 1827
+Cymba;Seidlitz, 1875;Broderip, 1826
+Cymbula;Pandelle, 1876;H. Adams & A. Adams, 1854
 Cymodocea;K. D. Koenig;Leach, 1814
 Cytherea;Salisb.;Röding, 1798
 Cytherea;Salisb.;Lamarck, 1805
+Cynthia;Fabricius, 1807;Savigny, 1816
+Cytherea;Fabricius, 1794;Röding, 1798
+Cytherea;Fabricius, 1794;Lamarck, 1805
 Desmophyllum;Webb & Berthel.;Ehrenberg, 1834
 Digenea;;C.Agardh, 1822;Subclass;Genus
 Digitaria;Haller;S. V. Wood, 1853
@@ -145,18 +155,30 @@ Discula;Sacc.;R.T. Lowe, 1852
 Duplicaria;Fuckel;Vine, 1972
 Echinacea;Moench;Claus, 1876
 Echinella;Mamaev, 1965;Acharius in F. Weber & D. Mohr, 1810
+Echinodera;Wollaston, 1863;Gosse, 1864
 Elachista;Treitschke, 1833;Duby, 1830
 Ellisiella;Bretfeld, 1999;Norris, 1965
+Elodia;Robineau-Desvoidy, 1863;de Folin, 1870
 Entomophaga;A. Batko;Lioy, 1864
 Ephemera;Linnaeus, 1758;T.B.B. Paddock, 1988
+Esperia;Hübner, 1825;Nardo, 1833
+Eulalia;Meigen, 1800;Savigny, 1822
+Eumenis;Hübner, 1819;Alder & Hancock, 1845
+Euphrosyne;Meigen, 1800;[auct.]
+Eupista;Hübner, 1825;McIntosh, 1885
+Euplocamus;Latreille, 1809;R. A. Philippi, 1836
+Eurycercus;Baird, 1843;Busch, 1851
 Euthyneura;Macquart, 1836;Spengel, 1881
+Euxinia;Tucolesco, 1933;Graff, 1911
 Fabricia;Adans.;Blainville, 1828
+Fenella;Westwood, 1839;A. Adams, 1864
 Ficus;L.;Röding, 1798
 Filifera;;Lieberkühn, 1859;Order;Genus
 Fimbriaria;Nees;Froelich, 1802
 Fimbriella;Farw. ex Butzin;Allgen, 1929
 Fistularia;Kuntze;Forsskål, 1775
 Fistularia;Kuntze;Linnaeus, 1758
+Foersteria;Szepligeti, 1896;Arai & Brinckmann-Voss, 1980
 Fritillaria;L.;Fol, 1872
 Fritillaria gracilis;(Ebel) Asch. & Graebn.;Lohmann, 1896
 Fritillaria messanensis;Raf.;Lohmann in Bückmann, 1924
@@ -164,34 +186,52 @@ Galeopsis;L.;Jullien, 1903
 Galeopsis;Hill;Jullien, 1903
 Galeopsis;Moench;Jullien, 1903
 Gastrocotyle;Bunge;Beneden & Hesse, 1863
+Gastrodes;Westwood, 1840;Korotneff, 1888
 Gastroidea;Hope, 1840;Stechow, 1921
 Gibberella;Sacc.;Miller, 1961
 Gilia;Ruiz & Pav.;Pugh & Pages, 1995
 Giraudia;Goux, 1989;Derbès & Solier, 1851
 Giraudia;Forster, 1869;Derbès & Solier, 1851
 Glomus;Tul. & C. Tul.;Jeffreys, 1876
+Glyptocephalus;Edwards, 1883;Gottsche, 1835
 Gomphus;Pers.;Charpentier, 1825
 Goniodoma;Zeller, 1849;Stein, 1883
+Gossea;Zelinka, 1889;L. Agassiz, 1862
 Grantia;Boiss.;Fleming, 1828
 Graphis;Adans.;Jeffreys, 1867
 Guepinia;Fr.;Bastard
 Gymnomera;Rondani, 1866;G.O. Sars, 1865
 Haasiella;Kotl. & Pouzar;Kieffer, 1913
 Halocharis;Moq.;L. Agassiz, 1862
+Halocharis;Erdos, 1951;L. Agassiz, 1862
 Hannonia;Braun-Blanq. & Maire;Hoek, 1881
 Harpella;L. Léger & Duboscq;Schrank, 1802
+Heliopathes;Mulsant, 1854;Opresko, 2003
 Helix;Mitch.;Linnaeus, 1758
 Helminthia;Juss.;Handmann, 1882
 Helotium;Pers.;Tode, 1790
+Hermione;Meigen, 1800;Blainville, 1828
 Hermione;Salisb.;Blainville, 1828
+Hertwigia;Dziedzicki, 1885;Schmidt, 1880
+Hertwigia;Plate, 1886;Schmidt, 1880
+Heterocheilidae;McAlpine, 1991;Railliet & Henry, 1915
 Heterocarpus;Phil.;A. Milne-Edwards, 1881
+Heterochaeta;Claparede, 1863;Claus, 1863
 Heterococcus;Ferris, 1918;Chodat, 1908
 Heteropoda;Latreille, 1804;Lamarck, 1812
 Heteroptera;Macquart, 1835;;Genus;Suborder
 Holopedium;Zaddach, 1855;Lagerheim, 1893
+Homotoma;Guérin-Méneville, 1844;Bellardi, 1875
 Hyalea;(DC.) Jaub. & Spach;[sic]
+Hydatina;Ehrenberg, 1830;Schumacher, 1817
 Hypoderma;De Not.;Latreille, 1818
+Idalia;Mulsant, 1846;Leuckart, 1828
+Idalia;Mulsant, 1846;Leach, 1847
 Isias;De Not.;Boeck, 1865
+Isochaeta;Pointner, 1911;Giesbrecht, 1889
+Janus;Stephens, 1829;Vérany, 1844
+Johanssonia;Borkowski, 1972;Selensky, 1914
+Johnstonia;Basir, 1956;Quatrefages, 1866
 Kentrophyllum;DC.;Petz, Song & Wilbert, 1995
 Kleinia;Mill.;Gray, 1851
 Lacrymaria;Pat.;Bory de St. Vincent, 1824
@@ -200,8 +240,10 @@ Lagena;Vanterp. & Ledingham;Walker & Jacob, 1798
 Lamarckia;Moench;Leach, 1852
 Lamarckia;Moench;G.Olivi, 1792
 Lathyrus;L.;[sic]
+Latona;Straus, 1820;Schumacher, 1817
 Lepidoderma;de Bary;Zelinka, 1889
 Lepidophyllum;Trinajstić;Odhner, 1902
+Leptodemus;Reuter, 1900;Zelinka, 1907
 Leptoderma;G. Lister;Vaillant, 1886
 Leptonema;Hook.;Reinke, 1888
 Leptotheca;Schwägr.;Thélohan, 1895
@@ -211,15 +253,24 @@ Lesquerella;S. Watson;Chardez & Thomas, 1980
 Leucopsis;Dummeril, 1823;Greuet, 1968
 Leucostoma;(Nitschke) Höhn.;Meigen, 1803
 Ligia;Fasano;Fabricius, 1798
+Ligula;Bloch, 1782;Montagu, 1808
 Liparis;Rich.;Scopoli, 1777
 Listerella;E. Jahn;Cushman, 1933
 Lobaria;(Schreb.) Hoffm.;O. F. Müller, 1776
 Lobophora;Curtis, 1825;J.Agardh, 1894
 Lobularia;Desv.;Lamarck, 1816
+Lophyrus;Latreille, 1802;G. O. Sars, 1878
+Lovenella;Hincks, 1868;G. O. Sars, 1878
+Lucina;Meigen, 1830;Bruguière, 1797
 Ludwigia;L.;Reiffen, 1901
+Macropus;Shaw, 1790;Latreille, 1803
 Macrura;(Kraenzl.) Szlach. & Sawicka;Latreille, 1802
+Marilynia;Lehtinnen, 1967;Hopper, 1972
 Massalongia;Körb.;Kieffer, 1897
 Mastigophora;Nees;
+Meckelia;Robineau-Desvoidy, 1830;Leuckart, 1828
+Mecynostomum;Schultze, 1850;Beneden E., 1870
+Medon;Stephens, 1833;Duchassaing & Michelotti, 1864
 Melanochaeta;E. Müll., Harr & Sulmont;Bezzi, 1906
 Melanogaster;Corda;Rondani, 1857
 Melanotus;Pat.;Eschscholtz, 1829
@@ -228,6 +279,7 @@ Mertensia;Roth;Lesson, 1829
 Mesoneura;Hartig, 1837;Brenzinger, Schrödl & Kano, 2021
 Metschnikowia;T. Kamieński;Grimm, 1876
 Metzgeria;Raddi;Norman, 1879
+Micrella;Motschulsky, 1869;Punnett, 1901
 Microporus;P. Beauv.;Uhler, 1876
 Microstoma;Bernstein;Cuvier, 1816
 Micrura;;Ehrenberg, 1828;Subclass;Genus
@@ -245,37 +297,58 @@ Morus;L.;Vieillot, 1816
 Mucronella;Fr.;Hincks, 1880
 Myina;Nees, 1834;Stoliczka, 1870
 Myriactis;Less.;Kützing, 1843
+Mysia;Mulsant, 1846;Lamarck, 1818
+Naenia;Stephens, 1827;Gray, 1867
+Neaera;Robineau-Desvoidy, 1830;J. E. Gray, 1833
 Nemastoma;C.L.Koch in Hahn & C.L.Koch, 1836;J.Agardh, 1842
 Nerine;Herb.;Johnston, 1838
+Nesaea;Koch, 1836;Risso, 1826
 Nidularia;Fr.;Targioni Tozzetti, 1868
+Nipporhynchus;Korotyaev, 1996;Chandler, 1934
 Nitzschia;Baer, 1826;A.H. Hassall, 1845
 Nitzschiella;Keler, 1939;L. Rabenhorst, 1864
 Normania;Lowe;Boeck, 1871
 Normania;Lowe;Bowerbank, 1869
 Normania;Lowe;Brady, 1866
+Nychia;Stål, 1860;Malmgren, 1865
+Odinia;Robineau-Desvoidy, 1830;Perrier, 1885
 Oenanthe;L.;Vieillot, 1816
+Okenia;Zetterstedt, 1838;Menke, 1830
 Oligochaeta;(DC.) K. Koch;Grube, 1850
+Onychia;Haliday in Walker, 1835;Blainville, 1823
+Orcula;Held, 1838;Troschel, 1846
+Oria;Hübner, 1821;Quatrefages, 1866
+Otus;Pennant, 1769;Spence Bate & Westwood, 1862
 Oxynema;Linstow, 1899;Chatchawan, Komárek, Strunecky, Smarda & Peerapornpisal, 2012
 Oxyporus;(Bourdot & Galzin) Donk;Fabricius, 1775
+Oxystoma;Duméril, 1805;Bütschli, 1874
 Pandora;Humber;Bruguière, 1797
 Patellaria;Fr.;J. T. Williams, A. J. Scott & Ford-Lloyd
 Patellina;Grove ex Petch;Williamson, 1858
 Patinella;Sacc.;Gray, 1848
+Pelates;Horn, 1880;Cuvier, 1829
+Pelophila;Dejean, 1826;Dörjes, 1968
 Perigrapha;Hafellner;Lederer, 1857
 Petersenia;Gozmány, 1960;Sparrow, 1934
 Peziza;Dill. ex Fr.;Pers., 1801
 Phaeoceros;Prosk.;
 Phalangium;Mill.;Linnaeus, 1758
+Pharus;Mulsant, 1850;J. E. Gray, 1840
+Pharus;Mulsant, 1850;T. Brown, 1844
 Phaseolus;L.;Monterosato, 1875
 Phippsia;(Trin.) R. Br.;Stebbing, 1906
 Phloeospora;Wallr.;Areschoug, 1873
+Phorbas;Ashmead, 1893;Duchassaing & Michelotti, 1864
 Phyllitis;Hill;Kützing, 1843
 Phyllodoce;Salisb.;Ranzani, 1817
 Phyllodoce;Salisb.;Lamarck, 1818
 Phylloporia;Murrill;Heinemann, 1870
 Pilidium;Kunze;Middendorff, 1851
 Pilophorus;Th. Fr.;Hahn, 1826
+Planaria;Muller, 1776;Müller, 1776
+Platycephalus;Cuvier, 1798;Bloch, 1795
 Plumaria;Reitter in Heyden, Reitter & Weise, 1883;F.Schmitz, 1896
+Polia;Ochsenheimer, 1816;Delle Chiaje, 1822
 Polyarthra;Ehrenberg, 1834;Lang, 1944
 Polynema;Lév.;Haliday, 1833
 Pontoporeia;Krøyer, 1842;Kohlm., 1963
@@ -293,21 +366,35 @@ Ptilophora;Stephens, 1828;Kützing, 1847
 Pycnoporus;P. Karst.;Looss, 1899
 Radicula;Moench;Christiansen, 1958
 Radula;Dumort.;Mörch, 1853
+Raia;Ashmead, 1893;Linnaeus, 1758
 Rhipidophora;Hübner, 1822;F.T. Kützing, 1844
 Sabaudia;Buscal. & Muschl.;Ghigi, 1909
 Sabina;Mill.;Williams, 1851
+Saccosoma;Motschulsky, 1859;Danielssen & Koren, 1880
+Sargus;Fabricius, 1798;Cuvier, 1816
 Schizophyllum;Fr.;Verhoeff, 1895
+Schizorhynchus;Parent, 1927;Hallez, 1894
 Schmidtia;Steud.;Balsamo Crivelli, 1863
 Schroederella;Enderlein, 1920;J. Pavillard, 1913
+Schroederella;Enderlein, 1920;Laubier, 1962
+Scymnus;Kugelann, 1794;Cuvier, 1816
 Searsia;F. A. Barkley;Parr, 1937
 Semele;Kunth;Schumacher, 1817
 Seriola;L.;Cuvier, 1816
 Seriola;L.;Hanitsch, 1889
+Sergia;Nasonov, 1923;Stimpson, 1860
 Serpula;(Pers.) Gray;Linnaeus, 1758
+Serrula;Netolitzky, 1910;Mörch, 1853
 Seuratia;Pat.;Skrjabin, 1916
 Seuratia;Pat.;Ditlevsen, 1918
 Sida;L.;Straus, 1820
+Sidonia;Erdos, 1957;Schulze, 1854
+Sigmophora;Rondani, 1867;Cobb, 1933
 Siphonaptera;;Vella, 1957;Order;Genus
+Smaragdinella;L. Medvedev, 1971;A. Adams, 1848
+Smaris;Latreille, 1796;Cuvier, 1814
+Smittia;Holmgren, 1869;Hincks, 1879
+Solariella;Flach, 1905;S. V. Wood, 1842
 Solenostoma;Mitt.;Brady & Robertson, 1873
 Solieria;Robineau-Desvoidy, 1848;J.Agardh, 1842
 Sorosphaera;J. Schröt.;Brady, 1879
@@ -325,6 +412,8 @@ Sphenella;Robineau-Desvoidy, 1830;F.T. Kützing, 1844
 Squilla;Steinh.;Fabricius, 1787
 Stagnicola;Redhead & A.H. Sm.;Jeffreys, 1830
 Stagnicola;Redhead & A.H. Sm.;Montrouzier, 1860
+Stagnicola;Montrouzier, 1860;Jeffreys, 1830
+Staurophora;Reichenbach, 1817;Brandt, 1834
 Staurophora;Reichenbach, 1817;C. Mereschkowsky, 1903
 Stellaria;L.;Nardo, 1834
 Stenella;Syd.;Gray, 1866
@@ -332,21 +421,32 @@ Stephensia;Tul. & C. Tul.;Stainton, 1858
 Stilbum;Tode;Spinola, 1806
 Strasseria;Bres. & Sacc.;Verhoeff, 1929
 Strigosella;Boiss.;Sacco, 1896
+Strongylus;Panzer, 1813;Müller, 1780
+Strongylus;Herbst, 1792;Müller, 1780
 Subularia;L.;Monterosato, 1884
 Subularia;Forssk.;Monterosato, 1884
 Sympodium;K. Koch;Ehrenberg, 1834
 Tapinella;E.-J. Gilbert;Enderlein, 1908
 Thapsia;L.;Monterosato, 1884
+Terebratella;Shafee & Rizvi, 1985;d'Orbigny, 1847
+Tethea;Ochsenheimer, 1816;Johnston, 1842
 Tetracladium;De Wild.;Kulachkova, 1954
 Tetracladium;Kulachkova, 1954;De Wild., 1893
 Thamnidium;Link;Thuret, 1863
 Thecocarpus;Boiss.;Nutting, 1900
+Thecophora;Rondani, 1845;Schmidt, 1870
 Theria;Hübner, 1825;;Genus;Subclass
+Thulinia;Bertolani, 1981;Gibson & Bray, 1979
+Thyreus;Panzer, 1806;R. A. Philippi, 1844
 Timmia;Hedw.;Hopper, 1961
+Toxeuma;Walker, 1833;Chun, 1906
+Trachydemus;Chevrolat, 1873;Zelinka, 1907
+Triaenophorus;Rudolphi, 1793;Gill, 1859
 Trichia;Haller;W. Hartmann, 1840
 Trichoceras;Ratzeburg, 1844;Kützing, 1849
 Trichoderma;Pers.;Stephens, 1833
 Trichoderma;Pers.;Greeff, 1869
+Trichoderma;Stephens, 1833;Greeff, 1869
 Trichonema;Ker Gawl.;De Fromentel
 Trigonaspis;Hartig, 1840;H.A.Thomsen, 1980
 Trigonella;L.;da Costa, 1778
@@ -359,7 +459,11 @@ Tubulifera;O.F. Müll. ex Jacq.;
 Tylodina;;Rafinesque, 1814;Subtribe;Genus
 Urnula;Fr.;Wiesner, 1931
 Urocystis;Rabenh. ex Fuckel;Villot, 1880
+Valencia;Myers, 1928;(Quatrefages, 1846) sensu Koehler, 1885
+Venilia;Kuznetzov, 1979;A. Adams & Reeve, 1848
+Venilia;Kuznetzov, 1979;Alder & Hancock, 1844
 Venturia;Sacc.;Schrottky, 1902
+Venusia;Curtis, 1839;Johnston, 1865
 Vertebrata;;S.F.Gray, 1821;Subphylum;Genus
 Vesicularia;(Müll. Hal.) Müll. Hal.;Thompson, 1830
 Vogtia;Oberpr. & Sonboli;Kölliker, 1853
@@ -369,3 +473,4 @@ Volvaria;(Fr.) P. Kumm.;Lamarck, 1801
 Williamia;Baill.;Monterosato, 1884
 Wilsoniella;E.B.G. Jones ined.;Pettibone, 1993
 Woodwardia;Sm.;Crosse & P. Fischer, 1861
+Zygaena;Fabricius, 1775;Cuvier, 1816
