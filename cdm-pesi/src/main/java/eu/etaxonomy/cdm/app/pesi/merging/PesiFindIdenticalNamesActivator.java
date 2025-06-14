@@ -78,6 +78,10 @@ public class PesiFindIdenticalNamesActivator {
 
 	static final String path = System.getProperty("user.home")+File.separator+".cdmLibrary"+File.separator+"pesi"+File.separator+"pesimerge";
 
+	// !!!!!!!!! ADAPT !!!!!!!!!!!!!!
+	int defaultNameUsage = 2;
+	int defaultTaxonUsage = 2;
+
 	private static UUID emSourceUuid = PesiTransformer.uuidSourceRefEuroMed;
 	private static UUID ermsSourceUuid = PesiTransformer.uuidSourceRefErms;
 	private static UUID faunaEuSourceUuid = PesiTransformer.uuidSourceRefFaunaEuropaea;
@@ -88,8 +92,8 @@ public class PesiFindIdenticalNamesActivator {
     static {
         sourceRefUuids.addAll(Arrays.asList(new UUID[]{
 //                emSourceUuid
+                  ermsSourceUuid,
                   faunaEuSourceUuid
-               , ermsSourceUuid
 //              ,  ifSourceUuid
         }));
         sourcesLabels.put(emSourceUuid, "E+M");
@@ -163,7 +167,15 @@ public class PesiFindIdenticalNamesActivator {
             list.remove(0); //remove header
             list.forEach(ar->{
                 if (ar.length !=3 && ar.length != 5) {
-                    System.out.println("Homonym has incorrect size: " + ar[0]);
+                    if (ar[0].equals("--validations")) {
+                        System.out.println("Start reading validating names as homonyms");
+                    } else if (ar[0].equals("--doubtful homonyms (duplicates in FauEu)")) {
+                        System.out.println("Start reading homonyms in FauEu");
+                    } else if (ar[0].equals("--misapplications")) {
+                        System.out.println("Start reading misapplications in homonyms");
+                    } else {
+                        System.out.println("Homonym has incorrect size: " + ar[0]);
+                    }
                 }else {
                     KnownHomonym knownHomonym = KnownHomonym.fromArray(ar);
                     knownHomonyms.putItem(knownHomonym.nameCache, knownHomonym);
@@ -301,6 +313,9 @@ public class PesiFindIdenticalNamesActivator {
                         if (differenceExists){
                             for (PesiMergeObject merge1 : mergeList1){
                                 for (PesiMergeObject merge2 : mergeList2){
+                                    if (merge1.getIdTaxon().equals(merge2.getIdTaxon())) {
+                                        continue;
+                                    }
                                     boolean areHomonyms = areHomonyms(merge1, merge2);
                                     if (! areHomonyms) {
                                         writeCsvLine(writer, merge1, merge2, filterMethod, isNextNameCache, combinations);
@@ -353,6 +368,7 @@ public class PesiFindIdenticalNamesActivator {
 //            writeHeaderPair(writer, "idInSource");
             writer.append("nameCache;");
             writeHeaderPair(writer, "author");
+            writeHeaderPair(writer, "year");
             writeHeaderPair(writer, "nom.ref.");
             writeHeaderPair(writer, "rank");
             writeHeaderPair(writer, "classification");
@@ -364,6 +380,7 @@ public class PesiFindIdenticalNamesActivator {
             writeHeaderPair(writer, "parentString");
             writeHeaderPair(writer, "parentRankString");
             writeHeaderPair(writer, "status");
+            writeHeaderPair(writer, "nChild");
             writeHeaderPair(writer, "tuuid");
             writer.append("firstAuthor;");
             writer.append("firstRank;");
@@ -392,13 +409,13 @@ public class PesiFindIdenticalNamesActivator {
            Method filterMethod, boolean isNextNameCache, String combinations){  //isNextNameCache probably not needed anymore
 
         writePair(writer, merge1, merge2, "IdTaxon", Compare.NO);
-        writeSingleValue(writer, "");   //taxonUse
-        writeSingleValue(writer, "");   //nameUse
+        writeSingleValue(writer, getTaxonUse(merge1, merge2, defaultTaxonUsage));   //taxonUse
+        writeSingleValue(writer, getNameUse(merge1, merge2, defaultNameUsage));   //nameUse
         writeSingleValue(writer, "");   //comment
 //        writeSingleValue(writer, isNextNameCache?"1":"0");
         writeSingleValue(writer, combinations);
         boolean doFilter = isDifferent(merge1,  merge2, filterMethod);
-        writeSingleValue(writer, doFilter?"1":"0");
+        writeSingleValue(writer, doFilter? "1": "0");
         writeSingleValue(writer, sourcesLabels.get(UUID.fromString(merge1.getUuidSource())));
         writeSingleValue(writer, sourcesLabels.get(UUID.fromString(merge2.getUuidSource())));
 //        writePair(writer, merge1, merge2, "UuidName");
@@ -406,6 +423,7 @@ public class PesiFindIdenticalNamesActivator {
         writeSingleValue(writer, merge1.getNameCache());
 //        writePair(writer, merge1, merge2, "NameCache");
         writePair(writer, merge1, merge2, "Author", Compare.YES);
+        writePair(writer, merge1, merge2, "Year", Compare.YES);
         writePair(writer, merge1, merge2, "NomenclaturalReference", Compare.YES);
         writePair(writer, merge1, merge2, "Rank", Compare.YES);
         writePair(writer, merge1, merge2, "ClassificationCache", Compare.YES);
@@ -417,6 +435,7 @@ public class PesiFindIdenticalNamesActivator {
         writePair(writer, merge1, merge2, "ParentString", Compare.YES);
         writePair(writer, merge1, merge2, "ParentRankString", Compare.YES);
         writePair(writer, merge1, merge2, "StatusStr", Compare.YES);
+        writePair(writer, merge1, merge2, "nChildren", Compare.NO);
         writePair(writer, merge1, merge2, "UuidTaxon", Compare.YES);
         writeSingleValue(writer, merge1.getAuthor());
         writeSingleValue(writer, merge1.getRank());
@@ -432,6 +451,103 @@ public class PesiFindIdenticalNamesActivator {
             writer.append('\n');
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private String getTaxonUse(PesiMergeObject merge1, PesiMergeObject merge2, int defaultTaxonUsage) {
+        if (merge1.getClassificationCache() == null || merge1.getClassificationCache() == null) {
+            return "";
+        } else if (merge1.getClassificationCache().equals(merge2.getClassificationCache())){
+            if (statusAndParentEqual(merge1, merge2)) {
+                return String.valueOf(defaultTaxonUsage);
+            } else {
+                return "";
+            }
+        } else {
+            if (statusEqual(merge1, merge2)) {
+                if (merge1.getClassificationCache().startsWith(merge2.getClassificationCache())) {
+                    return "1";
+                } else if (merge2.getClassificationCache().startsWith(merge1.getClassificationCache())) {
+                    return "2";
+                }
+            }
+            return "";
+        }
+    }
+
+    private boolean statusEqual(PesiMergeObject merge1, PesiMergeObject merge2) {
+        return CdmUtils.nullSafeEqual(merge1.getStatusStr(), merge2.getStatusStr());
+
+    }
+
+    private boolean statusAndParentEqual(PesiMergeObject merge1, PesiMergeObject merge2) {
+        return statusEqual(merge1, merge2)
+                && CdmUtils.nullSafeEqual(merge1.getParentString(), merge2.getParentString())
+                && CdmUtils.nullSafeEqual(merge1.getParentRankString(), merge2.getParentRankString());
+    }
+
+    private String getNameUse(PesiMergeObject merge1, PesiMergeObject merge2, int defaultNameUsage) {
+
+        //ranks
+        if (! CdmUtils.nullSafeEqual(merge1.getRank(), merge2.getRank())){
+            return "";
+        }
+
+        //authors
+        String author1 = normalizeAuthor(merge1.getAuthor());
+        String author2 = normalizeAuthor(merge2.getAuthor());
+
+        if (CdmUtils.nullSafeEqualIgnoreCase(author1, author2)){
+            return String.valueOf(defaultNameUsage);
+        }else if (StringUtils.isBlank(author1)) {
+            return "2";
+        }else if (StringUtils.isBlank(author2)) {
+            return "1";
+        }else {
+            if (firstAuthorIsMissingCombinationAuthor(author1, author2)) {
+                return "2";
+            } else if (firstAuthorIsMissingCombinationAuthor(author2, author1)) {
+                return "1";
+            }
+            return "";
+        }
+    }
+
+    private String normalizeAuthor(String author) {
+        if (author == null) {
+            return null;
+        }
+        String result = CdmUtils.convertToAscii(author)
+                .toLowerCase()
+                .replace("ue", "u")
+                .replace("oe", "o")
+                .replace("ae", "a")
+                .replace("j", "i")
+                .replace("y", "i")
+                .replace("tch", "tsch")
+                .replace("sch", "sh")
+                .replace("ow", "ov")
+                .replace("ew", "ev")
+                .replace("ss", "s")
+
+                .replace("ii", "i")
+                .replace("-", " ")
+                .replace("\\s", "")
+                .replace("th", "t")
+                .replace("\\.", "")
+                .replace("GO\\s*Sars", "Sars")
+                .replace("OF\\s*Muller", "Muller")
+                .replace("Ax,P", "Ax")
+                .replace("Kritshagin", "Krichagin");
+
+        return result;
+    }
+
+    private boolean firstAuthorIsMissingCombinationAuthor(String author1, String author2) {
+        if (author1.matches("\\(.*\\)") && author2.startsWith(author1)  ) {
+            return true;
+        }else {
+            return false;
         }
     }
 
@@ -526,7 +642,7 @@ public class PesiFindIdenticalNamesActivator {
                     mergeObject.setNameCache(name.getNameCache());
 
                     //authorship
-                    mergeObject.setAuthor(name.getAuthorshipCache());
+                    mergeObject.setAuthor(getAuthor(name.getAuthorshipCache()));
 
                     //year
                     mergeObject.setYear(getYear(name));
@@ -580,6 +696,8 @@ public class PesiFindIdenticalNamesActivator {
 
                     //status and parent
                     makeStatusAndParent(name, mergeObject);
+
+                    makeChildrenCount(taxonBase, mergeObject);
                 }
             }
         }
@@ -612,12 +730,65 @@ public class PesiFindIdenticalNamesActivator {
         }*/
     }
 
+    private String getAuthor(String authorshipCache) {
+        return authorshipCache;
+    }
+
+
+    private String getAuthorNew(String authorshipCache) {
+        String year = getYearFromAuthorshipCache(authorshipCache);
+        if (StringUtils.isBlank(getYearFromAuthorshipCache(year))) {
+            return authorshipCache;
+        } else {
+            String authorship = authorshipCache
+                    .substring(0, authorshipCache.length() - year.length())
+                    .trim();
+            authorship = authorship.substring(0, authorship.length() -1).trim(); //remove comma
+            return authorship;
+        }
+    }
+
+    private void makeChildrenCount(TaxonBase<?> taxonBase, PesiMergeObject mergeObject) {
+        if (! (taxonBase instanceof Taxon)) {
+            mergeObject.setnChildren(null);
+        }else {
+            Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+            if (taxon.getTaxonNodes().isEmpty()){
+                mergeObject.setnChildren(0);
+            }else{
+                if (taxon.getTaxonNodes().size()>1){
+                    logger.warn("More than 1 node not yet handled for makeChildrenCount. Take arbitrary one.");
+                }
+                TaxonNode node = taxon.getTaxonNodes().iterator().next();
+                mergeObject.setnChildren(node.getCountChildren());
+            }
+        }
+    }
+
     private String getYear(TaxonName name) {
         if (name.getPublicationYear() != null) {
             return String.valueOf(name.getPublicationYear());
         }else if (name.getReferenceYear() != null) {
             return name.getReferenceYear();
         }else {
+            String year = getYearFromAuthorshipCache(name.getAuthorshipCache());
+            return year;
+        }
+    }
+
+    private static String authorYearRegex = ".*,\\s*\\d{4}";
+    private static String basionymAuthorYearRegex = "\\(" + authorYearRegex + "\\)";
+
+    private String getYearFromAuthorshipCache(String authorshipCache) {
+        if (authorshipCache == null) {
+            return null;
+        }else if (authorshipCache.matches(authorYearRegex )) {
+            String year = authorshipCache.substring(authorshipCache.length()-4);
+            return year;
+        }else if (authorshipCache.matches(basionymAuthorYearRegex )) {
+            String year = authorshipCache.substring(authorshipCache.length()-5, authorshipCache.length()-1);
+            return year;
+        } else {
             return null;
         }
     }

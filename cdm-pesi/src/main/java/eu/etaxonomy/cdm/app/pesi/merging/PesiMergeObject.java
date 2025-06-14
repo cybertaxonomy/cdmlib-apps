@@ -47,6 +47,8 @@ public class PesiMergeObject {
 
 	private boolean isMisapplication;
 
+	private Integer nChildren;
+
 //************************ FACTORY *******************/
 
     public static PesiMergeObject NewInstance(){
@@ -235,6 +237,14 @@ public class PesiMergeObject {
 
     public void setMisapplication(boolean isMisapplication) {
         this.isMisapplication = isMisapplication;
+    }
+
+    public String getnChildren() {
+        return nChildren == null ? "" :String.valueOf(nChildren);
+    }
+
+    public void setnChildren(Integer nChildren) {
+        this.nChildren = nChildren;
     }
 
     @Override
