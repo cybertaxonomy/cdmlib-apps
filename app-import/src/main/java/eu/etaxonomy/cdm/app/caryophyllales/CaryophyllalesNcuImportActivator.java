@@ -36,7 +36,7 @@ public class CaryophyllalesNcuImportActivator extends SourceBase{
 
 	//database validation status (create, update, validate ...)
 	static final DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final Source source = caryo_len61();
+	static final Source source = null;
 
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 

@@ -13,7 +13,6 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.etaxonomy.cdm.app.berlinModelImport.BerlinModelDestinations;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportConfigurator;
@@ -33,7 +32,7 @@ public class SalvadorExport {
     private static final Logger logger = LogManager.getLogger();
 
     //database validation status (create, update, validate ...)
-	static final Source berlinModelDestination = BerlinModelDestinations.El_Salvador_Andreas();
+	static final Source berlinModelDestination = null;
 	static final ICdmDataSource cdmSource = CdmDestinations.localH2Salvador();
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;
