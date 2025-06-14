@@ -296,7 +296,7 @@ public class ErmsTaxonImport
             //"alternate representation"
             //TODO nom. standing unclear
             NomenclaturalStanding nomenclaturalStanding = NomenclaturalStanding.VALID;
-            nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusAlternateRepresentation, "alternate representation", "alternate representation", null, nomenclaturalStanding, Language.ENGLISH(), null);
+            nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusAlternateRepresentation, "alternate representation", "alternate representation", "alt. rep.", nomenclaturalStanding, Language.ENGLISH(), null);
         }else if (tuStatus == 3){
             //nomen nudum
             nomStatus = NomenclaturalStatusType.NUDUM();
