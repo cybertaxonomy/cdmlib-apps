@@ -91,16 +91,6 @@ public class CaryophyllalesNcuImportActivator extends SourceBase{
 		return result;
 	}
 
-	public static Source caryo_len61(){
-		//	Cyryophyllales source
-		String dbms = Source.SQL_SERVER_2008;
-		String strServer = "Lenovo-T61";
-		String strDB = "caryo";
-		int port = 1433;
-		String userName = "WebUser";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
-
 	public static void main(String[] args) {
 		CaryophyllalesNcuImportActivator me = new CaryophyllalesNcuImportActivator();
 		me.doImport(cdmDestination);

@@ -73,7 +73,7 @@ public class BerlinModelSources {
 
 	public static Source Campanulaceae(){
 		//	BerlinModel - Campanulaceae
-		String dbms = Source.SQL_SERVER_2005;
+		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "BGBM42";
 		String strDB = "Campanulaceae";
 		int port = 1433;
@@ -93,7 +93,7 @@ public class BerlinModelSources {
 
 	public static Source EDIT_CICHORIEAE(){
 		//	BerlinModel - EditWP6
-		String dbms = Source.SQL_SERVER_2005;
+		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "BGBM42";
 		String strDB = "EditWP6";
 		int port = 1433;
@@ -103,7 +103,7 @@ public class BerlinModelSources {
 
 	public static Source EDIT_Taraxacum(){
 		//	BerlinModel - EditWP6
-		String dbms = Source.SQL_SERVER_2005;
+		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "BGBM42";
 		String strDB = "Edit_Taraxacum";
 		int port = 1247;
@@ -113,7 +113,7 @@ public class BerlinModelSources {
 
 	public static Source EDIT_Diptera(){
 		//	BerlinModel - EDIT_Diptera
-		String dbms = Source.SQL_SERVER_2005;
+		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "BGBM42";
 		String strDB = "EDIT_Diptera";
 		int port = 1247;
@@ -141,18 +141,8 @@ public class BerlinModelSources {
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-	public static Source PESI_ERMS(){
-		//	BerlinModel - Pesi-ERMS
-		String dbms = Source.SQL_SERVER_2005;
-		String strServer = "SQL2000Intern\\SQL2005";
-		String strDB = "BM_ERMS";
-		int port = 1433;
-		String userName = "WebUser";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
-
 	public static Source MT_MOOSE(){
-		String dbms = Source.SQL_SERVER_2005;
+		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "BGBM-SQL02";
 		String strDB = "MTMoose";
 		int port = 1433;
@@ -161,7 +151,7 @@ public class BerlinModelSources {
 	}
 
 	public static Source MT_Standardliste(){
-		String dbms = Source.SQL_SERVER_2005;
+		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "BGBM-SQL02";
 		String strDB = "MTStandardliste";
 		int port = 1433;
@@ -171,13 +161,6 @@ public class BerlinModelSources {
 
 	/**
 	 * Initializes the source.
-	 * @param dbms
-	 * @param strServer
-	 * @param strDB
-	 * @param port
-	 * @param userName
-	 * @param pwd
-	 * @return the source
 	 */
 	private static Source makeSource(String dbms, String strServer, String strDB, int port, String userName, String pwd ){
 		//establish connection
@@ -190,5 +173,4 @@ public class BerlinModelSources {
 		// write pwd to account store
 		return source;
 	}
-
 }

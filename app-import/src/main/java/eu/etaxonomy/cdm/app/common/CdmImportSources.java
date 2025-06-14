@@ -45,25 +45,6 @@ public class CdmImportSources extends SourceBase{
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-
-	public static Source GLOBIS(){
-		String dbms = Source.SQL_SERVER_2005;
-		String strServer = "LENOVO-T61";
-		String strDB = "globis";
-		int port = 0001;
-		String userName = "user";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
-
-	public static Source GLOBIS_ODBC(){
-		String dbms = Source.ODDBC;
-		String strServer = "LENOVO-T61";
-		String strDB = "globis";
-		int port = 1433;
-		String userName = "sa";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
-
 	public static Source GLOBIS_MDB(){
 		String dbms = Source.ACCESS;
 		String strServer = null;
