@@ -54,8 +54,8 @@ public class CacheUpdater {
 	//new ArrayList<Class<? extends IdentifiableEntity>>();
 
 	private ImportResult doInvoke(ICdmDataSource destination){
-		ImportResult result = new ImportResult();
 
+	    ImportResult result = new ImportResult();
 		CacheUpdaterConfigurator config;
 		try {
 

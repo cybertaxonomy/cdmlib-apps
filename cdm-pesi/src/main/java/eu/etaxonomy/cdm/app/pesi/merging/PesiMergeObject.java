@@ -242,4 +242,5 @@ public class PesiMergeObject {
         return "PesiMergeObject [uuidSource=" + uuidSource + ", uuidName=" + uuidName + ", uuidTaxon=" + uuidTaxon
                 + ", nameCache=" + nameCache + ", author=" + author + (isMisapplication? ", MAN": "") + "]";
     }
+
 }

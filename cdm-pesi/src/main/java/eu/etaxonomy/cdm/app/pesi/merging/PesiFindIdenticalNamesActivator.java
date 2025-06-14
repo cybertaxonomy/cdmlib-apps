@@ -750,7 +750,7 @@ public class PesiFindIdenticalNamesActivator {
                     return null;
                 }else {
                     if (higherDtos.size() > 1){
-                        logger.warn("More than 1 higher dto. This is not yet implemented: " + taxon.getTitleCache());
+                        logger.warn("More than 1 higher dto. Probably 2 ancestors have the same rank. This is not yet implemented: " + taxon.getTitleCache());
                     }
                     return higherDtos.get(0);
                 }

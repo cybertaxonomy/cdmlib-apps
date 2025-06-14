@@ -83,8 +83,8 @@ public class ErmsImportActivator {
 //	static final boolean doLinks = false;
 //	static final boolean doImages = true;
 
-//	private static DbSchemaValidation hbm2dll = (doReferences ==  DO_REFERENCES.ALL)? DbSchemaValidation.CREATE:DbSchemaValidation.VALIDATE;
-	private static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	private static DbSchemaValidation hbm2dll = (doReferences == DO_REFERENCES.ALL)? DbSchemaValidation.CREATE: DbSchemaValidation.VALIDATE;
+//	private static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
 	private void doImport(Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from ("+ ermsSource.getDatabase() + ") to " + destination.getDatabase() + " ..." );

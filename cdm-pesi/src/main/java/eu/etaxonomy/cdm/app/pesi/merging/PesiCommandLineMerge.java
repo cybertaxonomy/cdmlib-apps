@@ -552,6 +552,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
 
     private void mergeMarkers(IdentifiableEntity<?> removeEntity,
             IdentifiableEntity<?> stayEntity) throws CloneNotSupportedException {
+
         String className = removeEntity.getClass().getSimpleName();
         for (Marker marker: removeEntity.getMarkers()){
             if (!filterMarker(marker, removeEntity, stayEntity)){
