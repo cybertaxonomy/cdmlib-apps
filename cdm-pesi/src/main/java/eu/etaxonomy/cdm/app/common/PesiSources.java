@@ -25,7 +25,7 @@ public class PesiSources {
 
 	public static Source faunEu_pesi3(){
 		//	Fauna Europaea auf pesiimport3
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
         String strServer = "pesiimport3";
         String strDB = "FaunEu";
 		int port = 1433;
@@ -35,7 +35,7 @@ public class PesiSources {
 
 	public static Source mfn_faunEu_pesi3(){
 		//	Fauna Europaea auf pesiimport3
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
         String strServer = "pesiimport3";
         String strDB = "MfN_FaunaEuropaea";
 		int port = 1433;
@@ -45,7 +45,7 @@ public class PesiSources {
 
 	public static Source faunEu(){
 		//	Fauna Europaea
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
        	String strServer = "BGBM42";               // "192.168.1.36";
         String strDB = "FaunEu";
 		int port = 1433;
@@ -55,7 +55,7 @@ public class PesiSources {
 
 	public static Source faunaEu_previous(){
 		//	Fauna Europaea
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
  		String strServer = "BGBM42";               // "192.168.1.36";
  		String strDB = "FaunEu_2_2";
 		int port = 1433;
@@ -65,7 +65,7 @@ public class PesiSources {
 
 	public static Source PESI_ERMS(){
 		// Pesi-ERMS
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM42";
 		String strDB = "ERMS";
 		int port = 1433;
@@ -75,7 +75,7 @@ public class PesiSources {
 
     public static Source PESI2019_ERMS_2018(){
         // Pesi-ERMS
-        String dbms = Source.SQL_SERVER_2008;
+        String dbms = Source.SQL_SERVER;
         String strServer = "BGBM-PESISQL\\SQLEXPRESS";
         String strDB = "erms_2018_07_05";
         int port = 1434;
@@ -85,7 +85,7 @@ public class PesiSources {
 
     public static Source PESI2019_ERMS_2019(){
         // Pesi-ERMS
-        String dbms = Source.SQL_SERVER_2008;
+        String dbms = Source.SQL_SERVER;
         String strServer = "BGBM-PESISQL\\SQLEXPRESS";
         String strDB = "erms2019_12_16";
         int port = 1434;
@@ -95,7 +95,7 @@ public class PesiSources {
 
     public static Source PESI2025_ERMS_2023(){
         // Pesi-ERMS
-        String dbms = Source.SQL_SERVER_2008;
+        String dbms = Source.SQL_SERVER;
         String strServer = "BGBM-PESISQL\\SQLEXPRESS";
         String strDB = "erms_2023_12_21";
         int port = 1434;
@@ -105,7 +105,7 @@ public class PesiSources {
 
     public static Source PESI2025_ERMS_2025(){
         // Pesi-ERMS
-        String dbms = Source.SQL_SERVER_2008;
+        String dbms = Source.SQL_SERVER;
         String strServer = "BGBM-PESISQL\\SQLEXPRESS";
         String strDB = "erms_2025_04_03";
         int port = 1434;
@@ -115,7 +115,7 @@ public class PesiSources {
 
 	public static Source PESI3_IF(){
 		//	Index Fungorum
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "Pesiimport3";
 		String strDB = "IF_2014_06";
 		int port = 1433;
@@ -125,7 +125,7 @@ public class PesiSources {
 
 	public static Source PESI_IF(){
 		//  Pesi-IF
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM42";
 		String strDB = "IF";
 		int port = 1433;

@@ -84,7 +84,7 @@ public class CdmImportSources extends SourceBase{
 	}
 
 	public static Source GLOBIS_MDB_20140113_PESIIMPORT_SQLSERVER(){
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "PESIIMPORT3";
 		String strDB = "globis_orig_20140113";
 		int port = 1433;

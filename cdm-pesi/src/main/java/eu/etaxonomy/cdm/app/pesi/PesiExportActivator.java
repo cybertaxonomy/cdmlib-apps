@@ -32,15 +32,18 @@ public class PesiExportActivator {
     @SuppressWarnings("unused")
     private static Logger logger = LogManager.getLogger();
 
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_pesi_faunaEu();
-//	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
+
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_pesi2025_final();
+//	static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_pesi_faunaEu();
 //	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_test();
 
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
+	static final Source pesiDestination = PesiDestinations.pesisql_DW_2025_1();
+//	static final Source pesiDestination = PesiDestinations.pesisql_DW_2025_2();
 
-	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
+	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and their IDs.
+	//We add nameIdStart to the TaxonName id to get a unique id
 	static final int nameIdStart = 10000000;
 
 	static final int partitionSize = 5000;
@@ -93,7 +96,8 @@ public class PesiExportActivator {
 //	static final boolean doDescription = false;
 
 	public boolean 	doExport(ICdmDataSource source){
-		System.out.println("Start export to PESI ("+ pesiDestination.getDatabase() + ") ...");
+
+	    System.out.println("Start export to PESI ("+ pesiDestination.getDatabase() + ") ...");
 
 		//make PESI Source
 		Source destination = pesiDestination;
@@ -130,14 +134,10 @@ public class PesiExportActivator {
 		return result;
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		PesiExportActivator ex = new PesiExportActivator();
 		ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
 
 		ex.doExport(source);
 	}
-
 }

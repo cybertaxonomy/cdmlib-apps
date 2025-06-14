@@ -23,7 +23,7 @@ public class BerlinModelSources {
 
 	public static Source euroMed_PESI3(){
 		//	BerlinModel - Euro+Med
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "PESIIMPORT3";
 		String strDB = "EM_2014_06";
 		int port = 1433;
@@ -33,7 +33,7 @@ public class BerlinModelSources {
 
 	public static Source iopi(){
 		//	BerlinModel - Euro+Med
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM17";
 		String strDB = "IOPIBM";
 		int port = 1433;
@@ -43,7 +43,7 @@ public class BerlinModelSources {
 
 	public static Source euroMed_Pub2(){
         //  BerlinModel - Euro+Med
-        String dbms = Source.SQL_SERVER_2008;
+        String dbms = Source.SQL_SERVER;
         String strServer = "bgbm-sql03";
         String strDB = "EuroPlusMed_Pub2";
         int port = 1433;
@@ -53,7 +53,7 @@ public class BerlinModelSources {
 
 	public static Source euroMed_BGBM42(){
 		//	BerlinModel - Euro+Med
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM42";
 		String strDB = "EuroPlusMed_00_Edit";
 		int port = 1433;  //was 1247
@@ -63,7 +63,7 @@ public class BerlinModelSources {
 
 	public static Source mcl(){
 		//	BerlinModel - Euro+Med
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM42";
 		String strDB = "MCL";
 		int port = 1433;
@@ -73,7 +73,7 @@ public class BerlinModelSources {
 
 	public static Source Campanulaceae(){
 		//	BerlinModel - Campanulaceae
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM42";
 		String strDB = "Campanulaceae";
 		int port = 1433;
@@ -83,7 +83,7 @@ public class BerlinModelSources {
 
 	public static Source ILDIS(){
 		//	BerlinModel - EditWP6
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM42";
 		String strDB = "ILDIS_EM_BM";
 		int port = 1433;
@@ -93,7 +93,7 @@ public class BerlinModelSources {
 
 	public static Source EDIT_CICHORIEAE(){
 		//	BerlinModel - EditWP6
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM42";
 		String strDB = "EditWP6";
 		int port = 1433;
@@ -103,7 +103,7 @@ public class BerlinModelSources {
 
 	public static Source EDIT_Taraxacum(){
 		//	BerlinModel - EditWP6
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM42";
 		String strDB = "Edit_Taraxacum";
 		int port = 1247;
@@ -113,7 +113,7 @@ public class BerlinModelSources {
 
 	public static Source EDIT_Diptera(){
 		//	BerlinModel - EDIT_Diptera
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM42";
 		String strDB = "EDIT_Diptera";
 		int port = 1247;
@@ -123,7 +123,7 @@ public class BerlinModelSources {
 
 	public static Source El_Salvador(){
 		//	BerlinModel - El_Salvador
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM-SQL01";
 		String strDB = "Salvador";
 		int port = 1433;
@@ -133,7 +133,7 @@ public class BerlinModelSources {
 
 	public static Source AlgaTerra(){
 		//	BerlinModel - AlgaTerra
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM-SQL01";
 		String strDB = "Algaterra";
 		int port = 1433;
@@ -142,7 +142,7 @@ public class BerlinModelSources {
 	}
 
 	public static Source MT_MOOSE(){
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM-SQL02";
 		String strDB = "MTMoose";
 		int port = 1433;
@@ -151,7 +151,7 @@ public class BerlinModelSources {
 	}
 
 	public static Source MT_Standardliste(){
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM-SQL02";
 		String strDB = "MTStandardliste";
 		int port = 1433;

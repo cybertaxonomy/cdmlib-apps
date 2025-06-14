@@ -23,8 +23,26 @@ public class PesiDestinations {
     @SuppressWarnings("unused")
     private static Logger logger = LogManager.getLogger();
 
+    public static Source pesisql_DW_2025_1(){
+        String dbms = Source.SQL_SERVER_TRUSTED;
+        String strServer = "BGBM-PESISQL\\SQLEXPRESS";
+        String strDB = "PESI_DW_2025_1";
+        int port = 1434; //!!!
+        String userName =  "pesiimport";
+        return makeSource(dbms, strServer, strDB, port, userName, null);
+    }
+
+    public static Source pesisql_DW_2025_2(){
+        String dbms = Source.SQL_SERVER_TRUSTED;
+        String strServer = "BGBM-PESISQL\\SQLEXPRESS";
+        String strDB = "PESI_DW_2025_2";
+        int port = 1434; //!!!
+        String userName =  "pesiimport";
+        return makeSource(dbms, strServer, strDB, port, userName, null);
+    }
+
 	public static Source pesi_test_local_CDM_EM2PESI(){
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "pesiimport3";
 		String strDB = "CDM_EM2PESI";
 		int port = 1433;
@@ -33,7 +51,7 @@ public class PesiDestinations {
 	}
 
 	public static Source pesi_test_local_CDM_EM2PESI_2(){
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "pesiimport3";
 		String strDB = "CDM_EM2PESI_2";
 		int port = 1433;
@@ -42,7 +60,7 @@ public class PesiDestinations {
 	}
 
 	public static Source pesi_test_local_CDM_FE2PESI(){
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "pesiimport3"; //130.133.70.48
 		String strDB = "CDM_FE2PESI";
 		int port = 1433;
@@ -51,7 +69,7 @@ public class PesiDestinations {
 	}
 
     public static Source pesi_test_local_CDM_FE2PESI_2(){
-        String dbms = Source.SQL_SERVER_2008;
+        String dbms = Source.SQL_SERVER;
         String strServer = "pesiimport3"; //130.133.70.48
         String strDB = "CDM_FE2PESI_2";
         int port = 1433;
@@ -60,7 +78,7 @@ public class PesiDestinations {
     }
 
 	public static Source pesi_test_local_CDM_IF2PESI(){
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "pesiimport3";
 		String strDB = "CDM_IF2PESI";
 		int port = 1433;
@@ -69,7 +87,7 @@ public class PesiDestinations {
 	}
 
 	public static Source pesi_test_local_CDM_IF2PESI_2(){
-        String dbms = Source.SQL_SERVER_2008;
+        String dbms = Source.SQL_SERVER;
         String strServer = "pesiimport3";
         String strDB = "CDM_IF2PESI_2";
         int port = 1433;
@@ -78,7 +96,7 @@ public class PesiDestinations {
     }
 
 	public static Source pesi_test_local_CDM_ERMS2PESI(){
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "pesiimport3";
 		String strDB = "CDM_ERMS2PESI";
 		int port = 1433;
@@ -87,7 +105,7 @@ public class PesiDestinations {
 	}
 
     public static Source pesi_test_local_CDM_ERMS2PESI_2(){
-        String dbms = Source.SQL_SERVER_2008;
+        String dbms = Source.SQL_SERVER;
         String strServer = "pesiimport3";
         String strDB = "CDM_ERMS2PESI_2";
         int port = 1433;
@@ -97,7 +115,7 @@ public class PesiDestinations {
 
 	public static Source pesi_test_bgbm42_CDM_DWH_FaEu(){
 		//	CDM - PESI
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM42";
 		String strDB = "CDM_DWH_FaEu";
 		int port = 1433;
@@ -107,7 +125,7 @@ public class PesiDestinations {
 
 	public static Source pesi_test_bgbm42_PESI_V11(){
 		//	CDM - PESI
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER;
 		String strServer = "BGBM42";
 		String strDB = "PESI_v11";
 		int port = 1433;
