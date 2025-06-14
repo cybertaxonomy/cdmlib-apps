@@ -150,6 +150,9 @@ public class PesiCommandLineMerge extends PesiMergeBase {
      */
     private TaxonInformation readLineFromFile(List<List<String>> fileData) {
         List<String> line = fileData.get(0);
+        if (line.size()<=1) {
+            return null;
+        }
         TaxonInformation taxonInformation = new TaxonInformation();
         taxonInformation.taxon1 = taxonByString(line.get(0));
         taxonInformation.taxon2 = taxonByString(line.get(1));
@@ -322,7 +325,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
             if(isAutomatedAnswer(taxonInformation)){
                 return true;
             }else{
-                return booleanAnswer("Commit moved information");
+                return true; // booleanAnswer("Commit moved information");
             }
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
@@ -467,7 +470,8 @@ public class PesiCommandLineMerge extends PesiMergeBase {
 
     private void mergeDescriptions(Taxon remove, Taxon stay) {
         //TODO handle duplicates for taxon descriptions
-        for (TaxonDescription description: remove.getDescriptions()){
+        HashSet<TaxonDescription> removeDescriptions = new HashSet<>(remove.getDescriptions());
+        for (TaxonDescription description: removeDescriptions){
             System.out.println("Move taxon description: " + description.getTitleCache());
             stay.addDescription(description.clone());
         }
@@ -511,7 +515,8 @@ public class PesiCommandLineMerge extends PesiMergeBase {
             IdentifiableEntity<?> stayEntity) throws CloneNotSupportedException {
 
         String className = removeEntity.getClass().getSimpleName();
-        for (Extension extension: removeEntity.getExtensions()){
+        HashSet<Extension> removeExtensions = new HashSet<>(removeEntity.getExtensions());
+        for (Extension extension: removeExtensions){
             if (!filterExtension(extension, removeEntity, stayEntity)){
                 System.out.println("Move "+className+" extension: " + extension.getType().getTitleCache() + ": " + extension.getValue());
 
@@ -554,7 +559,8 @@ public class PesiCommandLineMerge extends PesiMergeBase {
             IdentifiableEntity<?> stayEntity) throws CloneNotSupportedException {
 
         String className = removeEntity.getClass().getSimpleName();
-        for (Marker marker: removeEntity.getMarkers()){
+        HashSet<Marker> removeMarkers = new HashSet<>(removeEntity.getMarkers());
+        for (Marker marker: removeMarkers){
             if (!filterMarker(marker, removeEntity, stayEntity)){
                 System.out.println("Move "+className+" marker: " + marker.getMarkerType().getTitleCache() + ": " + marker.getValue());
                 IdentifiableEntity<?> thisStayEntity = selectStay(removeEntity, stayEntity, "Marker");
