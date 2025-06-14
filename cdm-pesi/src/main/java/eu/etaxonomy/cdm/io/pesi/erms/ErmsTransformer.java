@@ -238,6 +238,38 @@ public final class ErmsTransformer extends InputTransformerBase {
     public static final UUID uuidNorwegianExclusiveEconomicZoneSvalbard = UUID.fromString("dc91cbef-7020-411b-b5e6-4301d1fc45e5");
     public static final UUID uuidFrenchExclusiveEconomicZoneMartinique = UUID.fromString("f8b341dc-64f0-4881-8656-e1138580b75b");
 
+    //2025
+//    public static final UUID uuidIndianOcean = UUID.fromString("ac7f5e7a-786a-4a7a-9c51-f2e61b249961");
+//    public static final UUID  uuidGulfOfSaintLawrence = UUID.fromString("1ef1a806-f0a6-45da-8af7-1e42bd06c7ee");
+//    public static final UUID  uuidAustralia = UUID.fromString("504210f8-a494-42bc-a1f7-5d8430febce3");
+//    public static final UUID  uuidFrenchExclusiveEconomicZoneNewCaledonia = UUID.fromString("de59b568-784d-45d1-a659-2c9c62415513");
+//    public static final UUID  uuidPhilippineExclusiveEconomicZone = UUID.fromString("7a6c3324-3b7c-4d23-95c1-feb85047277d");
+//    public static final UUID  uuidMozambicanExclusiveEconomicZone = UUID.fromString("5bf91193-949a-4718-9e97-6c75e4421845");
+//    public static final UUID  uuidLibyanExclusiveEconomicZone = UUID.fromString("4c5c0c6a-0d10-45de-a224-966df62e49c3");
+//    public static final UUID  uuidSyrianExclusiveEconomicZone = UUID.fromString("13182437-d5ab-471d-98e9-6a75f112b51e");
+//    public static final UUID  uuidBritishExclusiveEconomicZoneSaintHelena = UUID.fromString("d71b1f97-f420-4550-af8b-1b3915b7e6ac");
+//    public static final UUID  uuidDominicanRepublicExclusiveEconomicZone = UUID.fromString("e397f22f-bdc9-4c9d-aa6a-8191cb58c2a9");
+//    public static final UUID  uuidUnitedStatesExclusiveEconomicZoneHawaii = UUID.fromString("9e23731f-b46b-4142-950d-48301f654c9b");
+//    public static final UUID  uuidBrazilianExclusiveEconomicZone = UUID.fromString("85866236-32b8-49d5-87b2-7061473e2057");
+//    public static final UUID  uuidGuineanExclusiveEconomicZone = UUID.fromString("51ae8b2b-2e98-4bf1-9ea4-ec2b0d0ae687");
+//    public static final UUID  uuidUnitedStatesExclusiveEconomicZone = UUID.fromString("559c5912-5261-4b9e-a9de-d250ced94409");
+//    public static final UUID  uuidGabon = UUID.fromString("594ecdf9-96ba-4613-8793-64c1bff93377");
+//    public static final UUID  uuidTrinidadianAndTobagonianExclusiveEconomicZone = UUID.fromString("0d265568-5980-43a5-bd45-751be713fc40");
+//    public static final UUID  uuidPakistaniExclusiveEconomicZone = UUID.fromString("85f7189d-efcb-4d77-9149-c6429079ce93");
+//    public static final UUID  uuidPersianGulf = UUID.fromString("bb0015a5-341c-4502-900e-7b3de87f1ead");
+//    public static final UUID  uuidIvorianExclusiveEconomicZone = UUID.fromString("7469f459-dd57-4774-bf35-6c1b5456f1fa");
+//    public static final UUID  uuidGaboneseExclusiveEconomicZone = UUID.fromString("c61bda0b-3523-475e-8983-dbb48e860280");
+//    public static final UUID  uuidCongoleseDemocraticRepublicExclusiveEconomicZone = UUID.fromString("efe2d081-6dca-4521-b7f5-58e3347c355c");
+//    public static final UUID  uuidChineseExclusiveEconomicZone = UUID.fromString("55b6b012-f198-416d-9952-de30780177d5");
+//    public static final UUID  uuidDjiboutianExclusiveEconomicZone = UUID.fromString("f4b9bb79-fe66-4c67-8549-1ea7d1a4ca31");
+//    public static final UUID  uuidIranianExclusiveEconomicZone = UUID.fromString("0fb2be11-a6cd-4c83-8c9e-94bff047a55f");
+//    public static final UUID  uuidJordanianExclusiveEconomicZone = UUID.fromString("0fb9a740-076e-47fc-9fbd-9d1a711130cd");
+//    public static final UUID  uuidMexicanExclusiveEconomicZone = UUID.fromString("a9229985-baa1-4067-a395-5e2b601d11ca");
+//    public static final UUID  uuidOmaniExclusiveEconomicZone = UUID.fromString("68bb7f6c-2791-43ca-baf7-5f14a3fd36d7");
+//    public static final UUID  uuidMontenegrinExclusiveEconomicZone = UUID.fromString("475edbb5-6661-4a8e-9ea7-9a4d2c81c4f5");
+//    public static final UUID uuidUruguayanExclusiveEconomicZone = UUID.fromString("4351a037-6b5f-4507-80b9-01d1befb6956");
+//    public static final UUID uuidYemeniExclusiveEconomicZone = UUID.fromString("41bc016e-f2eb-445d-96bb-6822406742a9");
+
 	//feature uuids
 	public static final UUID uuidRemark = UUID.fromString("648eab77-8469-4139-bbf4-3fb26ec15864");
 	public static final UUID uuidAdditionalinformation = UUID.fromString("ef00c304-ce33-45ef-9543-0b9336a2b6eb");
@@ -612,6 +644,37 @@ public final class ErmsTransformer extends InputTransformerBase {
         }else if (guName.equalsIgnoreCase("Norwegian Exclusive Economic Zone (Svalbard)")){ return uuidNorwegianExclusiveEconomicZoneSvalbard;
         }else if (guName.equalsIgnoreCase("French Exclusive Economic Zone (Martinique)")){ return uuidFrenchExclusiveEconomicZoneMartinique;
 
+        //2025
+//        }else if (guName.equalsIgnoreCase("Indian Ocean")){ return uuidIndianOcean;
+//        }else if (guName.equalsIgnoreCase("Gulf of Saint Lawrence")){ return uuidGulfOfSaintLawrence;
+//        }else if (guName.equalsIgnoreCase("Australia")){ return uuidAustralia;
+//        }else if (guName.equalsIgnoreCase("French Exclusive Economic Zone (New Caledonia)")){ return uuidFrenchExclusiveEconomicZoneNewCaledonia;
+//        }else if (guName.equalsIgnoreCase("Philippine Exclusive Economic Zone")){ return uuidPhilippineExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Mozambican Exclusive Economic Zone")){ return uuidMozambicanExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Libyan Exclusive Economic Zone")){ return uuidLibyanExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Syrian Exclusive Economic Zone")){ return uuidSyrianExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("British Exclusive Economic Zone (Saint Helena)")){ return uuidBritishExclusiveEconomicZoneSaintHelena;
+//        }else if (guName.equalsIgnoreCase("Dominican (Republic) Exclusive Economic Zone")){ return uuidDominicanRepublicExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("United States Exclusive Economic Zone (Hawaii)")){ return uuidUnitedStatesExclusiveEconomicZoneHawaii;
+//        }else if (guName.equalsIgnoreCase("Brazilian Exclusive Economic Zone")){ return uuidBrazilianExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Guinean Exclusive Economic Zone")){ return uuidGuineanExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("United States Exclusive Economic Zone")){ return uuidUnitedStatesExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Gabon")){ return uuidGabon;
+//        }else if (guName.equalsIgnoreCase("Trinidadian and Tobagonian Exclusive Economic Zone")){ return uuidTrinidadianAndTobagonianExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Pakistani Exclusive Economic Zone")){ return uuidPakistaniExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Persian Gulf")){ return uuidPersianGulf;
+//        }else if (guName.equalsIgnoreCase("Ivorian Exclusive Economic Zone")){ return uuidIvorianExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Gabonese Exclusive Economic Zone")){ return uuidGaboneseExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Congolese (Democratic Republic of) Exclusive Economic Zone")){ return uuidCongoleseDemocraticRepublicExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Chinese Exclusive Economic Zone")){ return uuidChineseExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Djiboutian Exclusive Economic Zone")){ return uuidDjiboutianExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Iranian Exclusive Economic Zone")){ return uuidIranianExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Jordanian Exclusive Economic Zone")){ return uuidJordanianExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Mexican Exclusive Economic Zone")){ return uuidMexicanExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Omani Exclusive Economic Zone")){ return uuidOmaniExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Montenegrin Exclusive Economic Zone")){ return uuidMontenegrinExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Uruguayan Exclusive Economic Zone")){ return uuidUruguayanExclusiveEconomicZone;
+//        }else if (guName.equalsIgnoreCase("Yemeni Exclusive Economic Zone")){ return uuidYemeniExclusiveEconomicZone;
 
 		}else{
 			throw new IllegalArgumentException("Unknown area " + guName);
