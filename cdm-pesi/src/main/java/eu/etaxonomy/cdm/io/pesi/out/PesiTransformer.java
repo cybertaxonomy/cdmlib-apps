@@ -1989,6 +1989,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return REF_PUBLICATION;  //?
 		} else if (reference.getType().equals(ReferenceType.Proceedings)) {
 			return REF_PUBLICATION;  //?
+		} else if (reference.getType().equals(ReferenceType.InProceedings)) {
+            return REF_PUBLICATION;  //?
 		} else if (reference.getType().equals(ReferenceType.Patent)) {
 			return REF_NOT_APPLICABLE;
 		} else if (reference.getType().equals(ReferenceType.PersonalCommunication)) {
