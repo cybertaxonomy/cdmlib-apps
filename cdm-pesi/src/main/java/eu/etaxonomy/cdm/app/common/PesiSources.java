@@ -105,7 +105,7 @@ public class PesiSources {
 
     public static Source PESI2025_ERMS_2025(){
         // Pesi-ERMS
-        String dbms = Source.SQL_SERVER;
+        String dbms = Source.SQL_SERVER_TRUSTED;
         String strServer = "BGBM-PESISQL\\SQLEXPRESS";
         String strDB = "erms_2025_04_03";
         int port = 1434;
