@@ -174,7 +174,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			//PHASE 3: Add Rank data, KingdomFk, TypeNameFk ...
 			success &= doPhase03(state);
 
-			// 4nd Round: Add TreeIndex to each taxon
+			// 4th Round: Add TreeIndex to each taxon
 			success &= doPhase04(state);
 
 			//"PHASE 5: Creating Inferred Synonyms...
@@ -290,8 +290,10 @@ public class PesiTaxonExport extends PesiExportBase {
 				//core mapping
 				success &= mapping.invoke(taxon);
 				//additional source
-				if (nvn.getNomenclaturalReference() != null || StringUtils.isNotBlank(nvn.getNomenclaturalMicroReference() )){
+				if (nvn.getNomenclaturalReference() != null ){
 					additionalSourceMapping.invoke(taxon);
+				} else if (StringUtils.isNotBlank(nvn.getNomenclaturalMicroReference())){
+				    logger.warn("Taxon name has a micro reference but no nom. ref.: " + nvn.getTitleCache());
 				}
 
 				//TODO switch on again, leads to some warnings in ERMS for taxa of not correctly handled kingdoms
@@ -1905,7 +1907,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	/**
 	 * Returns the <code>IdInSource</code> attribute.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
+	 * @param taxonName The {@link TaxonName TaxonName}.
 	 * @return The <code>IdInSource</code> attribute.
 	 * @see MethodMapper
 	 */
@@ -1916,7 +1918,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		try {
 			Set<IdentifiableSource> sources = getPesiSources(taxonName);
 			if (sources.size() > 1){
-				logger.warn("There is > 1 Pesi source. This is not yet handled.");
+				logger.warn("There is > 1 Pesi source. This is not yet handled: " +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
 			}
 			if (sources.size() == 0){
 				logger.warn("There is no Pesi source!" +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
@@ -1955,7 +1957,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("An error occurs while creating idInSource..." + taxonName.getUuid() + " (" + taxonName.getTitleCache()+ e.getMessage());
+			logger.error("An error occured while creating idInSource..." + taxonName.getUuid() + " (" + taxonName.getTitleCache()+ e.getMessage());
 		}
 
 		if (result == null) {
@@ -2430,7 +2432,8 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	private PesiExportMapping getSynRelMapping() {
-		PesiExportMapping mapping = new PesiExportMapping(dbTableNameSynRel);
+
+	    PesiExportMapping mapping = new PesiExportMapping(dbTableNameSynRel);
 		logger.warn("SynRelMapping currently not implemented. Needs to be checked");
 
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFk1", this.getClass(), "getSynonym", Synonym.class, PesiExportState.class));

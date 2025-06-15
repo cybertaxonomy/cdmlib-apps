@@ -649,7 +649,9 @@ public abstract class PesiExportBase
             }
 
             // name has no PESI source, take sources from TaxonBase
-            if (sources == null || sources.isEmpty()) {
+            if (sources.isEmpty()) {
+                logger.warn("Name has no PESI source: " + identifiableEntity.getTitleCache());
+                @SuppressWarnings("rawtypes")
                 Set<TaxonBase> taxa = taxonName.getTaxonBases();
                 for (TaxonBase<?> taxonBase: taxa){
                     sources.addAll(filterPesiSources(taxonBase.getSources()));
