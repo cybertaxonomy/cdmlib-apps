@@ -97,6 +97,7 @@ public class PesiExportActivator {
 
 	public boolean 	doExport(ICdmDataSource source){
 
+	    logger.warn("Start logging");
 	    System.out.println("Start export to PESI ("+ pesiDestination.getDatabase() + ") ...");
 
 		//make PESI Source

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration  xmlns="https://logging.apache.org/xml/ns"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="https://logging.apache.org/xml/ns https://logging.apache.org/xml/ns/log4j-config-2.xsd">
+  <Appenders>
+    <!--
+    <File name="FILE" fileName="cdmlib-model.log" append="true" header="%d{dd MMM yyyy}">
+      <PatternLayout pattern="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
+    </File>
+    -->
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="WARN">
+      <AppenderRef ref="STDOUT"/>
+      <!-- <AppenderRef ref="FILE"/> -->
+    </Root>
+    <Logger name="eu.etaxonomy.cdm.app.pesi" level="INFO"/>
+    <Logger name="eu.etaxonomy.cdm.pesi.archive.io.faunaEuropaea" level="INFO"/>
+    <Logger name="eu.etaxonomy.cdm.io.pesi" level="INFO"/>
+    <Logger name="eu.etaxonomy.cdm.io.pesi.indexFungorum" level="INFO"/>
+    <Logger name="eu.etaxonomy.cdm.io.pesi.erms" level="INFO"/>
+    <Logger name="eu.etaxonomy.cdm.io.pesi.euromed" level="INFO"/>
+    <Logger name="org.hibernate.dialect" level="WARN"/>
+    <Logger name="org.hibernate.engine.internal.StatefulPersistenceContext" level="ERROR"/>
+    <Logger name="org.hibernate.orm.deprecation" level="WARN">
+       <RegexFilter regex=".*HHH90000022.*" onMatch="DENY" onMismatch="NEUTRAL"/></Logger>
+    
+<!--    <Logger name="eu.etaxonomy.cdm.persistence.dao.hibernate.common" level="info"/>-->
+  </Loggers>
+</Configuration>
