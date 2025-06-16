@@ -258,8 +258,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
     				    }
     				}
 				}catch(NullPointerException e){
-				    logger.error(nvn.getTitleCache() + " has no Rank!");
-				    System.err.println(nvn.getTitleCache() + " has no Rank!");
+				    logger.error(nvn.getTitleCache() +  "("+nvn.getUuid()+")" + " has no Rank!");
 				}
 				//core mapping
 				success &= mapping.invoke(taxon);
@@ -439,7 +438,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 
 	//PHASE 3: Add Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk...
 	private boolean doPhase03(PesiExportState state) {
-		int count = 0;
+
+	    int count = 0;
 		int pastCount = 0;
 		boolean success = true;
 		if (! state.getConfig().isDoTreeIndex()){
@@ -581,7 +581,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 				// Commit transaction
 				commitTransaction(txStatus);
 				logger.debug("Committed transaction.");
-				logger.info("Exported " + (count - pastCount) + " " + pluralStringNames + ". Total: " + count + ". Partition: " + partitionCount);
+				logger.info("Exported " + (count - pastCount) + " " + pluralStringNames + ". Total: " + count + ". Partition: " + partitionCount + "/Phase 1b");
 				pastCount = count;
 
 				// Start transaction
@@ -794,7 +794,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         if (origin.size() == 1 && origin.contains(PesiSource.EM)){
             return getRankFk(taxonName, getKingdomFk(taxonName));
         }else{
-            logger.warn("getRankFk not yet implemented for non-EuroMed pure names");
+            logger.warn("getRankFk not yet implemented for non-EuroMed pure names"+ taxonName.getTitleCache() + "/" + taxonName.getUuid());
             return null;
         }
     }
