@@ -1414,29 +1414,34 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getIdInSource(IdentifiableEntity<?> taxonName) {
+	private static String getIdInSource(TaxonName taxonName) {
 		String result = null;
 
+		if (!taxonName.isInstanceOf(TaxonName.class)) {
+		    logger.warn("Parameter for getIdInSource is not a taxon name: " + taxonName.getTitleCache());
+		}
+		taxonName = CdmBase.deproxy(taxonName, TaxonName.class);
 		try {
 			Set<IdentifiableSource> sources = getPesiSources(taxonName);
 			if (sources.size() > 1){
-				logger.warn("There is > 1 Pesi source. This is not yet handled: " +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
+			    //multiple sources do exist for names after merging, therefore this should not be logged anymore, but maybe useful for single source import
+//				logger.warn("There is > 1 Pesi source. This is not yet handled: " +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
 			}
 			if (sources.size() == 0){
-				logger.warn("There is no Pesi source!" +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
+				logger.warn("There is no Pesi source for taxon name!" +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
 			}
 			for (IdentifiableSource source : sources) {
 				Reference ref = source.getCitation();
 				UUID refUuid = ref.getUuid();
 				String idInSource = source.getIdInSource();
 				if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed)){
-					result = idInSource != null ? ("NameId: " + source.getIdInSource()) : null;
+					result = CdmUtils.concat("; ", result, (idInSource != null ? ("NameId: " + source.getIdInSource()) : null));
 				}else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)){
-					result = idInSource != null ? ("TAX_ID: " + source.getIdInSource()) : null;
+					result = CdmUtils.concat("; ", result, (idInSource != null ? ("TAX_ID: " + source.getIdInSource()) : null));
 				}else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
-					result = idInSource != null ? ("tu_id: " + source.getIdInSource()) : null;
+				    result = CdmUtils.concat("; ", result, (result = idInSource != null ? ("tu_id: " + source.getIdInSource()) : null));
 				}else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){  //Index Fungorum
-					result = idInSource != null ? ("if_id: " + source.getIdInSource()) : null;
+				    result = CdmUtils.concat("; ", result, (result = idInSource != null ? ("if_id: " + source.getIdInSource()) : null));
 				}else{
 					if (logger.isDebugEnabled()){logger.debug("Not a PESI source");}
 				}
@@ -1444,13 +1449,13 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 				String sourceIdNameSpace = source.getIdNamespace();
 				if (sourceIdNameSpace != null) {
 					if (sourceIdNameSpace.equals(PesiTransformer.STR_NAMESPACE_NOMINAL_TAXON)) {
-						result =  idInSource != null ? ("Nominal Taxon from TAX_ID: " + source.getIdInSource()):null;
+						result = CdmUtils.concat("; ", result, idInSource != null ? ("Nominal Taxon from TAX_ID: " + source.getIdInSource()):null);
 					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.INFERRED_EPITHET_NAMESPACE)) {
-						result =  idInSource != null ? ("Inferred epithet from TAX_ID: " + source.getIdInSource()) : null;
+						result = CdmUtils.concat("; ", result, idInSource != null ? ("Inferred epithet from TAX_ID: " + source.getIdInSource()) : null);
 					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.INFERRED_GENUS_NAMESPACE)) {
-						result =  idInSource != null ? ("Inferred genus from TAX_ID: " + source.getIdInSource()):null;
+						result = CdmUtils.concat("; ", result, idInSource != null ? ("Inferred genus from TAX_ID: " + source.getIdInSource()):null);
 					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.POTENTIAL_COMBINATION_NAMESPACE)) {
-						result =  idInSource != null ? ("Potential combination from TAX_ID: " + source.getIdInSource()):null;
+						result = CdmUtils.concat("; ", result, idInSource != null ? ("Potential combination from TAX_ID: " + source.getIdInSource()):null);
 					}
 				}
 				if (result == null) {
@@ -1473,11 +1478,16 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @return The idInSource.
 	 */
-	private static String getIdInSourceOnly(IdentifiableEntity<?> identEntity) {
+	private static String getIdInSourceOnly(IdentifiableEntity<?> identifiableEntity) {
 		String result = null;
 
+		if (!identifiableEntity.isInstanceOf(TaxonName.class)) {
+            logger.warn("Parameter for getIdInSourceOnly is not a taxon name. Return null: " + identifiableEntity.getTitleCache());
+            return null;
+		}
+        TaxonName taxonName = CdmBase.deproxy(identifiableEntity, TaxonName.class);
 		// Get the sources first
-		Set<IdentifiableSource> sources = getPesiSources(identEntity);
+		Set<IdentifiableSource> sources = getPesiSources(taxonName);
 
 		// Determine the idInSource
 		if (sources.size() == 1) {
