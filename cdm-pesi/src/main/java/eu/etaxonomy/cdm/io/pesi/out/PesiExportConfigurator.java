@@ -61,6 +61,7 @@ public class PesiExportConfigurator
 		ioClassList = new Class[]{
 				PesiSourceExport.class,
 				PesiTaxonExport.class,
+				PesiInferredSynonymExport.class,
 				PesiRelTaxonExport.class, // RelTaxonId's could be deleted from state hashmap
 				PesiAdditionalSourceExport.class,
 				PesiDescriptionExport.class,
