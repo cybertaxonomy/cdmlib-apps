@@ -101,6 +101,7 @@ public class ErmsTaxonImport
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "id", TAXON_NAMESPACE)); //id + tu_status
 			mapping.addMapper(DbImportLsidMapper.NewInstance("GUID", "lsid"));
 
+			logger.warn("Consider not importing TSN as it is not used for PESI");
 			UUID tsnUuid = ErmsTransformer.uuidExtTsn;
 			ExtensionType tsnExtType = getExtensionType(tsnUuid, "TSN", "TSN", "TSN");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tsn", tsnExtType));

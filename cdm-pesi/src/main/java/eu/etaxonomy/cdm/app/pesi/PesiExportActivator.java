@@ -29,7 +29,6 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
  */
 public class PesiExportActivator {
 
-    @SuppressWarnings("unused")
     private static Logger logger = LogManager.getLogger();
 
 
@@ -62,6 +61,8 @@ public class PesiExportActivator {
 
 	//taxa
 	static final boolean doTaxa = true;
+    static final boolean doPureNames = true;
+    static final boolean doInferredSynonyms = true;
 	static final boolean doRelTaxa = true;
 	static final boolean doNotes = true;
 	static final boolean doNoteSources = true;
@@ -71,8 +72,6 @@ public class PesiExportActivator {
 	static final boolean doImage = true;
 	static final boolean doTreeIndex = true;
 	static final boolean doRank = true;
-	static final boolean doInferredSynonyms = true;
-	static final boolean doPureNames = true;
 	static final boolean doDescription = true;
 
 

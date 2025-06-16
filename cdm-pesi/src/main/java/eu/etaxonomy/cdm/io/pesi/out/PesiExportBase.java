@@ -332,7 +332,7 @@ public abstract class PesiExportBase
 			}
 		}
 
-		//include hybrid parents, but no childs
+		//include hybrid parents, but no children
 
 		for (HybridRelationship rel : taxonName.getHybridParentRelations()){
 			INonViralName child = rel.getHybridName();
@@ -645,16 +645,19 @@ public abstract class PesiExportBase
                 logger.warn("There are sources, but they are no pesi sources!!!" + source.getIdInSource() + " - " + source.getIdNamespace() + " - " + (source.getCitation()== null? "no reference" : source.getCitation().getTitleCache()));
             }
             if (sources.size() > 1) {
-                logger.warn("This TaxonName has more than one Source: " + identifiableEntity.getUuid() + " (" + identifiableEntity.getTitleCache() + ")");
+//                logger.warn("This TaxonName has more than one Source: " + identifiableEntity.getUuid() + " (" + identifiableEntity.getTitleCache() + ")");
             }
 
             // name has no PESI source, take sources from TaxonBase
             if (sources.isEmpty()) {
-                logger.warn("Name has no PESI source: " + identifiableEntity.getTitleCache());
+                logger.debug("Name has no PESI source: " + identifiableEntity.getTitleCache());
                 @SuppressWarnings("rawtypes")
                 Set<TaxonBase> taxa = taxonName.getTaxonBases();
                 for (TaxonBase<?> taxonBase: taxa){
                     sources.addAll(filterPesiSources(taxonBase.getSources()));
+                }
+                if (sources.isEmpty()) {
+                    logger.warn("... and also taxonBase has no PESI source: " + identifiableEntity.getTitleCache());
                 }
             }
 

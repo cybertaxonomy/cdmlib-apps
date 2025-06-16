@@ -1906,7 +1906,7 @@ public final class PesiTransformer extends ExportTransformerBase{
     			if (!rels.isEmpty() && !nodes.isEmpty()){
     			    logger.warn("Taxon has relations and parent. This is not expected in E+M, but maybe possible in ERMS. Check if taxon status is correct.");
     			}else if (rels.isEmpty() && nodes.isEmpty()){
-                    logger.warn("Taxon has neither relations nor parent. This is not expected. Check if taxon status is correct.");
+                    logger.warn("Taxon has neither relations nor parent. This is not expected. Check if taxon status is correct:" + taxon.getTitleCache());
                 }
     			if (!rels.isEmpty()){
     			    //we expect all rels to have same type, maybe not true
@@ -2082,15 +2082,13 @@ public final class PesiTransformer extends ExportTransformerBase{
 		//TODO
 		}else {
 			//TODO Exception
-			logger.warn("NomStatus type not yet supported by PESI export: "+ status);
+			logger.warn("NomStatus type not yet supported by PESI export: "+ status + "("+status.getUuid()+")");
 			return null;
 		}
 	}
 
 	/**
 	 * Returns the RelTaxonQualifierCache for a given taxonRelation.
-	 * @param relation
-	 * @return
 	 */
 	public String getCacheByRelationshipType(RelationshipBase relation, NomenclaturalCode code){
 		if (relation == null){
@@ -2146,19 +2144,10 @@ public final class PesiTransformer extends ExportTransformerBase{
             logger.warn("Unhandled synonym type: " + type.getLabel());
             return null;
         }
-//              return IS_PRO_PARTE_SYNONYM_OF;
-//              return IS_PARTIAL_SYNONYM_OF;
-//              return IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF;
-//              return IS_PARTIAL_AND_HOMOTYPIC_SYNONYM_OF;
-//              return IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF;
-//              return IS_PARTIAL_AND_HETEROTYPIC_SYNONYM_OF;
     }
-
 
 	/**
 	 * Returns the RelTaxonQualifierFk for a TaxonRelation.
-	 * @param relation
-	 * @return
 	 */
 	public static Integer taxonRelation2RelTaxonQualifierFk(RelationshipBase<?,?,?> relation) {
 		if (relation == null || relation.getType() == null) {
@@ -2225,30 +2214,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 		return null;
 	}
-	/**
-     * FIXME still needed?
-     * Returns the RelTaxonQualifierFk for a TaxonRelation.
-     * @param relation
-     * @return
-     */
-	public static Integer synonymrelation2RelTaxonQualifierFk(Synonym syn) {
-        if (syn.getAcceptedTaxon() == null) {
-            return null;
-        }
-        if (syn.getType().equals(SynonymType.HETEROTYPIC_SYNONYM_OF)){
-            return IS_HETEROTYPIC_SYNONYM_OF;
-        } else if (syn.getType().equals(SynonymType.HOMOTYPIC_SYNONYM_OF)){
-            return IS_HOMOTYPIC_SYNONYM_OF;
-        }else if (syn.getType().equals(SynonymType.INFERRED_EPITHET_OF)) {
-            return IS_INFERRED_EPITHET_FOR;
-        } else if (syn.getType().equals(SynonymType.INFERRED_GENUS_OF)) {
-            return IS_INFERRED_GENUS_FOR;
-        } else if (syn.getType().equals(SynonymType.POTENTIAL_COMBINATION_OF)) {
-            return IS_POTENTIAL_COMBINATION_FOR;
-        }
-        return IS_SYNONYM_OF;
 
-	}
 
 	/**
 	 * Returns the StatusFk for a given StatusCache.
