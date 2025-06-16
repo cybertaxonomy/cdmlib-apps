@@ -1558,7 +1558,9 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 				//TODO check if correct, compare with PESI 2014
 			    Set<Extension> extensions = taxon.getExtensions();
 				for (Extension extension : extensions) {
-					if (extension.getType().equals(cacheCitationExtensionType)) {
+				    if (extension.getType()== null) {
+				        logger.warn("Extensiontype is null: " + taxon.getTitleCache() + "/" + taxon.getUuid());
+				    } else if (extension.getType().equals(cacheCitationExtensionType)) {
 						result = extension.getValue();
 					}
 				}
