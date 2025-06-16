@@ -1040,7 +1040,6 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         return result;
     }
 
-    static boolean isFirstAbbrevTitle = true;
 	/**
 	 * Returns the SourceNameCache for the AdditionalSource table
 	 */
@@ -1049,12 +1048,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		if (taxonName != null){
 			Reference nomRef = taxonName.getNomenclaturalReference();
 			if (nomRef != null ){
-			    if (isFirstAbbrevTitle){
-			        //#5388 is definetely not the correct ticket number
-			        logger.warn("Semantics of getAbbrevTitleCache has changed. Please check if output is still correct. See #5388");
-			        isFirstAbbrevTitle = false;
-			    }
-			    return nomRef.getAbbrevTitleCache();
+			    String result = NomenclaturalSourceFormatter.INSTANCE().format(taxonName.getNomenclaturalSource());
+			    return result;
 			}
 		}
 		return null;
