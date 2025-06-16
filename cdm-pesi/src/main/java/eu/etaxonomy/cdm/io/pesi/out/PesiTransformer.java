@@ -159,6 +159,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int NAME_ST_ALTERNATE_REPRESENTATION = 26;
 	private static int NAME_ST_TEMPORARY_NAME = 27;
 	private static int NAME_ST_SPECIES_INQUIRENDA = 28;
+	private static int NAME_ST_COMB_ILLEG = 29;
+
 
 	// TaxonStatus
 	public static int T_STATUS_ACCEPTED = 1;
@@ -2064,12 +2066,13 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}else if (status.equals(NomenclaturalStatusType.ALTERNATIVE())) {return NAME_ST_NOM_ALTERN;
 		}else if (status.equals(NomenclaturalStatusType.COMBINATION_INVALID())) {return NAME_ST_COMB_INVAL;
 		}else if (status.equals(NomenclaturalStatusType.LEGITIMATE())) {return NAME_ST_LEGITIMATE;
+		}else if (status.equals(NomenclaturalStatusType.COMBINATION_ILLEGITIMATE())) {return NAME_ST_COMB_ILLEG;
+        }else if (status.equals(NomenclaturalStatusType.COMB_INED())) {return NAME_ST_COMB_INED;
+        }else if (status.equals(NomenclaturalStatusType.NAME_AND_ORTHOGRAPHY_CONSERVED())) {return NAME_ST_NOM_AND_ORTH_CONS;
+        }else if (status.equals(NomenclaturalStatusType.COMB_NOV())) {return NAME_ST_COMB_INED;
 
-		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusCombIned)||
-		        //FIXME deduplicate COMB_NOV
-		        status.equals(NomenclaturalStatusType.COMB_NOV())) {return NAME_ST_COMB_INED;
-		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusNomOrthCons)) {return NAME_ST_NOM_AND_ORTH_CONS;
-		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusSpNovIned)) {return NAME_ST_SP_NOV_INED;
+		//does not seem to exist anymore
+//		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusSpNovIned)) {return NAME_ST_SP_NOV_INED;
 
 
 		// The following are non-existent in CDM
