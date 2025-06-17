@@ -8,8 +8,6 @@
 */
 package eu.etaxonomy.cdm.io.pesi.out;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,8 +53,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private static int modCount = 1000;
 	private static final String dbTableName = "RelTaxon";
 	private static final String pluralString = "Relationships";
-	private static PreparedStatement synonymsStmt;
-
 	private PesiExportMapping mapping;
 	private PesiExportMapping synonymMapping;
 	private PesiExportMapping taxonNodeMapping;
@@ -77,10 +73,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			logger.info("*** Started Making " + pluralString + " ...");
 
 			doDelete(state);
-
-			Connection connection = state.getConfig().getDestination().getConnection();
-			String synonymsSql = "UPDATE Taxon SET KingdomFk = ?, RankFk = ?, RankCache = ? WHERE TaxonId = ?";
-			synonymsStmt = connection.prepareStatement(synonymsSql);
 
 			// Stores whether this invoke was successful or not.
 			boolean success = true;
@@ -229,7 +221,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
     }
 
 	private boolean doPhase02(PesiExportState state, PesiExportMapping mapping2) {
-		logger.info("PHASE 2: Name Relationships ...");
+
+	    logger.info("PHASE 2: Name Relationships ...");
 		boolean success = true;
 
 		int limit = state.getConfig().getLimitSave();
@@ -243,13 +236,17 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		while ((list = getNextNameRelationshipPartition(NameRelationship.class, limit, partitionCount++, null)) != null   ) {
 			txStatus = handleNameRelationList(state, txStatus, list);
 		}
+
         //hybrid relations
-		List<HybridRelationship> hybridList;
+		logger.info("PHASE 2b: ... Hybrid Relationships ...");
+        List<HybridRelationship> hybridList;
 		partitionCount = 0;
         while ((hybridList = getNextNameRelationshipPartition(HybridRelationship.class, limit, partitionCount++, null)) != null   ) {
             txStatus = handleNameRelationList(state, txStatus, hybridList);
         }
+
         //original spellings
+        logger.info("PHASE 2c: ... Original Spellings ...");
         List<NomenclaturalSource> originalSpellingList;
         partitionCount = 0;
         while ((originalSpellingList = getNextOriginalSpellingPartition(limit, partitionCount++, null)) != null   ) {
@@ -565,6 +562,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
      * @return The {@link PesiExportMapping PesiExportMapping}.
      */
     PesiExportMapping getSynonymMapping() {
+
         PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 
         mapping.addMapper(MethodMapper.NewInstance("TaxonFk1", this.getClass(), "getSynonym", Synonym.class, PesiExportState.class));
@@ -577,6 +575,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
     }
 
     PesiExportMapping getTaxonNodeMapping() {
+
         PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 
         mapping.addMapper(MethodMapper.NewInstance("TaxonFk2", this.getClass(), "getParent", TaxonNode.class, PesiExportState.class));
@@ -589,6 +588,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
     }
 
     PesiExportMapping getOriginalSpellingMapping() {
+
         PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 
         mapping.addMapper(MethodMapper.NewInstance("TaxonFk1", this.getClass(), "getFromObject", PesiExportState.class));
