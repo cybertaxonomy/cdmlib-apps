@@ -92,6 +92,9 @@ public class PesiRelTaxonExport extends PesiExportBase {
             taxonNodeMapping = getTaxonNodeMapping();
             taxonNodeMapping.initialize(state);
 
+            originalSpellingMapping = getOriginalSpellingMapping();
+            originalSpellingMapping.initialize(state);
+
 			//Export taxon relations
 			success &= doPhase01(state, mapping);
 
