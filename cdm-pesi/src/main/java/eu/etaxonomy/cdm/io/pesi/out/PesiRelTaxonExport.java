@@ -371,6 +371,10 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private static Integer getTaxonFk1(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
 		return getObjectFk(relationship, state, true);
 	}
+    @SuppressWarnings("unused")
+    private static Integer getTaxonFk1(NomenclaturalSource nomSource, PesiExportState state) {
+        return getObjectFk(nomSource, state, true);
+    }
 
 	/**
      * Returns the <code>TaxonFk1</code> attribute. It corresponds to a CDM <code>TaxonRelationship</code>.
@@ -437,6 +441,10 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private static Integer getTaxonFk2(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
 		return getObjectFk(relationship, state, false);
 	}
+    @SuppressWarnings("unused")
+    private static Integer getTaxonFk2(NomenclaturalSource nomSource, PesiExportState state) {
+        return getObjectFk(nomSource, state, false);
+    }
 
 	/**
 	 * Returns the <code>RelTaxonQualifierFk</code> attribute.
@@ -594,8 +602,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
         PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 
-        mapping.addMapper(MethodMapper.NewInstance("TaxonFk1", this.getClass(), "getFromObject", PesiExportState.class));
-        mapping.addMapper(MethodMapper.NewInstance("TaxonFk2", this.getClass(), "getToObject", PesiExportState.class));
+        mapping.addMapper(MethodMapper.NewInstance("TaxonFk1", this.getClass(), "getTaxonFk1", NomenclaturalSource.class, PesiExportState.class));
+        mapping.addMapper(MethodMapper.NewInstance("TaxonFk2", this.getClass(), "getTaxonFk2", NomenclaturalSource.class, PesiExportState.class));
         mapping.addMapper(DbFixedIntegerMapper.NewInstance(PesiTransformer.IS_ORIGINAL_SPELLING_FOR, "RelTaxonQualifierFk"));
         mapping.addMapper(DbFixedStringMapper.NewInstance("is original spelling for", "RelQualifierCache"));
 //        mapping.addMapper(DbAnnotationMapper.NewExludedInstance(getLastActionAnnotationTypes(), "Notes"));
