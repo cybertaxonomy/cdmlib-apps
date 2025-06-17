@@ -229,7 +229,7 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFk", this, IdentifiableSource.class, PesiExportState.class));
         mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceFk"));
 		mapping.addMapper(MethodMapper.NewInstance("SourceUseFk", this, IdentifiableSource.class, PesiExportState.class));
-		mapping.addMapper(DbStringMapper.NewInstance("originalNameString", "SourceUseCache"));
+		mapping.addMapper(DbStringMapper.NewInstance("originalInfo", "SourceUseCache"));
         mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceNameCache", IS_CACHE));
 		mapping.addMapper(DbStringMapper.NewInstance("citationMicroReference", "SourceDetail"));
 
