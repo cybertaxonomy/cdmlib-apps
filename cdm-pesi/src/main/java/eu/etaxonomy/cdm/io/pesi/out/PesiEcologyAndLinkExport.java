@@ -32,7 +32,9 @@ import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.profiler.ProfilerController;
 /**
- * The export class for PESI ecology notes (marine, brackish, fresh, terrestrial) coming from ERMS tu table.<p>
+ * The export class for PESI ecology notes (marine, brackish, fresh, terrestrial)
+ * coming from ERMS tu table.<p>
+ *
  * @author a.mueller
  * @since 28.09.2019
  */

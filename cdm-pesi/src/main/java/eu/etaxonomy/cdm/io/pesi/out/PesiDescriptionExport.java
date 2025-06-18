@@ -95,7 +95,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private static final String parentPluralString = "Taxa";
 
 	//decide where to handle them best (configurator, transformer, single method, ...)
-	private static Set<Integer> excludedNoteCategories = new HashSet<>(Arrays.asList(new Integer[]{250,251,252,253,10,11,13}));
+	private static Set<Integer> excludedNoteCategories = new HashSet<>(
+	        Arrays.asList(new Integer[]{250,251,252,253,10,11,13}));
 
 	//debugging
 	private static int countDescriptions;
@@ -346,7 +347,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 	private boolean handleDescriptionElement(PesiExportState state, PesiExportMapping notesMapping,
 			PesiExportMapping occurrenceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping,
-			PesiExportMapping addSourceSourceMapping, PesiExportMapping additionalSourceMapping, boolean isImageGallery, DescriptionElementBase element) throws SQLException {
+			PesiExportMapping addSourceSourceMapping, PesiExportMapping additionalSourceMapping,
+			boolean isImageGallery, DescriptionElementBase element) {
 
 	    try {
 			boolean success = true;

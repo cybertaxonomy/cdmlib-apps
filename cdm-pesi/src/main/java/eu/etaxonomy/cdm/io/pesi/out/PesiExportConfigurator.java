@@ -36,18 +36,21 @@ public class PesiExportConfigurator
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	private boolean doTaxa = true;
 	private boolean doRelTaxa = true;
-	private boolean doNotes = true;
-	private boolean doNoteSources = true;
 	private boolean doAdditionalTaxonSource = true;
-	private boolean doOccurrence = true;
-	private boolean doOccurrenceSource = true;
-	private boolean doImages = true;
 	private boolean doTreeIndex = true;
 	private boolean doParentAndBiota = true;
 	private boolean doInferredSynonyms = true;
 	private boolean doPureNames = true;
 	private boolean doDescription = true;
 	private boolean doEcologyAndLink = true;
+
+	//old
+	private boolean doOccurrence = true;
+    private boolean doOccurrenceSource = true;
+    private boolean doImages = true;
+    private boolean doNotes = true;
+    private boolean doNoteSources = true;
+
 
 	private int nameIdStart = 10000000;
 

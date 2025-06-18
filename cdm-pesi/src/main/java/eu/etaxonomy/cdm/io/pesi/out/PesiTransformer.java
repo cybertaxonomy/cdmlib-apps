@@ -75,6 +75,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static final UUID uuidSourceRefAuct = UUID.fromString("5f79f96c-c100-4cd8-b78e-2b2dacf09a23");
 	public static final UUID uuidSourceRefFaunaEuropaea_fromSql = UUID.fromString("6786d863-75d4-4796-b916-c1c3dff4cb70");
 
+	//other UUIDs
     public static final UUID uuidTaxonValuelessEuroMed = UUID.fromString("f0a9322b-a57e-447b-9a75-a909f2f2a994");
 
 	public static final String SOURCE_STR_EM = "E+M";
@@ -1049,9 +1050,11 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGe)) { return AREA_GERMANY; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGg)) { return AREA_GEORGIA; }
 
+			//old
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGg_G)) { return AREA_GEORGIA_G; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGg_A)) { return AREA_ABKHAZIA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGg_D)) { return AREA_ADZARIA; }
+			//end old
 
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGr)) { return AREA_GREECE_WITH_CYCLADES_AND_MORE_ISLANDS; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidHb)) { return AREA_IRELAND; }
