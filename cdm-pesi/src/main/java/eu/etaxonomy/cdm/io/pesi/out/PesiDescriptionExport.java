@@ -55,6 +55,7 @@ import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
@@ -410,15 +411,23 @@ public class PesiDescriptionExport extends PesiExportBase {
 		return (excludedNoteCategories.contains(categoryFk));
 	}
 
-    boolean isFirstUndefinedStatusWarnung = true;
-	private boolean isPesiDistribution(PesiExportState state, Distribution distribution) {
+    boolean hasFirstUndefinedStatusWarnung = false;
+    boolean hasFirstIucnMissingWarning = false;
+    private boolean isPesiDistribution(PesiExportState state, Distribution distribution) {
 		//currently we use the E+M summary status to decide if a distribution should be exported
-		if (distribution.getStatus() == null){
+		PresenceAbsenceTerm status = distribution.getStatus();
+	    if (status == null){
 			return false;
-		}else if (distribution.getStatus().getUuid().equals(BerlinModelTransformer.uuidStatusUndefined)){
-		    if (isFirstUndefinedStatusWarnung){
+		}else if (status.getUuid().equals(BerlinModelTransformer.uuidStatusUndefined)){
+		    if (hasFirstUndefinedStatusWarnung){
                 logger.warn("Status 'undefined' is not mapped to any status for now. Needs further checking. (E+M specific)");
-                isFirstUndefinedStatusWarnung = false;
+                hasFirstUndefinedStatusWarnung = true;
+            }
+            return false;
+		}else if (status.getUuid().equals(Feature.uuidIucnStatus)){
+            if (!hasFirstIucnMissingWarning){
+                logger.warn("Status 'IUCN' is not mapped yet as it should go to the notes mapping, not the occurrences. (Bryophytes specific)");
+                hasFirstIucnMissingWarning = true;
             }
             return false;
 		}
@@ -429,8 +438,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 		if (area == null){
 			logger.warn("Area is null for distribution " +  distribution.getUuid());
 			return false;
-		}else if (area.getUuid().equals(BerlinModelTransformer.euroMedUuid)){
-			//E+M area only holds endemic status information and therefore is not exported to PESI
+		}else if (area.getUuid().equals(BerlinModelTransformer.euroMedUuid) ||
+		        area.getUuid().equals(BerlinModelTransformer.uuidEUR)){
+			//E+M area and mosses EUR area only hold endemic status information and therefore is not exported to PESI
 			return false;
 //		}else if (area.equals(TdwgAreaProvider.getAreaByTdwgAbbreviation("1"))){
 //			//Europe area never holds status information (may probably be deleted in E+M)
@@ -469,11 +479,22 @@ public class PesiDescriptionExport extends PesiExportBase {
 		return (feature.equals(Feature.CITATION()) || feature.equals(Feature.ADDITIONAL_PUBLICATION()));
 	}
 
-	private boolean isOccurrence(DescriptionElementBase element) {
-		Feature feature = element.getFeature();
-		if (element.isInstanceOf(Distribution.class)){
-		    if (!Feature.DISTRIBUTION().equals(feature)){
-		        logger.warn("Description element has class 'Distribution' but has no feature 'Distribution'");
+	private boolean isOccurrence(DescriptionElementBase fact) {
+		Feature feature = fact.getFeature();
+		if (fact.isInstanceOf(Distribution.class)){
+
+		    if (feature == null) {
+		        logger.warn("No feature defined for distribution. No Import.");
+		        return false;
+		    } else if (!Feature.uuidDistribution.equals(feature.getUuid())){
+		        if (Feature.uuidIucnStatus.equals(feature.getUuid())) {
+		            //we handle IUCN status later
+		            return true;
+		        } else {
+		            logger.warn("Description element has class 'Distribution' but has no feature 'Distribution'. Not imported. FactID: "
+		                    + fact.getUuid() + "; other feature: " + feature.getTitleCache());
+		            return false;
+		        }
 		    }
 		    return true;
 		}else if (Feature.DISTRIBUTION().equals(feature)){
