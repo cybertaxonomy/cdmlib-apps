@@ -14,6 +14,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.etaxonomy.cdm.app.pesi.merging.PesiCommandLineMerge;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -77,6 +79,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	//other UUIDs
     public static final UUID uuidTaxonValuelessEuroMed = UUID.fromString("f0a9322b-a57e-447b-9a75-a909f2f2a994");
+    public static final UUID uuidEuroMedMossesareas = UUID.fromString("ad177547-1f23-48db-8657-ca120668fca6");
 
 	public static final String SOURCE_STR_EM = "E+M";
 	public static final String SOURCE_STR_FE = "FaEu";
@@ -371,6 +374,7 @@ public final class PesiTransformer extends ExportTransformerBase{
     private static int NoteCategory_Type_Material = 310;
     private static int NoteCategory_Editors_Comment = 311;
     private static int NoteCategory_Syntype = 312;
+    private static int NoteCategory_IUCN_Status = 313;
 
 	// FossilStatus
 	private static int FOSSILSTATUS_RECENT_ONLY = 1;
@@ -607,6 +611,18 @@ public final class PesiTransformer extends ExportTransformerBase{
 	//new E+M areas
 	private static int AREA_SERBIA = 294;
 	private static int AREA_KOSOVO = 295;
+	private static int AREA_SWEDEN_AND_FINLAND = 300;
+
+	private static int AREA_Arctic_European_Russia = 301;
+	private static int AREA_Central_European_Russia_Mosses = 302;
+    private static int AREA_Egypt_and_Sinai = 303;
+    private static int AREA_Greece_East_Aegean_Islands = 304;
+    private static int AREA_NE_European_Russia = 305;
+    private static int AREA_NW_European_Russia = 306;
+    private static int AREA_SE_European_Russia = 307;
+    private static int AREA_South_Urals = 308;
+    private static int AREA_PALESTINE = 309; // Country
+    private static int AREA_NORTH_AMERICA = 310;
 
 	//FauEu area UUIDs
     private static UUID uuidAreaAD = UUID.fromString("38dd31d2-8275-4b05-8b85-eb71a390d67f");
@@ -977,9 +993,14 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (namedArea.equals(Country.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND())) { return AREA_UNITED_KINGDOM; }
 			else if (namedArea.equals(Country.DENMARKKINGDOMOF())) { return AREA_DENMARK_COUNTRY; }
 			else if (namedArea.equals(Country.TUERKIYEREPUBLICOF())) { return AREA_TUERKIYE_COUNTRY; }
-			else {
+			else if (namedArea.equals(Country.FRANCE())) { return AREA_FRANCE; }
+			else if (namedArea.equals(Country.PALESTINIANTERRITORYOCCUPIED())) { return AREA_PALESTINE; }
+
+            else {
 				logger.warn("Unknown Country: " + area.getTitleCache());
 			}
+		}else if (area.getVocabulary().getUuid().equals(NamedArea.uuidContinentVocabulary)){
+		    if (namedArea.equals(NamedArea.NORTH_AMERICA())) { return AREA_NORTH_AMERICA; }
 
 		}else if (area.getVocabulary().getUuid().equals(BerlinModelTransformer.uuidVocEuroMedAreas)){
 			if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEM)) {
@@ -1133,6 +1154,20 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else {
                 logger.warn("Unknown EuroMed distribution area: " + area.getTitleCache());
             }
+	    }else if (area.getVocabulary().getUuid().equals(PesiTransformer.uuidEuroMedMossesareas)){
+            if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEUR)) {logger.warn("EUR area not available in PESI"); return null; }
+            else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRf_A2)) { return AREA_Arctic_European_Russia; }
+            else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRf_C2)) { return AREA_Central_European_Russia_Mosses; }
+            else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEgSn)) { return AREA_Egypt_and_Sinai; }
+            else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGr_AE_G)) { return AREA_Greece_East_Aegean_Islands; }
+            else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidIt_I)) { return AREA_ITALIAN_MAINLAND; }
+            else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRf_NE)) { return AREA_NE_European_Russia; }
+            else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRf_NW2)) { return AREA_NW_European_Russia; }
+            else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidIt_S)) { return AREA_SAN_MARINO; }
+            else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRf_SE)) { return AREA_SE_European_Russia; }
+            else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRf_SU)) { return AREA_South_Urals; }
+            else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidIt_V)) { return AREA_VATICAN_CITY; }
+
         }else if (area.getVocabulary().getUuid().equals(BerlinModelTransformer.uuidVocEuroMedCommonNameAreas)){
             UUID uuidArea = namedArea.getUuid();
             if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameAlbania)) { return AREA_ALBANIA; }
@@ -1194,6 +1229,7 @@ public final class PesiTransformer extends ExportTransformerBase{
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameSouthEuropeanRussia)) { return AREA_SOUTH_EUROPEAN_RUSSIA; }
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameSpain)) { return AREA_SPAIN; }
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameSweden)) { return AREA_SWEDEN; }
+            else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameSwedenAndFinland)) { return AREA_SWEDEN_AND_FINLAND; }
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameSwitzerland)) { return AREA_SWITZERLAND; }
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameSyria)) { return AREA_SYRIA; }
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameTenerife)) { return AREA_TENERIFE; }
@@ -1528,6 +1564,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return NoteCategory_Distribution;
 		} else if (feature.equals(Feature.ETYMOLOGY())) {
             return NoteCategory_Etymology;
+		} else if (feature.equals(Feature.IUCN_STATUS())) {
+            return NoteCategory_IUCN_Status;
+        //************************ ERMS Features ***************************/
         } else if (feature.getUuid().equals(ErmsTransformer.uuidAcknowledgments)){
 		    return NoteCategory_Acknowledgments;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidAdditionalinformation)) {
@@ -1895,6 +1934,38 @@ public final class PesiTransformer extends ExportTransformerBase{
 		if (taxonBase == null){
 			return null;
 		}else if(!taxonBase.getExtensions(ErmsTransformer.uuidPesiTaxonStatus).isEmpty()){
+		    Integer ermsStatus = taxonStatusByErmsStatus(taxonBase.getExtensions(ErmsTransformer.uuidPesiTaxonStatus));
+		    boolean isSynStatus = ermsStatus == 2 || ermsStatus == 3 || ermsStatus == 4;  //syn, ppsyn, partialSyn
+		    if (isSynStatus && taxonBase.isInstanceOf(Synonym.class)) {
+		        return ermsStatus;
+		    }else if (!isSynStatus && taxonBase.isInstanceOf(Synonym.class)) {
+		        logger.warn("Check erms status for synonym: "+ taxonBase.getTitleCache());
+		        return ermsStatus;
+		    }else if (isSynStatus && !taxonBase.isInstanceOf(Synonym.class)) {
+		        Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+		        if (! PesiCommandLineMerge.isTaxonSynonym(taxon)) {
+		            if (!taxon.isMisapplicationOnly()) {
+		                if (isAltRepForAutonym(taxon)) {
+		                    return 1;
+		                }else {
+		                    logger.warn("ERMS taxon has syn status but is not taxon synonym: " + taxon.getTitleCache());
+		                }
+
+		            } else {
+                        logger.debug("ERMS taxon has syn status and is MAN. This is probably correct but needs final chck: " + taxon.getTitleCache());
+		            }
+		        }
+		        return ermsStatus;
+		    }else {
+		        //!synStatus && !Synonym.class
+		        if (ermsStatus == 7) {
+		            //OK, unaccepted, but not synonym
+		            //TODO aber nur, wenn ERMS Priorität hat, z.B. zusammen mit FauEu.
+		            //Das sollte grundsätzlich beim Merge behandelt werden!! Der status sollte nicht kopiert werden
+		        }else {
+		            logger.warn("Unexpected pesi taxon status: " + taxonBase.getTitleCache());
+		        }
+		    }
 		    return taxonStatusByErmsStatus(taxonBase.getExtensions(ErmsTransformer.uuidPesiTaxonStatus));
 		}else{
 		    if (taxonBase.isInstanceOf(Synonym.class)){
@@ -1954,6 +2025,40 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}
 	}
 
+    /**
+     * Checks, if this taxon is an alternative representation and has a child taxon
+     * which is an autonym. This is the way how ERMS handles it.
+     * In this case the taxon should be accepted and not a synonym.
+     */
+    private static boolean isAltRepForAutonym(Taxon taxon) {
+        try {
+            TaxonName name = taxon.getName();
+            UUID uuidAltRep = ErmsTransformer.uuidNomStatusAlternateRepresentation;
+            boolean isAltRep = name.getStatus().stream()
+                    .anyMatch(ns->ns.getType().getUuid().equals(uuidAltRep));
+            if (isAltRep) {
+                boolean hasAutonym = taxon.getTaxonNodes().stream()
+                    .flatMap(tn->tn.getChildNodes().stream())
+                    .anyMatch(ctn->isAutonymOf(ctn.getTaxon().getName(), name));
+                return hasAutonym;
+            }
+        } catch (Exception e) {
+            logger.error("Error in isAltRepForAutonym");
+        }
+        return false;
+    }
+
+    private static boolean isAutonymOf(TaxonName autonym, TaxonName originalName) {
+        if (autonym.isAutonym(true)
+                && Objects.equals(autonym.getGenusOrUninomial(), originalName.getGenusOrUninomial())) {
+            if (originalName.isGenus()) {
+                return true;
+            }else if (originalName.isSpecies()) {
+                return Objects.equals(autonym.getSpecificEpithet(), originalName.getSpecificEpithet());
+            }
+        }
+        return false;
+    }
     private static Integer taxonStatusByErmsStatus(Set<String> extensions) {
         //Note: status extensions should only be used during ERMS import
         //      if the status can not be derived from ordinary CDM status handling (Taxon, Synonym, ProParte, doubtful, ...)
@@ -2312,7 +2417,10 @@ public final class PesiTransformer extends ExportTransformerBase{
 				return QUALITY_STATUS_EDITED_BY_DBMT;
 			}else if (statusSet.contains("Added/edited by Thematic Editor")){
                 return QUALITY_STATUS_THEMATIC_EDITOR;
-            }else{
+			}else if (statusSet.isEmpty()) {
+			    logger.warn("ERMS name has not quality status: " +taxonName.getTitleCache());
+			    return null;
+			}else{
 				logger.warn("Unknown ERMS quality status: " + statusSet.iterator().next() + " for taxon name " + taxonName.getTitleCache());
 				return null;
 			}

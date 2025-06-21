@@ -424,7 +424,7 @@ public class PesiDescriptionExport extends PesiExportBase {
                 hasFirstUndefinedStatusWarnung = true;
             }
             return false;
-		}else if (status.getUuid().equals(Feature.uuidIucnStatus)){
+		}else if (distribution.getFeature().getUuid().equals(Feature.uuidIucnStatus)){
             if (!hasFirstIucnMissingWarning){
                 logger.warn("Status 'IUCN' is not mapped yet as it should go to the notes mapping, not the occurrences. (Bryophytes specific)");
                 hasFirstIucnMissingWarning = true;
