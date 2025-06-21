@@ -190,12 +190,6 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		parentTaxonFkStmt = connection.prepareStatement(parentTaxonFkSql);
 	}
 
-	private void initRankUpdateStatement(PesiExportState state) throws SQLException {
-		Connection connection = state.getConfig().getDestination().getConnection();
-		String rankSql = "UPDATE Taxon SET RankFk = ?, RankCache = ?, KingdomFk = ? WHERE TaxonId = ?";
-		rankUpdateStmt = connection.prepareStatement(rankSql);
-	}
-
 	private void initRankExpertsUpdateStmt(PesiExportState state) throws SQLException {
 //		String sql_old = "UPDATE Taxon SET RankFk = ?, RankCache = ?, TypeNameFk = ?, KingdomFk = ?, " +
 //				"ExpertFk = ?, SpeciesExpertFk = ? WHERE TaxonId = ?";

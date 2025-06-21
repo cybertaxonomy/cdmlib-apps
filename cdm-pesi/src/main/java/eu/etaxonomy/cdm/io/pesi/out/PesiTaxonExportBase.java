@@ -8,7 +8,9 @@
 */
 package eu.etaxonomy.cdm.io.pesi.out;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -201,7 +203,6 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
         }
     }
 
-
     private static Taxon acceptedPseudoTaxon(Taxon taxon) {
         for (TaxonRelationship rel : taxon.getRelationsFromThisTaxon()){
             if (TaxonRelationshipType.pseudoTaxonUuids().contains(rel.getType().getUuid())){
@@ -240,6 +241,11 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
         return false;
     }
 
+    protected void initRankUpdateStatement(PesiExportState state) throws SQLException {
+        Connection connection = state.getConfig().getDestination().getConnection();
+        String rankSql = "UPDATE Taxon SET RankFk = ?, RankCache = ?, KingdomFk = ? WHERE TaxonId = ?";
+        rankUpdateStmt = connection.prepareStatement(rankSql);
+    }
 
     /**
      * Returns the <code>RankFk</code> attribute.

@@ -65,6 +65,8 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
             // Stores whether this invoke was successful or not.
             boolean success = true;
 
+            initPreparedStatements(state);
+
             // Get specific mappings: (CDM) Taxon -> (PESI) Taxon
             PesiExportMapping mapping = getMapping();
             PesiExportMapping synonymRelMapping = getSynRelMapping();
@@ -87,6 +89,10 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
             logger.error(e.getMessage());
             state.getResult().addException(e);
         }
+    }
+
+    private void initPreparedStatements(PesiExportState state) throws SQLException {
+        initRankUpdateStatement(state);
     }
 
     private PesiExportMapping getSynRelMapping() {
