@@ -139,5 +139,6 @@ public class PesiExportActivator {
 		ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
 
 		ex.doExport(source);
+		System.exit(0);
 	}
 }

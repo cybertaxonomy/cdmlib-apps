@@ -74,7 +74,7 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
             synonymRelMapping.initialize(state);
 
             //"PHASE 5: Creating Inferred Synonyms...
-            success &= doPhase05(state, mapping, synonymRelMapping);
+            success &= doPhase(state, mapping, synonymRelMapping);
 
             logger.info("*** Finished making " + pluralString + " ..." + getSuccessString(success));
 
@@ -141,8 +141,8 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
         return result;
     }
 
-    //  "PHASE 5: Creating Inferred Synonyms..."
-    private boolean doPhase05(PesiExportState state, PesiExportMapping mapping, PesiExportMapping synRelMapping) {
+    //  "PHASE: Creating Inferred Synonyms..." (was PHASE 05 in TaxonExport)
+    private boolean doPhase(PesiExportState state, PesiExportMapping mapping, PesiExportMapping synRelMapping) {
         int count;
 
         boolean success = true;

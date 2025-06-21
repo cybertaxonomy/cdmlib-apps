@@ -85,9 +85,10 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  * @author a.mueller
  * @since 05.01.2016
  */
-
 @Component("iAPTExcelImport")
-public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends SimpleExcelTaxonImport<CONFIG> {
+public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator>
+        extends SimpleExcelTaxonImport<CONFIG> {
+
     private static final long serialVersionUID = -747486709409732371L;
     private static final Logger logger = LogManager.getLogger();
 
@@ -115,7 +116,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private final static String AUTHORSTRING= "AuthorString";
 
     private  static List<String> expectedKeys= Arrays.asList(new String[]{
-            REGISTRATIONNO_PK, HIGHERTAXON, FULLNAME, AUTHORSSPELLING, LITSTRING, REGISTRATION, TYPE, CAVEATS, FULLBASIONYM, FULLSYNSUBST, NOTESTXT, REGDATE, NAMESTRING, BASIONYMSTRING, SYNSUBSTSTR, AUTHORSTRING});
+            REGISTRATIONNO_PK, HIGHERTAXON, FULLNAME, AUTHORSSPELLING,
+            LITSTRING, REGISTRATION, TYPE, CAVEATS, FULLBASIONYM,
+            FULLSYNSUBST, NOTESTXT, REGDATE, NAMESTRING, BASIONYMSTRING,
+            SYNSUBSTSTR, AUTHORSTRING});
 
     private static final Pattern nomRefTokenizeP = Pattern.compile("^(?<title>.*):\\s(?<detail>[^\\.:]+)\\.(?<date>.*?)(?:\\s\\((?<issue>[^\\)]*)\\)\\s*)?\\.?$");
     private static final Pattern[] datePatterns = new Pattern[]{
@@ -195,7 +199,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private ExtensionType extensionTypeIAPTRegData = null;
 
     private Set<String> nameSet = new HashSet<>();
-    private DefinedTermBase duplicateRegistration = null;
+    private DefinedTermBase<?> duplicateRegistration = null;
 
     enum TypesName {
         fieldUnit, holotype, isotype;
@@ -463,7 +467,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         getNameService().save(taxonName);
     }
 
-    private void makeNameTypeData(String typeStr, IBotanicalName taxonName, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
+    private void makeNameTypeData(String typeStr, IBotanicalName taxonName,
+            String regNumber, @SuppressWarnings("unused") SimpleExcelTaxonImportState<CONFIG> state) {
 
         String nameStr = typeStr.replaceAll("^Type\\s?\\:\\s?", "");
         if(nameStr.isEmpty()) {
@@ -607,7 +612,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 ge.setLocality(LanguageString.NewInstance(locality, Language.UNKNOWN_LANGUAGE()));
             }
 
-            TeamOrPersonBase agent =  state.getAgentBase(collectorStr);
+            TeamOrPersonBase<?> agent =  state.getAgentBase(collectorStr);
             if(agent == null) {
                 agent = Person.NewTitledInstance(collectorStr);
                 getAgentService().save(agent);
