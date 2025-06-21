@@ -105,18 +105,15 @@ public class PesiExportActivator {
 
 		PesiExportConfigurator config = PesiExportConfigurator.NewInstance(destination, source, transformer);
 
-		config.setDoTaxa(doTaxa);
-		config.setDoRelTaxa(doRelTaxa);
-		config.setDoOccurrence(doOccurrence);
 		config.setDoReferences(doReferences);
-		config.setDoImages(doImage);
-		config.setDoNotes(doNotes);
-		config.setDoNoteSources(doNoteSources);
-		config.setDoOccurrenceSource(doOccurrenceSource);
+		config.setDoTaxa(doTaxa);
 		config.setDoTreeIndex(doTreeIndex);
 		config.setDoInferredSynonyms(doInferredSynonyms);
 		config.setDoPureNames(doPureNames);
+		config.setDoRelTaxa(doRelTaxa);
+		config.setDoAdditionalTaxonSource(doAdditionalTaxonSource);
 		config.setDoDescription(doDescription);
+		config.setDoEcologyAndLink(doEcologyAndLink);
 
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);
