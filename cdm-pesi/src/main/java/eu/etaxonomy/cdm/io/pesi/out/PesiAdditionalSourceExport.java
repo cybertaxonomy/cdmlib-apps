@@ -161,7 +161,11 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 		for (IdentifiableSource src : sources){
 			OriginalSourceType type = src.getType();
 			if (type == OriginalSourceType.Other){
-			    mapping.invoke(src);
+			    if (src.getCitation() != null) {
+			        logger.warn("Source has no citation. Not imported. id = " +  src.getId());
+			    } else {
+			        mapping.invoke(src);
+			    }
 			    countSources++;
 			}
 		}
