@@ -334,8 +334,8 @@ public class PesiCommandLineMerge extends PesiMergeBase {
     }
 
 
-    private boolean isTaxonSynonym(Taxon removeAccTaxon) {
-        for (TaxonRelationship rel:  removeAccTaxon.getRelationsFromThisTaxon()){
+    public static boolean isTaxonSynonym(Taxon taxon) {
+        for (TaxonRelationship rel:  taxon.getRelationsFromThisTaxon()){
             boolean isPseudo = TaxonRelationshipType.pseudoTaxonUuids().contains(rel.getType().getUuid());
             if (isPseudo){
                 return true;
