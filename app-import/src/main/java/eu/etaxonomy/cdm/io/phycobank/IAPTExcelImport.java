@@ -624,7 +624,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator>
                 ge.setGatheringDate(date);
             }
 
-            getEventBaseService().save(ge);
+            getCommonService().save(ge);
             fieldUnit.setGatheringEvent(ge);
 
             if(fieldNumber != null) {
