@@ -51,6 +51,11 @@ public class PesiExportConfigurator
     private boolean doNotes = true;
     private boolean doNoteSources = true;
 
+    private String euromedBaseUrl = "https://europlusmed.org/cdm_dataportal/taxon/";
+    private String fauEuBaseUrl = "https://portal.cybertaxonomy.org/fauna-europaea/";
+    private String indexFungorumBaseUrl = "http://www.indexfungorum.org/names/NamesRecord.asp?RecordID=";
+    private String ermsBaseUrl = "";
+
 
 	private int nameIdStart = 10000000;
 
@@ -228,6 +233,36 @@ public class PesiExportConfigurator
     }
     public void setDoEcologyAndLink(boolean doEcologyAndLink) {
         this.doEcologyAndLink = doEcologyAndLink;
+    }
+
+   //******************* BASE URLS ***********************************/
+
+    public String getEuromedBaseUrl() {
+        return euromedBaseUrl;
+    }
+    public void setEuromedBaseUrl(String euromedBaseUrl) {
+        this.euromedBaseUrl = euromedBaseUrl;
+    }
+
+    public String getFauEuBaseUrl() {
+        return fauEuBaseUrl;
+    }
+    public void setFauEuBaseUrl(String fauEuBaseUrl) {
+        this.fauEuBaseUrl = fauEuBaseUrl;
+    }
+
+    public String getIndexFungorumBaseUrl() {
+        return indexFungorumBaseUrl;
+    }
+    public void setIndexFungorumBaseUrl(String indexFungorumBaseUrl) {
+        this.indexFungorumBaseUrl = indexFungorumBaseUrl;
+    }
+
+    public String getErmsBaseUrl() {
+        return ermsBaseUrl;
+    }
+    public void setErmsBaseUrl(String ermsBaseUrl) {
+        this.ermsBaseUrl = ermsBaseUrl;
     }
 
 }

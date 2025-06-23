@@ -119,7 +119,8 @@ public class PesiFinalUpdateExport extends PesiExportBase {
 
 		// cache citation - EM
 		String updateCacheCitationEM = " UPDATE Taxon " +
-				" SET CacheCitation = SpeciesExpertName + ' ' + WebShowName + '. Accessed through: Euro+Med PlantBase at http://ww2.bgbm.org/euroPlusMed/PTaxonDetail.asp?UUID=' + GUID " +
+				" SET CacheCitation = SpeciesExpertName + ' ' + WebShowName + '. Accessed through: Euro+Med PlantBase at "
+				       + ""+state.getConfig().getEuromedBaseUrl()+ "' + GUID " +
 				" WHERE OriginalDb = '%s'";
 		updateCacheCitationEM = String.format(updateCacheCitationEM, emStr);
 		updated = state.getConfig().getDestination().update(updateCacheCitationEM);

@@ -1541,12 +1541,12 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 
 	/**
 	 * Returns the <code>CacheCitation</code> attribute.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
+	 * @param taxonName The {@link TaxonName TaxonName}.
 	 * @return The CacheCitation.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getCacheCitation(TaxonBase<?> taxon) {
+	private static String getCacheCitation(TaxonBase<?> taxon, PesiExportState state) {
 		// !!! See also doPhaseUpdates
 
 		TaxonName taxonName = taxon.getName();
@@ -1585,7 +1585,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			    }
 			    String author = sec == null? "" : sec.getTitleCache();
 			    String webShowName = isMisapplied? getDisplayName(taxon):getWebShowName(taxonName);  //for misapplied we need also the sensu and non author part, for ordinary names name + author is enough
-			    String accessed = ". Accessed through: Euro+Med PlantBase at https://www.europlusmed.org/cdm_dataportal/taxon/";
+			    String accessed = ". Accessed through: Euro+Med PlantBase at " + state.getConfig().getEuromedBaseUrl();
 			    result = CdmUtils.removeTrailingDots(author)
 			            + ". " + CdmUtils.removeTrailingDots(webShowName)
 			            + accessed + taxon.getUuid();
@@ -1610,10 +1610,12 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 					logger.warn("WebShowName could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 				}
 
-				if (getOriginalDB(taxonName).equals("FaEu")) {
-					result += "Accessed through: Fauna Europaea at http://faunaeur.org/full_results.php?id=";
+				if (getOriginalDB(taxonName).equals("IF")) {
+                    result += "Accessed through: Index Fungorum at " +  state.getConfig().getFauEuBaseUrl();
+				} else if (getOriginalDB(taxonName).equals("FaEu")) {
+					result += "Accessed through: Fauna Europaea at " +  state.getConfig().getFauEuBaseUrl();
 				} else if (getOriginalDB(taxonName).equals("EM")) {
-					result += "Accessed through: Euro+Med PlantBase at http://ww2.bgbm.org/euroPlusMed/PTaxonDetail.asp?UUID=";
+					result += "Accessed through: Euro+Med PlantBase at "+ state.getConfig().getEuromedBaseUrl();
 				}
 
 				if (idInSource != null) {
