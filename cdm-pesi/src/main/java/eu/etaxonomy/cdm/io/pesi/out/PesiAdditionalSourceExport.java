@@ -68,7 +68,10 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 			// Stores whether this invoke was successful or not.
 			boolean success = true;
 
-			success &= doDelete(state);
+
+			//should probably not be used as additional sources are already
+			//filled during taxon import
+//			success &= doDelete(state);
 
 			// Get specific mappings: (CDM) Source -> (PESI) Addtional Taxon Source
 			PesiExportMapping mapping = getMapping();
