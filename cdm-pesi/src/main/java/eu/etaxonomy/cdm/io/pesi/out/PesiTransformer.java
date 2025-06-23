@@ -272,7 +272,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 
     //ranks of some kingdoms
     private static int Infrakingdom = 25; //2,3,5,7
-    private static int Infraphylum = 45;  //2,7
+    private static int Infraphylum = 45;  //2,5,7
     private static int Superclass = 50;   //2,5,6,7
     private static int Infraclass = 80;   //2,5,6,7
     private static int Superorder = 90;   //2,3,5,6,7
@@ -286,11 +286,16 @@ public final class PesiTransformer extends ExportTransformerBase{
 
     // Animalia Ranks
 	private static int Superphylum = 28;
-	private static int Subterclass = 85;
+	private static int Parvphylum = 26;
+    private static int Megaclass = 49;
+    private static int Subterclass = 85;
 	private static int Parvorder = 122;
 	private static int Animalia_Section = 125;
 	private static int Animalia_Subsection = 127;
+	private static int Animalia_Epifamily = 135;
 	private static int Natio = 235;
+	private static int Mutatio = 280;
+
 
 	// Plantae Ranks
 	private static int Series = 212;
@@ -303,6 +308,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int Convarietas = 236;
 	private static int Taxa_infragen = 280;
 	private static int Taxa_infraspec = 285;
+	private static int Taxa_supragen = 175;
 
 	//NoteCategory
 	private static int NoteCategory_description = 1;
@@ -1787,7 +1793,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 			if (rank.equals(Rank.INFRAKINGDOM())) {result = Infrakingdom;
             } else if (rank.equals(Rank.SUPERPHYLUM())) {result = Superphylum;
 			} else if (rank.equals(Rank.INFRAPHYLUM())) {result = Infraphylum;
-			} else if (rank.equals(Rank.SUPERCLASS())) {result = Superclass;
+			} else if (rank.getUuid().equals(ErmsTransformer.uuidRankParvphylum)) {result = Parvphylum;
+            } else if (rank.getUuid().equals(ErmsTransformer.uuidRankMegaclass)) {result = Megaclass;
+            } else if (rank.equals(Rank.SUPERCLASS())) {result = Superclass;
 			} else if (rank.equals(Rank.INFRACLASS())) {result = Infraclass;
             } else if (rank.getUuid().equals(ErmsTransformer.uuidRankSubterclass)) {result = Subterclass;
 			} else if (rank.equals(Rank.SUPERORDER())) {result = Superorder;
@@ -1796,9 +1804,12 @@ public final class PesiTransformer extends ExportTransformerBase{
             } else if (rank.equals(Rank.SECTION_ZOOLOGY())) {result = Animalia_Section;
 			} else if (rank.equals(Rank.SUBSECTION_ZOOLOGY())) {result = Animalia_Subsection;
 			} else if (rank.equals(Rank.SUPERFAMILY())) {result = Superfamily;
-			} else if (rank.equals(Rank.NATIO())) {result = Natio;
+			} else if (rank.getUuid().equals(ErmsTransformer.uuidRankEpifamily)) {result = Animalia_Epifamily;
+            } else if (rank.equals(Rank.NATIO())) {result = Natio;
 			} else if (rank.equals(Rank.SUBVARIETY())) {result = Subvariety;
 			} else if (rank.equals(Rank.SUBFORM())) {result = Subform;
+			} else if (rank.getUuid().equals(ErmsTransformer.uuidRankMutatio)) {result = Mutatio;
+
             } else {
 				//TODO Exception
 				logger.warn("Rank for Kingdom Animalia not yet supported in CDM: "+ rank.getLabel());
@@ -1816,7 +1827,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 				logger.warn("Rank Species Group not yet implemented");
 				result = null;
 			} else if (rank.getUuid().equals(Rank.uuidCollSpecies)) {result = Coll_Species;
-			} else if (rank.equals(Rank.GREX_INFRASPEC())) {logger.warn("Unclear which grex is meant here"); result = Grex;
+			} else if (rank.equals(Rank.GREX_INFRASPEC())) {result = Grex;
 			} else if (rank.getUuid().equals(Rank.uuidProles) ) {result = Proles;
 			} else if (rank.getUuid().equals(Rank.uuidRace)) {result = Race;
 			} else if (rank.equals(Rank.CONVAR())) {result = Convarietas;
@@ -1825,7 +1836,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 			} else if (rank.equals(Rank.SPECIALFORM())) {result = Forma_spec;
 			} else if (rank.equals(Rank.INFRAGENERICTAXON())) {result = Taxa_infragen;
 			} else if (rank.equals(Rank.INFRASPECIFICTAXON())) {result = Taxa_infraspec;
-			} else {
+			} else if (rank.equals(Rank.SUPRAGENERICTAXON())) {result = Taxa_supragen;
+            } else {
 				//TODO Exception
 				logger.warn("Rank for Kingdom Plantae not yet supported in CDM: "+ rank.getLabel());
 				return null;
@@ -1849,6 +1861,7 @@ public final class PesiTransformer extends ExportTransformerBase{
             } else if (rank.equals(Rank.INFRAORDER())) { result = Infraorder;
             } else if (rank.equals(Rank.SUPERFAMILY())) { result = Superfamily;
             } else if (rank.equals(Rank.SPECIALFORM())) {result = Forma_spec;
+            } else if (rank.equals(Rank.INFRAPHYLUM())) {result = Infraphylum;
             } else {
                 //TODO Exception
                 logger.warn("Rank for Kingdom Protozoa not yet supported in CDM: "+ rank.getLabel());
