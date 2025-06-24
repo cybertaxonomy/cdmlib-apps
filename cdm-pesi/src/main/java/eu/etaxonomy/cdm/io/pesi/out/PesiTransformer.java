@@ -286,7 +286,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 
     // Animalia Ranks
 	private static int Superphylum = 28;
-	private static int Parvphylum = 26;
+	private static int Parvphylum = 46;
     private static int Megaclass = 49;
     private static int Subterclass = 85;
 	private static int Parvorder = 122;
