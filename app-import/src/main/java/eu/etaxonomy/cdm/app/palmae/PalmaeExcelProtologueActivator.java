@@ -39,7 +39,7 @@ public class PalmaeExcelProtologueActivator {
 	static final UUID secUuid = UUID.fromString("5f32b8af-0c97-48ac-8d33-6099ed68c625");
 
 	// set the webserver path to the protologues
-	private static final String urlString = "http://wp5.e-taxonomy.eu/media/palmae/protologe/";
+	private static final String urlString = "http://media.e-taxonomy.eu/palmae/protologe/";
 
 	public static void main (String[] whatever){
 		URI uri;

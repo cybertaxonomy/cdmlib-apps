@@ -49,9 +49,9 @@ public class PalmaeActivator {
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2Palmae();
 
 	// set the webserver path to the images
-	private static final String imageUrlString = "http://wp5.e-taxonomy.eu/media/palmae/photos/";
+	private static final String imageUrlString = "http://media.e-taxonomy.eu/palmae/photos/";
 	// set the webserver path to the protologues
-	public static final String protologueUrlString = "http://wp5.e-taxonomy.eu/media/palmae/protologe/";
+	public static final String protologueUrlString = "http://media.e-taxonomy.eu/palmae/protologe/";
 
 	public static final UUID featureTreeUuid = UUID.fromString("72ccce05-7cc8-4dab-8e47-bf3f5fd848a0");
 

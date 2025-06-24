@@ -38,7 +38,7 @@ public class PalmaeImageActivator  {
 
 
 	// set the webserver path to the images
-	private static final String urlString = "http://wp5.e-taxonomy.eu/media/palmae/photos/";
+	private static final String urlString = "http://media.e-taxonomy.eu/palmae/photos/";
 
 	static final UUID secUuid = UUID.fromString("5f32b8af-0c97-48ac-8d33-6099ed68c625");
 

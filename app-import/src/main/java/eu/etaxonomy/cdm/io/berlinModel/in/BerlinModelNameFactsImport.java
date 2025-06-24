@@ -408,7 +408,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 
 		URL url;
 		try {
-			url = new URL("http://wp5.e-taxonomy.eu/dataportal/cichorieae/media/protolog/");
+			url = new URL("http://media.e-taxonomy.eu/cichorieae/protolog/");
 			File path = new File("/Volumes/protolog/protolog/");
 			if(path.exists()){
 				String fact = "Acanthocephalus_amplexifolius";

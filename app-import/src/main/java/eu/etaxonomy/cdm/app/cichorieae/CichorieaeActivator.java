@@ -63,7 +63,7 @@ public class CichorieaeActivator {
 
 	/* --------- MEDIA recources ------------ */
 	static final boolean stopOnMediaErrors = false;
-	static final String protologueUrlString = "http://wp5.e-taxonomy.eu/dataportal/cichorieae/media/protolog/";
+	static final String protologueUrlString = "http://media.e-taxonomy.eu/cichorieae/protolog/";
 	//Mac
 	//static final File protologuePath = new File("/Volumes/protolog/protolog/");
 	//Windows

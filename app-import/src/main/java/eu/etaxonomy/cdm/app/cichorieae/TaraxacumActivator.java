@@ -59,7 +59,7 @@ public class TaraxacumActivator {
 	static final Object[] featureKeyList = new Integer[]{1, 31, 4, 98, 41};
 
 	//TODO update for Taraxacum
-	static final String mediaUrlString = "http://wp5.e-taxonomy.eu/dataportal/cichorieae/media/protolog/";
+	static final String mediaUrlString = "http://media.e-taxonomy.eu/cichorieae/protolog/";
 	//Mac
 	//static final File mediaPath = new File("/Volumes/protolog/protolog/");
 	//Windows
