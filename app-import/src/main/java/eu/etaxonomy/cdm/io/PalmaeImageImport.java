@@ -195,7 +195,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 
 					Reference sec = referenceService.find(state.getConfig().getSecUuid());
 
-					List<TaxonBase> taxa = new ArrayList<>();
+					List<? extends TaxonBase> taxa = new ArrayList<>();
 					if (taxonName != null){
 						taxa = taxonService.searchByName(taxonName, true, sec);
 					}else{

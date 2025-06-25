@@ -67,7 +67,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 					if (taxonName == null){
 						continue;
 					}
-					List<TaxonBase> taxa = taxonService.searchByName(taxonName, true, state.getConfig().getSourceReference());
+					List<? extends TaxonBase> taxa = taxonService.searchByName(taxonName, true, state.getConfig().getSourceReference());
 					if(taxa.size() == 0){
 						logger.warn("no taxon with this name found: " + taxonName);
 					} else {
@@ -125,7 +125,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 	}
 
 	private void handleTaxa(Classification tree, Reference sourceRef,
-	        String fileName, String taxonName, List<TaxonBase> taxa) {
+	        String fileName, String taxonName, List<? extends TaxonBase> taxa) {
 
 		Taxon taxon = getTaxon(tree, taxonName, taxa);
 		TaxonDescription imageGallery = taxon.getOrCreateImageGallery(sourceRef == null ? null :sourceRef.getTitleCache());
@@ -172,7 +172,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 
 	private Taxon getTaxon(Classification tree,
 	        String taxonName,
-			List<TaxonBase> taxa) {
+			List<? extends TaxonBase> taxa) {
 
 		Taxon taxon = null;
 		if(taxa.size() > 1) {
