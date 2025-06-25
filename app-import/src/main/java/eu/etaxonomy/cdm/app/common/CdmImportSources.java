@@ -45,44 +45,6 @@ public class CdmImportSources extends SourceBase{
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-	public static Source GLOBIS_MDB(){
-		String dbms = Source.ACCESS;
-		String strServer = null;
-		String strDB = "C:\\localCopy\\Data\\globis\\globis.mdb";
-		int port = -1;
-		String userName = "";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
-
-	public static Source GLOBIS_MDB_20120928(){
-		String dbms = Source.ACCESS;
-		String strServer = null;
-		String strDB = "C:\\localCopy\\Data\\globis\\globis.20120928.mdb";
-		int port = -1;
-		String userName = "";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
-
-	public static Source GLOBIS_MDB_20140113(){
-		String dbms = Source.ACCESS;
-		String strServer = null;
-		String strDB = "C:\\localCopy\\Data\\globis\\globis_20140113.mdb";
-		int port = -1;
-		String userName = "";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
-
-	//Problem MS Access ODBC Driver does not work on PESIIMPORT 3
-	@Deprecated
-	public static Source GLOBIS_MDB_20140113_PESIIMPORT(){
-		String dbms = Source.ACCESS;
-		String strServer = null;
-		String strDB = "\\\\PESIIMPORT3\\globis\\globis_20140113.mdb";
-		int port = -1;
-		String userName = "";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
-
 	public static Source GLOBIS_MDB_20140113_PESIIMPORT_SQLSERVER(){
 		String dbms = Source.SQL_SERVER;
 		String strServer = "PESIIMPORT3";

@@ -117,6 +117,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
 
     private boolean mergeTaxa(TransactionStatus tx, TaxonInformation taxonInformation) {
         boolean commit = compareTaxa(taxonInformation);
+
         if (commit){
             moveTaxonInformation(taxonInformation);
         }
