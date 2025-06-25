@@ -288,6 +288,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int Superphylum = 28;
 	private static int Parvphylum = 46;
     private static int Megaclass = 49;
+    private static int Gigaclass = 48;
     private static int Subterclass = 85;
 	private static int Parvorder = 122;
 	private static int Animalia_Section = 125;
@@ -1795,6 +1796,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			} else if (rank.equals(Rank.INFRAPHYLUM())) {result = Infraphylum;
 			} else if (rank.getUuid().equals(ErmsTransformer.uuidRankParvphylum)) {result = Parvphylum;
             } else if (rank.getUuid().equals(ErmsTransformer.uuidRankMegaclass)) {result = Megaclass;
+            } else if (rank.getUuid().equals(ErmsTransformer.uuidRankGigaclass)) {result = Gigaclass;
             } else if (rank.equals(Rank.SUPERCLASS())) {result = Superclass;
 			} else if (rank.equals(Rank.INFRACLASS())) {result = Infraclass;
             } else if (rank.getUuid().equals(ErmsTransformer.uuidRankSubterclass)) {result = Subterclass;
