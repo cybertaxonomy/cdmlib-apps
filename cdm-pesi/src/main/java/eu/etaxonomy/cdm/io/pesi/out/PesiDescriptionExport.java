@@ -56,6 +56,7 @@ import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
@@ -128,7 +129,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 			// Stores whether this invoke was successful or not.
 			boolean success = true;
 
-			success &= doDelete(state);
+			if (state.getConfig().getStartDescriptionPartition() == 0) {
+			    success &= doDelete(state);
+			}
 
 			// Get specific mappings: (CDM) DescriptionElement -> (PESI) Note
 			PesiExportMapping notesMapping = getNotesMapping();
@@ -196,9 +199,13 @@ public class PesiDescriptionExport extends PesiExportBase {
 		    ProfilerController.memorySnapshot();
 		}
 
-		List<String> propPath = Arrays.asList(new String[]{"descriptions.elements.*"});
+		List<String> propPath = null; //setting the property path leads to memory issues due to large hibernate query plans by AdvancedBeanInitializer induced queries
+		                              // Arrays.asList(new String[]{"descriptions.elements.*"});
+		int startPartition = state.getConfig().getStartDescriptionPartition();
+		int maxPartitions = state.getConfig().getMaxDescriptionPartitions();
 		int partitionCount = 0;
-		while ((taxonList = getNextTaxonPartition(Taxon.class, limit, partitionCount++, propPath )) != null   ) {
+		while ((taxonList = getNextTaxonPartition(Taxon.class, limit, partitionCount++ + startPartition, propPath )) != null
+		        && partitionCount < maxPartitions) {
 
 			if (logger.isDebugEnabled()) {
                 logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
@@ -249,7 +256,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 	//PHASE 01b: Name Descriptions
 	private boolean doPhase01b(PesiExportState state, PesiExportMapping notesMapping, PesiExportMapping occurrenceMapping, PesiExportMapping addSourceSourceMapping,
 			PesiExportMapping additionalSourceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) throws SQLException {
-		logger.info("PHASE 1b...");
+
+	    if (state.getConfig().getStartDescriptionPartition() > 0) {
+	        logger.info("Skip PHASE 1b. Description partition is not 0 (first)");
+	        return true;
+	    }
+	    logger.info("PHASE 1b...");
 		int count = 0;
 		int pastCount = 0;
 		boolean success = true;
@@ -436,7 +448,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		//area filter
 		NamedArea area = distribution.getArea();
 		if (area == null){
-			logger.warn("Area is null for distribution " +  distribution.getUuid());
+			logger.warn("Area is null for distribution " +  distribution.getUuid() +"/" + CdmBase.deproxy(distribution.getInDescription(), TaxonDescription.class).getTaxon().getTitleCache());
 			return false;
 		}else if (area.getUuid().equals(BerlinModelTransformer.euroMedUuid) ||
 		        area.getUuid().equals(BerlinModelTransformer.uuidEUR)){
@@ -517,6 +529,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private boolean doPhase02(PesiExportState state) {
 		TransactionStatus txStatus;
 		boolean success =  true;
+
+		if (state.getConfig().getStartDescriptionPartition() > 0) {
+            logger.warn("Skip PHASE 2. Description partition is not 0 (first)");
+            return true;
+        }
+	    logger.info("PHASE 2 ...");
 
 		// Get the limit for objects to save within a single transaction.
 		//int limit = state.getConfig().getLimitSave();

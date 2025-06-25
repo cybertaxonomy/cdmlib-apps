@@ -30,6 +30,8 @@ public class PesiExportConfigurator
 
     private int limitSave = 2000;
     private int limitSaveDescription = 500;
+    private int startDescriptionPartition = 0;
+    private int maxDescriptionPartitions = 100000;  //no volumes by default
 
 	private Reference auctReference;
 
@@ -101,6 +103,21 @@ public class PesiExportConfigurator
     }
     public void setLimitSaveDescription(int limitSaveDescription) {
         this.limitSaveDescription = limitSaveDescription;
+    }
+
+
+    public int getMaxDescriptionPartitions() {
+        return maxDescriptionPartitions;
+    }
+    public void setMaxDescriptionPartitions(int maxDescriptionPartitions) {
+        this.maxDescriptionPartitions = maxDescriptionPartitions;
+    }
+
+    public int getStartDescriptionPartition() {
+        return startDescriptionPartition;
+    }
+    public void setStartDescriptionPartition(int startDescriptionPartition) {
+        this.startDescriptionPartition = startDescriptionPartition;
     }
 
 	/**

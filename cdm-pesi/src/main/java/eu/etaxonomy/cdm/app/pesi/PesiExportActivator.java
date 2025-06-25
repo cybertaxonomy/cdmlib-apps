@@ -47,10 +47,17 @@ public class PesiExportActivator {
 
 	static final int partitionSize = 5000;
 
+	static final boolean deleteAll = false;
+
+	// !!!!!!!!!!!!!!
+//	static final int startDescriptionPartition = 0;
+//	static final int maxDescriptionPartitions = 10000;
+
+	//!!!!!!!!!!!!!!!
+
 	//check - export
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
 
-	static final boolean deleteAll = true;
 
 	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
 
@@ -117,6 +124,8 @@ public class PesiExportActivator {
 
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);
+//		config.setStartDescriptionPartition(startDescriptionPartition);
+//		config.setMaxDescriptionPartitions(maxDescriptionPartitions);
 		config.setIdType(idType);
 		config.setNameIdStart(nameIdStart);
 		if (deleteAll){
