@@ -784,7 +784,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 	    }else if (key.equalsIgnoreCase("Original description")){return uuidOriginalDescription;
 	    }else if (key.equalsIgnoreCase("Syntype")){return uuidSyntype;
 	    }else if (key.equalsIgnoreCase("Biology")){return uuidBiology;
-	    }else if (key.equalsIgnoreCase("Etymology")){return uuidEtymology;
+	    }else if (key.equalsIgnoreCase("Etymology")){return Feature.uuidEtymology;
 
 		}else{
 			logger.warn("Feature key " + key + " not yet supported by ERMS transformer");
