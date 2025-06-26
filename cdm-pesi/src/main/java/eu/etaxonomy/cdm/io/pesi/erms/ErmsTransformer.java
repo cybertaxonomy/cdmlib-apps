@@ -759,7 +759,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Type species")){return uuidTypespecies;
 		}else if (key.equalsIgnoreCase("Taxonomic Remark")){return uuidTaxonomicRemark;
 		}else if (key.equalsIgnoreCase("Date of Publication")){return uuidPublicationdate;
-		}else if (key.equalsIgnoreCase("Acknowledgments")){return uuidAcknowledgments;
+		}else if (key.equalsIgnoreCase("Acknowledgments")){return Feature.uuidAcknowledgments;
 		}else if (key.equalsIgnoreCase("Original publication")){return uuidOriginalpublication;
 		}else if (key.equalsIgnoreCase("Type locality")){return uuidTypelocality;
 		}else if (key.equalsIgnoreCase("Validity")){return uuidValidity;
