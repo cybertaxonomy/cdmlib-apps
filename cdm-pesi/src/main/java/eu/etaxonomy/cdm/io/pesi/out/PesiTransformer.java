@@ -1346,12 +1346,12 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidFrenchExclusiveEconomicZone)) { return AREA_FRENCH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidEnglishChannel)) { return AREA_ENGLISH_CHANNEL; }
 			else if (uuidArea.equals(ErmsTransformer.uuidAdriaticSea)) { return AREA_ADRIATIC_SEA; }
-			else if (uuidArea.equals(ErmsTransformer.uuidBiscayBay)) { return AREA_BISCAY_BAY; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidBiscayBay)) { return AREA_BISCAY_BAY; }
 			else if (uuidArea.equals(ErmsTransformer.uuidDutchExclusiveEconomicZone)) { return AREA_DUTCH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidUnitedKingdomExclusiveEconomicZone)) { return AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidSpanishExclusiveEconomicZone)) { return AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidEgyptianExclusiveEconomicZone)) { return AREA_EGYPTIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (uuidArea.equals(ErmsTransformer.uuidTirrenoSea)) { return AREA_TIRRENO_SEA; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidTirrenoSea)) { return AREA_TIRRENO_SEA; }
 			else if (uuidArea.equals(ErmsTransformer.uuidIcelandicExclusiveEconomicZone)) { return AREA_ICELANDIC_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidIrishExclusiveeconomicZone)) { return AREA_IRISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidIrishSea)) { return AREA_IRISH_SEA; }
@@ -1385,46 +1385,46 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidTurkishExclusiveEconomicZone)) { return AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidDanishExclusiveEconomicZone)) { return AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE; }
 
-			else if (uuidArea.equals(ErmsTransformer.uuidAfghanistan)) { return 297; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidAfghanistan)) { return 297; }
             else if (uuidArea.equals(ErmsTransformer.uuidAlboranSea)) { return 219; }
 			else if (uuidArea.equals(ErmsTransformer.uuidAlgeria)) { return 220; }
-			else if (uuidArea.equals(ErmsTransformer.uuidAngola)) { return 221; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidAngola)) { return 221; }
 			else if (uuidArea.equals(ErmsTransformer.uuidArcticOcean)) { return 296; }
-            else if (uuidArea.equals(ErmsTransformer.uuidAustralianExclusiveEconomicZone)) { return 222; }
-			else if (uuidArea.equals(ErmsTransformer.uuidBahamas)) { return 223; }
-			else if (uuidArea.equals(ErmsTransformer.uuidBalearicSea)) { return 224; }
+//            else if (uuidArea.equals(ErmsTransformer.uuidAustralianExclusiveEconomicZone)) { return 222; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidBahamas)) { return 223; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidBalearicSea)) { return 224; }
 			else if (uuidArea.equals(ErmsTransformer.uuidBelgium)) { return 225; }
-			else if (uuidArea.equals(ErmsTransformer.uuidBelize)) { return 226; }
-			else if (uuidArea.equals(ErmsTransformer.uuidBrazil)) { return 227; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidBelize)) { return 226; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidBrazil)) { return 227; }
 			else if (uuidArea.equals(ErmsTransformer.uuidBulgaria)) { return 228; }
-			else if (uuidArea.equals(ErmsTransformer.uuidCanada)) { return 229; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidCanada)) { return 229; }
 			else if (uuidArea.equals(ErmsTransformer.uuidCapeVerde)) { return 230; }
 			else if (uuidArea.equals(ErmsTransformer.uuidCapeVerdeanExclusiveEconomicZone)) { return 231; }
-			else if (uuidArea.equals(ErmsTransformer.uuidCaribbeanSea)) { return 210; }
-            else if (uuidArea.equals(ErmsTransformer.uuidChile)) { return 232; }
-			else if (uuidArea.equals(ErmsTransformer.uuidColombia)) { return 233; }
-			else if (uuidArea.equals(ErmsTransformer.uuidCostaRica)) { return 234; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidCaribbeanSea)) { return 210; }
+//            else if (uuidArea.equals(ErmsTransformer.uuidChile)) { return 232; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidColombia)) { return 233; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidCostaRica)) { return 234; }
 			else if (uuidArea.equals(ErmsTransformer.uuidCroatia)) { return 235; }
-			else if (uuidArea.equals(ErmsTransformer.uuidCuba)) { return 236; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidCuba)) { return 236; }
 			else if (uuidArea.equals(ErmsTransformer.uuidDenmark)) { return 292; }
             else if (uuidArea.equals(ErmsTransformer.uuidEgypt)) { return 237; }
 			else if (uuidArea.equals(ErmsTransformer.uuidEstonia)) { return 238; }
 			else if (uuidArea.equals(ErmsTransformer.uuidFaeroeExclusiveEconomicZone)) { return 239; }
 			else if (uuidArea.equals(ErmsTransformer.uuidFrance)) { return 240; }
-			else if (uuidArea.equals(ErmsTransformer.uuidGhana)) { return 241; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidGhana)) { return 241; }
 			else if (uuidArea.equals(ErmsTransformer.uuidGreece)) { return 242; }
 			else if (uuidArea.equals(ErmsTransformer.uuidGermany)) { return 298; }
             else if (uuidArea.equals(ErmsTransformer.uuidGreekExclusiveEconomicZone)) { return AREA_GREEK_EXCLUSIVE_ECONOMIC_ZONE; }
             else if (uuidArea.equals(ErmsTransformer.uuidGulfOfBothnia)) { return 243; }
 			else if (uuidArea.equals(ErmsTransformer.uuidGulfOfFinland)) { return 244; }
-			else if (uuidArea.equals(ErmsTransformer.uuidGulfOfGuinea)) { return 245; }
-			else if (uuidArea.equals(ErmsTransformer.uuidGulfOfMexico)) { return 246; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidGulfOfGuinea)) { return 245; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidGulfOfMexico)) { return 246; }
 			else if (uuidArea.equals(ErmsTransformer.uuidGulfOfRiga)) { return 247; }
 			else if (uuidArea.equals(ErmsTransformer.uuidIceland)) { return 248; }
 			else if (uuidArea.equals(ErmsTransformer.uuidIonianSea)) { return 249; }
 			else if (uuidArea.equals(ErmsTransformer.uuidIreland)) { return 250; }
             else if (uuidArea.equals(ErmsTransformer.uuidItaly)) { return 251; }
-			else if (uuidArea.equals(ErmsTransformer.uuidJamaica)) { return 252; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidJamaica)) { return 252; }
 			else if (uuidArea.equals(ErmsTransformer.uuidKattegat)) { return 253; }
 			else if (uuidArea.equals(ErmsTransformer.uuidLevantineSea)) { return 254; }
 			else if (uuidArea.equals(ErmsTransformer.uuidLigurianSea)) { return 255; }
@@ -1432,16 +1432,16 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidMauritanianExclusiveEconomicZone)) { return 257; }
 			else if (uuidArea.equals(ErmsTransformer.uuidMediterraneanSea_EasternBasin)) { return 258; }
 			else if (uuidArea.equals(ErmsTransformer.uuidMediterraneanSea_WesternBasin)) { return 259; }
-			else if (uuidArea.equals(ErmsTransformer.uuidMexico)) { return 260; }
-			else if (uuidArea.equals(ErmsTransformer.uuidMongolia)) { return 299; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidMexico)) { return 260; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidMongolia)) { return 299; }
             else if (uuidArea.equals(ErmsTransformer.uuidMorocco)) { return 261; }
 			else if (uuidArea.equals(ErmsTransformer.uuidNetherlands)) { return 262; }
-			else if (uuidArea.equals(ErmsTransformer.uuidNewZealand)) { return 263; }
-			else if (uuidArea.equals(ErmsTransformer.uuidNewZealandExclusiveEconomicZone)) { return 264; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidNewZealand)) { return 263; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidNewZealandExclusiveEconomicZone)) { return 264; }
 			else if (uuidArea.equals(ErmsTransformer.uuidNorthAtlanticOcean)) { return 265; }
 			else if (uuidArea.equals(ErmsTransformer.uuidNorway)) { return 266; }
-			else if (uuidArea.equals(ErmsTransformer.uuidPanama)) { return 267; }
-			else if (uuidArea.equals(ErmsTransformer.uuidPanamanianExclusiveEconomicZone)) { return 268; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidPanama)) { return 267; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidPanamanianExclusiveEconomicZone)) { return 268; }
 			else if (uuidArea.equals(ErmsTransformer.uuidPolishExclusiveEconomicZone)) { return 216; }
             else if (uuidArea.equals(ErmsTransformer.uuidPortugal)) { return 269; }
 			else if (uuidArea.equals(ErmsTransformer.uuidPortugueseExclusiveEconomicZone_Azores)) { return 270; }
@@ -1449,26 +1449,40 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidRedSea)) { return 272; }
 			else if (uuidArea.equals(ErmsTransformer.uuidRussianExclusiveEconomicZone)) { return 217; }
 			else if (uuidArea.equals(ErmsTransformer.uuidSeaOfMarmara)) { return 273; }
-			else if (uuidArea.equals(ErmsTransformer.uuidSenegaleseExclusiveEconomicZone)) { return 274; }
-			else if (uuidArea.equals(ErmsTransformer.uuidSingapore)) { return 275; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidSenegaleseExclusiveEconomicZone)) { return 274; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidSingapore)) { return 275; }
 			else if (uuidArea.equals(ErmsTransformer.uuidSlovenianExclusiveEconomicZone)) { return 276; }
-			else if (uuidArea.equals(ErmsTransformer.uuidSouthAfrica)) { return 277; }
-			else if (uuidArea.equals(ErmsTransformer.uuidSouthAfricanExclusiveEconomicZone)) { return 278; }
-			else if (uuidArea.equals(ErmsTransformer.uuidSouthChinaSea)) { return 279; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidSouthAfrica)) { return 277; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidSouthAfricanExclusiveEconomicZone)) { return 278; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidSouthChinaSea)) { return 279; }
 			else if (uuidArea.equals(ErmsTransformer.uuidSpain)) { return 280; }
 			else if (uuidArea.equals(ErmsTransformer.uuidSpanishExclusiveEconomicZone_CanaryIslands)) { return 281; }
-			else if (uuidArea.equals(ErmsTransformer.uuidSriLankanExclusiveEconomicZone)) { return 282; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidSriLankanExclusiveEconomicZone)) { return 282; }
 			else if (uuidArea.equals(ErmsTransformer.uuidStraitOfGibraltar)) { return 283; }
 			else if (uuidArea.equals(ErmsTransformer.uuidSweden)) { return 284; }
 			else if (uuidArea.equals(ErmsTransformer.uuidTunisia)) { return 285; }
 			else if (uuidArea.equals(ErmsTransformer.uuidTuerkiye)) { return 286; }
 			else if (uuidArea.equals(ErmsTransformer.uuidTyrrhenianSea)) { return 287; }
 			else if (uuidArea.equals(ErmsTransformer.uuidUnitedKingdom)) { return 288; }
-	        else if (uuidArea.equals(ErmsTransformer.uuidUnitedStates)) { return 291; }
-			else if (uuidArea.equals(ErmsTransformer.uuidUnitedStatesExclusiveEconomicZone_Alaska)) { return 289; }
-			else if (uuidArea.equals(ErmsTransformer.uuidVenezuela)) { return 290; }
+//	        else if (uuidArea.equals(ErmsTransformer.uuidUnitedStates)) { return 291; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidUnitedStatesExclusiveEconomicZone_Alaska)) { return 289; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidVenezuela)) { return 290; }
 
-			else {
+			else if (uuidArea.equals(ErmsTransformer.uuidBritishExclusiveEconomicZone)) { return 312; }
+            else if (uuidArea.equals(ErmsTransformer.uuidNorwegianExclusiveEconomicZoneJanMayen)) { return 313; }
+            else if (uuidArea.equals(ErmsTransformer.uuidNorwegianExclusiveEconomicZoneSvalbard)) { return 314; }
+            else if (uuidArea.equals(ErmsTransformer.uuidSyrianExclusiveEconomicZone)) { return 315; }
+            else if (uuidArea.equals(ErmsTransformer.uuidAlgerianExclusiveEconomicZone)) { return 316; }
+            else if (uuidArea.equals(ErmsTransformer.uuidCyprioteExclusiveEconomicZone)) { return 317; }
+            else if (uuidArea.equals(ErmsTransformer.uuidCelticSea)) { return 318; }
+            else if (uuidArea.equals(ErmsTransformer.uuidMontenegrinExclusiveEconomicZone)) { return 319; }
+            else if (uuidArea.equals(ErmsTransformer.uuidJordanianExclusiveEconomicZone)) { return 320; }
+            else if (uuidArea.equals(ErmsTransformer.uuidDanishExclusiveEconomicZoneFaeroe)) { return 321; }
+            else if (uuidArea.equals(ErmsTransformer.uuidLibyanExclusiveEconomicZone)) { return 322; }
+            else if (uuidArea.equals(ErmsTransformer.uuidRomanianExclusiveEconomicZone)) { return 323; }
+
+
+    		else {
 				logger.warn("Unknown ERMS Area: " + area.getTitleCache());
 			}
 
@@ -1573,7 +1587,9 @@ public final class PesiTransformer extends ExportTransformerBase{
             return NoteCategory_Etymology;
 		} else if (feature.equals(Feature.IUCN_STATUS())) {
             return NoteCategory_IUCN_Status;
+
         //************************ ERMS Features ***************************/
+
         } else if (feature.getUuid().equals(ErmsTransformer.uuidAcknowledgments)){
 		    return NoteCategory_Acknowledgments;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidAdditionalinformation)) {
