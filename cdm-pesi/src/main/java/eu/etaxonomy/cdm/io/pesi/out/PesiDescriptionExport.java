@@ -538,7 +538,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 		// Get the limit for objects to save within a single transaction.
 		//int limit = state.getConfig().getLimitSave();
-		int limit = 2000;
+		int limit = 5000;
 		txStatus = startTransaction(true);
 		ExtensionType taxCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtTaxComment);
 		ExtensionType fauCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtFauComment);
@@ -560,7 +560,10 @@ public class PesiDescriptionExport extends PesiExportBase {
 			for (TaxonName taxonName : taxonNameList) {
 				Set<Extension> extensions = taxonName.getExtensions();
 				for (Extension extension : extensions) {
-					if (extension.getType().equals(taxCommentExtensionType)) {
+					if (extension.getType() == null) {
+					    logger.warn("Extension has no type. Not imported: " + extension.getUuid() + " for name " + taxonName.getTitleCache());
+					}
+				    if (extension.getType().equals(taxCommentExtensionType)) {
 						String taxComment = extension.getValue();
 						invokeNotes(taxComment,
 								PesiTransformer.getNoteCategoryFk(PesiTransformer.uuidExtTaxComment),
