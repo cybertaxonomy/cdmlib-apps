@@ -164,7 +164,7 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 		for (IdentifiableSource src : sources){
 			OriginalSourceType type = src.getType();
 			if (type == OriginalSourceType.Other){
-			    if (src.getCitation() != null) {
+			    if (src.getCitation() == null) {
 			        logger.warn("Source has no citation. Not imported. id = " +  src.getId());
 			    } else {
 			        mapping.invoke(src);
@@ -208,7 +208,7 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
     private static Integer getSourceUseFk(IdentifiableSource source, PesiExportState state) {
         Integer result = state.getTransformer().getSourceUseKeyCacheByCache(source.getOriginalInfo());
         if (result == null){
-            logger.error("Source use for " + source.getOriginalInfo() + " does not exist. Please check if all source uses of erms.sourceuses exist exist in PESI.SourceUse" );
+            logger.error("Source use for '" + source.getOriginalInfo() + "' does not exist. Please check if all source uses of erms.sourceuses exist exist in PESI.SourceUse" );
         }
         return result;
     }
