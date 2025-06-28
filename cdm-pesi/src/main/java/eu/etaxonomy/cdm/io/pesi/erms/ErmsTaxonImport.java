@@ -245,7 +245,8 @@ public class ErmsTaxonImport
 
 	@Override
 	public TaxonBase<?> createObject(ResultSet rs, ErmsImportState state) throws SQLException {
-		int statusId = rs.getInt("status_id");
+
+	    int statusId = rs.getInt("status_id");
 		Integer meId = rs.getInt("id");
 		Integer accFinal = nullSafeInt(rs, "tu_acctaxon");
 
