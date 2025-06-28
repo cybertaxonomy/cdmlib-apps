@@ -73,7 +73,7 @@ public final class ErmsTransformer extends InputTransformerBase {
     public static final UUID uuidAegeanSea = UUID.fromString("65d6c443-225f-4ac0-9c86-da51502b46df");
     public static final UUID uuidArchipelagoSea = UUID.fromString("d9ea9d63-ec4d-4b01-967d-13f28b09a715");
     public static final UUID uuidBalticProper = UUID.fromString("12ddfcad-bf8f-43d8-a772-15ae69d37b20");
-    public static final UUID uuidBalearSea = UUID.fromString("478f30f0-01b1-4772-9d01-3a0a571f41c3");
+//    public static final UUID uuidBalearSea = UUID.fromString("478f30f0-01b1-4772-9d01-3a0a571f41c3");
     public static final UUID uuidBalticSea = UUID.fromString("0031cda2-4b27-49de-afa3-fdec75ee5060");
     public static final UUID uuidBarentszSea = UUID.fromString("b6fd9a4d-0ad0-4481-a0b4-5dd71c8fda8b");
     public static final UUID uuidBelgianExclusiveEconomicZone = UUID.fromString("02138b0f-cee1-4c56-ae12-72a5b36839af");
@@ -97,8 +97,8 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidIrishSea = UUID.fromString("9e972ad5-b153-419e-ab7e-935b93ff881b");
 	public static final UUID uuidItalianExclusiveEconomicZone = UUID.fromString("10557c6f-a33f-443a-ad8b-cd31c105bddd");
 	public static final UUID uuidLebaneseExclusiveEconomicZone = UUID.fromString("d9f7dc8b-9041-4206-bf5f-5226c42a5978");
-	public static final UUID uuidMadeiranExclusiveEconomicZone = UUID.fromString("c00f442a-4c08-4452-b979-825fa3ff97b2");
-	public static final UUID uuidMarmaraSea = UUID.fromString("3db5d470-3265-4187-ba5a-01ecfb94ce6e");
+//	public static final UUID uuidMadeiranExclusiveEconomicZone = UUID.fromString("c00f442a-4c08-4452-b979-825fa3ff97b2");
+//	public static final UUID uuidMarmaraSea = UUID.fromString("3db5d470-3265-4187-ba5a-01ecfb94ce6e");
 	public static final UUID uuidMediterraneanSea = UUID.fromString("bde8a624-23c4-4ac3-b381-11287f5d656a");
 	public static final UUID uuidMoroccanExclusiveEconomicZone = UUID.fromString("e62e5cc2-922f-4807-abd6-1b4bffbced49");
 	public static final UUID uuidNorthBalticproper = UUID.fromString("183ec305-1e9e-4cb1-93cc-703bd64de28f");
@@ -117,7 +117,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidTunisianExclusiveEconomicZone = UUID.fromString("b5972b59-6a36-45ea-88f7-0c520c99b99d");
 	public static final UUID uuidTurkishExclusiveEconomicZone = UUID.fromString("3d552e73-2bf5-4f36-8a91-94fbead970e5");
 	public static final UUID uuidUkrainianExclusiveEconomicZone = UUID.fromString("b7335968-e34f-412c-91a5-5dc0b73310e7");
-	public static final UUID uuidUnitedKingdomExclusiveEconomicZone = UUID.fromString("18ab29c0-3104-4102-ada8-6711fcdbdbb8");
+//	public static final UUID uuidUnitedKingdomExclusiveEconomicZone = UUID.fromString("18ab29c0-3104-4102-ada8-6711fcdbdbb8");
 	public static final UUID uuidWaddenSea = UUID.fromString("ae0c4555-8e19-479d-8a4f-e1b62939c09b");
 	public static final UUID uuidWhiteSea = UUID.fromString("bf14bfb6-8925-4696-911c-56d3e90d4491");
 
@@ -479,7 +479,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guName.equalsIgnoreCase("Aegean Sea")){ return uuidAegeanSea;
 		}else if (guName.equalsIgnoreCase("Archipelago Sea")){ return uuidArchipelagoSea;
 		}else if (guName.equalsIgnoreCase("Azores Exclusive Economic Zone")){ return uuidAzoresExclusiveEconomicZone;
-		}else if (guName.equalsIgnoreCase("Balear Sea")){ return uuidBalearSea;
+//		}else if (guName.equalsIgnoreCase("Balear Sea")){ return uuidBalearSea;
 		}else if (guName.equalsIgnoreCase("Baltic Proper")){ return uuidBalticProper;
 		}else if (guName.equalsIgnoreCase("Baltic Sea")){ return uuidBalticSea;
 		}else if (guName.equalsIgnoreCase("Barentsz Sea")){ return uuidBarentszSea;
@@ -505,8 +505,8 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guName.equalsIgnoreCase("Irish Sea and St. George's Channel")){ return uuidIrishSea;
 		}else if (guName.equalsIgnoreCase("Italian Exclusive Economic Zone")){ return uuidItalianExclusiveEconomicZone;
 		}else if (guName.equalsIgnoreCase("Lebanese Exclusive Economic Zone")){ return uuidLebaneseExclusiveEconomicZone;
-		}else if (guName.equalsIgnoreCase("Madeiran Exclusive Economic Zone")){ return uuidMadeiranExclusiveEconomicZone;
-		}else if (guName.equalsIgnoreCase("Marmara Sea")){ return uuidMarmaraSea;
+//		}else if (guName.equalsIgnoreCase("Madeiran Exclusive Economic Zone")){ return uuidMadeiranExclusiveEconomicZone;
+//		}else if (guName.equalsIgnoreCase("Marmara Sea")){ return uuidMarmaraSea;
 		}else if (guName.equalsIgnoreCase("Mediterranean Sea")){ return uuidMediterraneanSea;
 		}else if (guName.equalsIgnoreCase("Moroccan Exclusive Economic Zone")){ return uuidMoroccanExclusiveEconomicZone;
 		}else if (guName.equalsIgnoreCase("North Baltic proper")){ return uuidNorthBalticproper;
@@ -527,7 +527,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guName.equalsIgnoreCase("Turkish Exclusive Economic Zone")){ return uuidTurkishExclusiveEconomicZone;
 		}else if (guName.equalsIgnoreCase("Ukrainian Exclusive Economic Zone")||
 		        guName.equalsIgnoreCase("Overlapping claim Ukrainian Exclusive Economic Zone")){ return uuidUkrainianExclusiveEconomicZone;
-		}else if (guName.equalsIgnoreCase("United Kingdom Exclusive Economic Zone")){ return uuidUnitedKingdomExclusiveEconomicZone;
+//		}else if (guName.equalsIgnoreCase("United Kingdom Exclusive Economic Zone")){ return uuidUnitedKingdomExclusiveEconomicZone;
 		}else if (guName.equalsIgnoreCase("Wadden Sea")){ return uuidWaddenSea;
 		}else if (guName.equalsIgnoreCase("White Sea")){ return uuidWhiteSea;
 

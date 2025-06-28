@@ -569,11 +569,11 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int AREA_ADRIATIC_SEA = 160;
 	private static int AREA_BISCAY_BAY = 161;
 	private static int AREA_DUTCH_EXCLUSIVE_ECONOMIC_ZONE = 162;
-	private static int AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE = 163;
+//	private static int AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE = 163;
 	private static int AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE = 164;
 	private static int AREA_EGYPTIAN_EXCLUSIVE_ECONOMIC_ZONE = 165;
 	private static int AREA_GREEK_EXCLUSIVE_ECONOMIC_ZONE = 166;
-	private static int AREA_TIRRENO_SEA = 167;
+//	private static int AREA_TIRRENO_SEA = 167;
 	private static int AREA_ICELANDIC_EXCLUSIVE_ECONOMIC_ZONE = 168;
 	private static int AREA_IRISH_EXCLUSIVE_ECONOMIC_ZONE = 169;
 	private static int AREA_IRISH_SEA = 170;
@@ -585,7 +585,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int AREA_TUNISIAN_EXCLUSIVE_ECONOMIC_ZONE = 176;
 	private static int AREA_WADDEN_SEA = 177;
 	private static int AREA_BELT_SEA = 178;
-	private static int AREA_MARMARA_SEA = 179;
+//	private static int AREA_MARMARA_SEA = 179;
 	private static int AREA_SEA_OF_AZOV = 180;
 	private static int AREA_AEGEAN_SEA = 181;
 	private static int AREA_BULGARIAN_EXCLUSIVE_ECONOMIC_ZONE = 182;
@@ -597,12 +597,12 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int AREA_GERMAN_EXCLUSIVE_ECONOMIC_ZONE = 188;
 	private static int AREA_SWEDISH_EXCLUSIVE_ECONOMIC_ZONE = 189;
 	private static int AREA_UKRAINIAN_EXCLUSIVE_ECONOMIC_ZONE = 190;
-	private static int AREA_MADEIRAN_EXCLUSIVE_ECONOMIC_ZONE = 191;
+//	private static int AREA_MADEIRAN_EXCLUSIVE_ECONOMIC_ZONE = 191;
 	private static int AREA_LEBANESE_EXCLUSIVE_ECONOMIC_ZONE = 192;
 	private static int AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE_MEDITERRANEAN_PART = 193;
 	private static int AREA_ESTONIAN_EXCLUSIVE_ECONOMIC_ZONE = 194;
 	private static int AREA_CROATIAN_EXCLUSIVE_ECONOMIC_ZONE = 195;
-	private static int AREA_BALEAR_SEA = 196;
+//	private static int AREA_BALEAR_SEA = 196;
 	private static int AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE = 197;
 	private static int AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE = 198;
 	private static int AREA_TRANSCAUCASUS = 199;
@@ -1352,9 +1352,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidFrenchExclusiveEconomicZone)) { return AREA_FRENCH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidEnglishChannel)) { return AREA_ENGLISH_CHANNEL; }
 			else if (uuidArea.equals(ErmsTransformer.uuidAdriaticSea)) { return AREA_ADRIATIC_SEA; }
-//			else if (uuidArea.equals(ErmsTransformer.uuidBiscayBay)) { return AREA_BISCAY_BAY; }
+			else if (uuidArea.equals(ErmsTransformer.uuidBayOfBiscay)) { return AREA_BISCAY_BAY; }
 			else if (uuidArea.equals(ErmsTransformer.uuidDutchExclusiveEconomicZone)) { return AREA_DUTCH_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (uuidArea.equals(ErmsTransformer.uuidUnitedKingdomExclusiveEconomicZone)) { return AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidUnitedKingdomExclusiveEconomicZone)) { return AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidSpanishExclusiveEconomicZone)) { return AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidEgyptianExclusiveEconomicZone)) { return AREA_EGYPTIAN_EXCLUSIVE_ECONOMIC_ZONE; }
 //			else if (uuidArea.equals(ErmsTransformer.uuidTirrenoSea)) { return AREA_TIRRENO_SEA; }
@@ -1370,7 +1370,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidTunisianExclusiveEconomicZone)) { return AREA_TUNISIAN_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidWaddenSea)) { return AREA_WADDEN_SEA; }
 			else if (uuidArea.equals(ErmsTransformer.uuidBaeltSea)) { return AREA_BELT_SEA; }
-			else if (uuidArea.equals(ErmsTransformer.uuidMarmaraSea)) { return AREA_MARMARA_SEA; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidMarmaraSea)) { return AREA_MARMARA_SEA; }
 			else if (uuidArea.equals(ErmsTransformer.uuidSeaofAzov)) { return AREA_SEA_OF_AZOV; }
 			else if (uuidArea.equals(ErmsTransformer.uuidAegeanSea)) { return AREA_AEGEAN_SEA; }
 			else if (uuidArea.equals(ErmsTransformer.uuidBulgarianExclusiveEconomicZone)) { return AREA_BULGARIAN_EXCLUSIVE_ECONOMIC_ZONE; }
@@ -1382,12 +1382,12 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidGermanExclusiveEconomicZone)) { return AREA_GERMAN_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidSwedishExclusiveEconomicZone)) { return AREA_SWEDISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidUkrainianExclusiveEconomicZone)) { return AREA_UKRAINIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (uuidArea.equals(ErmsTransformer.uuidMadeiranExclusiveEconomicZone)) { return AREA_MADEIRAN_EXCLUSIVE_ECONOMIC_ZONE; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidMadeiranExclusiveEconomicZone)) { return AREA_MADEIRAN_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidLebaneseExclusiveEconomicZone)) { return AREA_LEBANESE_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidSpanishExclusiveEconomicZoneMediterraneanpart)) { return AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE_MEDITERRANEAN_PART; }
 			else if (uuidArea.equals(ErmsTransformer.uuidEstonianExclusiveEconomicZone)) { return AREA_ESTONIAN_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidCroatianExclusiveEconomicZone)) { return AREA_CROATIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (uuidArea.equals(ErmsTransformer.uuidBalearSea)) { return AREA_BALEAR_SEA; }
+//			else if (uuidArea.equals(ErmsTransformer.uuidBalearSea)) { return AREA_BALEAR_SEA; }
 			else if (uuidArea.equals(ErmsTransformer.uuidTurkishExclusiveEconomicZone)) { return AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidDanishExclusiveEconomicZone)) { return AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE; }
 
