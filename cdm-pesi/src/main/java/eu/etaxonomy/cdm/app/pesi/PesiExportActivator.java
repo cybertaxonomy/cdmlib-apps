@@ -47,7 +47,7 @@ public class PesiExportActivator {
 
 	static final int partitionSize = 5000;
 
-	static final boolean deleteAll = false;
+	static final boolean deleteAll = true;
 
 	// !!!!!!!!!!!!!!
 //	static final int startDescriptionPartition = 0;
@@ -67,20 +67,14 @@ public class PesiExportActivator {
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 
 	//taxa
-	static final boolean doTaxa = true;
-    static final boolean doPureNames = true;
-    static final boolean doInferredSynonyms = true;
-	static final boolean doRelTaxa = true;
-	static final boolean doNotes = true;
-	static final boolean doNoteSources = true;
-	static final boolean doAdditionalTaxonSource = true;
-	static final boolean doOccurrence = true;
-	static final boolean doOccurrenceSource = true;
-	static final boolean doImage = true;
-	static final boolean doTreeIndex = true;
-	static final boolean doRank = true;
-	static final boolean doDescription = true;
-
+	private static final boolean doTaxa = true;
+	private static final boolean doPureNames = true;
+	private static final boolean doInferredSynonyms = false;
+	private static final boolean doTreeIndex = true;
+	private static final boolean doRelTaxa = true;
+	private static final boolean doAdditionalTaxonSource = true;
+	private static final boolean doDescription = true;
+	private static final boolean doEcologyAndLink = true;
 
 // ************************ NONE **************************************** //
 
@@ -88,18 +82,14 @@ public class PesiExportActivator {
 //	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
 //
 //	//taxa
-//	static final boolean doTaxa = false;
-//	static final boolean doRelTaxa = false;
-//	static final boolean doNotes = false;
-//	static final boolean doNoteSources = false;
-//	static final boolean doAdditionalTaxonSource = false;
-//	static final boolean doOccurrence = false;
-//	static final boolean doOccurrenceSource = false;
-//	static final boolean doImage = false;
-//	static final boolean doTreeIndex = true;
-//	static final boolean doRank = true;
-//	static final boolean doInferredSynonyms = true;
-//	static final boolean doDescription = false;
+//    private static final boolean doTaxa = false;
+//    private static final boolean doPureNames = false;
+//    private static final boolean doTreeIndex = false;
+//    private static final boolean doInferredSynonyms = false;
+//    private static final boolean doRelTaxa = false;
+//    private static final boolean doAdditionalTaxonSource = false;
+//    private static final boolean doDescription = true;
+//    private static final boolean doEcologyAndLink = false;
 
 	public boolean 	doExport(ICdmDataSource source){
 
