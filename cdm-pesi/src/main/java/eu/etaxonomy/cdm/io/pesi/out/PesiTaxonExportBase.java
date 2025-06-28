@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -274,16 +275,28 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
     }
 
     //  @SuppressWarnings("unused")  //used by pure name mapper and by getRankFk
-    static Integer getKingdomFk(TaxonName taxonName){
+    static Integer getKingdomFk(TaxonName taxonName, PesiExportState state){
         EnumSet<PesiSource> origin = getSources(taxonName);
         if (origin.size() == 1 && origin.contains(PesiSource.EM)){
             //maybe simply replace by
             //return PesiTransformer.KINGDOM_PLANTAE;
             return PesiTransformer.nomenclaturalCode2Kingdom(taxonName.getNameType());
-        }else{
-            logger.warn("getKingdomFk not yet implemented for non-EuroMed pure names: " + taxonName.getTitleCache() + "/" + taxonName.getUuid());
-            return null;
+        } else if (origin.size() == 1 && origin.contains(PesiSource.ERMS)){
+            //
+            Optional<TaxonBase> taxonBase = taxonName.getRelationsFromThisName().stream()
+                    .map(r->r.getToName())
+                    .flatMap(n->n.getTaxonBases().stream())
+                    .findFirst();
+            if (taxonBase.isPresent() && state != null) {
+                Integer kingdomFk = findKingdomIdFromTreeIndex(taxonBase.get(), state);
+                logger.info("Successfully defined ERMS pure name kingdomId");
+                return kingdomFk;
+            }
         }
+
+        logger.warn("getKingdomFk not yet implemented for non-EuroMed pure names: " + taxonName.getTitleCache() + "/" + taxonName.getUuid());
+        return null;
+
     }
 
 
@@ -292,7 +305,7 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
         List<TaxonNode> nodes = getTaxonNodes(taxonName);
         Integer kingdomId;
         if (nodes == null||nodes.isEmpty()){
-            kingdomId = getKingdomFk(taxonName);
+            kingdomId = getKingdomFk(taxonName, state);
         }else{
             //should not happen, method exists only pure names
             kingdomId = findKingdomIdFromTreeIndex(nodes.iterator().next().getTaxon(), state);

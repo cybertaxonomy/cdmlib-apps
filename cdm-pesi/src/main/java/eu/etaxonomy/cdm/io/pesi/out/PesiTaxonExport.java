@@ -248,7 +248,9 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
     				        Integer kingdomId = PesiTransformer.pesiKingdomId(nvn.getGenusOrUninomial());
     				        state.getTreeIndexKingdomMap().put(treeIndex, kingdomId);
     				    }else{
-    				        logger.warn("Kingdom taxon is not of class Taxon but " + taxon.getClass().getSimpleName() + ": " + nvn.getGenusOrUninomial());
+    				        if (!"Monera".equals(nvn.getGenusOrUninomial())){  //Monera is the only known synonym of rank kingdom
+    				            logger.warn("Kingdom taxon is not of class Taxon but " + taxon.getClass().getSimpleName() + ": " + nvn.getGenusOrUninomial());
+    				        }
     				    }
     				}
 				}catch(NullPointerException e){
@@ -786,7 +788,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
     private static Integer getRankFk(TaxonName taxonName) {
         EnumSet<PesiSource> origin = getSources(taxonName);
         if (origin.size() == 1 && origin.contains(PesiSource.EM)){
-            return getRankFk(taxonName, getKingdomFk(taxonName));
+            //TODO state
+            return getRankFk(taxonName, getKingdomFk(taxonName, null));
         }else{
             logger.warn("getRankFk not yet implemented for non-EuroMed pure names"+ taxonName.getTitleCache() + "/" + taxonName.getUuid());
             return null;
@@ -1819,7 +1822,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		mapping.addMapper(IdMapper.NewInstance("TaxonId"));
 
 		mapping.addMapper(MethodMapper.NewInstance("SourceFk", this, TaxonName.class, PesiExportState.class));  //for now is only null
-        mapping.addMapper(MethodMapper.NewInstance("KingdomFk", PesiTaxonExportBase.class, "getKingdomFk", TaxonName.class));
+        mapping.addMapper(MethodMapper.NewInstance("KingdomFk", PesiTaxonExportBase.class, "getKingdomFk", TaxonName.class, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("RankFk", this, TaxonName.class));
 		mapping.addMapper(MethodMapper.NewInstance("RankCache", PesiTaxonExportBase.class, "getRankCache", TaxonName.class, PesiExportState.class));
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusFk", Types.INTEGER, PesiTransformer.T_STATUS_UNACCEPTED));
