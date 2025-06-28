@@ -205,6 +205,12 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int HAS_SAME_TYPE_AS = 18;
 	public static int IS_ORIGINAL_SPELLING_FOR = 19;
 	private static int IS_BLOCKING_NAME_FOR = 20;
+
+	private static int IS_MISSPELLING_FOR = 21;
+	private static int HAS_EMENDATION = 22;
+
+    private static int IS_LATER_ISONYM_OF = 31;
+
 	private static int IS_LECTOTYPE_OF = 61;
 	private static int TYPE_NOT_DESIGNATED = 62;
 	public static int IS_TAXONOMICALLY_INCLUDED_IN = 101;
@@ -2326,6 +2332,13 @@ public final class PesiTransformer extends ExportTransformerBase{
             return IS_BLOCKING_NAME_FOR;
 		} else if (type.equals(NameRelationshipType.ALTERNATIVE_NAME())) {
 			return IS_ALTERNATIVE_NAME_FOR;
+        } else if (type.equals(NameRelationshipType.LATER_ISONYM())) {
+            return IS_LATER_ISONYM_OF;
+        } else if (type.equals(NameRelationshipType.MISSPELLING())) {
+            return IS_MISSPELLING_FOR;
+        } else if (type.equals(NameRelationshipType.EMENDATION())) {
+            return HAS_EMENDATION;
+
 		} else if (type.equals(HybridRelationshipType.FEMALE_PARENT())) {
 			return IS_FEMALE_PARENT_OF;
 		} else if (type.equals(HybridRelationshipType.MALE_PARENT())) {
