@@ -27,6 +27,7 @@ import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
+import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalSource;
 import eu.etaxonomy.cdm.model.name.TaxonName;
@@ -265,22 +266,30 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
     private TransactionStatus handleNameRelationList(PesiExportState state, TransactionStatus txStatus,
             List<? extends RelationshipBase<?,?,?>> list) {
+
         for (RelationshipBase<?,?,?> rel : list){
         	try {
         	    TaxonName name1;
         	    TaxonName name2;
-        		if (rel.isInstanceOf(HybridRelationship.class)){
-        			HybridRelationship hybridRel = CdmBase.deproxy(rel, HybridRelationship.class);
-        			name1 = hybridRel.getParentName();
-        			name2 = hybridRel.getHybridName();
-        		}else if (rel.isInstanceOf(NameRelationship.class)){
-        			NameRelationship nameRel = CdmBase.deproxy(rel, NameRelationship.class);
-        			name1 = nameRel.getFromName();
-        			name2 = nameRel.getToName();
-        		}else{
-        			logger.warn ("Only hybrid- and name-relationships allowed here");
-        			continue;
-        		}
+        	    if (rel.getType() != null &&
+        	            rel.getType().getUuid().equals(NameRelationshipType.uuidAvoidsHomonymOf)
+        	            || rel.getType().getUuid().equals(NameRelationshipType.uuidNonUnspecific)
+                        ) {
+        	        logger.debug("'Avoids homonym of' and unspecific-non name relationships not supported in PESI");
+        	        continue;
+        	    }else if (rel.isInstanceOf(HybridRelationship.class)){
+                	HybridRelationship hybridRel = CdmBase.deproxy(rel, HybridRelationship.class);
+                	name1 = hybridRel.getParentName();
+                	name2 = hybridRel.getHybridName();
+                }else if (rel.isInstanceOf(NameRelationship.class)){
+                	NameRelationship nameRel = CdmBase.deproxy(rel, NameRelationship.class);
+                	name1 = nameRel.getFromName();
+                	name2 = nameRel.getToName();
+                }else{
+                	logger.warn ("Only hybrid- and name-relationships allowed here");
+                	continue;
+                }
+
         		List<IdentifiableEntity> fromList = new ArrayList<>();
         		List<IdentifiableEntity> toList = new ArrayList<>();
         		makeList(name1, fromList);
