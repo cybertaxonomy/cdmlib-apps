@@ -9,7 +9,6 @@
 package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -114,7 +113,8 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
 		    ProfilerController.memorySnapshot();
 		}
 
-		List<String> propPath = Arrays.asList(new String[]{"markers.*","extensions.*"});
+		List<String> propPath = null; //see #10779, setting the property path leads to memory issues due to large hibernate query plans by AdvancedBeanInitializer induced queries
+		                              //Arrays.asList(new String[]{"markers.*","extensions.*"});
 		int partitionCount = 0;
 		while ((taxonList = getNextTaxonPartition(TaxonBase.class, limit, partitionCount++, propPath )) != null   ) {
 

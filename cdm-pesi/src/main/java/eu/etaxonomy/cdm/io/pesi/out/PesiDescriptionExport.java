@@ -199,7 +199,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		    ProfilerController.memorySnapshot();
 		}
 
-		List<String> propPath = null; //setting the property path leads to memory issues due to large hibernate query plans by AdvancedBeanInitializer induced queries
+		List<String> propPath = null; //see #10779, setting the property path leads to memory issues due to large hibernate query plans by AdvancedBeanInitializer induced queries
 		                              // Arrays.asList(new String[]{"descriptions.elements.*"});
 		int startPartition = state.getConfig().getStartDescriptionPartition();
 		int maxPartitions = state.getConfig().getMaxDescriptionPartitions();
