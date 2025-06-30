@@ -554,49 +554,55 @@ public class PesiDescriptionExport extends PesiExportBase {
 		logger.warn("TODO handle extensions on taxon level, not name level (");
 		while ((taxonNameList = getNameService().list(null, limit, count, null, null)).size() > 0) {
 
-			if(logger.isDebugEnabled()) {
-                logger.info("Fetched " + taxonNameList.size() + " names. Exporting...");
-            }
-			for (TaxonName taxonName : taxonNameList) {
-				Set<Extension> extensions = taxonName.getExtensions();
-				for (Extension extension : extensions) {
-					if (extension.getType() == null) {
-					    logger.warn("Extension has no type. Not imported: " + extension.getUuid() + " for name " + taxonName.getTitleCache());
-					}
-				    if (extension.getType().equals(taxCommentExtensionType)) {
-						String taxComment = extension.getValue();
-						invokeNotes(taxComment,
-								PesiTransformer.getNoteCategoryFk(PesiTransformer.uuidExtTaxComment),
-								PesiTransformer.getNoteCategoryCache(PesiTransformer.uuidExtTaxComment),
-								null, null, getTaxonKey(taxonName, state),connection);
-					} else if (extension.getType().equals(fauCommentExtensionType)) {
-						String fauComment = extension.getValue();
-						invokeNotes(fauComment,
-								PesiTransformer.getNoteCategoryFk(PesiTransformer.uuidExtFauComment),
-								PesiTransformer.getNoteCategoryCache(PesiTransformer.uuidExtFauComment),
-								null, null, getTaxonKey(taxonName, state),connection);
-					} else if (extension.getType().equals(fauExtraCodesExtensionType)) {
-						String fauExtraCodes = extension.getValue();
-						invokeNotes(fauExtraCodes,
-								PesiTransformer.getNoteCategoryFk(PesiTransformer.uuidExtFauExtraCodes),
-								PesiTransformer.getNoteCategoryCache(PesiTransformer.uuidExtFauExtraCodes),
-								null, null, getTaxonKey(taxonName, state),connection);
-					}
-				}
+			try {
+                if(logger.isDebugEnabled()) {
+                    logger.info("Fetched " + taxonNameList.size() + " names. Exporting...");
+                }
+                for (TaxonName taxonName : taxonNameList) {
+                	Set<Extension> extensions = taxonName.getExtensions();
+                	for (Extension extension : extensions) {
+                		if (extension.getType() == null) {
+                		    logger.warn("Extension has no type. Not imported: " + extension.getUuid() + " for name " + taxonName.getTitleCache());
+                		    continue;
+                		}
+                	    if (extension.getType().equals(taxCommentExtensionType)) {
+                			String taxComment = extension.getValue();
+                			invokeNotes(taxComment,
+                					PesiTransformer.getNoteCategoryFk(PesiTransformer.uuidExtTaxComment),
+                					PesiTransformer.getNoteCategoryCache(PesiTransformer.uuidExtTaxComment),
+                					null, null, getTaxonKey(taxonName, state),connection);
+                		} else if (extension.getType().equals(fauCommentExtensionType)) {
+                			String fauComment = extension.getValue();
+                			invokeNotes(fauComment,
+                					PesiTransformer.getNoteCategoryFk(PesiTransformer.uuidExtFauComment),
+                					PesiTransformer.getNoteCategoryCache(PesiTransformer.uuidExtFauComment),
+                					null, null, getTaxonKey(taxonName, state),connection);
+                		} else if (extension.getType().equals(fauExtraCodesExtensionType)) {
+                			String fauExtraCodes = extension.getValue();
+                			invokeNotes(fauExtraCodes,
+                					PesiTransformer.getNoteCategoryFk(PesiTransformer.uuidExtFauExtraCodes),
+                					PesiTransformer.getNoteCategoryCache(PesiTransformer.uuidExtFauExtraCodes),
+                					null, null, getTaxonKey(taxonName, state),connection);
+                		}
+                	}
 
-				doCount(count++, modCount, parentPluralString);
-			}
+                	doCount(count++, modCount, parentPluralString);
+                }
 
-			// Commit transaction
-			commitTransaction(txStatus);
-			logger.debug("Committed transaction.");
-			logger.info("Exported " + (count - pastCount) + " names. Total: " + count + " (Phase 02)");
-			pastCount = count;
+                // Commit transaction
+                commitTransaction(txStatus);
+                logger.debug("Committed transaction.");
+                logger.info("Exported " + (count - pastCount) + " names. Total: " + count + " (Phase 02)");
+                pastCount = count;
 
-			// Start transaction
-			txStatus = startTransaction(true);
-			if (logger.isDebugEnabled()) {
-                logger.info("Started new transaction. Fetching some names first (max: " + limit + ") ...");
+                // Start transaction
+                txStatus = startTransaction(true);
+                if (logger.isDebugEnabled()) {
+                    logger.info("Started new transaction. Fetching some names first (max: " + limit + ") ...");
+                }
+            } catch (Exception e) {
+                logger.error("Unexpected exception occurred during description export.");
+                e.printStackTrace();
             }
 		}
 		// Commit transaction
