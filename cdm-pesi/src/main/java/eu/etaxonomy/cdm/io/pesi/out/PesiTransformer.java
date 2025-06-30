@@ -1398,7 +1398,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidArcticOcean)) { return 296; }
 //            else if (uuidArea.equals(ErmsTransformer.uuidAustralianExclusiveEconomicZone)) { return 222; }
 //			else if (uuidArea.equals(ErmsTransformer.uuidBahamas)) { return 223; }
-//			else if (uuidArea.equals(ErmsTransformer.uuidBalearicSea)) { return 224; }
+			else if (uuidArea.equals(ErmsTransformer.uuidBalearicSea)) { return 224; }
 			else if (uuidArea.equals(ErmsTransformer.uuidBelgium)) { return 225; }
 //			else if (uuidArea.equals(ErmsTransformer.uuidBelize)) { return 226; }
 //			else if (uuidArea.equals(ErmsTransformer.uuidBrazil)) { return 227; }

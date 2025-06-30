@@ -539,7 +539,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guName.equalsIgnoreCase("Arctic Ocean")){ return uuidArcticOcean;
 //        }else if (guName.equalsIgnoreCase("Australian Exclusive Economic Zone")){ return uuidAustralianExclusiveEconomicZone;
 //		}else if (guName.equalsIgnoreCase("Bahamas")){ return uuidBahamas;
-//		}else if (guName.equalsIgnoreCase("Balearic Sea")){ return uuidBalearicSea;
+		}else if (guName.equalsIgnoreCase("Balearic Sea")){ return uuidBalearicSea;
 		}else if (guName.equalsIgnoreCase("Belgium")){ return uuidBelgium;
 //		}else if (guName.equalsIgnoreCase("Belize")){ return uuidBelize;
 //		}else if (guName.equalsIgnoreCase("Brazil")){ return uuidBrazil;
