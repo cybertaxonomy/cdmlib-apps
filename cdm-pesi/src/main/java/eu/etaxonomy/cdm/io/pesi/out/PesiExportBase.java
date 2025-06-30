@@ -350,6 +350,7 @@ public abstract class PesiExportBase
 			excludedRelTypes.add(NameRelationshipType.BASIONYM());
 			excludedRelTypes.add(NameRelationshipType.REPLACED_SYNONYM());
 			excludedRelTypes.add(NameRelationshipType.ORTHOGRAPHIC_VARIANT());
+
 		}
 	}
 

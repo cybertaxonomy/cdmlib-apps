@@ -792,7 +792,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
             //TODO state
             return getRankFk(taxonName, getKingdomFk(taxonName, null));
         }else{
-            logger.warn("getRankFk not yet implemented for non-EuroMed pure names"+ taxonName.getTitleCache() + "/" + taxonName.getUuid());
+            logger.warn("getRankFk not yet implemented for non-EuroMed pure names. "+ taxonName.getTitleCache() + "/" + taxonName.getUuid());
             return null;
         }
     }

@@ -1487,7 +1487,6 @@ public final class PesiTransformer extends ExportTransformerBase{
             else if (uuidArea.equals(ErmsTransformer.uuidLibyanExclusiveEconomicZone)) { return 322; }
             else if (uuidArea.equals(ErmsTransformer.uuidRomanianExclusiveEconomicZone)) { return 323; }
 
-
     		else {
 				logger.warn("Unknown ERMS Area: " + area.getTitleCache());
 			}
@@ -2462,7 +2461,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			}else if (statusSet.contains("Added/edited by Thematic Editor")){
                 return QUALITY_STATUS_THEMATIC_EDITOR;
 			}else if (statusSet.isEmpty()) {
-			    logger.warn("ERMS name has not quality status: " +taxonName.getTitleCache());
+			    logger.warn("ERMS name has no quality status: " +taxonName.getTitleCache());
 			    return null;
 			}else{
 				logger.warn("Unknown ERMS quality status: " + statusSet.iterator().next() + " for taxon name " + taxonName.getTitleCache());
