@@ -43,7 +43,7 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 
 	private static final Class<? extends CdmBase> standardMethodParameter = IdentifiableSource.class;
 
-	private static int modCount = 1000;
+	private static int modCount = 5000;
 	private static final String dbTableName = "AdditionalTaxonSource";
 	private static final String pluralString = "addtional sources";
 	private static final String parentPluralString = "Taxa";
