@@ -32,7 +32,7 @@ public class PesiErmsValidator extends PesiValidatorBase {
 
     private static Logger logger = LogManager.getLogger();
 
-    private static final Source defaultSource = PesiSources.PESI2019_ERMS_2019();
+    private static final Source defaultSource = PesiSources.SQL_EX_PESI2019_ERMS_2019();
 //    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
     private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
 

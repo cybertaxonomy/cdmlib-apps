@@ -53,16 +53,6 @@ public class PesiSources {
 		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-	public static Source faunaEu_previous(){
-		//	Fauna Europaea
-		String dbms = Source.SQL_SERVER;
- 		String strServer = "BGBM42";               // "192.168.1.36";
- 		String strDB = "FaunEu_2_2";
-		int port = 1433;
-		String userName = "WebUser";
-		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
-	}
-
 	public static Source PESI_ERMS(){
 		// Pesi-ERMS
 		String dbms = Source.SQL_SERVER;
@@ -73,17 +63,7 @@ public class PesiSources {
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-    public static Source PESI2019_ERMS_2018(){
-        // Pesi-ERMS
-        String dbms = Source.SQL_SERVER;
-        String strServer = "BGBM-PESISQL\\SQLEXPRESS";
-        String strDB = "erms_2018_07_05";
-        int port = 1434;
-        String userName = "pesiimport";
-        return  makeSource(dbms, strServer, strDB, port, userName, null);
-    }
-
-    public static Source PESI2019_ERMS_2019(){
+    public static Source SQL_EX_PESI2019_ERMS_2019(){
         // Pesi-ERMS
         String dbms = Source.SQL_SERVER;
         String strServer = "BGBM-PESISQL\\SQLEXPRESS";
@@ -93,17 +73,7 @@ public class PesiSources {
         return  makeSource(dbms, strServer, strDB, port, userName, null);
     }
 
-    public static Source PESI2025_ERMS_2023(){
-        // Pesi-ERMS
-        String dbms = Source.SQL_SERVER;
-        String strServer = "BGBM-PESISQL\\SQLEXPRESS";
-        String strDB = "erms_2023_12_21";
-        int port = 1434;
-        String userName = "pesiimport";
-        return  makeSource(dbms, strServer, strDB, port, userName, null);
-    }
-
-    public static Source PESI2025_ERMS_2025(){
+    public static Source SQL_EX_PESI2025_ERMS_2025(){
         // Pesi-ERMS
         String dbms = Source.SQL_SERVER_TRUSTED;
         String strServer = "BGBM-PESISQL\\SQLEXPRESS";
@@ -112,6 +82,20 @@ public class PesiSources {
         String userName = "pesiimport";
         return  makeSource(dbms, strServer, strDB, port, userName, null);
     }
+
+
+
+
+    public static Source SQL_EX_FAU_EU_COMMON_NAMES(){
+        //  Index Fungorum
+        String dbms = Source.SQL_SERVER_TRUSTED;
+        String strServer = "BGBM-PESISQL\\SQLEXPRESS";
+        String strDB = "FauEuCommonNames_2015_11_17";
+        int port = 1434;
+        String userName = "pesiimport";
+        return  makeSource(dbms, strServer, strDB, port, userName, null);
+    }
+
 
 	public static Source PESI3_IF(){
 		//	Index Fungorum
