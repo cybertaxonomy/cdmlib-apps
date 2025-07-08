@@ -37,6 +37,7 @@ Apogon;Rondani, 1856;Lacepède, 1801
 Aporhynchidae;;Poche, 1926
 Arenaria;L.;Brisson, 1760
 Argentina;Hill;Linnaeus, 1758
+Arctophila;Schiner;(Rupr.) Andersson;
 Ariadna;Audouin, 1826;P. Fischer, 1864
 Aricia;Reichenbach, 1817;Savigny, 1822
 Aricia;Reichenbach, 1817;J. E. Gray, 1837
@@ -110,6 +111,7 @@ Chauliodus;Treitschke, 1833;Bloch & Schneider, 1801
 Chimaera;Ochsenheimer, 1808;Linnaeus, 1758
 Chione;Salisb.;J. E. Gray, 1838
 Chione;Salisb.;Megerle von Mühlfeld, 1811
+Chloris;Sw.;Cuvier, 1800
 Chondrilla;L.;Schmidt, 1862
 Chondrus;Cuvier, 1817;Stackhouse, 1797
 Chordeuma;C.L. Koch, 1847;Jungersen, 1914
@@ -122,6 +124,7 @@ Clausia;(Stephan) Korn.-Trotzky;Boeck, 1865
 Clausia;(Stephan) Korn.-Trotzky;Claparède, 1863
 Clavulina;J. Schröt.;d'Orbigny, 1826
 Cleta;Duponchel, 1845;Claus, 1863
+Cnestrum;Becker, 1896;I. Hagen
 Coleophora;Hübner, 1822;Steinbock, 1932
 Colus;Cavalier & Séchier;Röding, 1798
 Coniophora;DC.;Nijveldt, 1959
@@ -258,9 +261,11 @@ Homotoma;Guérin-Méneville, 1844;Bellardi, 1875
 Hyalea;(DC.) Jaub. & Spach;[sic]
 Hydatina;Ehrenberg, 1830;Schumacher, 1817
 Hypoderma;De Not.;Latreille, 1818
+Hyssopus;L.;Girault, 1916
 Idalia;Mulsant, 1846;Leuckart, 1828
 Idalia;Mulsant, 1846;Leach, 1847
 Ilyobates;Kraatz, 1856;Sars, 1866
+Iris;Tourn. ex L.;Saussure
 Ischnosoma;Stephens, 1829;G. O. Sars, 1866
 Isias;De Not.;Boeck, 1865
 Isochaeta;Pointner, 1911;Giesbrecht, 1889
@@ -272,9 +277,11 @@ Jurinia;Costa, 1839;Claus, 1866
 Kentrophyllum;DC.;Petz, Song & Wilbert, 1995
 Kleinia;Mill.;Gray, 1851
 Kliella;Schaefer, 1945;Hicks & Schriever, 1983
+Kurzia;G. Martens;Dybowski & Grochowski, 1894
 Lacrymaria;Pat.;Bory de St. Vincent, 1824
 Lacrymaria;Pat.;Ehrenberg, 1830
 Lagena;Vanterp. & Ledingham;Walker & Jacob, 1798
+Lagurus;L.;Gloger, 1841
 Laothoe;Fabricius, 1807;Sars, 1893
 Lamarckia;Moench;Leach, 1852
 Lamarckia;Moench;G.Olivi, 1792
@@ -429,6 +436,8 @@ Radula;Dumort.;Mörch, 1853
 Raia;Ashmead, 1893;Linnaeus, 1758
 Rhicnoessa;Loew, 1862;Williston, 1893
 Rhipidophora;Hübner, 1822;F.T. Kützing, 1844
+Ricinus;L.;De Geer, 1778
+Robinia;L.;Pankov, Webster, Blasco-Costa, Gibson, Littlewood, Balbuena & Kostadinova, 2006
 Sabaudia;Buscal. & Muschl.;Ghigi, 1909
 Sabina;Mill.;Williams, 1851
 Saccosoma;Motschulsky, 1859;Danielssen & Koren, 1880
@@ -446,6 +455,9 @@ Seriola;L.;Hanitsch, 1889
 Sergia;Nasonov, 1923;Stimpson, 1860
 Serpula;(Pers.) Gray;Linnaeus, 1758
 Serrula;Netolitzky, 1910;Mörch, 1853
+Setaria;P. Beauv.;Viborg, 1795
+Setaria;P. Beauv.;Mulsant & Rey, 1863
+Setaria;Viborg, 1795;Mulsant & Rey, 1863
 Seuratia;Pat.;Skrjabin, 1916
 Seuratia;Pat.;Ditlevsen, 1918
 Seuratia;Skrjabin, 1916;Ditlevsen, 1918
@@ -457,6 +469,7 @@ Smaragdinella;L. Medvedev, 1971;A. Adams, 1848
 Smaris;Latreille, 1796;Cuvier, 1814
 Smittia;Holmgren, 1869;Hincks, 1879
 Solariella;Flach, 1905;S. V. Wood, 1842
+Solenopsis;C. Presl;Westwood, 1840
 Solenostoma;Mitt.;Brady & Robertson, 1873
 Solieria;Robineau-Desvoidy, 1848;J.Agardh, 1842
 Sorosphaera;J. Schröt.;Brady, 1879
