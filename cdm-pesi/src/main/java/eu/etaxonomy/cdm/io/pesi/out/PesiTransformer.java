@@ -2189,6 +2189,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return null;
 		}
 		if (status.equals(NomenclaturalStatusType.INVALID())) {return NAME_ST_NOM_INVAL;
+		}else if (status.equals(NomenclaturalStatusType.ZOO_NOT_AVAILABLE())) {return NAME_ST_NOM_INVAL;
 		}else if (status.equals(NomenclaturalStatusType.ILLEGITIMATE())) {return NAME_ST_NOM_ILLEG;
 		}else if (status.equals(NomenclaturalStatusType.NUDUM())) {return NAME_ST_NOM_NUD;
 		}else if (status.equals(NomenclaturalStatusType.REJECTED())) {return NAME_ST_NOM_REJ;
