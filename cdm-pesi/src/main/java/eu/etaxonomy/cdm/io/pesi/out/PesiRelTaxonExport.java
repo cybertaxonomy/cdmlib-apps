@@ -59,9 +59,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private PesiExportMapping taxonNodeMapping;
 	private PesiExportMapping originalSpellingMapping;
 
-	public PesiRelTaxonExport() {
-		super();
-	}
+	public PesiRelTaxonExport() {}
 
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
@@ -120,6 +118,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	}
 
     private boolean doPhase03(PesiExportState state, PesiExportMapping synonymMapping) {
+
         logger.info("PHASE 3: Direct Synonym Relationships ...");
 
         boolean success = true;
@@ -146,6 +145,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
                     logger.error(e.getMessage() + ". Synonym: " +  synonym.getUuid());
                     e.printStackTrace();
                 }
+
             }
 
             commitTransaction(txStatus);
@@ -156,7 +156,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
     }
 
     private boolean doPhase01(PesiExportState state, PesiExportMapping mapping) {
-		logger.info("PHASE 1: Taxon Relationships ...");
+
+        logger.info("PHASE 1: Taxon Relationships ...");
 		boolean success = true;
 
 		int limit = state.getConfig().getLimitSave();
@@ -164,7 +165,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		TransactionStatus txStatus = startTransaction(true);
 		logger.debug("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 
-		List<RelationshipBase<?,?,?>> list;
+		List<TaxonRelationship> list;
 
 		//taxon relations
 		int partitionCount = 0;
@@ -175,7 +176,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 //			if (list.size() > 0){
 //				logger.warn("First relation type is " + list.get(0).getType().getTitleCache());
 //			}
-			for (RelationshipBase<?,?,?> rel : list){
+			for (TaxonRelationship rel : list){
 				try {
 					mapping.invoke(rel);
 				} catch (Exception e) {
@@ -192,6 +193,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	}
 
     private boolean doPhase01b(PesiExportState state, PesiExportMapping taxonNodeMapping) {
+
         logger.info("PHASE 1b: Taxonnodes ...");
         boolean success = true;
 

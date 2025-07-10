@@ -195,20 +195,19 @@ public abstract class PesiExportBase
 		return result;
 	}
 
-	protected <CLASS extends RelationshipBase> List<CLASS> getNextTaxonRelationshipPartition( int limit, int partitionCount, List<String> propertyPaths) {
+	protected List<TaxonRelationship> getNextTaxonRelationshipPartition( int limit, int partitionCount, List<String> propertyPaths) {
 
-	    List<CLASS> result = new ArrayList<>();
+	    List<TaxonRelationship> result = new ArrayList<>();
 
 	    List<OrderHint> orderHints = null;
-		@SuppressWarnings("unchecked")
-        List<CLASS> list = (List<CLASS>)this.getTaxonService()
+		List<TaxonRelationship> list = this.getTaxonService()
 		        .listTaxonRelationships(null, limit, partitionCount, orderHints, propertyPaths);
 
 		if (list.isEmpty()){
 			return null;
 		}
 
-		for (CLASS rel : list){
+		for (TaxonRelationship rel : list){
 			if (isPesiTaxonOrSynonymRelationship(rel)){
 				result.add(rel);
 			}
