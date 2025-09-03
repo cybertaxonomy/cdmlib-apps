@@ -9,7 +9,11 @@
 package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,6 +44,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 /**
  * The export class for relations between {@link eu.etaxonomy.cdm.model.taxon.TaxonBase TaxonBases}.<p>
  * Inserts into DataWarehouse database table <code>RelTaxon</code>.
+ *
  * @author e.-m.lee
  * @since 23.02.2010
  */
@@ -50,6 +55,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
     private static Logger logger = LogManager.getLogger();
 
     private static final Class<? extends CdmBase> standardMethodParameter = RelationshipBase.class;
+
+    private static Map<TaxRelKey,UUID> existingRelations = new HashMap<>();
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "RelTaxon";
@@ -64,6 +71,29 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
+	}
+
+	private class TaxRelKey {
+	    private UUID name1;
+	    private UUID name2;
+
+        public TaxRelKey(UUID fromUuid, UUID toUuid) {
+            name1 = fromUuid; name2 = toUuid;
+        }
+        @Override
+        public int hashCode() {
+            return 31 + Objects.hash(name1, name2);
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            } else if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            TaxRelKey other = (TaxRelKey) obj;
+            return Objects.equals(name1, other.name1) && Objects.equals(name2, other.name2);
+        }
 	}
 
 	@Override
@@ -94,14 +124,16 @@ public class PesiRelTaxonExport extends PesiExportBase {
             originalSpellingMapping = getOriginalSpellingMapping();
             originalSpellingMapping.initialize(state);
 
+
+            // Export name relations
+            //NOTE: name relations should come first as they have highest priority in deduplicating name relationships
+            success &= doPhase01(state);
+
 			//Export taxon relations
-			success &= doPhase01(state, mapping);
+			success &= doPhase02(state, mapping);
 
 			//Export taxon nodes
-            success &= doPhase01b(state, taxonNodeMapping);
-
-			// Export name relations
-			success &= doPhase02(state, mapping);
+            success &= doPhase02b(state, taxonNodeMapping);
 
 	         // Export synonym relations (directly attached to taxa)
             success &= doPhase03(state, synonymMapping);
@@ -135,17 +167,30 @@ public class PesiRelTaxonExport extends PesiExportBase {
         while ((list = getNextTaxonPartition(Synonym.class, limit, partitionCount++, null))!= null) {
             totalCount = totalCount + list.size();
             logger.info("Read " + list.size() + " PESI synonyms. Limit: " + limit + ". Total: " + totalCount );
-//          if (list.size() > 0){
-//              logger.warn("First relation type is " + list.get(0).getType().getTitleCache());
-//          }
+
             for (Synonym synonym : list){
+                //deduplicate (avoid having >1 relationships between the same 2 Taxon table entries
+                UUID fromUuid = synonym.getName().getUuid();
+                UUID toUuid = synonym.getAcceptedTaxon().getName().getUuid();
+                TaxRelKey relKey = new TaxRelKey(fromUuid, toUuid);
+                if (existingRelations.get(relKey) != null) {
+                    logger.info("Relation exists already for name "
+                       + synonym.getName().getTitleCache()
+                       + " to name " + synonym.getAcceptedTaxon().getName().getTitleCache()
+                       + ". Synonym relation not created.");
+                    continue;
+                }else {
+                    existingRelations.put(relKey, synonym.getType().getUuid());
+
+                }
+
+                //map
                 try {
                     synonymMapping.invoke(synonym);
                 } catch (Exception e) {
                     logger.error(e.getMessage() + ". Synonym: " +  synonym.getUuid());
                     e.printStackTrace();
                 }
-
             }
 
             commitTransaction(txStatus);
@@ -155,9 +200,9 @@ public class PesiRelTaxonExport extends PesiExportBase {
         return success;
     }
 
-    private boolean doPhase01(PesiExportState state, PesiExportMapping mapping) {
+    private boolean doPhase02(PesiExportState state, PesiExportMapping mapping) {
 
-        logger.info("PHASE 1: Taxon Relationships ...");
+        logger.info("PHASE 2: Taxon Relationships ...");
 		boolean success = true;
 
 		int limit = state.getConfig().getLimitSave();
@@ -173,12 +218,25 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		while ((list = getNextTaxonRelationshipPartition(limit, partitionCount++, null)) != null) {
 			totalCount = totalCount + list.size();
 			logger.info("Read " + list.size() + " PESI relations. Limit: " + limit + ". Total: " + totalCount );
-//			if (list.size() > 0){
-//				logger.warn("First relation type is " + list.get(0).getType().getTitleCache());
-//			}
+
 			for (TaxonRelationship rel : list){
 				try {
-					mapping.invoke(rel);
+				    //deduplicate (avoid having >1 relationship between the same 2 Taxon table entries
+	                UUID fromUuid = rel.getFromTaxon().getName().getUuid();
+				    UUID toUuid = rel.getToTaxon().getName().getUuid();
+				    TaxRelKey relKey = new TaxRelKey(fromUuid, toUuid);
+				    if (existingRelations.get(relKey) != null) {
+				        logger.warn("A txon relation exists already for name "
+				           + rel.getFromTaxon().getName().getTitleCache()
+				           + " to name " + rel.getToTaxon().getName().getTitleCache() );
+				        continue;
+				    }else {
+				        existingRelations.put(relKey, rel.getType().getUuid());
+				    }
+
+				    //map
+				    mapping.invoke(rel);
+
 				} catch (Exception e) {
 					logger.error(e.getMessage() + ". Relationship: " +  rel.getUuid());
 					e.printStackTrace();
@@ -192,9 +250,9 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		return success;
 	}
 
-    private boolean doPhase01b(PesiExportState state, PesiExportMapping taxonNodeMapping) {
+    private boolean doPhase02b(PesiExportState state, PesiExportMapping taxonNodeMapping) {
 
-        logger.info("PHASE 1b: Taxonnodes ...");
+        logger.info("PHASE 2b: Taxonnodes ...");
         boolean success = true;
 
         int limit = state.getConfig().getLimitSave();
@@ -226,9 +284,9 @@ public class PesiRelTaxonExport extends PesiExportBase {
         return success;
     }
 
-	private boolean doPhase02(PesiExportState state, PesiExportMapping mapping2) {
+	private boolean doPhase01(PesiExportState state) {
 
-	    logger.info("PHASE 2: Name Relationships ...");
+	    logger.info("PHASE 1: All types of name relationships ...");
 		boolean success = true;
 
 		int limit = state.getConfig().getLimitSave();
@@ -236,31 +294,33 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		TransactionStatus txStatus = startTransaction(true);
 		logger.debug("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 
+
+        //original spellings
+        logger.info("PHASE 1a: ... Original Spellings ...");
+        List<NomenclaturalSource> originalSpellingList;
+        int partitionCount = 0;
+        while ((originalSpellingList = getNextOriginalSpellingPartition(limit, partitionCount++, null)) != null   ) {
+            txStatus = handleOriginalSpellingList(state, txStatus, originalSpellingList);
+        }
+
 		//name relations
-		List<NameRelationship> list;
-		int partitionCount = 0;
+        logger.info("PHASE 1b: ... Name Relationships ...");
+        List<NameRelationship> list;
+		partitionCount = 0;
 		while ((list = getNextNameRelationshipPartition(NameRelationship.class, limit, partitionCount++, null)) != null   ) {
 			txStatus = handleNameRelationList(state, txStatus, list);
 		}
 
         //hybrid relations
-		logger.info("PHASE 2b: ... Hybrid Relationships ...");
+		logger.info("PHASE 1c: ... Hybrid Relationships ...");
         List<HybridRelationship> hybridList;
 		partitionCount = 0;
         while ((hybridList = getNextNameRelationshipPartition(HybridRelationship.class, limit, partitionCount++, null)) != null   ) {
             txStatus = handleNameRelationList(state, txStatus, hybridList);
         }
 
-        //original spellings
-        logger.info("PHASE 2c: ... Original Spellings ...");
-        List<NomenclaturalSource> originalSpellingList;
-        partitionCount = 0;
-        while ((originalSpellingList = getNextOriginalSpellingPartition(limit, partitionCount++, null)) != null   ) {
-            txStatus = handleOriginalSpellingList(state, txStatus, originalSpellingList);
-        }
-
         commitTransaction(txStatus);
-		logger.info("End PHASE 2: Name Relationships ...");
+		logger.info("End PHASE 1: Name Relationships ...");
 		state.setCurrentFromObject(null);
 		state.setCurrentToObject(null);
 		return success;
@@ -274,8 +334,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
         	    TaxonName name1;
         	    TaxonName name2;
         	    if (rel.getType() != null &&
-        	            rel.getType().getUuid().equals(NameRelationshipType.uuidAvoidsHomonymOf)
-        	            || rel.getType().getUuid().equals(NameRelationshipType.uuidNonUnspecific)
+        	            (rel.getType().getUuid().equals(NameRelationshipType.uuidAvoidsHomonymOf)
+        	            || rel.getType().getUuid().equals(NameRelationshipType.uuidNonUnspecific))
                         ) {
         	        logger.debug("'Avoids homonym of' and unspecific-non name relationships not supported in PESI");
         	        continue;
@@ -292,6 +352,20 @@ public class PesiRelTaxonExport extends PesiExportBase {
                 	continue;
                 }
 
+        	    //deduplicate (avoid having >1 relationships between the same 2 Taxon table entries
+        	    UUID fromUuid = name1.getUuid();
+        	    UUID toUuid = name2.getUuid();
+        	    TaxRelKey relKey = new TaxRelKey(fromUuid, toUuid);
+                if (existingRelations.get(relKey) != null) {
+                    logger.warn("A relation exists already for name "
+                       + name1.getTitleCache()
+                       + " to name " + name2.getTitleCache() );
+                    continue;
+                }else {
+                    existingRelations.put(relKey, rel.getType().getUuid());
+                }
+
+                //map
         		List<IdentifiableEntity> fromList = new ArrayList<>();
         		List<IdentifiableEntity> toList = new ArrayList<>();
         		makeList(name1, fromList);
@@ -317,10 +391,26 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
     private TransactionStatus handleOriginalSpellingList(PesiExportState state, TransactionStatus txStatus,
             List<NomenclaturalSource> list) {
+
         for (NomenclaturalSource nomSource : list){
             try {
                 TaxonName name1 = nomSource.getNameUsedInSource();
                 TaxonName name2 = nomSource.getSourcedName();
+
+                //deduplicate (avoid having >1 relationships between the same 2 Taxon table entries
+                UUID fromUuid = name1.getUuid();
+                UUID toUuid = name2.getUuid();
+                TaxRelKey relKey = new TaxRelKey(fromUuid, toUuid);
+                if (existingRelations.get(relKey) != null) {
+                    logger.warn("A relation exists already for name "
+                       + name1.getTitleCache()
+                       + " to name " + name2.getTitleCache() );
+                    continue;
+                }else {
+                    existingRelations.put(relKey, NameRelationshipType.uuidOriginalSpellingFor);
+                }
+
+                //map
                 List<IdentifiableEntity> fromList = new ArrayList<>();
                 List<IdentifiableEntity> toList = new ArrayList<>();
                 makeList(name1, fromList);
@@ -352,6 +442,9 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			for (TaxonBase<?> taxon: getPesiTaxa(name)){
 				list.add(taxon);
 			}
+		}
+		if (list.size() > 1) {
+		    logger.info("Name has > 1 taxon: " + name.getTitleCache() + "/" +  name.getUuid());
 		}
 	}
 
