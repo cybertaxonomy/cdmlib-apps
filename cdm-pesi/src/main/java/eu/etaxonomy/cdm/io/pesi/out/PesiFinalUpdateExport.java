@@ -16,16 +16,8 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
- * The export class for {@link eu.etaxonomy.cdm.model.name.TaxonNameBase TaxonNames}.<p>
- * Inserts into DataWarehouse database table <code>Taxon</code>.
- * It is divided into four phases:<p><ul>
- * <li>Phase 1:	Export of all {@link eu.etaxonomy.cdm.model.name.TaxonNameBase TaxonNames} except some data exported in the following phases.
- * <li>Phase 2:	Export of additional data: ParenTaxonFk and TreeIndex.
- * <li>Phase 3:	Export of additional data: Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk.
- * <li>Phase 4:	Export of Inferred Synonyms.</ul>
- * @author e.-m.lee
- * @since 23.02.2010
- *
+ * Final updates/cleanups for PESI DW export.
+ * @author muellera
  */
 @Component
 public class PesiFinalUpdateExport extends PesiExportBase {
@@ -52,7 +44,6 @@ public class PesiFinalUpdateExport extends PesiExportBase {
 		return result;
 	}
 
-
 	@Override
 	protected void doInvoke(PesiExportState state) {
 		try {
@@ -63,7 +54,6 @@ public class PesiFinalUpdateExport extends PesiExportBase {
 
 			//updates to TaxonStatus and others
 			success &= doPhaseUpdates(state);
-
 
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
@@ -79,9 +69,7 @@ public class PesiFinalUpdateExport extends PesiExportBase {
 		}
 	}
 
-
 	private boolean doPhaseUpdates(PesiExportState state) {
-
 
 		String oldStatusFilter = " 7 ";  //"= '" + PesiTransformer.T_STATUS_STR_UNACCEPTED + "' ";
 		String emStr = PesiTransformer.SOURCE_STR_EM;
@@ -93,21 +81,26 @@ public class PesiFinalUpdateExport extends PesiExportBase {
 				" WHERE OriginalDB = '%s' AND taxonstatusfk = 1 AND ParentTaxonFk = %s AND RankFk > 180 ";
 		updateNotAccepted = String.format(updateNotAccepted, 8, "NOT ACCEPTED: TAXONOMICALLY VALUELESS LOCAL OR SINGULAR BIOTYPE", emStr, oldStatusFilter);
 		int updated = state.getConfig().getDestination().update(updateNotAccepted);
+		logger.debug(updated + " taxonomically valueless updated");
 
 		//alternative names
 		String updateAlternativeName = "UPDATE Taxon SET TaxonStatusFk = 1, TaxonStatusCache = 'accepted' " +
 				" FROM RelTaxon RIGHT OUTER JOIN Taxon ON RelTaxon.TaxonFk1 = Taxon.TaxonId " +
 				" WHERE (RelTaxon.RelTaxonQualifierFk = 17) AND (Taxon.TaxonStatusFk = %s) ";
 		updateAlternativeName = String.format(updateAlternativeName, oldStatusFilter);
-		System.out.println(updateAlternativeName);
+//		System.out.println(updateAlternativeName);
 		updated = state.getConfig().getDestination().update(updateAlternativeName);
+		logger.debug(updated + " alternative names status updated");
+
 
 		String updateSynonyms = " UPDATE Taxon SET TaxonStatusFk = 2, TaxonStatusCache = 'synonym' " +
 					" FROM RelTaxon RIGHT OUTER JOIN Taxon ON RelTaxon.TaxonFk1 = Taxon.TaxonId " +
 					" WHERE (RelTaxon.RelTaxonQualifierFk in (1, 3)) AND (Taxon.TaxonStatusFk = %s)";
 		updateSynonyms = String.format(updateSynonyms, oldStatusFilter);
-		System.out.println(updateSynonyms);
+		//System.out.println(updateSynonyms);
 		updated = state.getConfig().getDestination().update(updateSynonyms);
+		logger.debug(updated + " synonym status updated");
+
 
 		// cache citation  - check if this can't be done in getCacheCitation
 		// cache citation - FE
@@ -120,10 +113,11 @@ public class PesiFinalUpdateExport extends PesiExportBase {
 		// cache citation - EM
 		String updateCacheCitationEM = " UPDATE Taxon " +
 				" SET CacheCitation = SpeciesExpertName + ' ' + WebShowName + '. Accessed through: Euro+Med PlantBase at "
-				       + ""+state.getConfig().getEuromedBaseUrl()+ "' + GUID " +
+				       + "" + state.getConfig().getEuromedBaseUrl()+ "' + GUID " +
 				" WHERE OriginalDb = '%s'";
 		updateCacheCitationEM = String.format(updateCacheCitationEM, emStr);
 		updated = state.getConfig().getDestination().update(updateCacheCitationEM);
+		logger.debug(updated + " E+M cache citations updated");
 
 		// cache citation - IF
 //		String updateCacheCitationIF = " UPDATE Taxon " +
@@ -139,5 +133,4 @@ public class PesiFinalUpdateExport extends PesiExportBase {
 	protected boolean isIgnore(PesiExportState state) {
 		return ! state.getConfig().isDoTaxa();
 	}
-
 }

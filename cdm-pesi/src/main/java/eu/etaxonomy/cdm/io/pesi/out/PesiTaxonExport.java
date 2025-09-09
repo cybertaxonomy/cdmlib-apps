@@ -1511,7 +1511,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 
 	/**
 	 * Returns the <code>GUID</code> attribute.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
+	 * @param taxon The {@link TaxonBase taxonBase}.
 	 * @return The <code>GUID</code> attribute.
 	 * @see MethodMapper
 	 */
@@ -1527,7 +1527,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 
 	/**
 	 * Returns the <code>DerivedFromGuid</code> attribute.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
+	 * @param taxon The {@link TaxonBase taxonBase}.
 	 * @return The <code>DerivedFromGuid</code> attribute.
 	 * @see MethodMapper
 	 */
