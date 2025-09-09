@@ -77,6 +77,8 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
         mapping.addMapper(MethodMapper.NewInstance("TaxonStatusCache", PesiTaxonExport.class, "getTaxonStatusCache", standardMethodParameter, PesiExportState.class));
 
         mapping.addMapper(MethodMapper.NewInstance("GUID", PesiTaxonExport.class, this));
+        mapping.addMapper(MethodMapper.NewInstance("NameGUID", PesiTaxonExport.class, this));
+        mapping.addMapper(MethodMapper.NewInstance("WfoId", PesiTaxonExport.class, this));
 
         mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid", PesiTaxonExport.class, this));
         mapping.addMapper(MethodMapper.NewInstance("CacheCitation", PesiTaxonExport.class, TaxonBase.class, PesiExportState.class));

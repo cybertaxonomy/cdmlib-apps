@@ -44,6 +44,7 @@ import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
+import eu.etaxonomy.cdm.model.common.Identifier;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
@@ -57,6 +58,7 @@ import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.model.term.IdentifierType;
 import eu.etaxonomy.cdm.strategy.cache.HTMLTagRules;
 import eu.etaxonomy.cdm.strategy.cache.TagEnum;
 import eu.etaxonomy.cdm.strategy.cache.name.INonViralNameCacheStrategy;
@@ -1038,6 +1040,21 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         return result;
     }
 
+    @SuppressWarnings("unused")
+    private static String getNameGUID(TaxonName taxonName) {
+        return taxonName.getUuid().toString();
+    }
+
+    @SuppressWarnings("unused")
+    private static String getWfoId(TaxonName taxonName) {
+        Identifier wfoId = taxonName.getIdentifier(IdentifierType.uuidWfoNameIdentifier);
+        if (wfoId != null && wfoId.getIdentifier() != null) {
+            return wfoId.getIdentifier();
+        } else {
+            return null;
+        }
+    }
+
 	/**
 	 * Returns the SourceNameCache for the AdditionalSource table
 	 */
@@ -1525,6 +1542,32 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		}
 	}
 
+	@SuppressWarnings("unused")
+	private static String getWfoId(TaxonBase<?> taxon) {
+        Identifier wfoId = taxon.getName().getIdentifier(IdentifierType.uuidWfoNameIdentifier);
+        if (wfoId != null && wfoId.getIdentifier() != null) {
+            return wfoId.getIdentifier();
+        } else {
+            return null;
+        }
+	}
+
+
+	/**
+     * Returns the <code>NameGUID</code> attribute.
+     * @param taxonName The {@link TaxonNameBase TaxonName}.
+     * @return The <code>NameGUID</code> attribute.
+     * @see MethodMapper
+     */
+	@SuppressWarnings("unused")
+	private static String getNameGUID(TaxonBase<?> taxon) {
+        if (taxon.getLsid() != null || taxon.hasMarker(PesiTransformer.uuidMarkerGuidIsMissing, true)){
+            return null;
+        }else{
+            return taxon.getName().getUuid().toString();
+        }
+    }
+
 	/**
 	 * Returns the <code>DerivedFromGuid</code> attribute.
 	 * @param taxon The {@link TaxonBase taxonBase}.
@@ -1832,6 +1875,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("FullName", this, TaxonName.class));
 		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this, TaxonName.class));
 		mapping.addMapper(MethodMapper.NewInstance("GUID", this, TaxonName.class));
+		mapping.addMapper(MethodMapper.NewInstance("NameGUID", this, TaxonName.class));
+		mapping.addMapper(MethodMapper.NewInstance("WfoId", this, TaxonName.class));
 
 		// DisplayName
 		mapping.addMapper(MethodMapper.NewInstance("DisplayName", this, TaxonName.class));
