@@ -1505,12 +1505,14 @@ public final class PesiTransformer extends ExportTransformerBase{
 	 * @return
 	 */
 	public static Integer sourceUseIdSourceUseId(Integer sourceUseId) {
-		// TODO: CDM sourceUseId and PESI sourceUseId are equal for now.
+
 		Integer result = null;
 		switch (sourceUseId) {
 			case 3: return ADDITIONAL_SOURCE;
 			case 4: return SOURCE_OF_SYNONYMY;
 			case 8: return NOMENCLATURAL_REFERENCE;
+			default:
+			    logger.warn("Unhandled sourceUseId: " + sourceUseId);
 		}
 		return result;
 	}
@@ -1743,7 +1745,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	 */
 	public static Integer nomenclaturalCode2Kingdom(NomenclaturalCode nomenclaturalCode) {
 		Integer result = null;
-		// TODO: This needs to be refined. For now we differentiate between animalia, plantae and bacteria only.
+		// TODO This needs to be refined. For now we distinguish animalia, plantae and bacteria only
 		if (nomenclaturalCode.equals(NomenclaturalCode.ICZN)) {
 			result = KINGDOM_ANIMALIA;
 		} else if (nomenclaturalCode.equals(NomenclaturalCode.ICNAFP)) {
@@ -1835,8 +1837,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			} else if (rank.getUuid().equals(ErmsTransformer.uuidRankMutatio)) {result = Mutatio;
 
             } else {
-				//TODO Exception
-				logger.warn("Rank for Kingdom Animalia not yet supported in CDM: "+ rank.getLabel());
+				logger.error("Rank for Kingdom Animalia not yet supported in CDM: "+ rank.getLabel());
 				return null;
 			}
 		} else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_PLANTAE) {
@@ -1849,7 +1850,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			} else if (rank.equals(Rank.SPECIESAGGREGATE() )) {result = Aggregate;
 			} else if (rank.equals(Rank.SPECIESGROUP())) {
 				logger.warn("Rank Species Group not yet implemented");
-				result = null;
+				return null;
 			} else if (rank.getUuid().equals(Rank.uuidCollSpecies)) {result = Coll_Species;
 			} else if (rank.equals(Rank.GREX_INFRASPEC())) {result = Grex;
 			} else if (rank.getUuid().equals(Rank.uuidProles) ) {result = Proles;
@@ -1862,8 +1863,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			} else if (rank.equals(Rank.INFRASPECIFICTAXON())) {result = Taxa_infraspec;
 			} else if (rank.equals(Rank.SUPRAGENERICTAXON())) {result = Taxa_supragen;
             } else {
-				//TODO Exception
-				logger.warn("Rank for Kingdom Plantae not yet supported in CDM: "+ rank.getLabel());
+				logger.error("Rank for Kingdom Plantae not yet supported in CDM: "+ rank.getLabel());
 				return null;
 			}
 		} else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_FUNGI) {
@@ -1873,8 +1873,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 		    } else if (rank.equals(Rank.SUBFORM())) { result = Subform;
 		    } else if (rank.equals(Rank.SPECIALFORM())) {result = Forma_spec;
 		    } else {
-		        //TODO Exception
-		        logger.warn("Rank for Kingdom Fungi not yet supported in CDM: "+ rank.getLabel());
+		        logger.error("Rank for Kingdom Fungi not yet supported in CDM: "+ rank.getLabel());
 		        return null;
 		    }
         }else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_PROTOZOA) {
@@ -1887,8 +1886,7 @@ public final class PesiTransformer extends ExportTransformerBase{
             } else if (rank.equals(Rank.SPECIALFORM())) {result = Forma_spec;
             } else if (rank.equals(Rank.INFRAPHYLUM())) {result = Infraphylum;
             } else {
-                //TODO Exception
-                logger.warn("Rank for Kingdom Protozoa not yet supported in CDM: "+ rank.getLabel());
+                logger.error("Rank for Kingdom Protozoa not yet supported in CDM: "+ rank.getLabel());
                 return null;
             }
         } else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_BACTERIA) {
@@ -1898,8 +1896,7 @@ public final class PesiTransformer extends ExportTransformerBase{
             } else if (rank.equals(Rank.INFRAORDER())) { result = Infraorder;
             } else if (rank.equals(Rank.SUPERFAMILY())) { result = Superfamily;
             } else {
-                //TODO Exception
-                logger.warn("Rank for Kingdom Bacteria not yet supported in CDM: "+ rank.getLabel());
+                logger.error("Rank for Kingdom Bacteria not yet supported in CDM: "+ rank.getLabel());
                 return null;
             }
         }else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_CHROMISTA) {
@@ -1915,13 +1912,11 @@ public final class PesiTransformer extends ExportTransformerBase{
             } else if (rank.equals(Rank.SUBVARIETY())) { result = Subvariety;
             } else if (rank.equals(Rank.SPECIALFORM())) {result = Forma_spec;
             } else {
-                //TODO Exception
-                logger.warn("Rank for Kingdom Chromista not yet supported in CDM: "+ rank.getLabel());
+                logger.error("Rank for Kingdom Chromista not yet supported in CDM: "+ rank.getLabel());
                 return null;
             }
         }else{
-			//TODO Exception
-			logger.warn("Kingdom not yet supported in CDM: "+ pesiKingdomId);
+			logger.error("Kingdom not yet supported in CDM: "+ pesiKingdomId);
 			return null;
 		}
 		return result;
@@ -1938,11 +1933,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 		} else if (nameTypeDesignationStatus.equals(NameTypeDesignationStatus.MONOTYPY())) {
 			return TYPE_BY_MONOTYPY;
 		} else {
-			//TODO Figure out a way to handle this gracefully.
 			logger.warn("Name Type Designation Status not yet supported in PESI: "+ nameTypeDesignationStatus.getLabel());
 			return null;
 		}
-
 	}
 
 	public static String nameTypeDesignationStatus2TypeDesignationStatusCache(NameTypeDesignationStatus nameTypeDesignationStatus) {
@@ -1956,7 +1949,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 		} else if (nameTypeDesignationStatus.equals(NameTypeDesignationStatus.MONOTYPY())) {
 			return TYPE_STR_BY_MONOTYPY;
 		} else {
-			//TODO Figure out a way to handle this gracefully.
 			logger.warn("Name Type Designation Status not yet supported in PESI: "+ nameTypeDesignationStatus.getLabel());
 			return null;
 		}
@@ -1997,8 +1989,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 		        //!synStatus && !Synonym.class
 		        if (ermsStatus == 7) {
 		            //OK, unaccepted, but not synonym
-		            //TODO aber nur, wenn ERMS Priorität hat, z.B. zusammen mit FauEu.
-		            //Das sollte grundsätzlich beim Merge behandelt werden!! Der status sollte nicht kopiert werden
+		            //TODO but only if ERMS has priority, e.g. together with FauEu.
+		            //This should be generally handled during merge!! The status should not be copied
 		        }else {
 		            logger.warn("Unexpected pesi taxon status: " + taxonBase.getTitleCache());
 		        }
@@ -2057,7 +2049,7 @@ public final class PesiTransformer extends ExportTransformerBase{
     		    logger.warn("Unresolved taxon status, neither taxon nor synonym, this should not happen");
     			return T_STATUS_UNRESOLVED;
     		}
-    		//TODO
+    		//TODO orphaned
     //		public static int T_STATUS_ORPHANED = 6;  //never used in SQL import
 		}
 	}
@@ -2220,7 +2212,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 		//does not seem to exist anymore
 //		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusSpNovIned)) {return NAME_ST_SP_NOV_INED;
 
-
 		// The following are non-existent in CDM
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_COMB_AND_STAT_INED;
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_NOM_NOV_INED;
@@ -2228,10 +2219,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}else if (status.getUuid().equals(uuidNomStatusTemporaryName)) {return NAME_ST_TEMPORARY_NAME;
 		}else if (status.getUuid().equals(ErmsTransformer.uuidNomStatusSpeciesInquirenda)) {return NAME_ST_SPECIES_INQUIRENDA;
 
-		//TODO
 		}else {
-			//TODO Exception
-			logger.warn("NomStatus type not yet supported by PESI export: "+ status + "("+status.getUuid()+")");
+			logger.error("NomStatus type not yet supported by PESI export: "+ status + "("+status.getUuid()+")");
 			return null;
 		}
 	}
@@ -2470,7 +2459,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 				return null;
 			}
 		}else{
-			return null;   // TODO needs to be implemented for others
+		    return null;   // TODO quality status, needs to be implemented for others (but others do not have a quality status until now)
 		}
 	}
 

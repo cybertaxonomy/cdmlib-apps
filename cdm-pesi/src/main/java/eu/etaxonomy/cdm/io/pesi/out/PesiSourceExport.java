@@ -323,22 +323,6 @@ public class PesiSourceExport extends PesiExportBase {
 		return result;
 	}
 
-//	private static Set<IdentifiableSource> filterOriginalPesiDbSources(
-//			Set<IdentifiableSource> sourceAll) {
-//		Set<IdentifiableSource> sourceCandidates = new HashSet<>();
-//		for (IdentifiableSource source : sourceAll){
-//			if (isOriginalPesiDbSource(source)){
-//				sourceCandidates.add(source);
-//			}
-//		}
-//		return sourceCandidates;
-//	}
-//
-//	private static boolean isOriginalPesiDbSource(IdentifiableSource source) {
-//		return (source.getCitation() != null) &&
-//				source.getCitation().getType().equals(ReferenceType.Database);
-//	}
-
 	/**
 	 * Returns the <code>OriginalDB</code> attribute.
 	 * @param reference The {@link Reference Reference}.
@@ -347,46 +331,8 @@ public class PesiSourceExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")
 	private static String getOriginalDB(Reference reference) {
-	    //TODO may not work for E+M and FauEu as they may not have import sources for all data
 	    EnumSet<PesiSource> sources  = getSources(reference);
 	    return PesiTransformer.getOriginalDbBySources(sources);
-
-//	    String result = "";
-//
-//		try {
-//    		if (reference != null) {
-//    			Set<IdentifiableSource> sourcesAll = reference.getSources();
-//    			Set<IdentifiableSource> sourceCandidates = filterOriginalPesiDbSources(sourcesAll);
-//
-//    			if (sourceCandidates.size() == 1) {
-//    				Reference citation = sourceCandidates.iterator().next().getCitation();
-//    				if (citation != null) {
-//    					result = PesiTransformer.databaseString2Abbreviation(citation.getTitleCache()); //or just title
-//    				} else {
-//    					logger.warn("OriginalDB can not be determined because the citation of this source is NULL: " + sourceCandidates.iterator().next().getUuid());
-//    				}
-//    			} else if (sourceCandidates.size() > 1) {
-//    				logger.warn("Taxon has multiple IdentifiableSources: " + reference.getUuid() + " (" + reference.getTitleCache() + ")");
-//    				int count = 1;
-//    				for (IdentifiableSource source : sourceCandidates) {
-//    					Reference citation = source.getCitation();
-//    					if (citation != null) {
-//    						result += PesiTransformer.databaseString2Abbreviation(citation.getTitleCache());
-//    						if (count < sourceCandidates.size()) {
-//    							result += "; ";
-//    						}
-//    						count++;
-//    					}
-//    				}
-//    			} else {
-//    				result = null;
-//    			}
-//    		}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//
-//		return result;
 	}
 
     @Override

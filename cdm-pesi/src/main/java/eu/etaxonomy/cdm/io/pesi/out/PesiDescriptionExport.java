@@ -419,7 +419,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 
     private boolean isExcludedNote(DescriptionElementBase element) {
 		Integer categoryFk = PesiTransformer.feature2NoteCategoryFk(element.getFeature());
-		//TODO decide where to handle them best (configurator, transformer, single method, ...)
 		return (excludedNoteCategories.contains(categoryFk));
 	}
 
@@ -460,7 +459,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 //		}else if (area.equals(TdwgArea.getAreaByTdwgAbbreviation("21"))){
 //			//Macaronesia records should not be exported to PESI
 //			return false;
-//		//TODO exclude Russion areas Rs*, and maybe others
+//		//TODO exclude Russian areas Rs*, and maybe others
 
 		} else {
             try {
@@ -732,7 +731,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private static Integer getNoteCategoryFk(DescriptionElementBase descriptionElement) {
 		Integer result = null;
 		result = PesiTransformer.feature2NoteCategoryFk(descriptionElement.getFeature());
-		//TODO decide where to handle them best (configurator, transformer, single method, ...)
 		if (excludedNoteCategories.contains(result)){
 			result = null;
 		}
@@ -799,12 +797,11 @@ public class PesiDescriptionExport extends PesiExportBase {
 		if (multilanguageText != null) {
 			Set<Language> languages = multilanguageText.keySet();
 
-			// TODO: Think of something more sophisticated than this
 			if (languages.size() > 0) {
 				language = languages.iterator().next();
-			}
-			if (languages.size() > 1){
-				logger.warn("There is more than 1 language for a given description (" + descriptionElement.getClass().getSimpleName() + "):" + descriptionElement.getUuid());
+				if (languages.size() > 1){
+				    logger.warn("There is more than 1 language for a given description (" + descriptionElement.getClass().getSimpleName() + "):" + descriptionElement.getUuid());
+				}
 			}
 		}
 		return language;
@@ -920,7 +917,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 		mapping.addMapper(IdMapper.NewInstance("NoteId"));
 		mapping.addMapper(DbTextDataMapper.NewDefaultInstance("Note_1"));
-		//TODO
+		//TODO Note_2
 		mapping.addMapper(MethodMapper.NewInstance("Note_2", this, standardMethodParameter));
 		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryFk", this, standardMethodParameter ));
 		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryCache", this, standardMethodParameter, PesiExportState.class ));

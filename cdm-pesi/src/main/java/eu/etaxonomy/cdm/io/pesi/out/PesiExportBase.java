@@ -276,18 +276,10 @@ public abstract class PesiExportBase
 	protected boolean isPesiTaxonOrSynonymRelationship(RelationshipBase rel){
 		TaxonBase<?> fromTaxon;
 		Taxon toTaxon;
-		// TODO:fix!!!
-//		if (rel.isInstanceOf(SynonymRelationship.class)){
-//			SynonymRelationship synRel = CdmBase.deproxy(rel, SynonymRelationship.class);
-//			fromTaxon = synRel.getSynonym();
-//			toTaxon = synRel.getAcceptedTaxon();
-//			synRel = null;
-//		}else
 		if (rel.isInstanceOf(TaxonRelationship.class)){
 			TaxonRelationship taxRel = CdmBase.deproxy(rel, TaxonRelationship.class);
 			fromTaxon = taxRel.getFromTaxon();
 			toTaxon = taxRel.getToTaxon();
-			taxRel = null;
 		}else{
 			logger.warn ("Only synonym - and taxon-relationships allowed here");
 			return false;

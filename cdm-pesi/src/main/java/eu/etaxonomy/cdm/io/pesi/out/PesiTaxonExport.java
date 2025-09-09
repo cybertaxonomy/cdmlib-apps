@@ -268,7 +268,6 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 				    logger.warn("Taxon name has a micro reference but no nom. ref.: " + nvn.getTitleCache());
 				}
 
-				//TODO switch on again, leads to some warnings in ERMS for taxa of not correctly handled kingdoms
 				validatePhaseOne(taxon, nvn);
 			}
 

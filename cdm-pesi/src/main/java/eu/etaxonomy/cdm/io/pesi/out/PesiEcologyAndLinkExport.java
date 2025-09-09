@@ -225,7 +225,7 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
         if (value == null){
             return null;
         }else{
-            //TODO use regex grouping
+            //TODO minor, use regex grouping
             String result = value.split(ErmsLinkImport.TOKEN_LINKTEXT)[0];
             result = result.replace(ErmsLinkImport.TOKEN_URL, "").trim();
             return result;
@@ -238,7 +238,7 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
         if (value == null){
             return null;
         }else{
-            //TODO use regex grouping
+            //TODO minor, use regex grouping
             String[] split = value.split(ErmsLinkImport.TOKEN_LINKTEXT);
             if (split.length > 1){
                 String result = split[1];
