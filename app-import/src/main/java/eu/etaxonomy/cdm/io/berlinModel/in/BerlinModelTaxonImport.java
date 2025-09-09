@@ -297,7 +297,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 					if (!state.getConfig().isUseLastScrutinyAsSec() && resultSetHasColumn(rs, "LastScrutiny")){
 						String lastScrutiny = rs.getString("LastScrutiny");
 						//TODO strange, why not Extension last scrutiny? To match PESI? Is there a difference
-						//to LastScrutinyFK and SpeciesExpertFK?
+						//to LastScrutinyFK and SpeciesExpertGUID?
 						if (isNotBlank(lastScrutiny)){
 						    ExtensionType extensionTypeSpeciesExpert = getExtensionType(state, BerlinModelTransformer.uuidSpeciesExpertName, "Species Expert", "Species Expert", "Species Expert");
 						    taxonBase.addExtension(lastScrutiny, extensionTypeSpeciesExpert);

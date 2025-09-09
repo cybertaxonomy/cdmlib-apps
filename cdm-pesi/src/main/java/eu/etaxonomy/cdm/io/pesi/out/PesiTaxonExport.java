@@ -469,10 +469,10 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			for (TaxonBase<?> taxon : list) {
 				TaxonName taxonName = CdmBase.deproxy(taxon.getName());
 				// Determine expertFk
-//				Integer expertFk = makeExpertFk(state, taxonName);
-//
-//				// Determine speciesExpertFk
-//				Integer speciesExpertFk = makeSpeciesExpertFk(state, taxonName);
+				Integer expertFk = getExpertGUID(taxon, state);
+
+				// Determine speciesExpertFk
+				Integer speciesExpertFk = getSpeciesExpertGUID(taxon, state);
 
 				doCount(count++, modCount, pluralString);
 				Integer typeNameFk = getTypeNameFk(taxonName, state);
@@ -1743,10 +1743,11 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		}
 	}
 
-	//TODO change to ExpertGUID
-	private static Integer getExpertFk(Reference reference, PesiExportState state) {
-		Integer result = state.getDbId(reference);
-		return result;
+	private static Integer getExpertGUID(TaxonBase<?> taxon, PesiExportState state) {
+	    //TODO implement expertGUID, but not clear which GUID to use
+//		Integer result = state.getDbId(reference);
+//		return result;
+		return null;
 	}
 
 	/**
@@ -1820,16 +1821,18 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
     }
 
     /**
-	 * Returns the <code>SpeciesExpertFk</code> attribute.
-	 * @param reference The {@link Reference Reference}.
+	 * Returns the <code>SpeciesExpertGUID</code> attribute.
+	 * @param reference The {TaxonBase taxon}.
 	 * @param state The {@link PesiExportState PesiExportState}.
-	 * @return The <code>SpeciesExpertFk</code> attribute.
+	 * @return The <code>SpeciesExpertGUID</code> attribute.
 	 * @see MethodMapper
 	 */
 	//TODO should be changed to SpeciesExpertGUID
-	private static Integer getSpeciesExpertFk(Reference reference, PesiExportState state) {
-		Integer result = state.getDbId(reference);
-		return result;
+	private static Integer getSpeciesExpertGUID(TaxonBase<?> taxon, PesiExportState state) {
+        //TODO implement expertGUID, but not clear which GUID to use
+//      Integer result = state.getDbId(reference);
+//      return result;
+        return null;
 	}
 
 	protected static TaxonNameDefaultCacheStrategy getCacheStrategy(TaxonName taxonName) {
