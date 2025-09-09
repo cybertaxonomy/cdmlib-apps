@@ -6,7 +6,7 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-package eu.etaxonomy.cdm.io.pesi.out;
+package eu.etaxonomy.cdm.pesi.archive.io.out;
 
 import java.util.Collection;
 
@@ -19,6 +19,8 @@ import eu.etaxonomy.cdm.io.common.mapping.CdmMapperBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbSequenceMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IDbExportMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
+import eu.etaxonomy.cdm.io.pesi.out.PesiExportMapping;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 
 /**
