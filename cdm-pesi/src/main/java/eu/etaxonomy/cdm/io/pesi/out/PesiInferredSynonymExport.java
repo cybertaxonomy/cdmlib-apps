@@ -10,6 +10,7 @@ package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -179,7 +180,9 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
         }
 
         List<Taxon> taxonList = null;
-        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber, null)).size() > 0) {
+        EnumSet<NomenclaturalCode> zooNameFilter = EnumSet.of(NomenclaturalCode.ICZN);
+        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*",
+                Rank.SPECIES(), zooNameFilter, pageSize, pageNumber, null)).size() > 0) {
 
             Map<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
@@ -214,7 +217,10 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
         }
         taxonList = null;
 
-        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SUBSPECIES(), pageSize, pageNumber, null)).size() > 0) {
+        //for subspecies
+        while ((taxonList = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*",
+                Rank.SUBSPECIES(), zooNameFilter, pageSize, pageNumber, null)).size() > 0) {
+
             Map<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
             logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");

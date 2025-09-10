@@ -106,8 +106,9 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 					if (infraGenericEpithet == null) {
 						String genusOrUninomial = targetNonViralName.getGenusOrUninomial();
 						String specificEpithet = targetNonViralName.getSpecificEpithet();
-						List<Taxon> foundTaxa = getTaxonService().listTaxaByName(Taxon.class, genusOrUninomial, "*", specificEpithet,
-								"*", "*", null, pageSize, 1, null);
+						List<Taxon> foundTaxa = getTaxonService().listTaxaByName(Taxon.class,
+						        genusOrUninomial, "*", specificEpithet,
+								"*", "*", null, null, pageSize, 1, null);
 						if (foundTaxa.size() == 1) {
 							// one matching Taxon found
 							TaxonBase<?> taxon = foundTaxa.iterator().next();

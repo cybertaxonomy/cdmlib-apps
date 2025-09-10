@@ -14,6 +14,7 @@ import static eu.etaxonomy.cdm.pesi.archive.io.faunaEuropaea.FaunaEuropaeaTransf
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +39,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -1137,8 +1139,9 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	        List<Taxon> taxonList = null;
 	        Set<TaxonBase> synonymList = new HashSet<>();
 
-
-	        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber, null)).size() > 0) {
+	        EnumSet<NomenclaturalCode> zooNameFilter = EnumSet.of(NomenclaturalCode.ICZN);
+	        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*",
+	                Rank.SPECIES(), zooNameFilter, pageSize, pageNumber, null)).size() > 0) {
 	            HashMap<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
 	            logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Importing...");
@@ -1162,8 +1165,10 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	            pageNumber++;
 	        }
 	        taxonList = null;
-	        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SUBSPECIES(), pageSize, pageNumber, null)).size() > 0) {
-	            HashMap<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
+	        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*",
+	                Rank.SUBSPECIES(), zooNameFilter, pageSize, pageNumber, null)).size() > 0) {
+
+	            Map<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
 	            logger.info("Fetched " + taxonList.size() + " " + parentPluralString  + ". Exporting...");
 	            synonymList = createInferredSynonymsForTaxonList(state, taxonList);

@@ -69,11 +69,13 @@ public class FaunaEuErmsMergeActivator extends PesiMergeBase{
 		//set the ranks of Agnatha and Gnathostomata to 50 instead of 45
 		List<TaxonBase> taxaToChangeRank = new ArrayList<>();
 
-		Pager<TaxonBase> agnatha = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Agnatha", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0, null);
+		Pager<TaxonBase> agnatha = sc.appCtrInit.getTaxonService().findTaxaByName(
+		        TaxonBase.class, "Agnatha", null, null, null, "*", Rank.INFRAPHYLUM(), null, 10, 0, null);
 		List<TaxonBase> agnathaList = agnatha.getRecords();
 		taxaToChangeRank.addAll(agnathaList);
 
-		Pager<TaxonBase> gnathostomata = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Gnathostomata", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0, null);
+		Pager<TaxonBase> gnathostomata = sc.appCtrInit.getTaxonService().findTaxaByName(
+		        TaxonBase.class, "Gnathostomata", null, null, null, "*", Rank.INFRAPHYLUM(), null, 10, 0, null);
 		List<TaxonBase> gnathostomataList = gnathostomata.getRecords();
 		taxaToChangeRank.addAll(gnathostomataList);
 
