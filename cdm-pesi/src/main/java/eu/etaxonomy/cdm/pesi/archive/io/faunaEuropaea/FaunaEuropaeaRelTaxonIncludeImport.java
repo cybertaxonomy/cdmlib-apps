@@ -1101,15 +1101,12 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
             }
             getTaxonNodeService().saveOrUpdate(nodes);
             nodes = null;
-
         }
         taxonMap= null;
         agentMap= null;
         taxonBases = null;
         agentBases = null;
-       }
-
-
+    }
 
 	private void processInferredSynonyms(FaunaEuropaeaImportState state){
 
@@ -1179,8 +1176,6 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	            logger.debug("Committed transaction.");
 	            logger.info("Exported " + taxonList.size()+ " " + inferredSynonymPluralString + ". Total: " + count);
 	            //pastCount = count;
-
-
 
 	            // Start transaction
 	            txStatus = startTransaction(true);

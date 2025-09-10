@@ -67,7 +67,8 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 	}
 
 	private void processAdditionalInfraGenericEpithets(FaunaEuropaeaImportState state) {
-		int pageSize = 1000;
+
+	    int pageSize = 1000;
 		Set<UUID> uuidSet = new HashSet<UUID>();
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		ICdmDataSource destination = fauEuConfig.getDestination();

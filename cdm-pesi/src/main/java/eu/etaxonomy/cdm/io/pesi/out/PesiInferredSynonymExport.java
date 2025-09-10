@@ -179,6 +179,7 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
             logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
         }
 
+        //for species
         List<Taxon> taxonList = null;
         EnumSet<NomenclaturalCode> zooNameFilter = EnumSet.of(NomenclaturalCode.ICZN);
         while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*",
@@ -224,8 +225,9 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
             Map<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
             logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
-            inferredSynonymsDataToBeSaved.putAll(createInferredSynonymsForTaxonList(state, mapping,
-                    synRelMapping, taxonList));
+            Map<Integer, TaxonName> inferredSynonyms = createInferredSynonymsForTaxonList(state, mapping,
+                    synRelMapping, taxonList);
+            inferredSynonymsDataToBeSaved.putAll(inferredSynonyms);
 
             doCount(count += taxonList.size(), modCount, inferredSynonymPluralString);
             // Commit transaction
@@ -247,10 +249,10 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
             pageNumber++;
             inferredSynonymsDataToBeSaved = null;
         }
+
         if (taxonList.size() == 0) {
             logger.info("No " + parentPluralString + " left to fetch.");
         }
-
         taxonList = null;
 //      logger.warn("Taking snapshot at the end of phase 5 of taxonExport");
 //      ProfilerController.memorySnapshot();
@@ -264,92 +266,72 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
         return success;
     }
 
-
     private Map<Integer, TaxonName> createInferredSynonymsForTaxonList(PesiExportState state,
             PesiExportMapping mapping, PesiExportMapping synRelMapping,  List<Taxon> taxonList) {
 
         Classification classification = null;
-        List<Synonym> inferredSynonyms = null;
         boolean localSuccess = true;
 
         Map<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
         for (Taxon acceptedTaxon : taxonList) {
 
-            TaxonName taxonName = acceptedTaxon.getName();
-
-            if (taxonName.isZoological()) {
+            if (acceptedTaxon.getName().isZoological()) {
                 kingdomFk = findKingdomIdFromTreeIndex(acceptedTaxon, state);
 
-                Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
-                TaxonNode singleNode = null;
-
-                if (taxonNodes.size() > 0) {
-                    // Determine the classification of the current TaxonNode
-
-                    singleNode = taxonNodes.iterator().next();
-                    if (singleNode != null) {
-                        classification = singleNode.getClassification();
-                    } else {
-                        logger.error("A TaxonNode belonging to this accepted Taxon is NULL: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() +")");
-                    }
-                } else {
-                    // Classification could not be determined directly from this TaxonNode
-                    // The stored classification from another TaxonNode is used. It's a simple, but not a failsafe fallback solution.
-                    if (taxonNodes.size() == 0) {
-                        //logger.error("Classification could not be determined directly from this Taxon: " + acceptedTaxon.getUuid() + " is misapplication? "+acceptedTaxon.isMisapplication()+ "). The classification of the last taxon is used");
-                    }
-                }
+                classification = getClassification(classification, acceptedTaxon);
 
                 if (classification != null) {
                     try{
-                        TaxonName name = acceptedTaxon.getName();
+//                        TaxonName name = acceptedTaxon.getName();
                         //if (name.isSpecies() || name.isInfraSpecific()){
-                            inferredSynonyms  = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true);
+                        List<Synonym> inferredSynonyms = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true);
                         //}
 //                              inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymType.INFERRED_GENUS_OF());
-                        if (inferredSynonyms != null) {
-                            for (Synonym synonym : inferredSynonyms) {
-//                                  TaxonName synonymName = synonym.getName();
-                                MarkerType markerType =getUuidMarkerType(PesiTransformer.uuidMarkerGuidIsMissing, state);
-                                synonym.addMarker(Marker.NewInstance(markerType, true));
-                                // Both Synonym and its TaxonName have no valid Id yet
-                                synonym.setId(currentTaxonId++);
 
+                        for (Synonym inferredSynonym : inferredSynonyms) {
 
-                                localSuccess &= mapping.invoke(synonym);
-                                //get SynonymRelationship and export
-                                if (synonym.getAcceptedTaxon() == null ){
-                                    IdentifiableSource source = synonym.getSources().iterator().next();
-                                    if (source.getIdNamespace().contains("Potential combination")){
-                                        acceptedTaxon.addSynonym(synonym, SynonymType.POTENTIAL_COMBINATION_OF);
-                                        logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
-                                    } else if (source.getIdNamespace().contains("Inferred Genus")){
-                                        acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_GENUS_OF);
-                                        logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
-                                    } else if (source.getIdNamespace().contains("Inferred Epithet")){
-                                        acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_EPITHET_OF);
-                                        logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
-                                    } else{
-                                        acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_SYNONYM_OF);
-                                        logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
-                                    }
+                            //add hasNoGuid-marker
+                            MarkerType markerType =getUuidMarkerType(PesiTransformer.uuidMarkerGuidIsMissing, state);
+                            inferredSynonym.addMarker(Marker.NewInstance(markerType, true));
 
-                                    localSuccess &= synRelMapping.invoke(synonym);
-                                    if (!localSuccess) {
-                                        logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
-                                    }
-                                } else {
-                                    localSuccess &= synRelMapping.invoke(synonym);
-                                    if (!localSuccess) {
-                                        logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
-                                    } else {
-                                        logger.info("Synonym relationship successfully exported: " + synonym.getTitleCache() + "  " +acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
-                                    }
+                            // Both Synonym and its TaxonName have no valid Id yet
+                            inferredSynonym.setId(currentTaxonId++);
+
+                            //map
+                            localSuccess &= mapping.invoke(inferredSynonym);
+
+                            //get SynonymRelationship and export
+                            if (inferredSynonym.getAcceptedTaxon() == null ){
+                                IdentifiableSource source = inferredSynonym.getSources().iterator().next();
+                                if (source.getIdNamespace().contains("Potential combination")){
+                                    acceptedTaxon.addSynonym(inferredSynonym, SynonymType.POTENTIAL_COMBINATION_OF);
+                                    logger.error(inferredSynonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
+                                } else if (source.getIdNamespace().contains("Inferred Genus")){
+                                    acceptedTaxon.addSynonym(inferredSynonym, SynonymType.INFERRED_GENUS_OF);
+                                    logger.error(inferredSynonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
+                                } else if (source.getIdNamespace().contains("Inferred Epithet")){
+                                    acceptedTaxon.addSynonym(inferredSynonym, SynonymType.INFERRED_EPITHET_OF);
+                                    logger.error(inferredSynonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
+                                } else{
+                                    acceptedTaxon.addSynonym(inferredSynonym, SynonymType.INFERRED_SYNONYM_OF);
+                                    logger.error(inferredSynonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
                                 }
 
-                                inferredSynonymsDataToBeSaved.put(synonym.getId(), synonym.getName());
+                                localSuccess &= synRelMapping.invoke(inferredSynonym);
+                                if (!localSuccess) {
+                                    logger.error("Synonym relationship export failed " + inferredSynonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+                                }
+                            } else {
+                                localSuccess &= synRelMapping.invoke(inferredSynonym);
+                                if (!localSuccess) {
+                                    logger.error("Synonym relationship export failed " + inferredSynonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+                                } else {
+                                    logger.info("Synonym relationship successfully exported: " + inferredSynonym.getTitleCache() + "  " +acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+                                }
                             }
+
+                            inferredSynonymsDataToBeSaved.put(inferredSynonym.getId(), inferredSynonym.getName());
                         }
                     }catch(Exception e){
                         logger.error(e.getMessage());
@@ -364,6 +346,29 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
         }
 
         return inferredSynonymsDataToBeSaved;
+    }
+
+    private Classification getClassification(Classification classification, Taxon acceptedTaxon) {
+        Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
+        TaxonNode singleNode = null;
+
+        if (taxonNodes.size() > 0) {
+            // Determine the classification of the current TaxonNode
+
+            singleNode = taxonNodes.iterator().next();
+            if (singleNode != null) {
+                classification = singleNode.getClassification();
+            } else {
+                logger.error("A TaxonNode belonging to this accepted Taxon is NULL: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() +")");
+            }
+        } else {
+            // Classification could not be determined directly from this TaxonNode
+            // The stored classification from another TaxonNode is used. It's a simple, but not a failsafe fallback solution.
+            if (taxonNodes.size() == 0) {
+                //logger.error("Classification could not be determined directly from this Taxon: " + acceptedTaxon.getUuid() + " is misapplication? "+acceptedTaxon.isMisapplication()+ "). The classification of the last taxon is used");
+            }
+        }
+        return classification;
     }
 
 
