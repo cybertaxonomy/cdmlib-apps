@@ -28,6 +28,7 @@ import eu.etaxonomy.cdm.io.pesi.erms.ErmsLinkImport;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
+import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.profiler.ProfilerController;
 /**
@@ -177,6 +178,15 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
     }
 
     private static String createEcologyStr(TaxonBase<?> taxon, String strEcology, UUID markerUuid) {
+        Set<Marker> markers = taxon.getMarkers(markerUuid);
+        long count = markers.stream().map(m->m.getFlag()).distinct().count();
+        if (count == 0) {
+            return null;
+        }else if (count > 1) {
+            logger.warn("Taxon " +  taxon.getTitleCache() + " has ecology markers with ambiguous values. Marker: " + markerUuid);
+            //in this case an arbitrary value is taken
+        }
+
         Boolean value = taxon.markerValue(markerUuid);
         if (value == null){
             return null;
