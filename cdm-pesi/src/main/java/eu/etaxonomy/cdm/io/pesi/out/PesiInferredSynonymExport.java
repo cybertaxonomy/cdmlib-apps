@@ -149,7 +149,7 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
     }
 
     //  "PHASE: Creating Inferred Synonyms..." (was PHASE 05 in TaxonExport)
-    private boolean doPhase(PesiExportState state, PesiExportMapping mapping, PesiExportMapping synRelMapping) {
+    private boolean doPhase(PesiExportState state, PesiExportMapping taxonMapping, PesiExportMapping synRelMapping) {
         int count;
 
         boolean success = true;
@@ -182,7 +182,7 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
         //for species
         List<Taxon> taxonList = null;
         EnumSet<NomenclaturalCode> zooNameFilter = EnumSet.of(NomenclaturalCode.ICZN);
-        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*",
+        while ((taxonList = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*",
                 Rank.SPECIES(), zooNameFilter, pageSize, pageNumber, null)).size() > 0) {
 
             Map<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
@@ -191,7 +191,7 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
                 logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
             }
 
-            Map<Integer, TaxonName> inferredSynonyms = createInferredSynonymsForTaxonList(state, mapping,
+            Map<Integer, TaxonName> inferredSynonyms = createInferredSynonymsForTaxonList(state, taxonMapping,
                     synRelMapping, taxonList);
             inferredSynonymsDataToBeSaved.putAll(inferredSynonyms);
 
@@ -225,7 +225,7 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
             Map<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
             logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
-            Map<Integer, TaxonName> inferredSynonyms = createInferredSynonymsForTaxonList(state, mapping,
+            Map<Integer, TaxonName> inferredSynonyms = createInferredSynonymsForTaxonList(state, taxonMapping,
                     synRelMapping, taxonList);
             inferredSynonymsDataToBeSaved.putAll(inferredSynonyms);
 
@@ -266,8 +266,13 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
         return success;
     }
 
+    /**
+     * Creates a map of not-persisted inferred synonyms (including all inferred types)
+     * with the id being the key of the map.
+     * Exports the inferred synonyms to the datawarehouse.
+     */
     private Map<Integer, TaxonName> createInferredSynonymsForTaxonList(PesiExportState state,
-            PesiExportMapping mapping, PesiExportMapping synRelMapping,  List<Taxon> taxonList) {
+            PesiExportMapping mapping, PesiExportMapping synRelMapping, List<Taxon> taxonList) {
 
         Classification classification = null;
         boolean localSuccess = true;
@@ -276,7 +281,8 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
 
         for (Taxon acceptedTaxon : taxonList) {
 
-            if (acceptedTaxon.getName().isZoological()) {
+            if (acceptedTaxon.getName().isZoological()) {  //not really needed anymore as taxonList should only include zoological names now
+
                 kingdomFk = findKingdomIdFromTreeIndex(acceptedTaxon, state);
 
                 classification = getClassification(classification, acceptedTaxon);
@@ -341,7 +347,7 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
                     logger.error("Classification is NULL. Inferred Synonyms could not be created for this Taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() + ")");
                 }
             } else {
-//                          logger.error("TaxonName is not a ZoologicalName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+//              logger.error("TaxonName is not a ZoologicalName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
             }
         }
 

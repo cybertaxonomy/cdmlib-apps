@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.service.TaxonServiceImpl;
+import eu.etaxonomy.cdm.api.service.IInferredSynonymsService;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.format.reference.NomenclaturalSourceFormatter;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -1464,11 +1464,11 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 				if (sourceIdNameSpace != null) {
 					if (sourceIdNameSpace.equals(PesiTransformer.STR_NAMESPACE_NOMINAL_TAXON)) {
 						result = CdmUtils.concat("; ", result, idInSource != null ? ("Nominal Taxon from TAX_ID: " + source.getIdInSource()):null);
-					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.INFERRED_EPITHET_NAMESPACE)) {
+					} else if (sourceIdNameSpace.equals(IInferredSynonymsService.INFERRED_EPITHET_NAMESPACE)) {
 						result = CdmUtils.concat("; ", result, idInSource != null ? ("Inferred epithet from TAX_ID: " + source.getIdInSource()) : null);
-					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.INFERRED_GENUS_NAMESPACE)) {
+					} else if (sourceIdNameSpace.equals(IInferredSynonymsService.INFERRED_GENUS_NAMESPACE)) {
 						result = CdmUtils.concat("; ", result, idInSource != null ? ("Inferred genus from TAX_ID: " + source.getIdInSource()):null);
-					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.POTENTIAL_COMBINATION_NAMESPACE)) {
+					} else if (sourceIdNameSpace.equals(IInferredSynonymsService.POTENTIAL_COMBINATION_NAMESPACE)) {
 						result = CdmUtils.concat("; ", result, idInSource != null ? ("Potential combination from TAX_ID: " + source.getIdInSource()):null);
 					}
 				}
