@@ -1254,7 +1254,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
                            TaxonName name = acceptedTaxon.getName();
 
                             //if (name.isSpecies() || name.isInfraSpecific()){
-                               inferredSynonymsLocal = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true);
+                               inferredSynonymsLocal = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true, true);
                               // logger.info("number of inferred synonyms: " + inferredSynonyms.size());
                            //}
 //                             inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymType.INFERRED_GENUS_OF());

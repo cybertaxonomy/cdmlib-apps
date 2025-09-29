@@ -291,7 +291,7 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
                     try{
 //                        TaxonName name = acceptedTaxon.getName();
                         //if (name.isSpecies() || name.isInfraSpecific()){
-                        List<Synonym> inferredSynonyms = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true);
+                        List<Synonym> inferredSynonyms = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true, true);
                         //}
 //                              inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymType.INFERRED_GENUS_OF());
 
