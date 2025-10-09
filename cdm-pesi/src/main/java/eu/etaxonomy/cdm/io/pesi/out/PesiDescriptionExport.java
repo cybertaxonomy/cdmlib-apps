@@ -21,9 +21,11 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.common.SetMap;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -44,14 +46,17 @@ import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbTextDataMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
+import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
+import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
+import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
@@ -157,13 +162,13 @@ public class PesiDescriptionExport extends PesiExportBase {
 			imageMapping.initialize(state);
 
 			// Taxon Descriptions
-			success &= doPhase01(state, notesMapping, occurrenceMapping, addSourceSourceMapping, additionalSourceMapping, vernacularMapping, imageMapping);
+			success &= doPhase01_taxon_descriptions(state, notesMapping, occurrenceMapping, addSourceSourceMapping, additionalSourceMapping, vernacularMapping, imageMapping);
 
 			// Name Descriptions
-			success &= doPhase01b(state, notesMapping, occurrenceMapping, addSourceSourceMapping, additionalSourceMapping, vernacularMapping, imageMapping);
+			success &= doPhase01b_name_descriptions(state, notesMapping, addSourceSourceMapping, additionalSourceMapping, vernacularMapping, imageMapping);
 
 			logger.info("PHASE 2...");
-			success &= doPhase02(state);
+			success &= doPhase02_name_extensions(state);
 
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
@@ -179,10 +184,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 	}
 
 	//PHASE 01: Description Elements
-	private boolean doPhase01(PesiExportState state, PesiExportMapping notesMapping, PesiExportMapping occurrenceMapping, PesiExportMapping addSourceSourceMapping,
-			PesiExportMapping additionalSourceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) throws SQLException {
+	private boolean doPhase01_taxon_descriptions(PesiExportState state, PesiExportMapping notesMapping,
+	        PesiExportMapping occurrenceMapping, PesiExportMapping addSourceSourceMapping,
+			PesiExportMapping additionalSourceMapping, PesiExportMapping vernacularMapping,
+			PesiExportMapping imageMapping) {
 
-//	    System.out.println("PHASE 1 of description import");
+//	    System.out.println("PHASE 1a of description import");
 	    logger.info("PHASE 1...");
 		int count = 0;
 		int pastCount = 0;
@@ -254,8 +261,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 	}
 
 	//PHASE 01b: Name Descriptions
-	private boolean doPhase01b(PesiExportState state, PesiExportMapping notesMapping, PesiExportMapping occurrenceMapping, PesiExportMapping addSourceSourceMapping,
-			PesiExportMapping additionalSourceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) throws SQLException {
+	private boolean doPhase01b_name_descriptions(PesiExportState state, PesiExportMapping notesMapping, PesiExportMapping addSourceSourceMapping,
+			PesiExportMapping additionalSourceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) {
 
 	    if (state.getConfig().getStartDescriptionPartition() > 0) {
 	        logger.info("Skip PHASE 1b. Description partition is not 0 (first)");
@@ -288,14 +295,14 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 				for (DescriptionElementBase element : desc.getElements()){
 					if (isPurePesiName(name)){
-						success &= handleDescriptionElement(state, notesMapping, occurrenceMapping, vernacularMapping, imageMapping,
-								addSourceSourceMapping, additionalSourceMapping, isImageGallery, element);
+						success &= handleDescriptionElement(state, notesMapping, vernacularMapping, imageMapping,
+								addSourceSourceMapping, additionalSourceMapping, isImageGallery, element, null);
 					}else{
 						for (TaxonBase<?> taxonBase : name.getTaxonBases()){
 							if (isPesiTaxon(taxonBase)){
 								state.setCurrentTaxon(taxonBase);
-								success &= handleDescriptionElement(state, notesMapping, occurrenceMapping, vernacularMapping, imageMapping,
-										addSourceSourceMapping, additionalSourceMapping, isImageGallery, element);
+								success &= handleDescriptionElement(state, notesMapping, vernacularMapping, imageMapping,
+										addSourceSourceMapping, additionalSourceMapping, isImageGallery, element, null);
 								state.setSourceForAdditionalSourceCreated(true);
 							}
 						}
@@ -334,23 +341,27 @@ public class PesiDescriptionExport extends PesiExportBase {
 		return success;
 	}
 
-	private boolean handleSingleTaxon(Taxon taxon, PesiExportState state, PesiExportMapping notesMapping, PesiExportMapping occurrenceMapping,
+	private boolean handleSingleTaxon(Taxon taxon, PesiExportState state, PesiExportMapping notesMapping,
+	        PesiExportMapping occurrenceMapping,
 			PesiExportMapping addSourceSourceMapping, PesiExportMapping additionalSourceMapping,
-			PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) throws SQLException {
+			PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) {
 
 	    boolean success = true;
 
 		Set<DescriptionBase<?>> descriptions = new HashSet<>();
 		descriptions.addAll(taxon.getDescriptions());
+		Set<Distribution> distributions = new HashSet<>();
 
 		for (DescriptionBase<?> desc : descriptions){
 			boolean isImageGallery = desc.isImageGallery();
 			for (DescriptionElementBase element : desc.getElements()){
-				success &= handleDescriptionElement(state, notesMapping, occurrenceMapping, vernacularMapping, imageMapping,
-						addSourceSourceMapping, additionalSourceMapping, isImageGallery, element);
+				success &= handleDescriptionElement(state, notesMapping, vernacularMapping, imageMapping,
+						addSourceSourceMapping, additionalSourceMapping, isImageGallery, element,
+						distributions);
 				countDescriptions++;
 			}
 		}
+		success &= distributions(taxon, distributions, occurrenceMapping, state.getConfig());
 		if (logger.isDebugEnabled()) {
             logger.info("number of handled decriptionelements " + countDescriptions);
         }
@@ -358,10 +369,167 @@ public class PesiDescriptionExport extends PesiExportBase {
 		return success;
 	}
 
-	private boolean handleDescriptionElement(PesiExportState state, PesiExportMapping notesMapping,
-			PesiExportMapping occurrenceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping,
+    private boolean distributions(Taxon taxon, Set<Distribution> originalDistributions,
+            PesiExportMapping occurrenceMapping, PesiExportConfigurator config) {
+        boolean success = true;
+        if (originalDistributions.isEmpty()) {
+            return success;
+        }
+        Set<PesiDistribution> aggregatedDistributions = distributionsAggregated(originalDistributions, config, taxon);
+        for (PesiDistribution distribution : aggregatedDistributions) {
+            try{
+                success &= occurrenceMapping.invoke(distribution);
+            }catch(Exception e){
+//                System.err.println(distribution.getInDescription().getTitleCache());
+                e.printStackTrace();
+            }
+        }
+        if (aggregatedDistributions.isEmpty()){
+            //TODO necessary?
+            logger.warn("No distribution available: " + taxon.getTitleCache());
+        }
+        return success;
+    }
+
+    private Set<PesiDistribution> distributionsAggregated(Set<Distribution> distributions, PesiExportConfigurator config, Taxon taxon) {
+
+        SetMap<NamedArea, Distribution> distAreaMap = distributionAreaMap(distributions);
+        Set<PesiDistribution> result = new HashSet<>();
+
+        //per area
+        for (NamedArea area : distAreaMap.keySet()) {
+            Set<Distribution> distributionsPerArea = distAreaMap.get(area);
+            PesiDistribution aggregatedDistribution = distributionAggregateStatus(distributionsPerArea, config, taxon);
+            if (aggregatedDistribution != null) {
+                result.add(aggregatedDistribution);
+            }
+        }
+        return result;
+    }
+
+    private PesiDistribution distributionAggregateStatus(Set<Distribution> distributions, PesiExportConfigurator config, Taxon taxon) {
+
+        Set<Distribution> highestStatusDistributions = distributionFilterHighestStatus(distributions, config);
+        if (highestStatusDistributions.isEmpty()) {
+            return null;
+        }
+        //id
+        Integer distributionId = highestStatusDistributions.iterator().next().getId(); //we simply take the first available id, not fully correct but not critical, the data model does not allow >1 IDs
+        //status
+        PresenceAbsenceTerm status = highestStatusDistributions.iterator().next().getStatus();
+        //area
+        NamedArea area = highestStatusDistributions.iterator().next().getArea();
+
+        Set<DescriptionElementSource> sources = new HashSet<>();
+        Set<Annotation> annotations = new HashSet<>();
+        Set<Marker> markers = new HashSet<>();
+        DateTime created = null;
+        DateTime updated = null;
+
+        //sources
+        for (Distribution dist : highestStatusDistributions) {
+            dist.getSources().stream()
+                .filter(s->s.getType().isPrimarySource())
+                .forEach(s->{
+                    try {
+                        sources.add(s.clone());
+                    } catch (CloneNotSupportedException e) {
+                        e.printStackTrace();
+                    }
+                });
+            dist.getAnnotations().forEach(a->annotations.add(a));
+            dist.getMarkers().forEach(m->markers.add(m));
+            //TODO compare latest
+            created = dist.getCreated();
+            updated = dist.getUpdated();
+        }
+
+        PesiDistribution result = new PesiDistribution(distributionId, taxon, area, status,
+                sources, annotations, markers, created, updated);
+
+        return result;
+    }
+
+    //TODO can we make this private? But class ImportHelper needs access ...
+    @SuppressWarnings("serial")
+    public class PesiDistribution extends Distribution {
+        private Taxon taxon;
+
+        public PesiDistribution(Integer distributionId, Taxon taxon, NamedArea area,
+                PresenceAbsenceTerm status, Set<DescriptionElementSource> sources,
+                Set<Annotation> annotations, Set<Marker> markers, DateTime created, DateTime updated) {
+
+            setId(distributionId);
+            this.taxon = taxon;
+            setArea(area);
+            setStatus(status);
+            this.addSources(sources);
+            annotations.forEach(a->this.addAnnotation(a));
+            markers.forEach(m->this.addMarker(m));
+            this.setCreated(created);
+            this.setUpdated(updated);
+        }
+        @SuppressWarnings("unused")
+        public Taxon getTaxon() {
+            return taxon;
+        }
+        @SuppressWarnings("unused")
+        public String getNameCache() {
+            return taxon.getName().getTitleCache();
+        }
+    }
+
+    static List<Integer> distributionStatusOrderList = Arrays.asList(new Integer[] {
+            PesiTransformer.STATUS_NATIVE
+            , PesiTransformer.STATUS_PRESENT
+            , PesiTransformer.STATUS_NATURALISED
+            , PesiTransformer.STATUS_INTRODUCED
+            //TODO which order should "invasive" have?
+            , PesiTransformer.STATUS_INVASIVE
+            , PesiTransformer.STATUS_DOUBTFUL
+            , PesiTransformer.STATUS_MANAGED
+            , PesiTransformer.STATUS_ABSENT
+    });
+
+    private Set<Distribution> distributionFilterHighestStatus(Set<Distribution> originalDistributions,
+            PesiExportConfigurator config) {
+
+        //initialize
+        int highestStatus = Integer.MAX_VALUE;
+        Set<Distribution> result = new HashSet<>();
+
+        //for each distribution check if it has highest status and fill result accordingly
+        for (Distribution distribution : originalDistributions) {
+            try {
+                Integer status = (Integer)config.getTransformer()
+                        .getKeyByPresenceAbsenceTerm(distribution.getStatus());
+                int orderIndex = distributionStatusOrderList.indexOf(status);
+                if (orderIndex < highestStatus) {
+                    result.clear();
+                    result.add(distribution);
+                    highestStatus = orderIndex;
+                }else if (orderIndex == highestStatus) {
+                    result.add(distribution);
+                }
+            } catch (UndefinedTransformerMethodException e) {
+                throw new RuntimeException(e);  //should not happen
+            }
+        }
+
+        //return
+        return result;
+    }
+
+    private SetMap<NamedArea, Distribution> distributionAreaMap(Set<Distribution> distributions) {
+        SetMap<NamedArea, Distribution> result = new SetMap<>();
+        distributions.forEach(d->result.putItem(d.getArea(), d));
+        return result;
+    }
+
+    private boolean handleDescriptionElement(PesiExportState state, PesiExportMapping notesMapping,
+			PesiExportMapping vernacularMapping, PesiExportMapping imageMapping,
 			PesiExportMapping addSourceSourceMapping, PesiExportMapping additionalSourceMapping,
-			boolean isImageGallery, DescriptionElementBase element) {
+			boolean isImageGallery, DescriptionElementBase element, Set<Distribution> distributions) {
 
 	    try {
 			boolean success = true;
@@ -378,6 +546,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 					success &= vernacularMapping.invoke(element);
 				}
 			}else if (isOccurrence(element)){
+			    //TODO we need to aggregate distributions #10812
 				countOccurrence++;
 				Distribution distribution = CdmBase.deproxy(element, Distribution.class);
 //				MarkerType markerType = getUuidMarkerType(PesiTransformer.uuidMarkerTypeHasNoLastAction, state);
@@ -386,12 +555,18 @@ public class PesiDescriptionExport extends PesiExportBase {
 				    logger.debug("Distribution is not PESI distribution: " + distribution.toString());
 				}else{
 					countDistributionFiltered++;
-					try{
-					    success &=occurrenceMapping.invoke(distribution);
-					}catch(Exception e){
-					    System.err.println(distribution.getInDescription().getTitleCache());
-					    e.printStackTrace();
+					if (distributions == null) {
+					    logger.warn("Distributions not yet implemented for NameDescriptions. Distribution ID: " + element.getUuid());
+					}else {
+					    distributions.add(distribution);
 					}
+//					try{
+//
+//					    success &=occurrenceMapping.invoke(distribution);
+//					}catch(Exception e){
+//					    System.err.println(distribution.getInDescription().getTitleCache());
+//					    e.printStackTrace();
+//					}
 				}
 			}else if (isAdditionalTaxonSource(element)){
 				countAdditionalSources++;
@@ -425,7 +600,8 @@ public class PesiDescriptionExport extends PesiExportBase {
     boolean hasFirstUndefinedStatusWarnung = false;
     boolean hasFirstIucnMissingWarning = false;
     private boolean isPesiDistribution(PesiExportState state, Distribution distribution) {
-		//currently we use the E+M summary status to decide if a distribution should be exported
+		//TODO
+        //currently we use the E+M summary status to decide if a distribution should be exported
 		PresenceAbsenceTerm status = distribution.getStatus();
 	    if (status == null){
 			return false;
@@ -525,8 +701,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 	}
 
 	//PHASE 02: Name extensions
-	private boolean doPhase02(PesiExportState state) {
-		TransactionStatus txStatus;
+	private boolean doPhase02_name_extensions(PesiExportState state) {
+
+	    TransactionStatus txStatus;
 		boolean success =  true;
 
 		if (state.getConfig().getStartDescriptionPartition() > 0) {
@@ -953,11 +1130,15 @@ public class PesiDescriptionExport extends PesiExportBase {
 	 * @return The {@link PesiExportMapping PesiExportMapping}.
 	 */
 	private PesiExportMapping getOccurrenceMapping() {
+
 		PesiExportMapping mapping = new PesiExportMapping(dbOccurrenceTableName);
 
 		mapping.addMapper(IdMapper.NewInstance("OccurrenceId"));
-		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
-		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("TaxonFullNameCache", true, true, null));
+
+		mapping.addMapper(DbObjectMapper.NewInstance("taxon", "taxonFk"));
+		mapping.addMapper(DbStringMapper.NewInstance("nameCache", "TaxonFullNameCache"));
+//		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
+//		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("TaxonFullNameCache", true, true, null));
 
 		mapping.addMapper(DbAreaMapper.NewInstance(Distribution.class, "Area", "AreaFk", ! IS_CACHE));
 		mapping.addMapper(DbAreaMapper.NewInstance(Distribution.class, "Area", "AreaNameCache", IS_CACHE));
@@ -977,7 +1158,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 	}
 
 	private CollectionExportMapping<PesiExportState, PesiExportConfigurator, PesiTransformer> getOccurrenceSourceMapping() {
-		String tableName = "OccurrenceSource";
+
+	    String tableName = "OccurrenceSource";
 		String collectionAttribute = "sources";
 		IdMapper parentMapper = IdMapper.NewInstance("OccurrenceFk");
 		@SuppressWarnings("unchecked")
