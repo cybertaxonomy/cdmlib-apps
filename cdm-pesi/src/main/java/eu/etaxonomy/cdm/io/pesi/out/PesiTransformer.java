@@ -2515,16 +2515,16 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static String getOriginalDbBySources(EnumSet<PesiSource> sources) {
 		String result = "";
 		if (sources.contains(PesiSource.EM)){
-			result = CdmUtils.concat(",", result,  SOURCE_STR_EM);
+			result = CdmUtils.concat(",", result, SOURCE_STR_EM);
 		}
 		if (sources.contains(PesiSource.FE)){
-			result = CdmUtils.concat(",", result,  SOURCE_STR_FE);
+			result = CdmUtils.concat(",", result, SOURCE_STR_FE);
 		}
 		if (sources.contains(PesiSource.IF)){
-			result = CdmUtils.concat(",", result,  SOURCE_STR_IF);
+			result = CdmUtils.concat(",", result, SOURCE_STR_IF);
 		}
 		if (sources.contains(PesiSource.ERMS)){
-			result = CdmUtils.concat(",", result,  SOURCE_STR_ERMS);
+			result = CdmUtils.concat(",", result, SOURCE_STR_ERMS);
 		}
 		return result;
 	}

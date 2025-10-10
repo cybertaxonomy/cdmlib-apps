@@ -1442,7 +1442,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 //				logger.warn("There is > 1 Pesi source. This is not yet handled: " +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
 			}
 			if (sources.size() == 0){
-				logger.warn("There is no Pesi source for taxon name!" +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
+				logger.warn("There is no Pesi source for taxon name!" + taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
 			}
 			for (IdentifiableSource source : sources) {
 				Reference ref = source.getCitation();
@@ -1519,8 +1519,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 				}
 				count++;
 			}
-
-		}
+//		}
 
 		return result;
 	}
@@ -1890,7 +1889,6 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		return mapping;
 	}
 
-
 	private PesiExportMapping getAdditionalSourceMapping(PesiExportState state) {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableAdditionalSourceRel);
 
@@ -1909,7 +1907,6 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 
 		return mapping;
 	}
-
 
     @Override
     protected boolean doCheck(PesiExportState state) {
