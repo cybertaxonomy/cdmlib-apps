@@ -77,10 +77,12 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
         mapping.addMapper(MethodMapper.NewInstance("TaxonStatusCache", PesiTaxonExport.class, "getTaxonStatusCache", standardMethodParameter, PesiExportState.class));
 
         mapping.addMapper(MethodMapper.NewInstance("GUID", PesiTaxonExport.class, this));
+        mapping.addMapper(MethodMapper.NewInstance("GUID2", PesiTaxonExport.class, this));
         mapping.addMapper(MethodMapper.NewInstance("NameGUID", PesiTaxonExport.class, this));
         mapping.addMapper(MethodMapper.NewInstance("WfoId", PesiTaxonExport.class, this));
 
         mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid", PesiTaxonExport.class, this));
+        mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid2", PesiTaxonExport.class, this));
         mapping.addMapper(MethodMapper.NewInstance("CacheCitation", PesiTaxonExport.class, TaxonBase.class, PesiExportState.class));
         mapping.addMapper(MethodMapper.NewInstance("AuthorString", PesiTaxonExport.class, this));  //For Taxon because misapplied names are handled differently
         mapping.addMapper(MethodMapper.NewInstance("FullName", PesiTaxonExport.class, this));    //For Taxon because misapplied names are handled differently
@@ -278,7 +280,7 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
 
     //  @SuppressWarnings("unused")  //used by pure name mapper and by getRankFk
     static Integer getKingdomFk(TaxonName taxonName, PesiExportState state){
-        EnumSet<PesiSource> origin = getSources(taxonName);
+        EnumSet<PesiSource> origin = getSourceType(taxonName);
         if (origin.size() == 1 && origin.contains(PesiSource.EM)){
             //maybe simply replace by
             //return PesiTransformer.KINGDOM_PLANTAE;

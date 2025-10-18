@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -581,13 +582,14 @@ public abstract class PesiExportBase
     }
 
     protected enum PesiSource{
-        EM,
-        FE,
-        ERMS,
-        IF;
+        EM(PesiTransformer.uuidSourceRefEuroMed),
+        FE(PesiTransformer.uuidSourceRefFaunaEuropaea),
+        ERMS(PesiTransformer.uuidSourceRefErms),
+        IF(PesiTransformer.uuidSourceRefIndexFungorum);
 
-        private PesiSource(){
-
+        final UUID sourceUuuid;
+        private PesiSource(UUID sourceUuid){
+            this.sourceUuuid =sourceUuid;
         }
     }
 
@@ -595,7 +597,7 @@ public abstract class PesiExportBase
      * Returns the source (E+M, Fauna Europaea, Index Fungorum, ERMS) of a given
      * Identifiable Entity as an {@link EnumSet enum set}
      */
-    protected static EnumSet<PesiSource> getSources(IdentifiableEntity<?> entity){
+    protected static EnumSet<PesiSource> getSourceType(IdentifiableEntity<?> entity){
         EnumSet<PesiSource> result = EnumSet.noneOf(PesiSource.class);
 
         Set<IdentifiableSource> sources = getPesiSources(entity);
@@ -617,6 +619,20 @@ public abstract class PesiExportBase
         return result;
     }
 
+    protected static IdentifiableSource getPesiSource(IdentifiableEntity<?> identifiableEntity, PesiSource pesiSourceType) {
+        List<IdentifiableSource> specificSources = getPesiSources(identifiableEntity).stream()
+            .filter(s->s.getCitation().getUuid().equals(pesiSourceType.sourceUuuid))
+            .collect(Collectors.toList());
+        if (specificSources.size() > 1) {
+            logger.warn("More than 1 source for pesi source " + pesiSourceType + " and entity " + identifiableEntity);
+        } else if (specificSources.isEmpty()) {
+//            logger.warn("No source for pesi source " + sourceType + " and entity " + identifiableEntity);
+            return null;
+        }
+        return specificSources.get(0);
+    }
+
+
     /**
      * Returns the Sources for a given TaxonName only.
      * @param identifiableEntity
@@ -628,16 +644,16 @@ public abstract class PesiExportBase
         //Taxon Names
         if (identifiableEntity.isInstanceOf(TaxonName.class)){
             // Sources from TaxonName
-            TaxonName taxonName = CdmBase.deproxy(identifiableEntity, TaxonName.class);
             Set<IdentifiableSource> testSources = identifiableEntity.getSources();
             sources = filterPesiSources(testSources);
 
+            TaxonName taxonName = CdmBase.deproxy(identifiableEntity, TaxonName.class);
             if (sources.size() == 0 && testSources.size()>0){
                 IdentifiableSource source = testSources.iterator().next();
                 logger.warn("There are sources, but they are no pesi sources!!!" + source.getIdInSource() + " - " + source.getIdNamespace() + " - " + (source.getCitation()== null? "no reference" : source.getCitation().getTitleCache()));
             }
             if (sources.size() > 1) {
-//                logger.warn("This TaxonName has more than one Source: " + identifiableEntity.getUuid() + " (" + identifiableEntity.getTitleCache() + ")");
+                logger.debug("This TaxonName has more than one Source: " + identifiableEntity.getUuid() + " (" + identifiableEntity.getTitleCache() + ")");
             }
 
             // name has no PESI source, take sources from TaxonBase

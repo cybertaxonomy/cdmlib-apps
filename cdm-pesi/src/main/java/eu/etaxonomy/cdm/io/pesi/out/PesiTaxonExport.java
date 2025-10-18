@@ -788,7 +788,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
      */
     @SuppressWarnings("unused")  //used by pure name mapper
     private static Integer getRankFk(TaxonName taxonName) {
-        EnumSet<PesiSource> origin = getSources(taxonName);
+        EnumSet<PesiSource> origin = getSourceType(taxonName);
         if (origin.size() == 1 && origin.contains(PesiSource.EM)){
             //TODO state
             return getRankFk(taxonName, getKingdomFk(taxonName, null));
@@ -901,7 +901,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			if (useNameCache){
                 result = cacheStrategy.getNameCache(taxonName, tagRules);
 			}else{
-			    EnumSet<PesiSource> sources = getSources(taxonName);
+			    EnumSet<PesiSource> sources = getSourceType(taxonName);
 			    if (sources.contains(PesiSource.ERMS)){
 			        result = cacheStrategy.getTitleCache(taxonName, tagRules);  //according to SQL script (also in ERMS sources are not abbreviated)
 			    }else if (sources.contains(PesiSource.FE) || sources.contains(PesiSource.IF)){
@@ -1038,6 +1038,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         String result = "NameUUID:" + uuid.toString();
         return result;
     }
+    //For now we do not have getGUID2(TaxonName) as E+M is the only data provider having pure names but is always represented in GUID1
 
     @SuppressWarnings("unused")
     private static String getNameGUID(TaxonName taxonName) {
@@ -1082,7 +1083,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			return null;
 		}
 		String result = null;
-		EnumSet<PesiSource> sources = getSources(taxonName);
+		EnumSet<PesiSource> sources = getSourceType(taxonName);
 		if(sources.contains(PesiSource.EM)){
 		    if (! nomSource.getCitation().isProtectedAbbrevTitleCache()){
 		        nomSource.getCitation().setAbbrevTitleCache(null, false);  //to remove a false cache
@@ -1270,7 +1271,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	private static Integer getQualityStatusFk(TaxonName taxonName) {
-	    EnumSet<PesiSource> sources = getSources(taxonName);
+	    EnumSet<PesiSource> sources = getSourceType(taxonName);
 		return PesiTransformer.getQualityStatusKeyBySource(sources, taxonName);
 	}
 
@@ -1429,12 +1430,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 */
 	@SuppressWarnings("unused")
 	private static String getIdInSource(TaxonName taxonName) {
-		String result = null;
 
-		if (!taxonName.isInstanceOf(TaxonName.class)) {
-		    logger.warn("Parameter for getIdInSource is not a taxon name: " + taxonName.getTitleCache());
-		}
-		taxonName = CdmBase.deproxy(taxonName, TaxonName.class);
+	    String result = null;
 		try {
 			Set<IdentifiableSource> sources = getPesiSources(taxonName);
 			if (sources.size() > 1){
@@ -1504,22 +1501,15 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		Set<IdentifiableSource> sources = getPesiSources(taxonName);
 
 		// Determine the idInSource
-		if (sources.size() == 1) {
-			IdentifiableSource source = sources.iterator().next();
-			if (source != null) {
-				result = source.getIdInSource();
+		int count = 1;
+		result = "";
+		for (IdentifiableSource source : sources) {
+			result += source.getIdInSource();
+			if (count < sources.size()) {
+				result += "; ";
 			}
-		} else if (sources.size() > 1) {
-			int count = 1;
-			result = "";
-			for (IdentifiableSource source : sources) {
-				result += source.getIdInSource();
-				if (count < sources.size()) {
-					result += "; ";
-				}
-				count++;
-			}
-//		}
+			count++;
+		}
 
 		return result;
 	}
@@ -1531,16 +1521,100 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	private static String getGUID(TaxonBase<?> taxon) {
-		if (taxon.getLsid() != null ){
-			return taxon.getLsid().getLsid();
-		}else if (taxon.hasMarker(PesiTransformer.uuidMarkerGuidIsMissing, true)){
-			return null;
-		}else{
-			return taxon.getUuid().toString();
-		}
-	}
+        EnumSet<PesiSource> sources = getSourceType(taxon);
+        if (sources.size() < 1) {
+            return null;
+        }
+        if (sources.contains(PesiSource.EM)) {
+            return taxon.getUuid().toString();
+        } else if (sources.contains(PesiSource.ERMS)) {
+            return getErmsGuid(taxon);
+        } else if (sources.contains(PesiSource.FE)) {
+            return getFauEuGuid(taxon);
+        } else if (sources.contains(PesiSource.IF)) {
+            return getIndexFungorumGuid(taxon);
+        }
+        return null;
+    }
 
-	@SuppressWarnings("unused")
+	/**
+     * Returns the <code>GUID2</code> attribute.
+     * @param taxon The {@link TaxonBase taxonBase}.
+     * @return The <code>GUID2</code> attribute value.
+     * @see MethodMapper
+     */
+    private static String getGUID2(TaxonBase<?> taxon) {
+        EnumSet<PesiSource> sources = getSourceType(taxon);
+        if (sources.size() < 2) {
+            return null;
+        }
+        if (sources.contains(PesiSource.EM)) {
+            //E+M should always go to field GUID
+            if (sources.contains(PesiSource.ERMS)) {
+                return getErmsGuid(taxon);
+            }else {
+                logger.warn("Unexpectd OriginalDB combination with E+M: " +  taxon.getTitleCache());
+            }
+        } else if (sources.contains(PesiSource.ERMS)) {
+            if (sources.contains(PesiSource.FE)) {
+                return getFauEuGuid(taxon);
+            } else if (sources.contains(PesiSource.IF)) {
+                return getIndexFungorumGuid(taxon);
+            }else {
+                logger.warn("Unexpected OriginalDB combination with ERMS" +  taxon.getTitleCache());
+            }
+        } else {
+            logger.warn("Unexpected OriginalDB combination with 2 sources" +  taxon.getTitleCache());
+        }
+        return null;
+    }
+
+    private static String getIndexFungorumGuid(TaxonBase<?> taxon) {
+        if (taxon.getLsid() != null && "indexfungorum.org".equals(taxon.getLsid().getAuthority())){
+            return taxon.getLsid().getLsid();
+        }else {
+            IdentifiableSource ifSource = getPesiSource(taxon, PesiSource.IF);
+            if (ifSource != null) {
+                return "urn:lsid:indexfungorum.org:names:" + ifSource.getIdInSource();
+            }else {
+                logger.warn("No IndexFungorum GUID found for " + taxon.getTitleCache());
+                return null;
+            }
+        }
+    }
+
+    private static String getFauEuGuid(TaxonBase<?> taxon) {
+        if (taxon.getLsid() != null && "faunaeur.org".equals(taxon.getLsid().getAuthority())){
+            return taxon.getLsid().getLsid();
+        }else {
+            if (taxon.hasMarker(PesiTransformer.uuidMarkerGuidIsMissing, true)){  //TODO needs more careful check that this is only valid for FauEu
+                return null;
+            }
+            IdentifiableSource feSource = getPesiSource(taxon, PesiSource.FE);
+            if (feSource != null) {
+                return "urn:lsid:faunaeur.org:taxname:" + feSource.getIdInSource();
+            }else {
+                logger.warn("No FauEu GUID found for " + taxon.getTitleCache());
+                return null;
+            }
+        }
+    }
+
+    private static String getErmsGuid(TaxonBase<?> taxon) {
+        if (taxon.getLsid() != null && "marinespecies.org".equals(taxon.getLsid().getAuthority())){
+            return taxon.getLsid().getLsid();
+        }else {
+            IdentifiableSource ermsSource = getPesiSource(taxon, PesiSource.ERMS);
+            if (ermsSource != null) {
+                return "urn:lsid:marinespecies.org:taxname:" + ermsSource.getIdInSource();
+            }else {
+                logger.warn("No ERMS GUID found for " + taxon.getTitleCache());
+                return null;
+            }
+        }
+    }
+
+    @SuppressWarnings("unused")
 	private static String getWfoId(TaxonBase<?> taxon) {
         Identifier wfoId = taxon.getName().getIdentifier(IdentifierType.uuidWfoNameIdentifier);
         if (wfoId != null && wfoId.getIdentifier() != null) {
@@ -1569,20 +1643,38 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	/**
 	 * Returns the <code>DerivedFromGuid</code> attribute.
 	 * @param taxon The {@link TaxonBase taxonBase}.
-	 * @return The <code>DerivedFromGuid</code> attribute.
+	 * @return The <code>DerivedFromGuid</code> attribute value
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
 	private static String getDerivedFromGuid(TaxonBase<?> taxon) {
 		String result = null;
 		try {
-		// The same as GUID for now
-		result = getGUID(taxon);
+    		// The same as GUID for now
+    		result = getGUID(taxon);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
+
+	   /**
+     * Returns the <code>DerivedFromGuid2</code> attribute.
+     * @param taxon The {@link TaxonBase taxonBase}.
+     * @return The <code>DerivedFromGuid2</code> attribute value
+     * @see MethodMapper
+     */
+    @SuppressWarnings("unused")
+    private static String getDerivedFromGuid2(TaxonBase<?> taxon) {
+        String result = null;
+        try {
+            // The same as GUID2 for now
+            result = getGUID2(taxon);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
 	/**
 	 * Returns the <code>CacheCitation</code> attribute.
@@ -1598,7 +1690,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		String result = "";
 		//TODO implement anew for taxa
 		try {
-			EnumSet<PesiSource> sources = getSources(taxon);
+			EnumSet<PesiSource> sources = getSourceType(taxon);
 			//TODO what if 2 sources? In PESI 2014 they were pipe separated
 			//TODO why does ERMS use accessed through eu-nomen, while E+M uses accessed through E+M
 			if (sources.isEmpty()) {
@@ -1688,7 +1780,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 */
 //	@SuppressWarnings("unused")
 	private static String getOriginalDB(IdentifiableEntity<?> identifiableEntity) {
-		EnumSet<PesiSource> sources  = getSources(identifiableEntity);
+		EnumSet<PesiSource> sources = getSourceType(identifiableEntity);
 		return PesiTransformer.getOriginalDbBySources(sources);
 	}
 
@@ -1706,7 +1798,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	private static String getExpertName(TaxonBase<?> taxon) {
 		try {
 		    List<String> result = new ArrayList<>();
-    		EnumSet<PesiSource> sources = getSources(taxon);
+    		EnumSet<PesiSource> sources = getSourceType(taxon);
 
     		//EM
     		if (sources.contains(PesiSource.EM)){
@@ -1762,7 +1854,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	private static String getSpeciesExpertName(TaxonBase<?> taxon) {
 		try {
 		    List<String> result = new ArrayList<>();
-            EnumSet<PesiSource> sources = getSources(taxon);
+            EnumSet<PesiSource> sources = getSourceType(taxon);
 
             //EM
             if (sources.contains(PesiSource.EM)){

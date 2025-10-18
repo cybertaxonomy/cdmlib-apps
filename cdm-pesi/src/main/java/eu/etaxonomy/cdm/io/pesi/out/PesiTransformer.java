@@ -719,12 +719,12 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 
 	// OccurrenceStatus
-	private static int STATUS_PRESENT = 1;
+	static int STATUS_PRESENT = 1;
 	public static int STATUS_ABSENT = 2;
 	public static int STATUS_NATIVE = 3;
 	public static int STATUS_INTRODUCED = 4;
 	public static int STATUS_NATURALISED = 5;
-	private static int STATUS_INVASIVE = 6;
+	static int STATUS_INVASIVE = 6;
 	public static int STATUS_MANAGED = 7;
 	public static int STATUS_DOUBTFUL = 8;
 
