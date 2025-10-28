@@ -95,7 +95,6 @@ public class BogotaSpecimenActivator {
         return URI.create("file:////BGBM-PESIHPC/Bogota/Flora_de_Bogota_Dataset_20170901_GB20171011_14607-entries-to-import_GB_20171016.xlsx");
     }
 
-
     private Reference getSourceReference() {
         Reference result = ReferenceFactory.newGeneric();
         result.setTitle("Flora_de_Bogota_Dataset_20170901_GB20171011_14607-entries-to-import_GB_20171016.xlsx");
@@ -119,10 +118,6 @@ public class BogotaSpecimenActivator {
         return (Reference)result;
     }
 
-
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         BogotaSpecimenActivator me = new BogotaSpecimenActivator();
         me.doImport(cdmDestination);

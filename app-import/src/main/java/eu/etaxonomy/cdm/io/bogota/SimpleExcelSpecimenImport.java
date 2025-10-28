@@ -53,21 +53,10 @@ public abstract class SimpleExcelSpecimenImport<CONFIG extends ExcelImportConfig
 
 //***************************** METHODS *********************************/
 
-
-    /**
-     * @param state
-     * @return
-     */
     protected IdentifiableSource makeOriginalSource(SimpleExcelSpecimenImportState<CONFIG> state) {
         return IdentifiableSource.NewDataImportInstance("line: " + state.getCurrentLine(), null, state.getConfig().getSourceReference());
     }
 
-
-    /**
-     * @param line
-     * @param keys
-     * @param expectedKeys
-     */
     protected void checkAllKeysExist(String line, Set<String> keys, List<String> expectedKeys) {
         for (String key: keys) {
             if (! expectedKeys.contains(key)){
@@ -75,6 +64,4 @@ public abstract class SimpleExcelSpecimenImport<CONFIG extends ExcelImportConfig
             }
         }
     }
-
-
 }

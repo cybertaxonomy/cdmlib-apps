@@ -124,9 +124,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         return "To be imported";
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void firstPass(SimpleExcelSpecimenImportState<CONFIG> state) {
 
@@ -155,15 +152,8 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
             state.getResult().addError("An unexpected exception appeared in record", e, null, line);
             e.printStackTrace();
         }
-
     }
 
-    /**
-     * @param state
-     * @param record
-     * @param line
-     * @return
-     */
     private Taxon getOrCreateNewTaxon(SimpleExcelSpecimenImportState<CONFIG> state,
             Map<String, String> record, String line) {
         String familyStr = record.get(COL_FAMILY);
@@ -204,19 +194,11 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
 
     }
 
-    /**
-     * @param existingFamilyNode
-     */
     private void save(TaxonNode node) {
         getTaxonNodeService().saveOrUpdate(node);
         taxonNodeMap.put(node.getTaxon().getName().getTitleCache(), node);
-
     }
 
-    /**
-     * @param state
-     * @return
-     */
     private Reference getSecReference(SimpleExcelSpecimenImportState<CONFIG> state) {
         if (this.secRef == null){
             Reference sec = state.getConfig().getSecReference();
@@ -226,17 +208,9 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
                 getReferenceService().save(sec);
             }
         }
-
-
         return this.secRef;
     }
 
-    /**
-     * @param state
-     * @param record
-     * @param line
-     * @return
-     */
     private TaxonName makeSpeciesName(SimpleExcelSpecimenImportState<CONFIG> state, String line) {
         Map<String, String> record = state.getOriginalRecord();
         String genus = record.get(COL_GENUS);
@@ -260,10 +234,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         return newName;
     }
 
-    /**
-     * @param state
-     *
-     */
     private void initTaxonMap(SimpleExcelSpecimenImportState<CONFIG> state) {
         if (taxonNodeMap.isEmpty()){
             List<String> propertyPaths = Arrays.asList(new String[]{"taxon.name"});
@@ -282,14 +252,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         }
     }
 
-    /**
-     * @param state
-     * @param record
-     * @param voucherId
-     * @param line
-     * @param taxonBase
-     * @param taxon
-     */
     protected void handleRecordForTaxon(SimpleExcelSpecimenImportState<CONFIG> state,
             String voucherId, String line, TaxonBase<?> taxonBase) {
 
@@ -305,11 +267,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         taxonDescription.addElement(indAssoc);
     }
 
-
-    /**
-     * @param state
-     * @return
-     */
     private boolean isInInterval(SimpleExcelSpecimenImportState<CONFIG> state) {
         Integer min = state.getConfig().getMinLineNumber();
         Integer max = state.getConfig().getMaxLineNumber();
@@ -321,13 +278,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         }
     }
 
-
-    /**
-     * @param state
-     * @param line
-     * @param taxon
-     * @return
-     */
     private TaxonDescription getTaxonDescription(SimpleExcelSpecimenImportState<CONFIG> state, String line,
             Taxon taxon) {
         Reference ref = getSourceCitation(state);
@@ -340,14 +290,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         return desc;
     }
 
-
-    /**
-     * @param state
-     * @param line
-     * @param record
-     * @param voucherId
-     * @return
-     */
     private DerivedUnit makeSpecimen(SimpleExcelSpecimenImportState<CONFIG> state, String line,
             Map<String, String> record, String voucherId, TaxonBase<?> taxonBase) {
 
@@ -366,14 +308,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         return specimen;
     }
 
-
-    /**
-     * @param innerDerivedUnit
-     * @param state
-     * @param line
-     * @param record
-     * @param name
-     */
     private void makeTypus(DerivedUnit specimen, SimpleExcelSpecimenImportState<CONFIG> state, String line,
             Map<String, String> record, TaxonName name) {
         String typus = record.get(COL_TYPUS);
@@ -390,13 +324,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         }
     }
 
-
-    /**
-     * @param facade
-     * @param state
-     * @param line
-     * @param record
-     */
     private void makeCollection(DerivedUnitFacade facade, SimpleExcelSpecimenImportState<CONFIG> state,
             String line, Map<String, String> record) {
         String strCollection = record.get(COL_COLLECTION);

@@ -59,5 +59,4 @@ public class CentaureaCloneActivator {
         myImport.doClone(cdmDB);
         System.exit(0);
     }
-
 }

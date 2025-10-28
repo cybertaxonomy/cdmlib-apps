@@ -58,7 +58,6 @@ public class BogotaSpecimenImportConfigurator extends ExcelImportConfiguratorBas
     public int getMaxLineNumber() {
         return maxLineNumber;
     }
-
     public void setMaxLineNumber(int maxLineNumber) {
         this.maxLineNumber = maxLineNumber;
     }
@@ -66,7 +65,6 @@ public class BogotaSpecimenImportConfigurator extends ExcelImportConfiguratorBas
     public Reference getSecReference() {
         return secReference;
     }
-
     public void setSecReference(Reference secReference) {
         this.secReference = secReference;
     }
@@ -74,7 +72,6 @@ public class BogotaSpecimenImportConfigurator extends ExcelImportConfiguratorBas
     public boolean isOnlyNonCdmTaxa() {
         return onlyNonCdmTaxa;
     }
-
     public void setOnlyNonCdmTaxa(boolean onlyNonCdmTaxa) {
         this.onlyNonCdmTaxa = onlyNonCdmTaxa;
     }
