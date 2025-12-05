@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.app.i4life.col;
 
 import java.io.File;
@@ -32,11 +31,8 @@ import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.InstitutionalMembership;
 import eu.etaxonomy.cdm.model.agent.Person;
 
-
 /**
- *
  * @author a.mueller
- *
  */
 public class ColDwcaExportActivator {
 
@@ -73,7 +69,6 @@ public class ColDwcaExportActivator {
 			UUID.fromString("0508114d-4158-48b5-9100-369fa75120d3")     //inedited
 	});
 
-
 // ****************** ALL *****************************************
 
 //	private boolean doTaxa = true;
@@ -102,18 +97,6 @@ public class ColDwcaExportActivator {
 
 	public ExportResult doExport(ICdmDataSource source){
 		System.out.println("Start export to DWC-A ("+ fileDestination + ") ...");
-
-//		CdmUpdater su = CdmUpdater.NewInstance();
-//		IProgressMonitor monitor = DefaultProgressMonitor.NewInstance();
-//
-//		try {
-//			su.updateToCurrentVersion(source, monitor);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		if (true){
-//			return true;
-//		}
 
 		//make file destination
 		String destination = fileDestination;
@@ -146,7 +129,6 @@ public class ColDwcaExportActivator {
 		return result;
 	}
 
-
 	private DwcaEmlRecord getEmlRecord() {
 		DwcaEmlRecord emlRecord = new DwcaEmlRecord();
 		emlRecord.setIdentifier("My Identifier");
@@ -173,18 +155,10 @@ public class ColDwcaExportActivator {
 		return emlRecord;
 	}
 
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		ColDwcaExportActivator ex = new ColDwcaExportActivator();
 		ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
 
 		ex.doExport(source);
 	}
-
-
-
-
 }

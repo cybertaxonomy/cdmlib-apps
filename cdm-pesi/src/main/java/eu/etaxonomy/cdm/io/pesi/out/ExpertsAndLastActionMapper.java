@@ -53,7 +53,7 @@ public class ExpertsAndLastActionMapper
 		singleMappers.add(DbLastActionMapper.NewInstance("LastAction", IS_ACTION_TYPE));
 		singleMappers.add(DbAnnotationMapper.NewIncludedInstance(getSpeciesExpertNameType(), "SpeciesExpertName"));
 		singleMappers.add(DbExportNotYetImplementedMapper.NewInstance("SpeciesExpertName", "Only implemented for ERMS until now. For other need to better understand what the species expert name is"));
-		singleMappers.add(DbExportNotYetImplementedMapper.NewInstance("SpeciesExpertGUID", "SpeciesExpertGUID derives from an external mapeing list: name to GUID from expertsDB"));
+		singleMappers.add(DbExportNotYetImplementedMapper.NewInstance("SpeciesExpertGUID", "SpeciesExpertGUID derives from an external mapping list: name to GUID from expertsDB"));
 	}
 
     private Collection<UUID> getSpeciesExpertNameType() {

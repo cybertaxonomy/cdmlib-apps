@@ -35,7 +35,7 @@ public class CentaureaSpecimenImportActivator {
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_greece();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
-    static final String fileName = "Lopholoma_ExcelSpecimenImportTemplate_edited2.xlsx";
+    static final String fileName = "Lopholoma_ExcelSpecimenImportTemplate_edited2_AM_KK.xlsx";
 
     static int minRow = 1;
     static boolean doDetermination = false;

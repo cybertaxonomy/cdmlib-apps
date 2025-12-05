@@ -47,7 +47,7 @@ public class PhycobankHigherClassificationActivator {
 //    static ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
 //    static ICdmDataSource cdmDestination = CdmDestinations.cdm_test_phycobank();
-    static ICdmDataSource cdmDestination = CdmDestinations.cdm_phycobank_production();
+    static ICdmDataSource cdmDestination = CdmDestinations.cdm_production_phycobank();
 
     static String worksheetName = "Syllabus2_1";
 
@@ -58,7 +58,7 @@ public class PhycobankHigherClassificationActivator {
 
 
     private void doImport(ICdmDataSource cdmDestination){
-        hbm2dll = (cdmDestination == CdmDestinations.cdm_phycobank_production()|| cdmDestination == CdmDestinations.cdm_test_phycobank())?
+        hbm2dll = (cdmDestination == CdmDestinations.cdm_production_phycobank()|| cdmDestination == CdmDestinations.cdm_test_phycobank())?
                 DbSchemaValidation.VALIDATE : hbm2dll;
 
         URI source = fileURI();
