@@ -484,7 +484,7 @@ public class CentaureaSpecimenImport<CONFIG extends CentaureaSpecimenImportConfi
         CollectorParser collectorParser = CollectorParser.Instance();
         ParserResult<TeamOrPersonBase<?>> parserResult = collectorParser.parse(collectorStr);
         TeamOrPersonBase<?> collector = parserResult.getEntity();
-        state.getResult().getParserResultMessages(parserResult);
+        state.getResult().addParserResultMessages(parserResult);
         facade.setCollector(collector);
 
         collector = state.getDeduplicationHelper().getExistingAuthor(collector, false);
@@ -528,7 +528,7 @@ public class CentaureaSpecimenImport<CONFIG extends CentaureaSpecimenImportConfi
         }else{
             ParserResult<TeamOrPersonBase<?>> parseResult = CollectorParser.Instance().parse(identifydBy);
             TeamOrPersonBase<?> identifiedBy = parseResult.getEntity();
-            state.getResult().getParserResultMessages(parseResult);
+            state.getResult().addParserResultMessages(parseResult);
 
 //            Person person = Person.NewInstance();
 //            person.setTitleCache(identifier, true);
