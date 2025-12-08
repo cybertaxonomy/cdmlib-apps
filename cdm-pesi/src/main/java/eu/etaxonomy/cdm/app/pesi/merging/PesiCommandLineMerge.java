@@ -477,8 +477,8 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         }
     }
 
-    private void mergeCredits(IdentifiableEntity<?> removeEntity,
-            IdentifiableEntity<?> stayEntity) throws CloneNotSupportedException {
+    private void mergeCredits(TaxonBase<?> removeEntity,
+            TaxonBase<?> stayEntity) throws CloneNotSupportedException {
         String className = removeEntity.getClass().getSimpleName();
         for (Credit credit: removeEntity.getCredits()){
             System.out.println("Move "+className+" credit: " + credit.toString());
