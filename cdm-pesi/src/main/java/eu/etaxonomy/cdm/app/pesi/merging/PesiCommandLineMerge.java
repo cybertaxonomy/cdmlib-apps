@@ -318,7 +318,6 @@ public class PesiCommandLineMerge extends PesiMergeBase {
             mergeAnnotations(removeName, stayName);
             mergeMarkers(removeName, stayName);
             mergeExtensions(removeName, stayName);
-            mergeCredits(removeName, stayName);
             mergeNameRelationships(removeName, stayName);
             mergeHybridRelationships(removeName, stayName);
             mergeNameDescriptions(removeName, stayName);
