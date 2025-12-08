@@ -22,6 +22,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
+import eu.etaxonomy.cdm.model.metadata.PublishEnumForMoving;
 import eu.etaxonomy.cdm.model.metadata.SecReferenceHandlingEnum;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -62,7 +63,9 @@ public class PesiEMUnpublishedMover extends PesiMergeBase{
         }
         int movingType = 0;
         SecReferenceHandlingEnum secHandling = SecReferenceHandlingEnum.KeepOrWarn;
-        UpdateResult result = app.getTaxonNodeService().moveTaxonNode(taxonNodeUuid, newParentTaxonNodeUuid, movingType, secHandling, null);
+        PublishEnumForMoving publishHandling = PublishEnumForMoving.WarnOrKeep;
+        UpdateResult result = app.getTaxonNodeService().moveTaxonNode(taxonNodeUuid, newParentTaxonNodeUuid,
+                movingType, secHandling, null, publishHandling);
         System.out.println(result);
     }
 

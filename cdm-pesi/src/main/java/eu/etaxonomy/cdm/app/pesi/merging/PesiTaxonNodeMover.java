@@ -19,6 +19,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
+import eu.etaxonomy.cdm.model.metadata.PublishEnumForMoving;
 import eu.etaxonomy.cdm.model.metadata.SecReferenceHandlingEnum;
 
 /**
@@ -53,7 +54,9 @@ public class PesiTaxonNodeMover {
         UUID newParentTaxonNodeUuid = UUID.fromString(uuidStreptophyta);
         int movingType = 0;
         SecReferenceHandlingEnum secHandling = SecReferenceHandlingEnum.KeepOrWarn;
-        UpdateResult result = app.getTaxonNodeService().moveTaxonNode(taxonNodeToMoveUuid, newParentTaxonNodeUuid, movingType, secHandling, null);
+        PublishEnumForMoving publishHandling = PublishEnumForMoving.WarnOrKeep;
+        UpdateResult result = app.getTaxonNodeService().moveTaxonNode(taxonNodeToMoveUuid, newParentTaxonNodeUuid, movingType,
+                secHandling, null, publishHandling);
         System.out.println(result);
     }
 

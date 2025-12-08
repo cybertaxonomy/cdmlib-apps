@@ -40,6 +40,7 @@ import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Identifier;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.metadata.PublishEnumForMoving;
 import eu.etaxonomy.cdm.model.metadata.SecReferenceHandlingEnum;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -419,10 +420,11 @@ public class PesiCommandLineMerge extends PesiMergeBase {
                 .stream().map(tn->tn.getUuid()).collect(Collectors.toSet());
 
         SecReferenceHandlingEnum secHandling = SecReferenceHandlingEnum.KeepOrWarn;
+        PublishEnumForMoving publishHandling = PublishEnumForMoving.WarnOrKeep;
 
         if(!removeNodeChildrenUuids.isEmpty()){
             app.getTaxonNodeService().moveTaxonNodes(removeNodeChildrenUuids,
-                    stayNode.getUuid(), 0, secHandling, null, null);
+                    stayNode.getUuid(), 0, secHandling, null, publishHandling, null);
             System.out.println("Child nodes moved: " + removeNodeChildrenUuids.size());
         }
         return true;
