@@ -910,7 +910,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			    }else if (sources.contains(PesiSource.EM)){
 			        result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
 			    }else{
-			        logger.warn("Source not yet handled");
+			        logger.warn("Source not yet handled for " + taxonName.getTitleCache()+". Sources: " +  sources);
 			        result = cacheStrategy.getTitleCache(taxonName, tagRules);
 			    }
 			    result = replaceTagForInfraSpecificMarkerForProtectedTitleCache(taxonName, result);
@@ -1781,10 +1781,10 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 //	@SuppressWarnings("unused")
 	private static String getOriginalDB(IdentifiableEntity<?> identifiableEntity) {
 		EnumSet<PesiSource> sources = getSourceType(identifiableEntity);
-		return PesiTransformer.getOriginalDbBySources(sources);
+        return PesiTransformer.getOriginalDbBySources(sources);
 	}
 
-	/**
+    /**
 	 * Returns the <code>ExpertName</code> attribute. For ERMS this is
 	 * the last action editor, for E+M the former last scrutiny, now sec.-reference,
 	 * for FauEu it still needs to be investigated and for IF it does not exist.<BR>

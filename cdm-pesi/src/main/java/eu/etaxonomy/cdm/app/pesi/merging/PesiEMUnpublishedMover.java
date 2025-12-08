@@ -73,8 +73,8 @@ public class PesiEMUnpublishedMover extends PesiMergeBase{
         config.setTaxonNameTitle(parentName);
         config.setClassificationUuid(targetClassificationUuid);
         config.setOnlyMatchingClassificationUuid(true);
-        List<TaxonBase> r = app.getTaxonService().findTaxaByName(config);
-        List<TaxonNode>nodes = r.stream()
+        List<TaxonBase> taxa = app.getTaxonService().findTaxaByName(config);
+        List<TaxonNode>nodes = taxa.stream()
             .filter(tb->tb.isInstanceOf(Taxon.class))
             .map(tb->tb.acceptedTaxon())
             .flatMap(t->t.getTaxonNodes().stream())
