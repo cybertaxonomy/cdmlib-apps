@@ -174,7 +174,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
                 UUID toUuid = synonym.getAcceptedTaxon().getName().getUuid();
                 TaxRelKey relKey = new TaxRelKey(fromUuid, toUuid);
                 if (existingRelations.get(relKey) != null) {
-                    logger.info("Relation exists already for name "
+                    logger.debug("Relation exists already for name "
                        + synonym.getName().getTitleCache()
                        + " to name " + synonym.getAcceptedTaxon().getName().getTitleCache()
                        + ". Synonym relation not created.");
@@ -226,7 +226,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 				    UUID toUuid = rel.getToTaxon().getName().getUuid();
 				    TaxRelKey relKey = new TaxRelKey(fromUuid, toUuid);
 				    if (existingRelations.get(relKey) != null) {
-				        logger.warn("A txon relation exists already for name "
+				        logger.info("A taxon relation exists already for name "
 				           + rel.getFromTaxon().getName().getTitleCache()
 				           + " to name " + rel.getToTaxon().getName().getTitleCache() );
 				        continue;
