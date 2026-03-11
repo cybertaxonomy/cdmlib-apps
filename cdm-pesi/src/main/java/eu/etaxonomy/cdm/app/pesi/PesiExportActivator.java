@@ -47,8 +47,6 @@ public class PesiExportActivator {
 
 	static final int partitionSize = 5000;
 
-	static final boolean deleteAll = true;
-
 	// !!!!!!!!!!!!!!
 //	static final int startDescriptionPartition = 0;
 //	static final int maxDescriptionPartitions = 10000;
@@ -63,13 +61,14 @@ public class PesiExportActivator {
 
 // ****************** ALL *****************************************
 
+	static boolean deleteAll = true;
 	//references
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 
 	//taxa
 	private static final boolean doTaxa = true;
 	private static final boolean doPureNames = true;
-	private static final boolean doInferredSynonyms = false;
+	private static final boolean doInferredSynonyms = false;  //not needed anymore
 	private static final boolean doTreeIndex = true;
 	private static final boolean doRelTaxa = true;
 	private static final boolean doAdditionalTaxonSource = true;
@@ -78,6 +77,9 @@ public class PesiExportActivator {
 
 // ************************ NONE **************************************** //
 
+//	{
+//	    deleteAll = false;
+//	}
 //	//references
 //	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
 //
