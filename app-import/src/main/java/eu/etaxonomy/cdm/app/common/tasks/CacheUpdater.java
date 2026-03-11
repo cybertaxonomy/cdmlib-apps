@@ -40,8 +40,9 @@ public class CacheUpdater {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview_direct();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_genus();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
-
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
+	 static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_phycobank();
+//	   static final ICdmDataSource cdmDestination = CdmDestinations.cdm_int_flora_malesiana();
 
 	static final List<String> classListStrings =  Arrays.asList(new String[]{
 			//IdentifiableEntity.class.getName(),
@@ -50,6 +51,7 @@ public class CacheUpdater {
 //			Reference.class.getName(),
 //			TaxonName.class.getName(),
 //			TaxonBase.class.getName()
+//	        Collection.class.getName()
 	});
 	//new ArrayList<Class<? extends IdentifiableEntity>>();
 
