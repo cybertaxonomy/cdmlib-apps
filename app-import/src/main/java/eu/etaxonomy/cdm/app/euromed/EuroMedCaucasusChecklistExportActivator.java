@@ -144,7 +144,7 @@ public class EuroMedCaucasusChecklistExportActivator {
         myImport.invoke(config);
     }
 
-    private void doImport(ICdmDataSource source, ICdmDataSource destination, DbSchemaValidation hbm2dll) throws NoSuchMethodException, SecurityException{
+    private void doImport(ICdmDataSource source, ICdmDataSource destination, DbSchemaValidation hbm2dll) throws SecurityException{
 
         String importFrom = " import from "+ source.getDatabase() + " to "+ destination.getDatabase() + " ...";
         System.out.println("Start" + importFrom);
@@ -248,8 +248,8 @@ public class EuroMedCaucasusChecklistExportActivator {
         emAreas.add(UUID.fromString("111bdf38-7a32-440a-9808-8af1c9e54b51"));  //EM
         emAreas.add(UUID.fromString("865e0fcc-bfb5-4af2-8822-08c90c7ba61e")); //Europe
         Set<UUID> largerCaucasusAreas = new HashSet<>();
-        emAreas.add(UUID.fromString("904c3980-b98d-422e-a195-95f4f41fc734"));  //Tcs
-        emAreas.add(UUID.fromString("05b0dd06-30f8-477d-bf4c-30d9def56320")); //Cc
+        largerCaucasusAreas.add(UUID.fromString("904c3980-b98d-422e-a195-95f4f41fc734"));  //Tcs
+        largerCaucasusAreas.add(UUID.fromString("05b0dd06-30f8-477d-bf4c-30d9def56320")); //Cc
 
 
         Set<UUID> relevantAreas = taxonNodeFilter.getAreaFilter().stream().map(f->f.getUuid()).collect(Collectors.toSet());
@@ -360,7 +360,7 @@ public class EuroMedCaucasusChecklistExportActivator {
         if (importType == IMPORT.I1_TAXA || importType == IMPORT.I3_DESCRIPTION) {
             try {
                 myImport.doImport(source, cdmDB, schemaValidation);
-            } catch (NoSuchMethodException | SecurityException e) {
+            } catch (SecurityException e) {
                 e.printStackTrace();
             }
         }
