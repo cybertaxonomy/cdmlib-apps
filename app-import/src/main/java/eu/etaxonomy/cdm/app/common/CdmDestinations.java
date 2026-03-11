@@ -264,6 +264,24 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
+    public static ICdmDataSource cdm_demo2_cuba1(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "160.45.63.231";
+        String cdmDB = "cdm_cdm_flora_cuba01";
+        String cdmUserName = "root";
+        int port  = 3307;
+        return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
+    }
+
+    public static ICdmDataSource cdm_staging_cyprus(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MariaDB;
+        String cdmServer = "160.45.63.177";
+        String cdmDB = "cdm_cyprus";
+        String cdmUserName = "edit";
+        int port = 3306;
+        return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
+    }
+
     public static ICdmDataSource cdm_test_col(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "160.45.63.175";
@@ -609,6 +627,14 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
+    public static ICdmDataSource cdm_local_phycobank(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "127.0.0.1";
+        String cdmDB = "cdm_local_phycobank";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+
     public static ICdmDataSource cdm_local_cuba(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "127.0.0.1";
@@ -772,14 +798,6 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-	public static ICdmDataSource cdm_algaterra_production(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.171";
-		String cdmDB = "cdm_production_algaterra";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
     public static ICdmDataSource cdm_test_salvador(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "160.45.63.175";
@@ -823,7 +841,15 @@ public class CdmDestinations {
     public static ICdmDataSource cdm_int_flora_malesiana(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "160.45.63.201";
-        String cdmDB = "cdm_integration_flora_malesiana";
+        String cdmDB = "cdm_integration_cichorieae";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+
+    public static ICdmDataSource cdm_int_reference(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "160.45.63.201";
+        String cdmDB = "cdm_integration_reference";
         String cdmUserName = "edit";
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
@@ -918,32 +944,27 @@ public class CdmDestinations {
 
 	/**
 	 * initializes source
-	 * TODO only supports MySQL and PostgreSQL
-	 *
-	 * @param dbType
-	 * @param cdmServer
-	 * @param cdmDB
-	 * @param port
-	 * @param cdmUserName
-	 * @param pwd
-	 * @return
+	 * TODO only supports MySQL, MariaDb and PostgreSQL
 	 */
 	public static ICdmDataSource makeDestination(DatabaseTypeEnum dbType, String cdmServer, String cdmDB, int port, String cdmUserName, String pwd ){
 		//establish connection
 		pwd = AccountStore.readOrStorePassword(cdmServer, cdmDB, cdmUserName, pwd);
-		ICdmDataSource destination;
-		if(dbType.equals(DatabaseTypeEnum.MySQL)){
-			destination = CdmDataSource.NewMySqlInstance(cdmServer, cdmDB, port, cdmUserName, pwd);
-		} else if(dbType.equals(DatabaseTypeEnum.PostgreSQL)){
-			destination = CdmDataSource.NewPostgreSQLInstance(cdmServer, cdmDB, port, cdmUserName, pwd);
-		} else {
-			//TODO others
-			throw new RuntimeException("Unsupported DatabaseType");
-		}
-		return destination;
 
+		switch (dbType) {
+    		case MySQL:
+                return CdmDataSource.NewMySqlInstance(cdmServer, cdmDB,
+                            port, cdmUserName, pwd);
+            case MariaDB:
+                return CdmDataSource.NewMariaDbInstance(cdmServer, cdmDB,
+                            port, cdmUserName, pwd);
+            case PostgreSQL:
+                return CdmDataSource.NewPostgreSQLInstance(cdmServer, cdmDB,
+                            port, cdmUserName, pwd);
+            default:
+                // TODO others
+                throw new RuntimeException("Unsupported DatabaseType");
+        }
 	}
-
 
 	/**
 	 * Accepts a string array and tries to find a method returning an ICdmDataSource with
