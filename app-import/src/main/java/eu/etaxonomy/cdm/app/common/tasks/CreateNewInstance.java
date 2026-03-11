@@ -46,6 +46,8 @@ public class CreateNewInstance {
 
         if (dbType == DatabaseTypeEnum.MySQL){
             return CdmDataSource.NewMySqlInstance(server, database, username, AccountStore.readOrStorePassword(server, database, username, null));
+        } else if (dbType == DatabaseTypeEnum.MariaDB){
+            return CdmDataSource.NewMariaDbInstance(server, database, username, AccountStore.readOrStorePassword(server, database, username, null));
         }else if (dbType == DatabaseTypeEnum.H2){
             //H2
             String path = "C:\\Users\\muellera\\.cdmLibrary\\writableResources\\h2\\LocalH2_" + database;

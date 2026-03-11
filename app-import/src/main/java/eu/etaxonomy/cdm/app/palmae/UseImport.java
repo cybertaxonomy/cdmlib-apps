@@ -89,18 +89,21 @@ public class UseImport {
 		// establish connection
 		pwd = AccountStore.readOrStorePassword(cdmServer, cdmDB, cdmUserName,
 				pwd);
-		ICdmDataSource destination;
-		if (dbType.equals(DatabaseTypeEnum.MySQL)) {
-			destination = CdmDataSource.NewMySqlInstance(cdmServer, cdmDB,
-					port, cdmUserName, pwd);
-		} else if (dbType.equals(DatabaseTypeEnum.PostgreSQL)) {
-			destination = CdmDataSource.NewPostgreSQLInstance(cdmServer, cdmDB,
-					port, cdmUserName, pwd);
-		} else {
-			// TODO others
-			throw new RuntimeException("Unsupported DatabaseType");
-		}
-		return destination;
+
+		switch (dbType) {
+    		case MySQL:
+    	        return CdmDataSource.NewMySqlInstance(cdmServer, cdmDB,
+    	                    port, cdmUserName, pwd);
+    		case MariaDB:
+    	        return CdmDataSource.NewMariaDbInstance(cdmServer, cdmDB,
+    	                    port, cdmUserName, pwd);
+    		case PostgreSQL:
+    	        return CdmDataSource.NewPostgreSQLInstance(cdmServer, cdmDB,
+    	                    port, cdmUserName, pwd);
+    		default:
+    	        // TODO others
+                throw new RuntimeException("Unsupported DatabaseType");
+    		}
 	}
 
 	public boolean importFromExcelSS(String xlsPath) {
