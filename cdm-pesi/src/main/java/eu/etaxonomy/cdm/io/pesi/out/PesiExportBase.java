@@ -9,6 +9,7 @@
 package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -582,19 +583,24 @@ public abstract class PesiExportBase
     }
 
     protected enum PesiSource{
-        EM(PesiTransformer.uuidSourceRefEuroMed),
-        FE(PesiTransformer.uuidSourceRefFaunaEuropaea),
-        ERMS(PesiTransformer.uuidSourceRefErms),
-        IF(PesiTransformer.uuidSourceRefIndexFungorum);
+        EM(PesiTransformer.uuidSourceRefEuroMed, null),
+        FE(PesiTransformer.uuidSourceRefFaunaEuropaea, PesiTransformer.uuidSourceRefFaunaEuropaea_fromSql),
+        ERMS(PesiTransformer.uuidSourceRefErms, null),
+        IF(PesiTransformer.uuidSourceRefIndexFungorum, null);
 
-        final UUID sourceUuuid;
-        private PesiSource(UUID sourceUuid){
-            this.sourceUuuid =sourceUuid;
+        final UUID sourceUuid;
+        final UUID secondSourceUuid;
+        private PesiSource(UUID sourceUuid, UUID secondUuid){
+            this.sourceUuid =sourceUuid;
+            this.secondSourceUuid = secondUuid;
+        }
+        private boolean hasSourceUuid(UUID sourceUuid) {
+            return sourceUuid != null && (sourceUuid.equals(this.sourceUuid)|| sourceUuid.equals(this.secondSourceUuid) );
         }
     }
 
     /**
-     * Returns the source (E+M, Fauna Europaea, Index Fungorum, ERMS) of a given
+     * Returns the source type (E+M, Fauna Europaea, Index Fungorum, ERMS) of a given
      * Identifiable Entity as an {@link EnumSet enum set}
      */
     protected static EnumSet<PesiSource> getSourceTypes(IdentifiableEntity<?> entity){
@@ -606,7 +612,7 @@ public abstract class PesiExportBase
             UUID refUuid = ref.getUuid();
             if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed)){
                 result.add(PesiSource.EM);
-            }else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)){
+            }else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea) || refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea_fromSql)){
                 result.add(PesiSource.FE);
             }else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
                 result.add(PesiSource.ERMS);
@@ -621,7 +627,7 @@ public abstract class PesiExportBase
 
     protected static IdentifiableSource getPesiSource(IdentifiableEntity<?> identifiableEntity, PesiSource pesiSourceType) {
         List<IdentifiableSource> specificSources = getPesiSources(identifiableEntity).stream()
-            .filter(s->s.getCitation().getUuid().equals(pesiSourceType.sourceUuuid))
+            .filter(s->pesiSourceType.hasSourceUuid(s.getCitation().getUuid()))
             .collect(Collectors.toList());
         if (specificSources.size() > 1) {
             logger.warn("More than 1 source for pesi source " + pesiSourceType + " and entity " + identifiableEntity);
@@ -633,77 +639,116 @@ public abstract class PesiExportBase
     }
 
     protected static IdentifiableSource getFauEuCdmSource(IdentifiableEntity<?> identifiableEntity) {
-        List<IdentifiableSource> specificSources = getPesiSources(identifiableEntity).stream()
-            .filter(s->s.getCitation().getUuid().equals(PesiTransformer.uuidSourceRefFaunaEuropaea))
-            .collect(Collectors.toList());
-        if (specificSources.size() > 1) {
-            logger.warn("More than 1 fauEuSql source for entity " + identifiableEntity);
-        } else if (specificSources.isEmpty()) {
-//            logger.warn("No source for pesi source " + sourceType + " and entity " + identifiableEntity);
+        Set<UUID> uuids = new HashSet<>();
+        uuids.add(PesiTransformer.uuidSourceRefFaunaEuropaea);
+        Set<IdentifiableSource> cdmFauEuSources = filterPesiSources(identifiableEntity.getSources(), uuids);
+        if (cdmFauEuSources.isEmpty()) {
             return null;
+        }else {
+            if (cdmFauEuSources.size() > 1) {
+                logger.warn("More than 1 CDM Fauna Europaea source for: " + identifiableEntity.getTitleCache());
+            }
+            return cdmFauEuSources.iterator().next();
         }
-        return specificSources.get(0);
     }
 
-
     /**
-     * Returns the Sources for a given TaxonName only.
-     * @param identifiableEntity
-     * @return The Sources.
+     * If entity is a TaxonName and has at least 1 real pesi source it returns all
+     * real PESI sources. If not, it returns the original FauEu source if it exists.
      */
     protected static Set<IdentifiableSource> getPesiSources(IdentifiableEntity<?> identifiableEntity) {
-        Set<IdentifiableSource> sources = new HashSet<>();
+
+        Set<IdentifiableSource> filteredSources = new HashSet<>();
+
+        if (identifiableEntity.getSources().isEmpty()) {
+            return filteredSources;
+        }
+
+        // Sources from TaxonName
+        Set<IdentifiableSource> allSources = identifiableEntity.getSources();
+        filteredSources = filterPesiSources(allSources);
 
         //Taxon Names
         if (identifiableEntity.isInstanceOf(TaxonName.class)){
-            // Sources from TaxonName
-            Set<IdentifiableSource> testSources = identifiableEntity.getSources();
-            sources = filterPesiSources(testSources);
 
             TaxonName taxonName = CdmBase.deproxy(identifiableEntity, TaxonName.class);
-            if (sources.size() == 0 && testSources.size()>0){
-                IdentifiableSource source = testSources.iterator().next();
-                logger.warn("There are sources, but they are no pesi sources!!!" + source.getIdInSource() + " - " + source.getIdNamespace() + " - " + (source.getCitation()== null? "no reference" : source.getCitation().getTitleCache()));
-            }
-            if (sources.size() > 1) {
+//            if (sources.size() == 0 && allSources.size()>0){
+//                IdentifiableSource source = allSources.iterator().next();
+//                logger.warn("There are sources, but they are no pesi sources!!!" + source.getIdInSource() + " - " + source.getIdNamespace() + " - " + (source.getCitation()== null? "no reference" : source.getCitation().getTitleCache()));
+//            }
+            if (filteredSources.size() > 1) {
                 logger.debug("This TaxonName has more than one Source: " + identifiableEntity.getUuid() + " (" + identifiableEntity.getTitleCache() + ")");
             }
 
             // name has no PESI source, take sources from TaxonBase
-            if (sources.isEmpty()) {
+            if (filteredSources.isEmpty()) {
                 logger.debug("Name has no PESI source: " + identifiableEntity.getTitleCache());
                 @SuppressWarnings("rawtypes")
                 Set<TaxonBase> taxa = taxonName.getTaxonBases();
                 for (TaxonBase<?> taxonBase: taxa){
-                    sources.addAll(filterPesiSources(taxonBase.getSources()));
+                    filteredSources.addAll(filterPesiSources(taxonBase.getSources()));
                 }
-                if (sources.isEmpty()) {
-                    logger.warn("... and also taxonBase has no PESI source: " + identifiableEntity.getTitleCache());
-                }
+//                if (sources.isEmpty()) {
+//                    logger.warn("... and also taxonBase has no PESI source: " + identifiableEntity.getTitleCache());
+//                }
             }
 
         //for TaxonBases
         }else if (identifiableEntity.isInstanceOf(TaxonBase.class)){
-            sources = filterPesiSources(identifiableEntity.getSources());
+            //nothing to do
         } else {
-            sources = filterPesiSources(identifiableEntity.getSources());
+            //nothing to do
+        }
+        if (filteredSources.isEmpty()) {
+            IdentifiableSource origFauEuSource = getOriginalFauEuSource(identifiableEntity);
+            if (origFauEuSource != null) {
+                filteredSources.add(origFauEuSource);
+            }
         }
 
-        return sources;
+        return filteredSources;
     }
 
-    // return all sources with a PESI reference
+    /**
+     * Returns the source to the old (SQL based) Fauna Europaea database (not the CDM database)
+     */
+    protected static IdentifiableSource getOriginalFauEuSource(IdentifiableEntity<?> identifiableEntity) {
+        Set<UUID> uuids = new HashSet<>();
+        uuids.add(PesiTransformer.uuidSourceRefFaunaEuropaea_fromSql);
+        Set<IdentifiableSource> origFauEuSources = filterPesiSources(identifiableEntity.getSources(), uuids);
+        if (origFauEuSources.isEmpty()) {
+            return null;
+        }else {
+            if (origFauEuSources.size() > 1) {
+                logger.warn("More than 1 original Fauna Europaea source for: " + identifiableEntity.getTitleCache());
+            }
+            return origFauEuSources.iterator().next();
+        }
+    }
+
+    /**
+     * Filters the given sources and returns only real pesi sources. This doesn't include
+     * the "original FauEu" source.
+     */
     protected static Set<IdentifiableSource> filterPesiSources(Set<? extends IdentifiableSource> sources) {
+        return filterPesiSources(sources, pesiSourceUuids);
+    }
+
+    private static Set<UUID> pesiSourceUuids = new HashSet<>(Arrays.asList(new UUID[]{
+            PesiTransformer.uuidSourceRefEuroMed,
+            PesiTransformer.uuidSourceRefFaunaEuropaea,
+            PesiTransformer.uuidSourceRefErms,
+            PesiTransformer.uuidSourceRefIndexFungorum,
+    }));
+
+    // return all sources with a PESI reference
+    private static Set<IdentifiableSource> filterPesiSources(Set<? extends IdentifiableSource> sources, Set<UUID> pesiSourceUuids) {
         Set<IdentifiableSource> result = new HashSet<>();
         for (IdentifiableSource source : sources){
             Reference ref = source.getCitation();
             if (ref != null){
                 UUID refUuid = ref.getUuid();
-                if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed) ||
-                        refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)||
-                        refUuid.equals(PesiTransformer.uuidSourceRefErms)||
-                        refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum) ||
-                        refUuid.equals(PesiTransformer.uuidSourceRefAuct)){
+                if (pesiSourceUuids.contains(refUuid)){
                     result.add(source);
                 }
             }

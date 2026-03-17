@@ -1386,7 +1386,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 
 	/**
      * Returns the <code>sourceFk</code> attribute which is
-     * a link to a reference.
+     * a link to the sec reference or, if a sec reference does not exist
+     * (e.g. for some misapplied names) a link to a pesi source.
      * @see #8796
      * @return The <code>sourceFk</code> attribute.
      * @see MethodMapper
@@ -1396,8 +1397,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         if (taxonBase.getSec() != null){
             return state.getDbId(taxonBase.getSec());
         }else{
-            Set<IdentifiableSource> sources = getPesiSources(taxonBase);
-            for (IdentifiableSource source : sources){
+            Set<IdentifiableSource> pesiSources = getPesiSources(taxonBase);
+            for (IdentifiableSource source : pesiSources){
                 Reference ref = source.getCitation();
                 if (ref != null){
                     return state.getDbId(ref);
@@ -1424,10 +1425,13 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
     }
 
 	/**
-	 * Returns the <code>IdInSource</code> attribute.
+	 * Returns the <code>IdInSource</code> attribute including namespaces like
+	 * "TAX_ID", "NameId", "CDM_ID", "tu_id", "if_id".
+	 *
 	 * @param taxonName The {@link TaxonName TaxonName}.
 	 * @return The <code>IdInSource</code> attribute.
 	 * @see MethodMapper
+	 * @see #getIdInSourceOnly(TaxonName)
 	 */
 	@SuppressWarnings("unused")
 	private static String getIdInSource(TaxonName taxonName) {
@@ -1449,11 +1453,21 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 				if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed)){
 					result = CdmUtils.concat("; ", result, (idInSource != null ? ("NameId: " + source.getIdInSource()) : null));
 				}else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)){
-					result = CdmUtils.concat("; ", result, (idInSource != null ? ("TAX_ID: " + source.getIdInSource()) : null));
-				}else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
-				    result = CdmUtils.concat("; ", result, (result = idInSource != null ? ("tu_id: " + source.getIdInSource()) : null));
+				    String idName = "TAX_ID: ";
+				    IdentifiableSource sqlSource = getOriginalFauEuSource(taxonName);
+				    if (sqlSource != null) {
+				        source = sqlSource;
+				    }else {
+				        idName = "CDM_ID";
+				    }
+				    idInSource = source.getIdInSource();
+				    result = CdmUtils.concat("; ", result, (idInSource != null ? (idName + source.getIdInSource()) : null));
+				}else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea_fromSql)){
+                    result = CdmUtils.concat("; ", result, (idInSource != null ? ("TAX_ID: " + source.getIdInSource()) : null));
+                }else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
+				    result = CdmUtils.concat("; ", result, (idInSource != null ? ("tu_id: " + source.getIdInSource()) : null));
 				}else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){  //Index Fungorum
-				    result = CdmUtils.concat("; ", result, (result = idInSource != null ? ("if_id: " + source.getIdInSource()) : null));
+				    result = CdmUtils.concat("; ", result, (idInSource != null ? ("if_id: " + source.getIdInSource()) : null));
 				}else{
 					if (logger.isDebugEnabled()){logger.debug("Not a PESI source");}
 				}
@@ -1489,15 +1503,12 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * Returns the idInSource for a given TaxonName only.
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @return The idInSource.
+	 * @see #getIdInSource(TaxonName)
 	 */
-	private static String getIdInSourceOnly(IdentifiableEntity<?> identifiableEntity) {
-		String result = null;
+	private static String getIdInSourceOnly(TaxonName taxonName) {
 
-		if (!identifiableEntity.isInstanceOf(TaxonName.class)) {
-            logger.warn("Parameter for getIdInSourceOnly is not a taxon name. Return null: " + identifiableEntity.getTitleCache());
-            return null;
-		}
-        TaxonName taxonName = CdmBase.deproxy(identifiableEntity, TaxonName.class);
+	    String result = null;
+
 		// Get the sources first
 		Set<IdentifiableSource> sources = getPesiSources(taxonName);
 
@@ -1591,7 +1602,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
             if (taxon.hasMarker(PesiTransformer.uuidMarkerGuidIsMissing, true)){  //TODO needs more careful check that this is only valid for FauEu
                 return null;
             }
-            IdentifiableSource feSource = getPesiSource(taxon, PesiSource.FE);
+            IdentifiableSource feSource = getOriginalFauEuSource(taxon);
             if (feSource != null) {
                 return "urn:lsid:faunaeur.org:taxname:" + feSource.getIdInSource();
             }else {
@@ -1640,13 +1651,18 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
                 //This is a workaround until the UUID is stored in FauEu CDM source
                 IdentifiableSource fauEuSource = getFauEuCdmSource(taxon);
                 if (fauEuSource != null) {
-                    String fauEuCdmId = fauEuSource.getIdInSource();
-                    String sql = "SELECT uuid "
-                            + "   FROM TaxonBase tb "
-                            + "   WHERE tb.id = " + fauEuCdmId;
-                    Source fauEuDb = new Source(CdmDestinations.cdm_local_pesi_faunaEu());
-                    Object result = fauEuDb.getUniqueResult(sql);  //should be uuid string
-                    return result.toString();
+                    try {
+                        String fauEuCdmId = fauEuSource.getIdInSource();
+                        String sql = "SELECT uuid "
+                                + "   FROM TaxonBase tb "
+                                + "   WHERE tb.id = " + fauEuCdmId;
+                        Source fauEuDb = new Source(CdmDestinations.cdm_local_pesi_faunaEu());
+                        Object result = fauEuDb.getUniqueResult(sql);  //should be uuid string
+                        return result.toString();
+                    } catch (Exception e) {
+                        logger.error("A problem occurred while retrieving FauEuUuid");
+                        e.printStackTrace();
+                    }
                 }else {
                     return "No FauEu CDM source found. Current uuid is " + taxon.getUuid().toString();
                 }
