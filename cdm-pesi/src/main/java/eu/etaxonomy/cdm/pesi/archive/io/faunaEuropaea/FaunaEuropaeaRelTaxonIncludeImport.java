@@ -1259,7 +1259,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
                            //}
 //                             inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymType.INFERRED_GENUS_OF());
                            if (inferredSynonymsLocal != null) {
-                               for (TaxonBase synonym : inferredSynonymsLocal) {
+                               for (TaxonBase<?> synonym : inferredSynonymsLocal) {
 //                                 TaxonNameBase<?,?> synonymName = synonym.getName();
                                    MarkerType markerType =getUuidMarkerType(PesiTransformer.uuidMarkerGuidIsMissing, state);
 
@@ -1268,7 +1268,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
                                    //get SynonymRelationship and export
                                    if (((Synonym)synonym).getAcceptedTaxon() == null ){
-                                       IdentifiableSource source = ((Synonym)synonym).getSources().iterator().next();
+                                       IdentifiableSource source = synonym.getSources().iterator().next();
                                        if (source.getIdNamespace().contains("Potential combination")){
                                            acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.POTENTIAL_COMBINATION_OF);
                                            logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");

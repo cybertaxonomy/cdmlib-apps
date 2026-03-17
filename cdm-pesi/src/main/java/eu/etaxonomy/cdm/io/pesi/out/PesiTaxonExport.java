@@ -1436,7 +1436,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			Set<IdentifiableSource> sources = getPesiSources(taxonName);
 			if (sources.size() > 1){
 			    //multiple sources do exist for names after merging, therefore this should not be logged anymore, but maybe useful for single source import
-//				logger.warn("There is > 1 Pesi source. This is not yet handled: " +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
+//				logger.warn("There is > 1 PESI source. This is not yet handled: " +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
 			}
 			if (sources.size() == 0){
 				logger.warn("There is no Pesi source for taxon name!" + taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
