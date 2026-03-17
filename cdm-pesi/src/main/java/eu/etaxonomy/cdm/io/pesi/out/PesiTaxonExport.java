@@ -1636,6 +1636,14 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         }
 	}
 
+    private static Source fauEuDbConnection;
+    private static Source getFauEuDbConnection() {
+        if (fauEuDbConnection == null) {
+            fauEuDbConnection = new Source(CdmDestinations.cdm_local_pesi_faunaEu());
+        }
+        return fauEuDbConnection;
+    }
+
     @SuppressWarnings("unused")
     private static String getFauEuUUID(TaxonBase<?> taxon) {
         EnumSet<PesiSource> sourceTypes = getSourceTypes(taxon);
@@ -1656,8 +1664,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
                         String sql = "SELECT uuid "
                                 + "   FROM TaxonBase tb "
                                 + "   WHERE tb.id = " + fauEuCdmId;
-                        Source fauEuDb = new Source(CdmDestinations.cdm_local_pesi_faunaEu());
-                        Object result = fauEuDb.getUniqueResult(sql);  //should be uuid string
+                        Object result = getFauEuDbConnection().getUniqueResult(sql);  //should be uuid string
                         return result.toString();
                     } catch (Exception e) {
                         logger.error("A problem occurred while retrieving FauEuUuid");
