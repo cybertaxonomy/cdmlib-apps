@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbAnnotationMapper;
@@ -295,8 +296,8 @@ public class PesiSourceExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")
 	private static String getRefIdInSource(Reference reference) {
-		String result = null;
 
+	    String result = null;
 		try {
     		if (reference != null) {
     			Set<IdentifiableSource> sourceAll = reference.getSources();
@@ -305,15 +306,11 @@ public class PesiSourceExport extends PesiExportBase {
     			if (sourceCandidates.size() == 1) {
     				result = sourceCandidates.iterator().next().getIdInSource();
     			} else if (sourceCandidates.size() > 1) {
-    				logger.warn("Reference for RefIdInSource has multiple IdentifiableSources which are candidates for a PESI originalDbSource. RefIdInSource can't be determined correctly and will be left out: " + reference.getUuid() + " (" + reference.getTitleCache() + ")");
-    				int count = 1;
-    //				for (IdentifiableSource source : sources) {
-    //					result += source.getIdInSource();
-    //					if (count < sources.size()) {
-    //						result += "; ";
-    //					}
-    //					count++;
-    //				}
+    				//note: did not exist in PESI 2025
+    			    logger.warn("Reference for RefIdInSource has multiple IdentifiableSources which are candidates for a PESI originalDbSource. RefIdInSource can't be determined correctly and will be left out: " + reference.getUuid() + " (" + reference.getTitleCache() + ")");
+    				for (IdentifiableSource source : sourceCandidates) {
+    					result += CdmUtils.concat("; ", result, source.getIdInSource());
+    				}
     			}
     		}
 		} catch (Exception e) {
