@@ -74,7 +74,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static final UUID uuidSourceRefFaunaEuropaea = UUID.fromString("f27a5e67-d065-4b79-8d41-eabd3ae0edd0");
 	public static final UUID uuidSourceRefErms = UUID.fromString("7744bc26-f914-42c4-b54a-dd2a030a8bb7");
 	public static final UUID uuidSourceRefIndexFungorum = UUID.fromString("8de25d27-7d40-47f4-af3b-59d64935a843");
-	public static final UUID uuidSourceRefAuct = UUID.fromString("5f79f96c-c100-4cd8-b78e-2b2dacf09a23");
+
 	public static final UUID uuidSourceRefFaunaEuropaea_fromSql = UUID.fromString("6786d863-75d4-4796-b916-c1c3dff4cb70");
     public static final UUID uuidSourceRefFaunaEuropaeaCommonNames = UUID.fromString("107c0b71-4bad-4e47-a09e-7d12f09a0cfd");
 

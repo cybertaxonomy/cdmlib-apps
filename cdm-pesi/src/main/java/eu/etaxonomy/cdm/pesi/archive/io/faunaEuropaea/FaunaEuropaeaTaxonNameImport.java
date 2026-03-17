@@ -342,7 +342,6 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				}
 
 				Reference sourceReference = fauEuConfig.getSourceReference();
-				Reference auctReference = fauEuConfig.getAuctReference();
 
 				TaxonName zooName = TaxonNameFactory.NewZoologicalInstance(rank);
 				TeamOrPersonBase<?> author = authorStore.get(autId);
