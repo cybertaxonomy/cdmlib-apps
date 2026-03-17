@@ -632,6 +632,19 @@ public abstract class PesiExportBase
         return specificSources.get(0);
     }
 
+    protected static IdentifiableSource getFauEuCdmSource(IdentifiableEntity<?> identifiableEntity) {
+        List<IdentifiableSource> specificSources = getPesiSources(identifiableEntity).stream()
+            .filter(s->s.getCitation().getUuid().equals(PesiTransformer.uuidSourceRefFaunaEuropaea))
+            .collect(Collectors.toList());
+        if (specificSources.size() > 1) {
+            logger.warn("More than 1 fauEuSql source for entity " + identifiableEntity);
+        } else if (specificSources.isEmpty()) {
+//            logger.warn("No source for pesi source " + sourceType + " and entity " + identifiableEntity);
+            return null;
+        }
+        return specificSources.get(0);
+    }
+
 
     /**
      * Returns the Sources for a given TaxonName only.

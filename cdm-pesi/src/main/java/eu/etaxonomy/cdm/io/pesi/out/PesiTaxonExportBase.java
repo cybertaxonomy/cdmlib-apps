@@ -80,6 +80,7 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
         mapping.addMapper(MethodMapper.NewInstance("GUID2", PesiTaxonExport.class, this));
         mapping.addMapper(MethodMapper.NewInstance("NameGUID", PesiTaxonExport.class, this));
         mapping.addMapper(MethodMapper.NewInstance("WfoId", PesiTaxonExport.class, this));
+        mapping.addMapper(MethodMapper.NewInstance("FauEuUUID", PesiTaxonExport.class, this));
 
         mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid", PesiTaxonExport.class, this));
         mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid2", PesiTaxonExport.class, this));

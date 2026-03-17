@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.IInferredSynonymsService;
+import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.format.reference.NomenclaturalSourceFormatter;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -1623,6 +1624,36 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
             return null;
         }
 	}
+
+    @SuppressWarnings("unused")
+    private static String getFauEuUUID(TaxonBase<?> taxon) {
+        EnumSet<PesiSource> sourceTypes = getSourceTypes(taxon);
+        if(sourceTypes.contains(PesiSource.FE)) {
+            if (sourceTypes.size() == 1) {
+                //if there is only 1 source (=fauEu source) we expect that the uuid did not change
+                return taxon.getUuid().toString();
+            }else {
+                //if there is >1 source (= an additional ERMS source) it is not guaranteed that
+                //the taxon uuid is the FauEu uuid. Therefore we
+                //    1. first get the FauEu CDM id from the attached FauEu CDM source
+                //    2. via FauEu CDM id we get the FauEu CDM uuid via sql query
+                //This is a workaround until the UUID is stored in FauEu CDM source
+                IdentifiableSource fauEuSource = getFauEuCdmSource(taxon);
+                if (fauEuSource != null) {
+                    String fauEuCdmId = fauEuSource.getIdInSource();
+                    String sql = "SELECT uuid "
+                            + "   FROM TaxonBase tb "
+                            + "   WHERE tb.id = " + fauEuCdmId;
+                    Source fauEuDb = new Source(CdmDestinations.cdm_local_pesi_faunaEu());
+                    Object result = fauEuDb.getUniqueResult(sql);  //should be uuid string
+                    return result.toString();
+                }else {
+                    return "No FauEu CDM source found. Current uuid is " + taxon.getUuid().toString();
+                }
+            }
+        }
+        return null;
+    }
 
 
 	/**
