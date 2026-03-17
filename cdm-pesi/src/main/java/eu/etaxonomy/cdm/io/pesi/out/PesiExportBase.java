@@ -597,7 +597,7 @@ public abstract class PesiExportBase
      * Returns the source (E+M, Fauna Europaea, Index Fungorum, ERMS) of a given
      * Identifiable Entity as an {@link EnumSet enum set}
      */
-    protected static EnumSet<PesiSource> getSourceType(IdentifiableEntity<?> entity){
+    protected static EnumSet<PesiSource> getSourceTypes(IdentifiableEntity<?> entity){
         EnumSet<PesiSource> result = EnumSet.noneOf(PesiSource.class);
 
         Set<IdentifiableSource> sources = getPesiSources(entity);

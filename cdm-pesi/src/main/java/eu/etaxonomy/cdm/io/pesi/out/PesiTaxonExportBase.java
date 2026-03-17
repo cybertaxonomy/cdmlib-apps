@@ -280,7 +280,7 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
 
     //  @SuppressWarnings("unused")  //used by pure name mapper and by getRankFk
     static Integer getKingdomFk(TaxonName taxonName, PesiExportState state){
-        EnumSet<PesiSource> origin = getSourceType(taxonName);
+        EnumSet<PesiSource> origin = getSourceTypes(taxonName);
         if (origin.size() == 1 && origin.contains(PesiSource.EM)){
             //maybe simply replace by
             //return PesiTransformer.KINGDOM_PLANTAE;
