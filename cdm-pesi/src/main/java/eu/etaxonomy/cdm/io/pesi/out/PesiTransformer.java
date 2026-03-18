@@ -2519,14 +2519,14 @@ public final class PesiTransformer extends ExportTransformerBase{
 	    if (sources.contains(PesiSource.EM)){
 			result = CdmUtils.concat(",", result, SOURCE_STR_EM);
 		}
+        if (sources.contains(PesiSource.ERMS)){
+            result = CdmUtils.concat(",", result, SOURCE_STR_ERMS);
+        }
 		if (sources.contains(PesiSource.FE)){
 			result = CdmUtils.concat(",", result, SOURCE_STR_FE);
 		}
 		if (sources.contains(PesiSource.IF)){
 			result = CdmUtils.concat(",", result, SOURCE_STR_IF);
-		}
-		if (sources.contains(PesiSource.ERMS)){
-			result = CdmUtils.concat(",", result, SOURCE_STR_ERMS);
 		}
 		return result;
 	}
