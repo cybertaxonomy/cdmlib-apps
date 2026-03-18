@@ -1758,75 +1758,83 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		//TODO implement anew for taxa
 		try {
 			List<PesiSource> sources = getSourceTypes(taxon);
-			//TODO what if 2 sources? In PESI 2014 they were pipe separated
 			//TODO why does ERMS use accessed through eu-nomen, while E+M uses accessed through E+M
 			if (sources.isEmpty()) {
-//				logger.error("OriginalDB is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-			} else if (sources.contains(PesiSource.ERMS)) {
-				//TODO check if correct, compare with PESI 2014
-			    Set<Extension> extensions = taxon.getExtensions();
-				for (Extension extension : extensions) {
-				    if (extension.getType()== null) {
-				        logger.warn("Extensiontype is null: " + taxon.getTitleCache() + "/" + taxon.getUuid());
-				    } else if (extension.getType().equals(cacheCitationExtensionType)) {
-						result = extension.getValue();
-					}
-				}
-			} else if (sources.contains(PesiSource.EM)) {
-			    //TODO
-			    boolean isMisapplied = isMisappliedName(taxon);
-			    boolean isProParteSyn = isProParteOrPartialSynonym(taxon);
-			    Reference sec = null;
-			    if(!isMisapplied && !isProParteSyn){
-			        sec = taxon.getSec();
-			    }else if (isMisapplied){
-			        sec = getAcceptedTaxonForMisappliedName(taxon).getSec();
-			    }else if (isProParteSyn){
-                    sec = getAcceptedTaxonForProParteSynonym(taxon).getSec();
-                }
-			    if (sec == null){
-			        logger.warn("Sec could not be defined for taxon " + taxon.getTitleCache()+ "; " + taxon.getUuid());
-			    }
-			    String author = sec == null? "" : sec.getTitleCache();
-			    String webShowName = isMisapplied? getDisplayName(taxon):getWebShowName(taxonName);  //for misapplied we need also the sensu and non author part, for ordinary names name + author is enough
-			    String accessed = ". Accessed through: Euro+Med PlantBase at " + state.getConfig().getEuromedBaseUrl();
-			    result = CdmUtils.removeTrailingDots(author)
-			            + ". " + CdmUtils.removeTrailingDots(webShowName)
-			            + accessed + taxon.getUuid();
-			} else {
-				//TODO check for IF + FE
+//              logger.error("OriginalDB is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+            }
+			for (PesiSource sourceType : sources) {
+			    String sourceResult = "";
+			    if (sourceType == PesiSource.ERMS) {
+	                //TODO check if correct,compare with PESI 2014
+	                Set<Extension> extensions = taxon.getExtensions();
+	                for (Extension extension : extensions) {
+	                    if (extension.getType()== null) {
+	                        logger.warn("Extensiontype is null: " + taxon.getTitleCache() + "/" + taxon.getUuid());
+	                    } else if (extension.getType().equals(cacheCitationExtensionType)) {
+	                        sourceResult = extension.getValue();
+	                    }
+	                }
+	                if ("".equals(sourceResult)) {
+	                    logger.warn("No cacheCitation for ERMS taxon: " + taxon.getTitleCache());
+	                }
+	            } else if (sources.contains(PesiSource.EM)) {
+	                //TODO
+	                boolean isMisapplied = isMisappliedName(taxon);
+	                boolean isProParteSyn = isProParteOrPartialSynonym(taxon);
+	                Reference sec = null;
+	                if(!isMisapplied && !isProParteSyn){
+	                    sec = taxon.getSec();
+	                }else if (isMisapplied){
+	                    sec = getAcceptedTaxonForMisappliedName(taxon).getSec();
+	                }else if (isProParteSyn){
+	                    sec = getAcceptedTaxonForProParteSynonym(taxon).getSec();
+	                }
+	                if (sec == null){
+	                    logger.warn("Sec could not be defined for taxon " + taxon.getTitleCache()+ "; " + taxon.getUuid());
+	                }
+	                String author = sec == null? "" : sec.getTitleCache();
+	                String webShowName = isMisapplied? getDisplayName(taxon):getWebShowName(taxonName);  //for misapplied we need also the sensu and non author part, for ordinary names name + author is enough
+	                String accessed = ". Accessed through: Euro+Med PlantBase at " + state.getConfig().getEuromedBaseUrl();
+	                sourceResult = CdmUtils.removeTrailingDots(author)
+	                        + ". " + CdmUtils.removeTrailingDots(webShowName)
+	                        + accessed + taxon.getUuid();
+	            } else {
+	                //TODO check for IF + FE
 
-			    String expertName = getExpertName(taxon);
-				String webShowName = getWebShowName(taxonName);
+	                String expertName = getExpertName(taxon);
+	                String webShowName = getWebShowName(taxonName);
 
-				// idInSource only
-				String idInSource = getIdInSourceOnly(taxonName);
+	                // idInSource only
+	                String idInSource = getIdInSourceOnly(taxonName);
 
-				// build the cacheCitation
-				if (expertName != null) {
-					result += expertName + ". ";
-				} else {
-					if (logger.isDebugEnabled()){logger.debug("ExpertName could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");}
-				}
-				if (webShowName != null) {
-					result += webShowName + ". ";
-				} else {
-					logger.warn("WebShowName could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-				}
+	                // build the cacheCitation
+	                if (expertName != null) {
+	                    sourceResult = expertName + ". ";
+	                } else {
+	                    if (logger.isDebugEnabled()){logger.debug("ExpertName could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");}
+	                }
 
-				if (getOriginalDB(taxonName).equals("IF")) {
-                    result += "Accessed through: Index Fungorum at " +  state.getConfig().getFauEuBaseUrl();
-				} else if (getOriginalDB(taxonName).equals("FaEu")) {
-					result += "Accessed through: Fauna Europaea at " +  state.getConfig().getFauEuBaseUrl();
-				} else if (getOriginalDB(taxonName).equals("EM")) {
-					result += "Accessed through: Euro+Med PlantBase at "+ state.getConfig().getEuromedBaseUrl();
-				}
+	                if (webShowName != null) {
+	                    sourceResult += webShowName + ". ";
+	                } else {
+	                    logger.warn("WebShowName could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+	                }
 
-				if (idInSource != null) {
-					result += idInSource;
-				} else {
-					logger.warn("IdInSource could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-				}
+	                if (getOriginalDB(taxonName).equals(PesiTransformer.SOURCE_STR_IF)) {
+	                    sourceResult += "Accessed through: Index Fungorum at " +  state.getConfig().getFauEuBaseUrl();
+	                } else if (getOriginalDB(taxonName).equals(PesiTransformer.SOURCE_STR_FE)) {
+	                    sourceResult += "Accessed through: Fauna Europaea at " +  state.getConfig().getFauEuBaseUrl();
+	                } else if (getOriginalDB(taxonName).equals(PesiTransformer.SOURCE_STR_EM)) {
+	                    sourceResult += "Accessed through: Euro+Med PlantBase at "+ state.getConfig().getEuromedBaseUrl();
+	                }
+
+	                if (idInSource != null) {
+	                    sourceResult += idInSource;
+	                } else {
+	                    logger.warn("IdInSource could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+	                }
+	            }
+			    result = CdmUtils.concat(" | ", result, sourceResult);
 			}
 
 		} catch (Exception e) {
