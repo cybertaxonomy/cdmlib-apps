@@ -1545,17 +1545,19 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	private static String getGUID(TaxonBase<?> taxon) {
-        EnumSet<PesiSource> sources = getSourceTypes(taxon);
-        if (sources.size() < 1) {
+        EnumSet<PesiSource> sourceTypes = getSourceTypes(taxon);
+        if (sourceTypes.size() < 1) {
             return null;
         }
-        if (sources.contains(PesiSource.EM)) {
+
+        //TODO use ordered source types
+        if (sourceTypes.contains(PesiSource.EM)) {
             return taxon.getUuid().toString();
-        } else if (sources.contains(PesiSource.ERMS)) {
+        } else if (sourceTypes.contains(PesiSource.ERMS)) {
             return getErmsGuid(taxon);
-        } else if (sources.contains(PesiSource.FE)) {
+        } else if (sourceTypes.contains(PesiSource.FE)) {
             return getFauEuGuid(taxon);
-        } else if (sources.contains(PesiSource.IF)) {
+        } else if (sourceTypes.contains(PesiSource.IF)) {
             return getIndexFungorumGuid(taxon);
         }
         return null;
