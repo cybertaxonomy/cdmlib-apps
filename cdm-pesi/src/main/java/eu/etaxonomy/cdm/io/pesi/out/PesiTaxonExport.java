@@ -1450,24 +1450,30 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			    Reference ref = source.getCitation();
 				UUID refUuid = ref.getUuid();
 				String idInSource = source.getIdInSource();
+				String idPrefix = null;
 				if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed)){
-					result = CdmUtils.concat("; ", result, (idInSource != null ? ("NameId: " + source.getIdInSource()) : null));
+				    idPrefix = "NameId";
+//					result = CdmUtils.concat("; ", result, (idInSource != null ? ("NameId: " + source.getIdInSource()) : null));
 				}else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)){
-				    String idName = "TAX_ID: ";
+				    idPrefix = "TAX_ID";
 				    IdentifiableSource sqlSource = getOriginalFauEuSource(taxonName);
 				    if (sqlSource != null) {
 				        source = sqlSource;
+				        idInSource = source.getIdInSource();
 				    }else {
-				        idName = "CDM_ID";
+				        idPrefix = "CDM_ID";
 				    }
-				    idInSource = source.getIdInSource();
-				    result = CdmUtils.concat("; ", result, (idInSource != null ? (idName + source.getIdInSource()) : null));
+//				    result = CdmUtils.concat("; ", result, (idInSource != null ? (idPrefix + source.getIdInSource()) : null));
 				}else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea_fromSql)){
-                    result = CdmUtils.concat("; ", result, (idInSource != null ? ("TAX_ID: " + source.getIdInSource()) : null));
+				    idPrefix = "TAX_ID";
+//                    result = CdmUtils.concat("; ", result, (idInSource != null ? ("TAX_ID: " + source.getIdInSource()) : null));
                 }else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
-				    result = CdmUtils.concat("; ", result, (idInSource != null ? ("tu_id: " + source.getIdInSource()) : null));
+                    idPrefix = "tu_id";
+//				    result = CdmUtils.concat("; ", result, (idInSource != null ? ("tu_id: " + source.getIdInSource()) : null));
 				}else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){  //Index Fungorum
-				    result = CdmUtils.concat("; ", result, (idInSource != null ? ("if_id: " + source.getIdInSource()) : null));
+				    idPrefix = "if_id";
+
+//				    result = CdmUtils.concat("; ", result, (idInSource != null ? ("if_id: " + source.getIdInSource()) : null));
 				}else{
 					if (logger.isDebugEnabled()){logger.debug("Not a PESI source");}
 				}
@@ -1475,18 +1481,23 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 				String sourceIdNameSpace = source.getIdNamespace();
 				if (sourceIdNameSpace != null) {
 					if (sourceIdNameSpace.equals(PesiTransformer.STR_NAMESPACE_NOMINAL_TAXON)) {
-						result = CdmUtils.concat("; ", result, idInSource != null ? ("Nominal Taxon from TAX_ID: " + source.getIdInSource()):null);
+					    idPrefix = "Nominal Taxon from TAX_ID";
+//						result = CdmUtils.concat("; ", result, idInSource != null ? ("Nominal Taxon from TAX_ID: " + source.getIdInSource()):null);
 					} else if (sourceIdNameSpace.equals(IInferredSynonymsService.INFERRED_EPITHET_NAMESPACE)) {
-						result = CdmUtils.concat("; ", result, idInSource != null ? ("Inferred epithet from TAX_ID: " + source.getIdInSource()) : null);
+					    idPrefix = "Inferred epithet from TAX_ID";
+//					    result = CdmUtils.concat("; ", result, idInSource != null ? ("Inferred epithet from TAX_ID: " + source.getIdInSource()) : null);
 					} else if (sourceIdNameSpace.equals(IInferredSynonymsService.INFERRED_GENUS_NAMESPACE)) {
-						result = CdmUtils.concat("; ", result, idInSource != null ? ("Inferred genus from TAX_ID: " + source.getIdInSource()):null);
+					    idPrefix = "Inferred genus from TAX_ID";
+//					    result = CdmUtils.concat("; ", result, idInSource != null ? ("Inferred genus from TAX_ID: " + source.getIdInSource()):null);
 					} else if (sourceIdNameSpace.equals(IInferredSynonymsService.POTENTIAL_COMBINATION_NAMESPACE)) {
-						result = CdmUtils.concat("; ", result, idInSource != null ? ("Potential combination from TAX_ID: " + source.getIdInSource()):null);
+					    idPrefix = "Potential combination from TAX_ID";
+//					    result = CdmUtils.concat("; ", result, idInSource != null ? ("Potential combination from TAX_ID: " + source.getIdInSource()):null);
 					}
 				}
-				if (result == null) {
-					logger.warn("IdInSource is NULL for this taxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() +", sourceIdNameSpace: " + source.getIdNamespace()+")");
+				if (idPrefix == null) {
+					logger.warn("IdInSource prefix is NULL for this taxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() +", sourceIdNameSpace: " + source.getIdNamespace()+")");
 				}
+				result = CdmUtils.concat("; ", result, idInSource != null ? (idPrefix + ": " + idInSource):null);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
