@@ -1397,7 +1397,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         if (taxonBase.getSec() != null){
             return state.getDbId(taxonBase.getSec());
         }else{
-            Set<IdentifiableSource> pesiSources = getPesiSources(taxonBase);
+            List<IdentifiableSource> pesiSources = getPesiSources(taxonBase);
             for (IdentifiableSource source : pesiSources){
                 Reference ref = source.getCitation();
                 if (ref != null){
@@ -1438,7 +1438,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 
 	    String result = null;
 		try {
-			Set<IdentifiableSource> sources = getPesiSources(taxonName);
+			List<IdentifiableSource> sources = getPesiSources(taxonName);
 			if (sources.size() > 1){
 			    //multiple sources do exist for names after merging, therefore this should not be logged anymore, but maybe useful for single source import
 				if (logger.isDebugEnabled()) {logger.debug("There is > 1 PESI source. This is not yet handled: " +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");}
@@ -1511,7 +1511,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	    String result = null;
 
 		// Get the sources first
-		Set<IdentifiableSource> sources = getPesiSources(taxonName);
+		List<IdentifiableSource> sources = getPesiSources(taxonName);
 
 		// Determine the idInSource
 		int count = 1;

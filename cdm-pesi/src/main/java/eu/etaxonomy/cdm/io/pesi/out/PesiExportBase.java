@@ -10,6 +10,7 @@ package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -22,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.service.pager.Pager;
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.DbExportBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
@@ -584,8 +586,8 @@ public abstract class PesiExportBase
 
     protected enum PesiSource{
         EM(PesiTransformer.uuidSourceRefEuroMed, null),
-        FE(PesiTransformer.uuidSourceRefFaunaEuropaea, PesiTransformer.uuidSourceRefFaunaEuropaea_fromSql),
         ERMS(PesiTransformer.uuidSourceRefErms, null),
+        FE(PesiTransformer.uuidSourceRefFaunaEuropaea, PesiTransformer.uuidSourceRefFaunaEuropaea_fromSql),
         IF(PesiTransformer.uuidSourceRefIndexFungorum, null);
 
         final UUID sourceUuid;
@@ -606,23 +608,35 @@ public abstract class PesiExportBase
     protected static EnumSet<PesiSource> getSourceTypes(IdentifiableEntity<?> entity){
         EnumSet<PesiSource> result = EnumSet.noneOf(PesiSource.class);
 
-        Set<IdentifiableSource> sources = getPesiSources(entity);
+        List<IdentifiableSource> sources = getPesiSources(entity);
         for (IdentifiableSource source : sources) {
-            Reference ref = source.getCitation();
-            UUID refUuid = ref.getUuid();
-            if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed)){
-                result.add(PesiSource.EM);
-            }else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea) || refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea_fromSql)){
-                result.add(PesiSource.FE);
-            }else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
-                result.add(PesiSource.ERMS);
-            }else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){
-                result.add(PesiSource.IF);
-            }else{
-                if (logger.isDebugEnabled()){logger.debug("Not a PESI source");}
+            PesiSource sourceType = getSourceTypeOfSource(source);
+            if (sourceType != null) {
+                result.add(sourceType);
             }
         }
         return result;
+    }
+
+    /**
+     * Returns the PESI source type of this source or null if it is not a pesi source.
+     * Old FauEu sources are returned as {@link PesiSource#FE}
+     */
+    private static PesiSource getSourceTypeOfSource(IdentifiableSource source) {
+        Reference ref = source.getCitation();
+        UUID refUuid = ref.getUuid();
+        if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed)){
+            return PesiSource.EM;
+        }else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea) || refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea_fromSql)){
+            return PesiSource.FE;
+        }else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
+            return PesiSource.ERMS;
+        }else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){
+            return PesiSource.IF;
+        }else{
+            if (logger.isDebugEnabled()){logger.debug("Not a PESI source");}
+            return null;
+        }
     }
 
     protected static IdentifiableSource getPesiSource(IdentifiableEntity<?> identifiableEntity, PesiSource pesiSourceType) {
@@ -641,14 +655,14 @@ public abstract class PesiExportBase
     protected static IdentifiableSource getFauEuCdmSource(IdentifiableEntity<?> identifiableEntity) {
         Set<UUID> uuids = new HashSet<>();
         uuids.add(PesiTransformer.uuidSourceRefFaunaEuropaea);
-        Set<IdentifiableSource> cdmFauEuSources = filterPesiSources(identifiableEntity.getSources(), uuids);
+        List<IdentifiableSource> cdmFauEuSources = filterAndOrderPesiSources(identifiableEntity.getSources(), uuids);
         if (cdmFauEuSources.isEmpty()) {
             return null;
         }else {
             if (cdmFauEuSources.size() > 1) {
                 logger.warn("More than 1 CDM Fauna Europaea source for: " + identifiableEntity.getTitleCache());
             }
-            return cdmFauEuSources.iterator().next();
+            return cdmFauEuSources.get(0);
         }
     }
 
@@ -656,17 +670,13 @@ public abstract class PesiExportBase
      * If entity is a TaxonName and has at least 1 real pesi source it returns all
      * real PESI sources. If not, it returns the original FauEu source if it exists.
      */
-    protected static Set<IdentifiableSource> getPesiSources(IdentifiableEntity<?> identifiableEntity) {
+    protected static List<IdentifiableSource> getPesiSources(IdentifiableEntity<?> identifiableEntity) {
 
-        Set<IdentifiableSource> filteredSources = new HashSet<>();
-
-        if (identifiableEntity.getSources().isEmpty()) {
-            return filteredSources;
-        }
+        List<IdentifiableSource> filteredSources = new ArrayList<>();
 
         // Sources from TaxonName
         Set<IdentifiableSource> allSources = identifiableEntity.getSources();
-        filteredSources = filterPesiSources(allSources);
+        filteredSources = filterAndOrderPesiSources(allSources);
 
         //Taxon Names
         if (identifiableEntity.isInstanceOf(TaxonName.class)){
@@ -686,7 +696,7 @@ public abstract class PesiExportBase
                 @SuppressWarnings("rawtypes")
                 Set<TaxonBase> taxa = taxonName.getTaxonBases();
                 for (TaxonBase<?> taxonBase: taxa){
-                    filteredSources.addAll(filterPesiSources(taxonBase.getSources()));
+                    filteredSources.addAll(filterAndOrderPesiSources(taxonBase.getSources()));
                 }
 //                if (sources.isEmpty()) {
 //                    logger.warn("... and also taxonBase has no PESI source: " + identifiableEntity.getTitleCache());
@@ -699,7 +709,8 @@ public abstract class PesiExportBase
         } else {
             //nothing to do
         }
-        if (filteredSources.isEmpty()) {
+
+        if (filteredSources.isEmpty() && !identifiableEntity.getSources().isEmpty()) {  //(some) IF names have no source and should not be handled here
             IdentifiableSource origFauEuSource = getOriginalFauEuSource(identifiableEntity);
             if (origFauEuSource != null) {
                 filteredSources.add(origFauEuSource);
@@ -715,14 +726,14 @@ public abstract class PesiExportBase
     protected static IdentifiableSource getOriginalFauEuSource(IdentifiableEntity<?> identifiableEntity) {
         Set<UUID> uuids = new HashSet<>();
         uuids.add(PesiTransformer.uuidSourceRefFaunaEuropaea_fromSql);
-        Set<IdentifiableSource> origFauEuSources = filterPesiSources(identifiableEntity.getSources(), uuids);
+        List<IdentifiableSource> origFauEuSources = filterAndOrderPesiSources(identifiableEntity.getSources(), uuids);
         if (origFauEuSources.isEmpty()) {
             return null;
         }else {
             if (origFauEuSources.size() > 1) {
                 logger.warn("More than 1 original Fauna Europaea source for: " + identifiableEntity.getTitleCache());
             }
-            return origFauEuSources.iterator().next();
+            return origFauEuSources.get(0);
         }
     }
 
@@ -730,8 +741,8 @@ public abstract class PesiExportBase
      * Filters the given sources and returns only real pesi sources. This doesn't include
      * the "original FauEu" source.
      */
-    protected static Set<IdentifiableSource> filterPesiSources(Set<? extends IdentifiableSource> sources) {
-        return filterPesiSources(sources, pesiSourceUuids);
+    protected static List<IdentifiableSource> filterAndOrderPesiSources(Set<? extends IdentifiableSource> sources) {
+        return filterAndOrderPesiSources(sources, pesiSourceUuids);
     }
 
     private static Set<UUID> pesiSourceUuids = new HashSet<>(Arrays.asList(new UUID[]{
@@ -742,8 +753,8 @@ public abstract class PesiExportBase
     }));
 
     // return all sources with a PESI reference
-    private static Set<IdentifiableSource> filterPesiSources(Set<? extends IdentifiableSource> sources, Set<UUID> pesiSourceUuids) {
-        Set<IdentifiableSource> result = new HashSet<>();
+    private static List<IdentifiableSource> filterAndOrderPesiSources(Set<? extends IdentifiableSource> sources, Set<UUID> pesiSourceUuids) {
+        List<IdentifiableSource> result = new ArrayList<>();
         for (IdentifiableSource source : sources){
             Reference ref = source.getCitation();
             if (ref != null){
@@ -753,7 +764,23 @@ public abstract class PesiExportBase
                 }
             }
         }
+        result.sort(pesiSourceComparatorInstance);
         return result;
     }
+
+    private static PesiSourceComparator pesiSourceComparatorInstance = new PesiSourceComparator();
+
+    private static class PesiSourceComparator implements Comparator<IdentifiableSource> {
+
+        @Override
+        public int compare(IdentifiableSource source1, IdentifiableSource source2) {
+            PesiSource sourceType1 = getSourceTypeOfSource(source1);
+            PesiSource sourceType2 = getSourceTypeOfSource(source2);
+
+            return CdmUtils.nullSafeCompareTo(sourceType1, sourceType2);
+        }
+
+    }
+
 
 }

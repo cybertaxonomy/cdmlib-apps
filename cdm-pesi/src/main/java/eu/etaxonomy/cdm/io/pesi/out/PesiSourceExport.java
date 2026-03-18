@@ -301,7 +301,7 @@ public class PesiSourceExport extends PesiExportBase {
 		try {
     		if (reference != null) {
     			Set<IdentifiableSource> sourceAll = reference.getSources();
-    			Set<IdentifiableSource> sourceCandidates = filterPesiSources(sourceAll);
+    			List<IdentifiableSource> sourceCandidates = filterAndOrderPesiSources(sourceAll);
 
     			if (sourceCandidates.size() == 1) {
     				result = sourceCandidates.iterator().next().getIdInSource();
