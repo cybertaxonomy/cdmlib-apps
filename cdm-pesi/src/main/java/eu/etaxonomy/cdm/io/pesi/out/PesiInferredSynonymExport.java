@@ -41,6 +41,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 /**
  * Moved from {@link PesiTaxonExport}
  *
+ * Note: This export is currently (2026-03) not used anymore as we create the inferred synonyms
+ *       in the original FauEu database.
+ *
  * @author muellera
  * @since 16.06.2025
  */
@@ -298,7 +301,7 @@ public class PesiInferredSynonymExport extends PesiTaxonExportBase {
                         for (Synonym inferredSynonym : inferredSynonyms) {
 
                             //add hasNoGuid-marker
-                            MarkerType markerType =getUuidMarkerType(PesiTransformer.uuidMarkerGuidIsMissing, state);
+                            MarkerType markerType = getUuidMarkerType(PesiTransformer.uuidMarkerGuidIsMissing, state);
                             inferredSynonym.addMarker(Marker.NewInstance(markerType, true));
 
                             // Both Synonym and its TaxonName have no valid Id yet

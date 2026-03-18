@@ -95,6 +95,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int QUALITY_STATUS_THEMATIC_EDITOR = 5;
 
 	// marker type
+	//marker used for inferred synonyms and basionyms (nominal taxa) in FauEu and for some taxa in IF
 	public static final UUID uuidMarkerGuidIsMissing = UUID.fromString("24e70843-05e2-44db-954b-84df0d23ea20");
 	public static final UUID uuidMarkerTypeHasNoLastAction = UUID.fromString("99652d5a-bc92-4251-b57d-0fec4d258ab7");
 //	public static final UUID uuidMarkerFossil = UUID.fromString("761ce108-031a-4e07-b444-f8d757070312");

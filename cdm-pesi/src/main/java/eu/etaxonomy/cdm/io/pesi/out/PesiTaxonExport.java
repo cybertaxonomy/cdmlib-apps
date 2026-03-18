@@ -904,7 +904,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			    List<PesiSource> sourceTypes = getSourceTypes(taxonName);
 			    if (sourceTypes.contains(PesiSource.ERMS)){
 			        result = cacheStrategy.getTitleCache(taxonName, tagRules);  //according to SQL script (also in ERMS sources are not abbreviated)
-			    }else if (sourceTypes.contains(PesiSource.FE) || sourceTypes.contains(PesiSource.IF)){
+			    }else if (sourceTypes.contains(PesiSource.FE)
+			            || sourceTypes.contains(PesiSource.IF)){
 			        //TODO define for FE + IF and for multiple sources
 			        result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
 			    }else if (sourceTypes.contains(PesiSource.EM)){
@@ -1955,7 +1956,9 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
                 }
             }
             //IF
-            if (sources.contains(PesiSource.IF)){} //nothing to do, IF does not have expert name
+            if (sources.contains(PesiSource.IF)){
+                //nothing to do, IF does not have expert name
+            }
 
             return CdmUtils.concat(" | ", result.toArray(new String[0]));
 		} catch (Exception e) {
