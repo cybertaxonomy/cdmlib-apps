@@ -902,16 +902,16 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			if (useNameCache){
                 result = cacheStrategy.getNameCache(taxonName, tagRules);
 			}else{
-			    EnumSet<PesiSource> sources = getSourceTypes(taxonName);
-			    if (sources.contains(PesiSource.ERMS)){
+			    EnumSet<PesiSource> sourceTypes = getSourceTypes(taxonName);
+			    if (sourceTypes.contains(PesiSource.ERMS)){
 			        result = cacheStrategy.getTitleCache(taxonName, tagRules);  //according to SQL script (also in ERMS sources are not abbreviated)
-			    }else if (sources.contains(PesiSource.FE) || sources.contains(PesiSource.IF)){
+			    }else if (sourceTypes.contains(PesiSource.FE) || sourceTypes.contains(PesiSource.IF)){
 			        //TODO define for FE + IF and for multiple sources
 			        result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
-			    }else if (sources.contains(PesiSource.EM)){
+			    }else if (sourceTypes.contains(PesiSource.EM)){
 			        result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
 			    }else{
-			        logger.warn("Source not yet handled for " + taxonName.getTitleCache()+". Sources: " +  sources);
+			        logger.warn("Source not yet handled for " + taxonName.getTitleCache()+". Sources: " +  sourceTypes);
 			        result = cacheStrategy.getTitleCache(taxonName, tagRules);
 			    }
 			    result = replaceTagForInfraSpecificMarkerForProtectedTitleCache(taxonName, result);
@@ -1441,13 +1441,13 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			Set<IdentifiableSource> sources = getPesiSources(taxonName);
 			if (sources.size() > 1){
 			    //multiple sources do exist for names after merging, therefore this should not be logged anymore, but maybe useful for single source import
-//				logger.warn("There is > 1 PESI source. This is not yet handled: " +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
+				if (logger.isDebugEnabled()) {logger.debug("There is > 1 PESI source. This is not yet handled: " +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");}
 			}
 			if (sources.size() == 0){
-				logger.warn("There is no Pesi source for taxon name!" + taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
+				logger.warn("There is no Pesi source for taxon name: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
 			}
 			for (IdentifiableSource source : sources) {
-				Reference ref = source.getCitation();
+			    Reference ref = source.getCitation();
 				UUID refUuid = ref.getUuid();
 				String idInSource = source.getIdInSource();
 				if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed)){
@@ -1500,7 +1500,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	}
 
 	/**
-	 * Returns the idInSource for a given TaxonName only.
+	 * Returns the idInSource for a given TaxonName only, without id prefix.
+	 *
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @return The idInSource.
 	 * @see #getIdInSource(TaxonName)
@@ -1556,21 +1557,22 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
      * @see MethodMapper
      */
     private static String getGUID2(TaxonBase<?> taxon) {
-        EnumSet<PesiSource> sources = getSourceTypes(taxon);
-        if (sources.size() < 2) {
+        EnumSet<PesiSource> sourceTypes = getSourceTypes(taxon);
+        if (sourceTypes.size() < 2) {
             return null;
         }
-        if (sources.contains(PesiSource.EM)) {
+        //TODO use ordered source types
+        if (sourceTypes.contains(PesiSource.EM)) {
             //E+M should always go to field GUID
-            if (sources.contains(PesiSource.ERMS)) {
+            if (sourceTypes.contains(PesiSource.ERMS)) {
                 return getErmsGuid(taxon);
             }else {
                 logger.warn("Unexpectd OriginalDB combination with E+M: " +  taxon.getTitleCache());
             }
-        } else if (sources.contains(PesiSource.ERMS)) {
-            if (sources.contains(PesiSource.FE)) {
+        } else if (sourceTypes.contains(PesiSource.ERMS)) {
+            if (sourceTypes.contains(PesiSource.FE)) {
                 return getFauEuGuid(taxon);
-            } else if (sources.contains(PesiSource.IF)) {
+            } else if (sourceTypes.contains(PesiSource.IF)) {
                 return getIndexFungorumGuid(taxon);
             }else {
                 logger.warn("Unexpected OriginalDB combination with ERMS" +  taxon.getTitleCache());
