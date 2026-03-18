@@ -788,8 +788,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
      */
     @SuppressWarnings("unused")  //used by pure name mapper
     private static Integer getRankFk(TaxonName taxonName) {
-        List<PesiSource> sourceType = getSourceTypes(taxonName);
-        if (sourceType.size() == 1 && sourceType.contains(PesiSource.EM)){
+        List<PesiSource> sourceTypes = getSourceTypes(taxonName);
+        if (sourceTypes.size() == 1 && sourceTypes.contains(PesiSource.EM)){
             //TODO state
             return getRankFk(taxonName, getKingdomFk(taxonName, null));
         }else{
@@ -1272,8 +1272,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	private static Integer getQualityStatusFk(TaxonName taxonName) {
-	    List<PesiSource> sources = getSourceTypes(taxonName);
-		return PesiTransformer.getQualityStatusKeyBySource(sources, taxonName);
+	    List<PesiSource> sourceTypes = getSourceTypes(taxonName);
+		return PesiTransformer.getQualityStatusKeyBySource(sourceTypes, taxonName);
 	}
 
 	/**
@@ -1570,6 +1570,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
      * @see MethodMapper
      */
     private static String getGUID2(TaxonBase<?> taxon) {
+
         List<PesiSource> sourceTypes = getSourceTypes(taxon);
         if (sourceTypes.size() < 2) {
             return null;
@@ -1667,6 +1668,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 
     @SuppressWarnings("unused")
     private static String getFauEuUUID(TaxonBase<?> taxon) {
+
         List<PesiSource> sourceTypes = getSourceTypes(taxon);
         if(sourceTypes.contains(PesiSource.FE)) {
             if (sourceTypes.size() == 1) {
@@ -1837,6 +1839,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 					logger.warn("IdInSource could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 				}
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1856,8 +1859,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 */
 //	@SuppressWarnings("unused")
 	private static String getOriginalDB(IdentifiableEntity<?> identifiableEntity) {
-		List<PesiSource> sources = getSourceTypes(identifiableEntity);
-        return PesiTransformer.getOriginalDbBySources(sources);
+		List<PesiSource> sourceTypes = getSourceTypes(identifiableEntity);
+        return PesiTransformer.getOriginalDbBySources(sourceTypes);
 	}
 
     /**
@@ -1930,10 +1933,10 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	private static String getSpeciesExpertName(TaxonBase<?> taxon) {
 		try {
 		    List<String> result = new ArrayList<>();
-            List<PesiSource> sources = getSourceTypes(taxon);
+            List<PesiSource> sourceTypes = getSourceTypes(taxon);
 
             //EM
-            if (sources.contains(PesiSource.EM)){
+            if (sourceTypes.contains(PesiSource.EM)){
                 String expertName = getEuroMedExport(taxon.getSec());
                 //TODO handle misapplications
                 //TODO think about using the author only
@@ -1942,7 +1945,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
                 }
             }
             //ERMS
-            if (sources.contains(PesiSource.ERMS)){
+            if (sourceTypes.contains(PesiSource.ERMS)){
                 Set<String> expertNamesExtensions = taxon.getExtensions(PesiTransformer.uuidExtSpeciesExpertName);
                 for (String extension : expertNamesExtensions) {
                     if (isNotBlank(extension) && !result.contains(extension)) {
@@ -1951,7 +1954,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
                 }
             }
             //FauEu
-            if (sources.contains(PesiSource.FE)){
+            if (sourceTypes.contains(PesiSource.FE)){
                 //TODO handle FauEu, not sure if the below is correct
 
                 Set<String> expertNamesExtensions = taxon.getExtensions(PesiTransformer.uuidExtSpeciesExpertName);
@@ -1962,7 +1965,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
                 }
             }
             //IF
-            if (sources.contains(PesiSource.IF)){
+            if (sourceTypes.contains(PesiSource.IF)){
                 //nothing to do, IF does not have expert name
             }
 

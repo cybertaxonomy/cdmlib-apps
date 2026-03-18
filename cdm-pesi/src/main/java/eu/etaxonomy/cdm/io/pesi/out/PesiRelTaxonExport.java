@@ -226,7 +226,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 				    UUID toUuid = rel.getToTaxon().getName().getUuid();
 				    TaxRelKey relKey = new TaxRelKey(fromUuid, toUuid);
 				    if (existingRelations.get(relKey) != null) {
-				        logger.info("A taxon relation exists already for name "
+				        logger.debug("A taxon relation exists already for name "
 				           + rel.getFromTaxon().getName().getTitleCache()
 				           + " to name " + rel.getToTaxon().getName().getTitleCache() );
 				        continue;

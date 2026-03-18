@@ -327,8 +327,8 @@ public class PesiSourceExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")
 	private static String getOriginalDB(Reference reference) {
-	    List<PesiSource> sources  = getSourceTypes(reference);
-	    return PesiTransformer.getOriginalDbBySources(sources);
+	    List<PesiSource> sourceTypes  = getSourceTypes(reference);
+	    return PesiTransformer.getOriginalDbBySources(sourceTypes);
 	}
 
     @Override
