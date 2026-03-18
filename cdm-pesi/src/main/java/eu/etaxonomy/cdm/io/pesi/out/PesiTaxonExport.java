@@ -1545,22 +1545,14 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	private static String getGUID(TaxonBase<?> taxon) {
-        List<PesiSource> sourceTypes = getSourceTypes(taxon);
+
+	    List<PesiSource> sourceTypes = getSourceTypes(taxon);
         if (sourceTypes.size() < 1) {
             return null;
         }
 
-        //TODO use ordered source types
-        if (sourceTypes.contains(PesiSource.EM)) {
-            return taxon.getUuid().toString();
-        } else if (sourceTypes.contains(PesiSource.ERMS)) {
-            return getErmsGuid(taxon);
-        } else if (sourceTypes.contains(PesiSource.FE)) {
-            return getFauEuGuid(taxon);
-        } else if (sourceTypes.contains(PesiSource.IF)) {
-            return getIndexFungorumGuid(taxon);
-        }
-        return null;
+        PesiSource firstSourceType = sourceTypes.get(0);
+        return getGuidForSourceType(taxon, firstSourceType);
     }
 
 	/**
@@ -1575,24 +1567,21 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         if (sourceTypes.size() < 2) {
             return null;
         }
-        //TODO use ordered source types
-        if (sourceTypes.contains(PesiSource.EM)) {
-            //E+M should always go to field GUID
-            if (sourceTypes.contains(PesiSource.ERMS)) {
-                return getErmsGuid(taxon);
-            }else {
-                logger.warn("Unexpectd OriginalDB combination with E+M: " +  taxon.getTitleCache());
-            }
-        } else if (sourceTypes.contains(PesiSource.ERMS)) {
-            if (sourceTypes.contains(PesiSource.FE)) {
-                return getFauEuGuid(taxon);
-            } else if (sourceTypes.contains(PesiSource.IF)) {
-                return getIndexFungorumGuid(taxon);
-            }else {
-                logger.warn("Unexpected OriginalDB combination with ERMS" +  taxon.getTitleCache());
-            }
-        } else {
-            logger.warn("Unexpected OriginalDB combination with 2 sources" +  taxon.getTitleCache());
+
+        PesiSource secondSourceType = sourceTypes.get(1);
+        return getGuidForSourceType(taxon, secondSourceType);
+    }
+
+    private static String getGuidForSourceType(TaxonBase<?> taxon, PesiSource sourceType) {
+        //TODO use switch
+        if (sourceType == PesiSource.EM) {  //should not happen
+            return taxon.getUuid().toString();
+        } else if (sourceType == PesiSource.ERMS) {
+            return getErmsGuid(taxon);
+        } else if (sourceType == PesiSource.FE) {
+            return getFauEuGuid(taxon);
+        } else if (sourceType == PesiSource.IF) {
+            return getIndexFungorumGuid(taxon);
         }
         return null;
     }
