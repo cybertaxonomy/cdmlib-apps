@@ -1673,7 +1673,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
                 IdentifiableSource fauEuSource = getFauEuCdmSource(taxon);
                 if (fauEuSource != null) {
                     try {
-                        String fauEuCdmId = fauEuSource.getIdInSource();
+                        String fauEuCdmId = fauEuSource.getIdInSource().split(";")[0];
+
                         String sql = "SELECT uuid "
                                 + "   FROM TaxonBase tb "
                                 + "   WHERE tb.id = " + fauEuCdmId;
