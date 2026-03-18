@@ -902,15 +902,15 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
                 result = cacheStrategy.getNameCache(taxonName, tagRules);
 			}else{
 			    List<PesiSource> sourceTypes = getSourceTypes(taxonName);
-			    if (sourceTypes.contains(PesiSource.ERMS)){
+			    if (sourceTypes.contains(PesiSource.EM)){
+                    result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
+                }else if (sourceTypes.contains(PesiSource.ERMS)){
 			        result = cacheStrategy.getTitleCache(taxonName, tagRules);  //according to SQL script (also in ERMS sources are not abbreviated)
 			    }else if (sourceTypes.contains(PesiSource.FE)
 			            || sourceTypes.contains(PesiSource.IF)){
 			        //TODO define for FE + IF and for multiple sources
 			        result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
-			    }else if (sourceTypes.contains(PesiSource.EM)){
-			        result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
-			    }else{
+			    }else {
 			        logger.warn("Source not yet handled for " + taxonName.getTitleCache()+". Sources: " +  sourceTypes);
 			        result = cacheStrategy.getTitleCache(taxonName, tagRules);
 			    }
