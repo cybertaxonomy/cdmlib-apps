@@ -1618,8 +1618,14 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
                 return null;
             }
             IdentifiableSource feSource = getOriginalFauEuSource(taxon);
-            if (feSource != null) {
-                return "urn:lsid:faunaeur.org:taxname:" + feSource.getIdInSource();
+            String idInSource = feSource.getIdInSource();
+            if (idInSource != null) {
+                if (idInSource.contains(";") && (idInSource.startsWith("Potential ")|| idInSource.startsWith("Inferred "))) {
+                    if (logger.isDebugEnabled()) {logger.debug("FauEu idInSource contains >1 source IDs: " + taxon.getTitleCache());}
+                    return null;
+                }else {
+                    return "urn:lsid:faunaeur.org:taxname:" + feSource.getIdInSource();
+                }
             }else {
                 logger.warn("No FauEu GUID found for " + taxon.getTitleCache());
                 return null;
