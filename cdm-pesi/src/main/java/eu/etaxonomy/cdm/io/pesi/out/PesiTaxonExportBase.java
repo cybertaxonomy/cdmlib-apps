@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -281,12 +280,12 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
 
     //  @SuppressWarnings("unused")  //used by pure name mapper and by getRankFk
     static Integer getKingdomFk(TaxonName taxonName, PesiExportState state){
-        EnumSet<PesiSource> origin = getSourceTypes(taxonName);
-        if (origin.size() == 1 && origin.contains(PesiSource.EM)){
+        List<PesiSource> sourceType = getSourceTypes(taxonName);
+        if (sourceType.size() == 1 && sourceType.contains(PesiSource.EM)){
             //maybe simply replace by
             //return PesiTransformer.KINGDOM_PLANTAE;
             return PesiTransformer.nomenclaturalCode2Kingdom(taxonName.getNameType());
-        } else if (origin.size() == 1 && origin.contains(PesiSource.ERMS)){
+        } else if (sourceType.size() == 1 && sourceType.contains(PesiSource.ERMS)){
             //
             Optional<TaxonBase> taxonBase = taxonName.getRelationsFromThisName().stream()
                     .map(r->r.getToName())

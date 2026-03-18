@@ -10,9 +10,9 @@ package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -2433,7 +2433,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 		return result;
 	}
 
-	public static Integer getQualityStatusKeyBySource(EnumSet<PesiSource> sources, TaxonName taxonName) {
+	public static Integer getQualityStatusKeyBySource(List<PesiSource> sources, TaxonName taxonName) {
 		if (sources.contains(PesiSource.EM)){
 			return QUALITY_STATUS_ADD_BY_DBMT;
 		}else if (sources.contains(PesiSource.ERMS)){
@@ -2512,9 +2512,10 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}
 	}
 
-	public static String getOriginalDbBySources(EnumSet<PesiSource> sources) {
-		String result = "";
-		if (sources.contains(PesiSource.EM)){
+	public static String getOriginalDbBySources(List<PesiSource> sources) {
+		//TODO better use natural enum order
+	    String result = "";
+	    if (sources.contains(PesiSource.EM)){
 			result = CdmUtils.concat(",", result, SOURCE_STR_EM);
 		}
 		if (sources.contains(PesiSource.FE)){

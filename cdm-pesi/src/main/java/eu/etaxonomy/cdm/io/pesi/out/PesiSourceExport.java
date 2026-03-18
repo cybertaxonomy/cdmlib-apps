@@ -10,7 +10,6 @@ package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -328,7 +327,7 @@ public class PesiSourceExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")
 	private static String getOriginalDB(Reference reference) {
-	    EnumSet<PesiSource> sources  = getSourceTypes(reference);
+	    List<PesiSource> sources  = getSourceTypes(reference);
 	    return PesiTransformer.getOriginalDbBySources(sources);
 	}
 

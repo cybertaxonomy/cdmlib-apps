@@ -14,7 +14,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -789,8 +788,8 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
      */
     @SuppressWarnings("unused")  //used by pure name mapper
     private static Integer getRankFk(TaxonName taxonName) {
-        EnumSet<PesiSource> origin = getSourceTypes(taxonName);
-        if (origin.size() == 1 && origin.contains(PesiSource.EM)){
+        List<PesiSource> sourceType = getSourceTypes(taxonName);
+        if (sourceType.size() == 1 && sourceType.contains(PesiSource.EM)){
             //TODO state
             return getRankFk(taxonName, getKingdomFk(taxonName, null));
         }else{
@@ -902,7 +901,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			if (useNameCache){
                 result = cacheStrategy.getNameCache(taxonName, tagRules);
 			}else{
-			    EnumSet<PesiSource> sourceTypes = getSourceTypes(taxonName);
+			    List<PesiSource> sourceTypes = getSourceTypes(taxonName);
 			    if (sourceTypes.contains(PesiSource.ERMS)){
 			        result = cacheStrategy.getTitleCache(taxonName, tagRules);  //according to SQL script (also in ERMS sources are not abbreviated)
 			    }else if (sourceTypes.contains(PesiSource.FE) || sourceTypes.contains(PesiSource.IF)){
@@ -1084,7 +1083,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			return null;
 		}
 		String result = null;
-		EnumSet<PesiSource> sources = getSourceTypes(taxonName);
+		List<PesiSource> sources = getSourceTypes(taxonName);
 		if(sources.contains(PesiSource.EM)){
 		    if (! nomSource.getCitation().isProtectedAbbrevTitleCache()){
 		        nomSource.getCitation().setAbbrevTitleCache(null, false);  //to remove a false cache
@@ -1272,7 +1271,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	private static Integer getQualityStatusFk(TaxonName taxonName) {
-	    EnumSet<PesiSource> sources = getSourceTypes(taxonName);
+	    List<PesiSource> sources = getSourceTypes(taxonName);
 		return PesiTransformer.getQualityStatusKeyBySource(sources, taxonName);
 	}
 
@@ -1545,7 +1544,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	private static String getGUID(TaxonBase<?> taxon) {
-        EnumSet<PesiSource> sourceTypes = getSourceTypes(taxon);
+        List<PesiSource> sourceTypes = getSourceTypes(taxon);
         if (sourceTypes.size() < 1) {
             return null;
         }
@@ -1570,7 +1569,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
      * @see MethodMapper
      */
     private static String getGUID2(TaxonBase<?> taxon) {
-        EnumSet<PesiSource> sourceTypes = getSourceTypes(taxon);
+        List<PesiSource> sourceTypes = getSourceTypes(taxon);
         if (sourceTypes.size() < 2) {
             return null;
         }
@@ -1661,7 +1660,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 
     @SuppressWarnings("unused")
     private static String getFauEuUUID(TaxonBase<?> taxon) {
-        EnumSet<PesiSource> sourceTypes = getSourceTypes(taxon);
+        List<PesiSource> sourceTypes = getSourceTypes(taxon);
         if(sourceTypes.contains(PesiSource.FE)) {
             if (sourceTypes.size() == 1) {
                 //if there is only 1 source (=fauEu source) we expect that the uuid did not change
@@ -1760,7 +1759,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		String result = "";
 		//TODO implement anew for taxa
 		try {
-			EnumSet<PesiSource> sources = getSourceTypes(taxon);
+			List<PesiSource> sources = getSourceTypes(taxon);
 			//TODO what if 2 sources? In PESI 2014 they were pipe separated
 			//TODO why does ERMS use accessed through eu-nomen, while E+M uses accessed through E+M
 			if (sources.isEmpty()) {
@@ -1850,7 +1849,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 */
 //	@SuppressWarnings("unused")
 	private static String getOriginalDB(IdentifiableEntity<?> identifiableEntity) {
-		EnumSet<PesiSource> sources = getSourceTypes(identifiableEntity);
+		List<PesiSource> sources = getSourceTypes(identifiableEntity);
         return PesiTransformer.getOriginalDbBySources(sources);
 	}
 
@@ -1868,7 +1867,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	private static String getExpertName(TaxonBase<?> taxon) {
 		try {
 		    List<String> result = new ArrayList<>();
-    		EnumSet<PesiSource> sources = getSourceTypes(taxon);
+    		List<PesiSource> sources = getSourceTypes(taxon);
 
     		//EM
     		if (sources.contains(PesiSource.EM)){
@@ -1924,7 +1923,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	private static String getSpeciesExpertName(TaxonBase<?> taxon) {
 		try {
 		    List<String> result = new ArrayList<>();
-            EnumSet<PesiSource> sources = getSourceTypes(taxon);
+            List<PesiSource> sources = getSourceTypes(taxon);
 
             //EM
             if (sources.contains(PesiSource.EM)){

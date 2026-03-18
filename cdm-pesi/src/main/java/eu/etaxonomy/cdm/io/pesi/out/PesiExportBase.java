@@ -10,6 +10,7 @@ package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -605,8 +606,9 @@ public abstract class PesiExportBase
      * Returns the source type (E+M, Fauna Europaea, Index Fungorum, ERMS) of a given
      * Identifiable Entity as an {@link EnumSet enum set}
      */
-    protected static EnumSet<PesiSource> getSourceTypes(IdentifiableEntity<?> entity){
-        EnumSet<PesiSource> result = EnumSet.noneOf(PesiSource.class);
+    protected static List<PesiSource> getSourceTypes(IdentifiableEntity<?> entity){
+
+        List<PesiSource> result = new ArrayList<>();
 
         List<IdentifiableSource> sources = getPesiSources(entity);
         for (IdentifiableSource source : sources) {
@@ -615,6 +617,7 @@ public abstract class PesiExportBase
                 result.add(sourceType);
             }
         }
+        Collections.sort(result);
         return result;
     }
 
