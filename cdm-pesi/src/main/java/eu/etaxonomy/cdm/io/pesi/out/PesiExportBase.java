@@ -642,7 +642,7 @@ public abstract class PesiExportBase
         }
     }
 
-    protected static IdentifiableSource getPesiSource(IdentifiableEntity<?> identifiableEntity, PesiSource pesiSourceType) {
+    protected static IdentifiableSource getPesiSourceForSourceType(IdentifiableEntity<?> identifiableEntity, PesiSource pesiSourceType) {
         List<IdentifiableSource> specificSources = getPesiSources(identifiableEntity).stream()
             .filter(s->pesiSourceType.hasSourceUuid(s.getCitation().getUuid()))
             .collect(Collectors.toList());
@@ -677,18 +677,15 @@ public abstract class PesiExportBase
 
         List<IdentifiableSource> filteredSources = new ArrayList<>();
 
-        // Sources from TaxonName
+        //add all PESI sources
         Set<IdentifiableSource> allSources = identifiableEntity.getSources();
         filteredSources = filterAndOrderPesiSources(allSources);
 
-        //Taxon Names
+        //for taxon names we additionally add taxon sources if no PESI name source exists
+        //or if taxon has an index fungorum source
         if (identifiableEntity.isInstanceOf(TaxonName.class)){
 
             TaxonName taxonName = CdmBase.deproxy(identifiableEntity, TaxonName.class);
-//            if (sources.size() == 0 && allSources.size()>0){
-//                IdentifiableSource source = allSources.iterator().next();
-//                logger.warn("There are sources, but they are no pesi sources!!!" + source.getIdInSource() + " - " + source.getIdNamespace() + " - " + (source.getCitation()== null? "no reference" : source.getCitation().getTitleCache()));
-//            }
             if (filteredSources.size() > 1) {
                 logger.debug("This TaxonName has more than one Source: " + identifiableEntity.getUuid() + " (" + identifiableEntity.getTitleCache() + ")");
             }
@@ -701,14 +698,24 @@ public abstract class PesiExportBase
                 for (TaxonBase<?> taxonBase: taxa){
                     filteredSources.addAll(filterAndOrderPesiSources(taxonBase.getSources()));
                 }
-//                if (sources.isEmpty()) {
-//                    logger.warn("... and also taxonBase has no PESI source: " + identifiableEntity.getTitleCache());
-//                }
+            }
+
+            //check for IF sources in taxon as some IF names have no PESI source for names
+            boolean indexFungorumSourceExists = filteredSources.stream()
+                    .anyMatch(s->PesiSource.IF == getSourceTypeOfSource(s));
+            if (!indexFungorumSourceExists) {
+                Set<TaxonBase> taxa = taxonName.getTaxonBases();
+                for (TaxonBase<?> taxonBase: taxa){
+                    IdentifiableSource ifSource = getPesiSourceForSourceType(taxonBase, PesiSource.IF);
+                    if (ifSource != null) {
+                        filteredSources.add(ifSource);
+                    }
+                }
             }
 
         //for TaxonBases
         }else if (identifiableEntity.isInstanceOf(TaxonBase.class)){
-            //nothing to do
+            //no additional sources needed
         } else {
             //nothing to do
         }

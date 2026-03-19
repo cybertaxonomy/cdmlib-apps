@@ -141,7 +141,7 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
 
         //supplemental
         mapping.addMapper(MethodMapper.NewInstance("IdInSource", PesiTaxonExport.class, TaxonName.class));
-        mapping.addMapper(MethodMapper.NewInstance("OriginalDB", PesiTaxonExport.class, IdentifiableEntity.class) );
+        mapping.addMapper(MethodMapper.NewInstance("OriginalDB", PesiTaxonExport.class, TaxonName.class) );
 
         //mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
     }

@@ -68,7 +68,7 @@ public class PesiExportActivator {
 	//taxa
 	private static final boolean doTaxa = true;
 	private static final boolean doPureNames = true;
-	private static final boolean doInferredSynonyms = false;  //not needed anymore
+	private static final boolean doInferredSynonyms = false;  //not needed anymore (inferred synonyms are created in the original FauEu database now)
 	private static final boolean doTreeIndex = true;
 	private static final boolean doRelTaxa = true;
 	private static final boolean doAdditionalTaxonSource = true;
