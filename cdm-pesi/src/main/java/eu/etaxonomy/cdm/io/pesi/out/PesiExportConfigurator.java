@@ -54,9 +54,9 @@ public class PesiExportConfigurator
     private boolean doNoteSources = true;
 
     private String euromedBaseUrl = "https://europlusmed.org/cdm_dataportal/taxon/";
-    private String fauEuBaseUrl = "https://portal.cybertaxonomy.org/fauna-europaea/";
+    private String fauEuBaseUrl = "https://portal.cybertaxonomy.org/fauna-europaea/cdm_dataportal/taxon/";
     private String indexFungorumBaseUrl = "http://www.indexfungorum.org/names/NamesRecord.asp?RecordID=";
-    private String ermsBaseUrl = "";
+    private String ermsBaseUrl = "https://www.marbef.org/data/aphia.php?p=taxdetails&id=";
 
 
 	private int nameIdStart = 10000000;

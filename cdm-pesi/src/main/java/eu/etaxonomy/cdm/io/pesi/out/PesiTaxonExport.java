@@ -90,6 +90,9 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 
 	private static final String pluralStringNames = "Names";
 
+
+    private static final String CDM_BACKLINK_SYNONYMY = "/synonymy?highlight=";
+
 //	private PreparedStatement parentTaxonFk_TreeIndex_KingdomFkStmts;
 	private PreparedStatement parentTaxonFkStmt;
 	private PreparedStatement rankTypeExpertsUpdateStmt;
@@ -1656,6 +1659,100 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
     }
 
     @SuppressWarnings("unused")
+    private static String getBacklink(TaxonBase<?> taxon, PesiExportState state) {
+        List<PesiSource> sourceTypes = getSourceTypes(taxon);
+        if (sourceTypes.size() < 1) {
+            return null;
+        }
+
+        PesiSource firstSourceType = sourceTypes.get(0);
+        return getBacklinkForSourceType(state, taxon, firstSourceType);
+    }
+
+    @SuppressWarnings("unused")
+    private static String getBacklink2(TaxonBase<?> taxon, PesiExportState state) {
+        List<PesiSource> sourceTypes = getSourceTypes(taxon);
+        if (sourceTypes.size() < 2) {
+            return null;
+        }
+
+        PesiSource firstSourceType = sourceTypes.get(1);
+        return getBacklinkForSourceType(state, taxon, firstSourceType);
+    }
+
+    private static String getBacklinkForSourceType(PesiExportState state, TaxonBase<?> taxon, PesiSource sourceType) {
+
+        switch (sourceType) {
+        case EM:
+            return getBacklinkEuroMed(state, taxon);
+        case ERMS:
+            return getBacklinkErms(state, taxon);
+        case FE:
+            return getBacklinkFauEu(state, taxon);
+        case IF:
+            return getBacklinkIndexFungorum(state, taxon);
+        default:
+            throw new RuntimeException("Unhandled source type: " + sourceType);
+        }
+     }
+
+    private static String getBacklinkEuroMed(PesiExportState state, TaxonBase<?> taxonBase) {
+        String baseUrl = state.getConfig().getEuromedBaseUrl();
+        return getBacklinkCdm(taxonBase, baseUrl);
+    }
+
+    private static String getBacklinkFauEu(PesiExportState state, TaxonBase<?> taxonBase) {
+        String baseUrl = state.getConfig().getFauEuBaseUrl();
+        return getBacklinkCdm(taxonBase, baseUrl);
+    }
+
+    private static String getBacklinkCdm(TaxonBase<?> taxonBase, String baseUrl) {
+        if (taxonBase.isInstanceOf(Taxon.class)) {
+            if (isMisappliedName(taxonBase)) {
+                Taxon acceptedTaxon = getAcceptedTaxonForMisappliedName(taxonBase);
+                return baseUrl + acceptedTaxon.getUuid() + CDM_BACKLINK_SYNONYMY + taxonBase.getUuid();
+            }else if (isProParteOrPartialSynonym(taxonBase)) {
+                Taxon acceptedTaxon = getAcceptedTaxonForProParteSynonym(taxonBase);
+                return baseUrl + acceptedTaxon.getUuid() + CDM_BACKLINK_SYNONYMY + taxonBase.getUuid();
+            }else {
+                return baseUrl + taxonBase.getUuid();
+            }
+        }else if (taxonBase.isInstanceOf(Synonym.class)) {
+            Synonym synonym = CdmBase.deproxy(taxonBase, Synonym.class);
+            Taxon taxon = synonym.getAcceptedTaxon();
+            return baseUrl + taxon.getUuid() + CDM_BACKLINK_SYNONYMY + synonym.getUuid();
+        }else {
+            logger.warn("Unexpected taxon type: " + taxonBase.getClass().getSimpleName());
+            return null;
+        }
+    }
+
+
+    private static String getBacklinkIndexFungorum(PesiExportState state, TaxonBase<?> taxon) {
+        String baseUrl = state.getConfig().getIndexFungorumBaseUrl();
+                IdentifiableSource ifSource = getPesiSourceForSourceType(taxon, PesiSource.IF);
+        if (ifSource == null) {
+            logger.warn("No Index Fungorum source: "+  taxon.getTitleCache());
+            return null;
+        }else {
+            String id = ifSource.getIdInSource();
+            return baseUrl + id;
+        }
+    }
+
+    private static String getBacklinkErms(PesiExportState state, TaxonBase<?> taxon) {
+        String baseUrl = state.getConfig().getErmsBaseUrl();
+        IdentifiableSource ermsSource = getPesiSourceForSourceType(taxon, PesiSource.ERMS);
+        if (ermsSource == null) {
+            logger.warn("No ERMS source: "+  taxon.getTitleCache());
+            return null;
+        }else {
+            String id = ermsSource.getIdInSource();
+            return baseUrl + id;
+        }
+    }
+
+    @SuppressWarnings("unused")
     private static String getFauEuUUID(TaxonBase<?> taxon) {
 
         List<PesiSource> sourceTypes = getSourceTypes(taxon);
@@ -1796,7 +1893,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
             if ("".equals(sourceResult)) {
                 logger.warn("No cacheCitation for ERMS taxon: " + taxonBase.getTitleCache());
             }
-        } else if (sources.contains(PesiSource.EM)) {
+        } else if (sourceType == PesiSource.EM) {
             //TODO
             boolean isMisapplied = isMisappliedName(taxonBase);
             boolean isProParteSyn = isProParteOrPartialSynonym(taxonBase);
@@ -1813,7 +1910,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
             }
             String author = sec == null? "" : sec.getTitleCache();
             String webShowName = isMisapplied? getDisplayName(taxonBase):getWebShowName(taxonName);  //for misapplied we need also the sensu and non author part, for ordinary names name + author is enough
-            String accessed = ". Accessed through: Euro+Med PlantBase at " + getEuroMedUrl(state, taxonBase);
+            String accessed = ". Accessed through: Euro+Med PlantBase at " + getBacklinkEuroMed(state, taxonBase);
             sourceResult = CdmUtils.removeTrailingDots(author)
                     + ". " + CdmUtils.removeTrailingDots(webShowName)
                     + accessed + taxonBase.getUuid();
@@ -1840,43 +1937,21 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
             }
 
             if (getOriginalDB(taxonName).equals(PesiTransformer.SOURCE_STR_IF)) {
-                sourceResult += "Accessed through: Index Fungorum at " +  state.getConfig().getFauEuBaseUrl();
+                sourceResult += "Accessed through: Index Fungorum at " + getBacklinkIndexFungorum(state, taxonBase);
             } else if (getOriginalDB(taxonName).equals(PesiTransformer.SOURCE_STR_FE)) {
-                sourceResult += "Accessed through: Fauna Europaea at " +  state.getConfig().getFauEuBaseUrl();
+                sourceResult += "Accessed through: Fauna Europaea at "  + getBacklinkFauEu(state, taxonBase);
             } else if (getOriginalDB(taxonName).equals(PesiTransformer.SOURCE_STR_EM)) {
-                sourceResult += "Accessed through: Euro+Med PlantBase at "+ state.getConfig().getEuromedBaseUrl();
+                //TODO isn't this handled in the EM section above already?
+                sourceResult += "Accessed through: Euro+Med PlantBase at "+ getBacklinkEuroMed(state, taxonBase);
             }
 
             if (idInSource != null) {
-                sourceResult += idInSource;
+//                sourceResult += idInSource;
             } else {
                 logger.warn("IdInSource could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
             }
         }
         return sourceResult;
-    }
-
-    private static final String EURO_MED_URL_SYNONYMY = "/synonymy?highlight=";
-    private static String getEuroMedUrl(PesiExportState state, TaxonBase<?> taxonBase) {
-        String baseUrl = state.getConfig().getEuromedBaseUrl();
-        if (taxonBase.isInstanceOf(Taxon.class)) {
-            if (isMisappliedName(taxonBase)) {
-                Taxon acceptedTaxon = getAcceptedTaxonForMisappliedName(taxonBase);
-                return baseUrl + acceptedTaxon.getUuid() + EURO_MED_URL_SYNONYMY + taxonBase.getUuid();
-            }else if (isProParteOrPartialSynonym(taxonBase)) {
-                Taxon acceptedTaxon = getAcceptedTaxonForProParteSynonym(taxonBase);
-                return baseUrl + acceptedTaxon.getUuid() + EURO_MED_URL_SYNONYMY + taxonBase.getUuid();
-            }else {
-                return baseUrl + taxonBase.getUuid();
-            }
-        }else if (taxonBase.isInstanceOf(Synonym.class)) {
-            Synonym synonym = CdmBase.deproxy(taxonBase, Synonym.class);
-            Taxon taxon = synonym.getAcceptedTaxon();
-            return baseUrl + taxon.getUuid() + EURO_MED_URL_SYNONYMY + synonym.getUuid();
-        }else {
-            logger.warn("Unexpected taxon type: " + taxonBase.getClass().getSimpleName());
-            return null;
-        }
     }
 
     /**
