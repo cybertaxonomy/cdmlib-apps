@@ -1859,7 +1859,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 //              logger.error("OriginalDB is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
             }
 			for (PesiSource sourceType : sources) {
-			    String sourceResult = getCacheCitationForSourceType(taxonBase, state, taxonName, sources, sourceType);
+			    String sourceResult = getCacheCitationForSourceType(taxonBase, state, taxonName, sourceType);
 			    result = CdmUtils.concat(" | ", result, sourceResult);
 			}
 
@@ -1875,7 +1875,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	}
 
     private static String getCacheCitationForSourceType(TaxonBase<?> taxonBase, PesiExportState state,
-            TaxonName taxonName, List<PesiSource> sources, PesiSource sourceType) {
+            TaxonName taxonName, PesiSource sourceType) {
 
         //TODO why does ERMS use accessed through eu-nomen, while E+M uses accessed through E+M
 
