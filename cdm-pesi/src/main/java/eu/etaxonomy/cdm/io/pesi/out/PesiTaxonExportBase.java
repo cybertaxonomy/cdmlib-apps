@@ -102,10 +102,7 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
         mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
 
         //experts
-//      mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeSpeciesExpertName, "SpeciesExpertName"));
         mapping.addMapper(MethodMapper.NewInstance("SpeciesExpertName", PesiTaxonExport.class, TaxonBase.class));
-//      ExtensionType extensionTypeExpertName = (ExtensionType)getTermService().find(PesiTransformer.uuidExtExpertName);
-//      mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeExpertName, "ExpertName"));
         mapping.addMapper(MethodMapper.NewInstance("ExpertName", PesiTaxonExport.class, TaxonBase.class));
 
         //ParentTaxonFk handled in Phase02 now
