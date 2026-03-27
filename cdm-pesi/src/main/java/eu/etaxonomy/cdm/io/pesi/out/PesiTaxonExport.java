@@ -1913,7 +1913,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
             String accessed = ". Accessed through: Euro+Med PlantBase at " + getBacklinkEuroMed(state, taxonBase);
             sourceResult = CdmUtils.removeTrailingDots(author)
                     + ". " + CdmUtils.removeTrailingDots(webShowName)
-                    + accessed + taxonBase.getUuid();
+                    + accessed;
         } else if (sourceType == PesiSource.IF) {
             //author
             sourceResult = ""; //"Kirk, P. (2014). ";
