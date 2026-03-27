@@ -1914,43 +1914,42 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
             sourceResult = CdmUtils.removeTrailingDots(author)
                     + ". " + CdmUtils.removeTrailingDots(webShowName)
                     + accessed + taxonBase.getUuid();
-        } else {
-            //TODO check for IF + FE
-
-            String expertName = getExpertName(taxonBase);
+        } else if (sourceType == PesiSource.IF) {
+            //author
+            sourceResult = ""; //"Kirk, P. (2014). ";
+            //
             String webShowName = getWebShowName(taxonName);
+            if (webShowName != null) {
+                sourceResult += (webShowName + ". ").replace(".. ", ". ");
+            } else {
+                logger.warn("WebShowName could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+            }
+            sourceResult += "Accessed through: Index Fungorum at " + getBacklinkIndexFungorum(state, taxonBase);
+        } else if (sourceType == PesiSource.FE) {
 
-            // idInSource only
-            String idInSource = getIdInSourceOnly(taxonName);
-
-            // build the cacheCitation
+            //author
+            String expertName = getExpertName(taxonBase);
             if (expertName != null) {
                 sourceResult = expertName + ". ";
             } else {
                 if (logger.isDebugEnabled()){logger.debug("ExpertName could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");}
             }
 
+            //name
+            String webShowName = getWebShowName(taxonName);
             if (webShowName != null) {
-                sourceResult += webShowName + ". ";
+                sourceResult += (webShowName + ". ").replace(".. ", ". ");
             } else {
                 logger.warn("WebShowName could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
             }
 
-            if (getOriginalDB(taxonName).equals(PesiTransformer.SOURCE_STR_IF)) {
-                sourceResult += "Accessed through: Index Fungorum at " + getBacklinkIndexFungorum(state, taxonBase);
-            } else if (getOriginalDB(taxonName).equals(PesiTransformer.SOURCE_STR_FE)) {
-                sourceResult += "Accessed through: Fauna Europaea at "  + getBacklinkFauEu(state, taxonBase);
-            } else if (getOriginalDB(taxonName).equals(PesiTransformer.SOURCE_STR_EM)) {
-                //TODO isn't this handled in the EM section above already?
-                sourceResult += "Accessed through: Euro+Med PlantBase at "+ getBacklinkEuroMed(state, taxonBase);
-            }
+            //accessed
+            sourceResult += "Accessed through: Fauna Europaea at "  + getBacklinkFauEu(state, taxonBase);
 
-            if (idInSource != null) {
-//                sourceResult += idInSource;
-            } else {
-                logger.warn("IdInSource could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-            }
+        }else {
+            logger.warn("Unhandled source type for : " + taxonBase.getTitleCache());
         }
+
         return sourceResult;
     }
 
