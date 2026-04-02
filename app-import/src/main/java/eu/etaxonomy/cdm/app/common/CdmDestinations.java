@@ -42,7 +42,7 @@ public class CdmDestinations {
 	}
 
     public static ICdmDataSource cdm_additivity_ontology(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_additivity_ontology";
         String cdmUserName = "edit";
@@ -50,7 +50,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_redlist_animalia_production_final(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_rl_animalia_final";
         String cdmUserName = "edit";
@@ -257,7 +257,7 @@ public class CdmDestinations {
 	}
 
     public static ICdmDataSource cdm_demo2_cuba1(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.231";
         String cdmDB = "cdm_cdm_flora_cuba01";
         String cdmUserName = "root";
@@ -275,7 +275,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_test_col(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.175";
         String cdmDB = "cdm_col";
         String cdmUserName = "edit";
@@ -283,7 +283,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_test_col2(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.175";
         String cdmDB = "cdm_col2";
         String cdmUserName = "edit";
@@ -307,7 +307,7 @@ public class CdmDestinations {
     }
 
 	public static ICdmDataSource cdm_test_euroMed(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
 		String cdmServer = "160.45.63.175";
 		String cdmDB = "cdm_test_euromed";
 		String cdmUserName = "edit";
@@ -315,7 +315,7 @@ public class CdmDestinations {
 	}
 
     public static ICdmDataSource cdm_production_medchecklist(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_medchecklist";
         String cdmUserName = "edit";
@@ -323,7 +323,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_euromed(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_euromed";
         String cdmUserName = "edit";
@@ -331,7 +331,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_fauna_europaea(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_fauna_europaea";
         String cdmUserName = "edit";
@@ -339,7 +339,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_euromed_caucasus(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_euromed_caucasus";
         String cdmUserName = "edit";
@@ -347,7 +347,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_georgia(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_georgia";
         String cdmUserName = "edit";
@@ -355,7 +355,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_armenia(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_armenia";
         String cdmUserName = "edit";
@@ -363,7 +363,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_azerbaijan(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_azerbaijan";
         String cdmUserName = "edit";
@@ -371,7 +371,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_test_redlist_mammalia(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.175";
         String cdmDB = "cdm_rl_mammalia";
         String cdmUserName = "edit";
@@ -379,7 +379,7 @@ public class CdmDestinations {
     }
 
 	public static ICdmDataSource cdm_test_redlist_moose(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
 		String cdmServer = "160.45.63.175";
 		String cdmDB = "cdm_mt_moose";
 		String cdmUserName = "edit";
@@ -387,7 +387,7 @@ public class CdmDestinations {
 	}
 
 	public static ICdmDataSource cdm_redlist_moose_production(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
 		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_rl_moose";
 		String cdmUserName = "edit";
@@ -395,7 +395,7 @@ public class CdmDestinations {
 	}
 
 	public static ICdmDataSource cdm_test_redlist_standardlist(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
 		String cdmServer = "160.45.63.175";
 		String cdmDB = "cdm_mt_standardliste";
 		String cdmUserName = "edit";
@@ -403,7 +403,7 @@ public class CdmDestinations {
 	}
 
 	public static ICdmDataSource cdm_test_redlist_germanSL(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.175";
         String cdmDB = "cdm_rl_german_sl";
         String cdmUserName = "edit";
@@ -411,7 +411,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_germanSL(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_rl_german_sl";
         String cdmUserName = "edit";
@@ -419,7 +419,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource local_cyprus(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MySQL;
         String cdmServer = "localhost";
         String cdmDB = "cdm_cyprus";
         String cdmUserName = "edit";
@@ -427,7 +427,7 @@ public class CdmDestinations {
     }
 
 	public static ICdmDataSource cdm_test_cyprus(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
 		String cdmServer = "160.45.63.175";
 		String cdmDB = "cdm_cyprus";
 		String cdmUserName = "edit";
@@ -435,7 +435,7 @@ public class CdmDestinations {
 	}
 
     public static ICdmDataSource cdm_test_bupleurum(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.175";
         String cdmDB = "cdm_test_bupleurum";
         String cdmUserName = "edit";
@@ -443,7 +443,7 @@ public class CdmDestinations {
     }
 
 	public static ICdmDataSource cdm_production_cyprus(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
 		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_cyprus";
 		String cdmUserName = "edit";
@@ -451,7 +451,7 @@ public class CdmDestinations {
 	}
 
     public static ICdmDataSource cdm_production_diptera(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_diptera";
         String cdmUserName = "edit";
@@ -459,7 +459,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_casearia(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_casearia";
         String cdmUserName = "edit";
@@ -467,7 +467,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_uzbekistan(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_flora_uzbekistan";
         String cdmUserName = "edit";
@@ -475,7 +475,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_phycobank(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_phycobank";
         String cdmUserName = "edit";
@@ -483,7 +483,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_flora_cuba(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_flora_cuba";
         String cdmUserName = "edit";
@@ -491,7 +491,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_fm_prospective(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_flora_malesiana_prospective";
         String cdmUserName = "edit";
@@ -499,7 +499,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_greece_checklist(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_flora_greece";
         String cdmUserName = "edit";
@@ -507,7 +507,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_greece_bupleurum(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_greece_bupleurum";
         String cdmUserName = "edit";
@@ -515,7 +515,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_lichenes(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_lichenes";
         String cdmUserName = "edit";
@@ -523,7 +523,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_lichenes_cora(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_lichenes_cora";
         String cdmUserName = "edit";
@@ -531,7 +531,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_mexico_rubiaceae(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_rubiaceae_mexico";
         String cdmUserName = "edit";
@@ -539,7 +539,7 @@ public class CdmDestinations {
     }
 
     public static ICdmDataSource cdm_production_bogota(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_flora_bogota";
         String cdmUserName = "edit";
@@ -556,7 +556,7 @@ public class CdmDestinations {
 	}
 
 	public static ICdmDataSource cdm_production_campanulaceae(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
 		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_campanulaceae";
 		String cdmUserName = "edit";
@@ -564,7 +564,7 @@ public class CdmDestinations {
 	}
 
     public static ICdmDataSource cdm_production_cdmterms(){
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        DatabaseTypeEnum dbType =  DatabaseTypeEnum.MariaDB;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_cdmterms";
         String cdmUserName = "edit";

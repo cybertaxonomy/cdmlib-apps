@@ -165,7 +165,7 @@ public class CdmDestinations {
 	}
 
 	public static ICdmDataSource test_cdm_pesi_euroMed(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MariaDB;
 		String cdmServer = "160.45.63.175";
 		String cdmDB = "cdm_pesi_euromed";
 		String cdmUserName = "edit";
@@ -173,7 +173,7 @@ public class CdmDestinations {
 	}
 
 	public static ICdmDataSource test_cdm_pesi_fauna_europaea(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MariaDB;
 		String cdmServer = "160.45.63.175";
 		String cdmDB = "cdm_pesi_fauna_europaea";
 		String cdmUserName = "edit";
@@ -182,7 +182,7 @@ public class CdmDestinations {
 
 
 	public static ICdmDataSource test_cdm_pesi_erms(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MariaDB;
 		String cdmServer = "160.45.63.175";
 		String cdmDB = "cdm_pesi_erms";
 		String cdmUserName = "edit";
