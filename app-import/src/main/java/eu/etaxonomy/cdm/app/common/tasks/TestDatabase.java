@@ -159,7 +159,7 @@ public class TestDatabase {
 		// agents
 		// - persons, institutions
 
-		Person linne = new Person("Carl", "Linne", "L.");
+		Person linne = Person.NewInstance("L.", "Linne", null, "Carl");
 		linne.setTitleCache("Linne & Karl", true);
 		GregorianCalendar birth = new GregorianCalendar(1707, 4, 23);
 		GregorianCalendar death = new GregorianCalendar(1778, 0, 10);
