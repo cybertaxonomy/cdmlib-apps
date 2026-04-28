@@ -47,6 +47,7 @@ public class CichorieaeWfoIdentifierActivator {
     static final String fileName = "Cichorieae_Syn_WFOID_10_NewToWfo.csv";
 
     boolean warnAndDoNotOverrideIfExists = true;
+    static char separator = ';';
 
     //check - import
     static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -60,6 +61,7 @@ public class CichorieaeWfoIdentifierActivator {
         config.setDbSchemaValidation(dbSchemaValidation);
         config.setCdmClass(TaxonName.class);
         config.setCheck(check);
+        config.setSeparator(separator);
         config.setIgnoreEmptyIdentifier(true);
 
         CdmDefaultImport<IdentifierImportConfigurator> myImport = new CdmDefaultImport<>();

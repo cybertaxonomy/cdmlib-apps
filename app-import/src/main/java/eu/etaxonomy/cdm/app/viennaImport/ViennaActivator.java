@@ -131,8 +131,6 @@ public class ViennaActivator {
 
 				//Original ID
 				specimen.addSource(IdentifiableSource.NewDataImportInstance(strId));
-
-
 			}
 		} catch (SQLException e) {
 			logger.warn("Error when reading record!!");
@@ -171,8 +169,6 @@ public class ViennaActivator {
 		return determinationEvent;
 	}
 
-
-
 	/**
 	 * @param args
 	 */
@@ -180,7 +176,6 @@ public class ViennaActivator {
 		ViennaActivator viennaAct = new ViennaActivator();
 		viennaAct.invoke();
 	}
-
 
 	/**
 	 * Initialises source
