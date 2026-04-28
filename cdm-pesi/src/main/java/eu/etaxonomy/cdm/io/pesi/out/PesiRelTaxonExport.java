@@ -127,16 +127,16 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
             // Export name relations
             //NOTE: name relations should come first as they have highest priority in deduplicating name relationships
-            success &= doPhase01(state);
+            success &= doPhase01_NameRelations(state);
 
 			//Export taxon relations
-			success &= doPhase02(state, mapping);
+			success &= doPhase02_TaxonRelationships(state, mapping);
 
-			//Export taxon nodes
-            success &= doPhase02b(state, taxonNodeMapping);
+			//Export taxon nodes - not needed anymore, handled in PesiTaxonExport
+            //success &= doPhase02b_TaxonNodes(state, taxonNodeMapping);
 
 	         // Export synonym relations (directly attached to taxa)
-            success &= doPhase03(state, synonymMapping);
+            success &= doPhase03_SynonymRelations(state, synonymMapping);
 
 			if (! success){
 				state.getResult().addError("An unknown error occurred in PesiRelTaxonExport");
@@ -149,7 +149,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		}
 	}
 
-    private boolean doPhase03(PesiExportState state, PesiExportMapping synonymMapping) {
+    private boolean doPhase03_SynonymRelations(PesiExportState state, PesiExportMapping synonymMapping) {
 
         logger.info("PHASE 3: Direct Synonym Relationships ...");
 
@@ -200,7 +200,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
         return success;
     }
 
-    private boolean doPhase02(PesiExportState state, PesiExportMapping mapping) {
+    private boolean doPhase02_TaxonRelationships(PesiExportState state, PesiExportMapping mapping) {
 
         logger.info("PHASE 2: Taxon Relationships ...");
 		boolean success = true;
@@ -250,7 +250,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		return success;
 	}
 
-    private boolean doPhase02b(PesiExportState state, PesiExportMapping taxonNodeMapping) {
+    //Not needed anymore. Parent relationships are handled in PesiTaxonExport now
+    private boolean doPhase02b_TaxonNodes(PesiExportState state, PesiExportMapping taxonNodeMapping) {
 
         logger.info("PHASE 2b: Taxonnodes ...");
         boolean success = true;
@@ -284,7 +285,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
         return success;
     }
 
-	private boolean doPhase01(PesiExportState state) {
+	private boolean doPhase01_NameRelations(PesiExportState state) {
 
 	    logger.info("PHASE 1: All types of name relationships ...");
 		boolean success = true;

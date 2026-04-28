@@ -151,13 +151,13 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			success &= doPhase01b_Names(state, additionalSourceMapping);
 
 			// 2nd Round: Add ParentTaxonFk to each taxon
-			success &= doPhase02(state);
+			success &= doPhase02_addParentFk(state);
 
 			//PHASE 3: Add Rank data, KingdomFk, TypeNameFk ...
-			success &= doPhase03(state);
+			success &= doPhase03_addRankKingdomTypeExpert(state);
 
 			// 4th Round: Add TreeIndex to each taxon
-			success &= doPhase04(state);
+			success &= doPhase04_makeTreeIndex(state);
 
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
@@ -363,7 +363,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	/**
 	 * 2nd Round: Add ParentTaxonFk to each taxon and add Biota if not exists
 	 */
-	private boolean doPhase02(PesiExportState state) {
+	private boolean doPhase02_addParentFk(PesiExportState state) {
 		int count = 0;
 		int pastCount = 0;
 		boolean success = true;
@@ -438,7 +438,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	}
 
 	//PHASE 3: Add Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk...
-	private boolean doPhase03(PesiExportState state) {
+	private boolean doPhase03_addRankKingdomTypeExpert(PesiExportState state) {
 
 	    int count = 0;
 		int pastCount = 0;
@@ -522,7 +522,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
     }
 
     // 4th round: Add TreeIndex to each taxon
-    private boolean doPhase04(PesiExportState state) {
+    private boolean doPhase04_makeTreeIndex(PesiExportState state) {
         boolean success = true;
 
         logger.info("PHASE 4: Make TreeIndex ... ");
