@@ -1490,7 +1490,6 @@
 		<xsd:attribute name="LSID_NAMESPACE" use="optional" />
 		<xsd:attribute name="REV" use="optional" />
 		<xsd:attribute name="PRESERVATION_ID" use="optional" />
-		<xsd:attribute name="STOREDUNDER_ID" use="optional" />
 		<xsd:attribute name="CREATED" use="optional" />
 		<xsd:attribute name="FIELDNOTES" use="optional" />
 		<xsd:attribute name="UPDATEDBY_ID" use="optional" />
@@ -2097,7 +2096,6 @@
 		<xsd:attribute name="LSID_AUTHORITY" use="optional" />
 		<xsd:attribute name="LSID_NAMESPACE" use="optional" />
 		<xsd:attribute name="PRESERVATION_ID" use="optional" />
-		<xsd:attribute name="STOREDUNDER_ID" use="optional" />
 		<xsd:attribute name="CREATED" use="optional" />
 		<xsd:attribute name="FIELDNOTES" use="optional" />
 		<xsd:attribute name="UPDATEDBY_ID" use="optional" />

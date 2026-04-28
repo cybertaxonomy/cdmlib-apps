@@ -122,7 +122,6 @@ public class ViennaActivator {
 				DerivedUnitFacade specimen = DerivedUnitFacade.NewInstance(SpecimenOrObservationType.PreservedSpecimen);
 
 				specimen.setCatalogNumber(catalogNumber);
-				specimen.setStoredUnder(TaxonName.castAndDeproxy(taxonName));   //??
 				//TODO
 				//specimen.setCollection(collection);
 				specimen.addAnnotation(Annotation.NewDefaultLanguageInstance(annotation));
