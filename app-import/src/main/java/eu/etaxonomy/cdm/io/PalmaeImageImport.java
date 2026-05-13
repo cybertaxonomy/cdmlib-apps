@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetadataItem;
 import org.apache.commons.imaging.common.ImageMetadata;
 import org.apache.commons.imaging.common.ImageMetadata.ImageMetadataItem;
@@ -95,7 +95,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 
 		try {
 			metadata = Imaging.getMetadata(imageFile);
-		} catch (ImageReadException e) {
+		} catch (ImagingException e) {
 			logger.error("Error reading image" + " in " + imageFile.getName(), e);
 		} catch (IOException e) {
 			logger.error("Error reading file"  + " in " + imageFile.getName(), e);
@@ -140,7 +140,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 
 		try {
 			metadata = Imaging.getMetadata(imageFile);
-		} catch (ImageReadException e) {
+		} catch (ImagingException e) {
 			logger.error("Error reading image" + " in " + imageFile.getName(), e);
 		} catch (IOException e) {
 			logger.error("Error reading file"  + " in " + imageFile.getName(), e);

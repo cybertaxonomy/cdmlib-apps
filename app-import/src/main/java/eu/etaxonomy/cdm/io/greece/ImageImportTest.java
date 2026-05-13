@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetadataItem;
 import org.apache.commons.imaging.common.ImageMetadata;
@@ -97,7 +96,7 @@ public class ImageImportTest {
                             throw new IllegalStateException("Unsupported ImageMetadataItem type: " + metadataItem.getClass().getName());
                         }
                     }
-                } catch (ImageReadException | IOException e1) {
+                } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }

@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetadataItem;
 import org.apache.commons.imaging.common.ImageMetadata;
@@ -279,7 +278,7 @@ public class CyprusImagesActivator {
                     }
                 }
             }
-        } catch (ImageReadException | IOException e1) {
+        } catch (IOException e1) {
             logger.warn("       Problem (" + e1.getMessage() + ") when reading metadata from file: " + fileName);
             e1.printStackTrace();
         }
