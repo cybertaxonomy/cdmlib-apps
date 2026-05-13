@@ -369,7 +369,7 @@ public class SalvadorSpecimenImport
         String localCommonName = record.get("LocalCommonName");
         if (localCommonName != null){
             CommonTaxonName commonName = CommonTaxonName.NewInstance(localCommonName, spanish);
-            Set<SpecimenDescription> descs = (Set)facade.innerFieldUnit().getDescriptions();
+            Set<SpecimenDescription> descs = facade.innerFieldUnit().getDescriptions();
             if (descs.isEmpty()){
                 SpecimenDescription desc = SpecimenDescription.NewInstance(facade.innerFieldUnit());
                 descs.add(desc);

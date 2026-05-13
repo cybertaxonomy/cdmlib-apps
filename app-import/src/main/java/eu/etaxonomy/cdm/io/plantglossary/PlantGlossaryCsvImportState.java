@@ -8,7 +8,6 @@
 */
 package eu.etaxonomy.cdm.io.plantglossary;
 
-import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,6 +16,7 @@ import java.util.Set;
 
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.api.service.IVocabularyService;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.csv.in.CsvImportState;
 import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;

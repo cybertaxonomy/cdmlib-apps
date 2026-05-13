@@ -86,8 +86,5 @@ public class SynthesysCacheActivator {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-
     }
-
-
 }
