@@ -200,7 +200,7 @@ public class SalvadorSpecimenImport
                 facade.setCollection(collection);
                 unit = facade.innerDerivedUnit();
             }else{
-                unit = facade.addDuplicate(collection, null, null, null, null);
+                unit = facade.addDuplicate(collection, null, null, null);
             }
             isFirst = false;
             if ("B".equalsIgnoreCase(split)){

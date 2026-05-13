@@ -71,7 +71,6 @@ public class SynthesysCacheActivator {
             Person p = Person.NewInstance();
             p.setGivenName("Quentin");
             p.setFamilyName("Groom");
-            p.addEmailAddress("qgroom@bsbi.co.uk");
             reference.setAuthorship(p);
             reference.setOrganization("Botanical Society of the British Isles");
 

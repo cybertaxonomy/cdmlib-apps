@@ -63,7 +63,6 @@ public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsv
         datePublished.setStartDay(13);
         citation.setDatePublished(datePublished);
         Institution institution = Institution.NewNamedInstance("OTO System");
-        institution.addUrl(URI.create("http://biosemantics.arizona.edu/OTO/"));
         citation.setInstitution(institution);
         URI uri;
         try {
