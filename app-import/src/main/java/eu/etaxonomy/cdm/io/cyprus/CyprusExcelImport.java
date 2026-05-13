@@ -485,9 +485,9 @@ public class CyprusExcelImport
 		return;
 	}
 
-	private TaxonBase<?> createTaxon(CyprusImportState state, Rank rank, String taxonNameStr,
+	private TaxonBase createTaxon(CyprusImportState state, Rank rank, String taxonNameStr,
 			Class<?> statusClass, NomenclaturalCode nc) {
-		TaxonBase<?> taxonBase;
+		TaxonBase taxonBase;
 		INonViralName taxonNameBase = null;
 		if (nc == NomenclaturalCode.ICVCN){
 			logger.warn("ICVCN not yet supported");

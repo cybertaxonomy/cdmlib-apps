@@ -258,7 +258,7 @@ public class EuroMedActivatorVibrant {
 	}
 
 	private static final String URLbase = "http://ww2.bgbm.org/EuroPlusMed/PTaxonDetail.asp?";
-	public static Method makeUrlForTaxon(TaxonBase<?> taxon, ResultSet rs){
+	public static Method makeUrlForTaxon(TaxonBase taxon, ResultSet rs){
 		Method result = null;
 		ExtensionType urlExtensionType = ExtensionType.URL();
 		int nameFk;

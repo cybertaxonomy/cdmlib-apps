@@ -310,7 +310,7 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
             throws SQLException {
         Integer id = nullSafeInt(rs, "description_detail_id");
         Integer taxonFk = nullSafeInt(rs, "taxon_fk");
-        TaxonBase<?> taxonBase = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(taxonFk), TaxonBase.class);
+        TaxonBase taxonBase = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(taxonFk), TaxonBase.class);
 
 
 //        //id

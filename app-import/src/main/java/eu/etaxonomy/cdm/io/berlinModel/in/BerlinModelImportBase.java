@@ -292,7 +292,7 @@ public abstract class BerlinModelImportBase
 	 * @return
 	 */
 	protected Taxon getTaxon(BerlinModelImportState state, int taxonId, Map<String, TaxonBase> taxonMap, int factId) {
-		TaxonBase<?> taxonBase = taxonMap.get(String.valueOf(taxonId));
+		TaxonBase taxonBase = taxonMap.get(String.valueOf(taxonId));
 
 		//TODO for testing
 //		if (taxonBase == null && ! state.getConfig().isDoTaxa()){

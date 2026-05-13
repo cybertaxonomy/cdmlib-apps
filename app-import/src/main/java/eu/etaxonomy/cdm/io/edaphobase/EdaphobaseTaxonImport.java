@@ -196,7 +196,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
             logger.debug("now");
         }
 
-        TaxonBase<?> taxonBase;
+        TaxonBase taxonBase;
 
         rankStr= extractEnglish(rankStr);
         parentRankStr= extractEnglish(parentRankStr);
@@ -353,7 +353,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
      * @param taxonBase
      * @return
      */
-    private boolean titleCacheDiffers(EdaphobaseImportState state, String displayString, IZoologicalName name, TaxonBase<?> taxonBase) {
+    private boolean titleCacheDiffers(EdaphobaseImportState state, String displayString, IZoologicalName name, TaxonBase taxonBase) {
         String orig = displayString.replace("nomen nudum [Hirschmann, 1951]", "Hirschmann, 1951")
                 .replace("  ", " ");
         String nameTitleCache = name.getTitleCache().replace("species group", "group");
@@ -456,7 +456,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
      * @param taxonBase
      * @param id
      */
-    private void handleExampleIdentifiers(TaxonBase<?> taxonBase, Integer id) {
+    private void handleExampleIdentifiers(TaxonBase taxonBase, Integer id) {
         if (idMap.get(id) != null){
             taxonBase.setUuid(idMap.get(id));
             logger.warn("Override UUID for specific taxa. ID="+ id +  "; uuid="+idMap.get(id) + "; name="+ taxonBase.getName().getTitleCache());
@@ -490,7 +490,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
      * @param isGroup
      * @param taxonBase
      */
-    private void handleTaxonomicGroupMarker(EdaphobaseImportState state, TaxonBase<?> taxonBase, boolean isGroup) {
+    private void handleTaxonomicGroupMarker(EdaphobaseImportState state, TaxonBase taxonBase, boolean isGroup) {
         if (! isGroup){
             return;
         }else{

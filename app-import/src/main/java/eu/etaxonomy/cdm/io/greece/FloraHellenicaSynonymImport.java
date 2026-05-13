@@ -81,7 +81,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
         }
 
         String row = "row" + state.getCurrentLine();
-        TaxonBase<?> relatedTaxon = makeSynonym(state, line, record, row);
+        TaxonBase relatedTaxon = makeSynonym(state, line, record, row);
         if (relatedTaxon != null){
             getTaxonService().saveOrUpdate(relatedTaxon);
         }
@@ -95,7 +95,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
      * @param noStr
      * @return
      */
-    private TaxonBase<?> makeSynonym(SimpleExcelTaxonImportState<CONFIG> state, String line,
+    private TaxonBase makeSynonym(SimpleExcelTaxonImportState<CONFIG> state, String line,
             Map<String, String> record,
             String lineId) {
 
@@ -143,7 +143,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
         name = replaceNameAuthorsAndReferences(state, name, true);
 
 
-        TaxonBase<?> result;
+        TaxonBase result;
         if (isMisapplied){
             Reference sec = null;// getMisappliedRef(state, parsedSynStr[1]);
             result = Taxon.NewInstance(name, sec);

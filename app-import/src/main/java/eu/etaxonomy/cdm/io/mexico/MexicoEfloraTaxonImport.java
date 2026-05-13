@@ -155,7 +155,7 @@ public class MexicoEfloraTaxonImport  extends MexicoEfloraImportBase {
 		}
 
 		//taxon
-		TaxonBase<?> taxonBase;
+		TaxonBase taxonBase;
 		Synonym synonym;
 		Taxon taxon;
 		try {

@@ -1960,7 +1960,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	 * @param taxonBase
 	 * @return
 	 */
-	public static Integer taxonBase2statusFk (TaxonBase<?> taxonBase){
+	public static Integer taxonBase2statusFk (TaxonBase taxonBase){
 		if (taxonBase == null){
 			return null;
 		}else if(!taxonBase.getExtensions(ErmsTransformer.uuidPesiTaxonStatus).isEmpty()){
@@ -2467,7 +2467,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	private static Set<String> getAllQualityStatus(TaxonName taxonName) {
 		Set<String> result = new HashSet<>();
-		for (TaxonBase<?> taxonBase : taxonName.getTaxonBases()){
+		for (TaxonBase taxonBase : taxonName.getTaxonBases()){
 			result.addAll(taxonBase.getExtensions(ErmsTransformer.uuidExtQualityStatus));
 		}
 		return result;

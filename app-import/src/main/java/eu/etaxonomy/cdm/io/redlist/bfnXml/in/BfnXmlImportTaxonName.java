@@ -141,7 +141,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 			String taxNr1 = elTaxon1.getAttributeValue(BfnXmlConstants.ATT_TAXNR);
 			int int1 = Integer.parseInt(taxNr1);
 			Taxon taxon1 = firstList.get(int1);
-			TaxonBase<?> taxonBase1 = getTaxonService().load(taxon1.getUuid());
+			TaxonBase taxonBase1 = getTaxonService().load(taxon1.getUuid());
 			taxon1 = (Taxon)taxonBase1;
 
 			childName = "TAXONYM2";
@@ -149,7 +149,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 			String taxNr2 = elTaxon2.getAttributeValue(BfnXmlConstants.ATT_TAXNR);
 			int int2 = Integer.parseInt(taxNr2);
 			Taxon taxon2 = secondList.get(int2);
-			TaxonBase<?> taxonBase2 = getTaxonService().load(taxon2.getUuid());
+			TaxonBase taxonBase2 = getTaxonService().load(taxon2.getUuid());
 			taxon2 = (Taxon) taxonBase2;
 
 			childName = "STATUS";

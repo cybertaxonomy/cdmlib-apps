@@ -194,7 +194,7 @@ public class PesiNoteExport_Old extends PesiExportBase {
 		while ((taxonBaseList = getTaxonService().list(null, limit, count, null, null)).size() > 0) {
 
 			logger.info("Fetched " + taxonBaseList.size() + " names. Exporting...");
-			for (TaxonBase<?> taxon : taxonBaseList) {
+			for (TaxonBase taxon : taxonBaseList) {
 				Set<Extension> extensions = taxon.getExtensions();
 				for (Extension extension : extensions) {
 					if (extension.getType().equals(taxCommentExtensionType)) {

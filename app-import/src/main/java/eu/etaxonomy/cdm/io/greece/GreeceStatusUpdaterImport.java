@@ -79,7 +79,7 @@ public class GreeceStatusUpdaterImport
         String line = getLine(state, 50);
 
     	String row = getValue(record, "line");
-    	TaxonBase<?> taxonBase = getTaxon(state, record, line);
+    	TaxonBase taxonBase = getTaxon(state, record, line);
     	if (taxonBase == null){
     	    return;
     	}
@@ -123,9 +123,9 @@ public class GreeceStatusUpdaterImport
         newDescription.addElement(newStatus);
     }
 
-    private TaxonBase<?> getTaxon(SimpleExcelTaxonImportState<GreeceStatusUpdaterConfigurator> state, Map<String, String> record, String line) {
+    private TaxonBase getTaxon(SimpleExcelTaxonImportState<GreeceStatusUpdaterConfigurator> state, Map<String, String> record, String line) {
         UUID taxonUuid = UUID.fromString(getValue(record, TAXON_UUID));
-    	TaxonBase<?> taxonBase = getTaxonService().find(taxonUuid);
+    	TaxonBase taxonBase = getTaxonService().find(taxonUuid);
     	if (taxonBase == null) {
     		logger.warn(line + "no taxon " + taxonUuid);
     		String nameStr = getValue(state.getOriginalRecord(), SCIENTIFIC_NAME);
@@ -232,7 +232,7 @@ public class GreeceStatusUpdaterImport
     }
 
     private boolean checkTaxonName(SimpleExcelTaxonImportState<GreeceStatusUpdaterConfigurator> state,
-			TaxonBase<?> taxonBase, String line) {
+			TaxonBase taxonBase, String line) {
 		String nameStr = getValue(state.getOriginalRecord(), SCIENTIFIC_NAME);
 		boolean equals = (nameStr.equals(taxonBase.getName().getTitleCache()));
 		if (!equals) {

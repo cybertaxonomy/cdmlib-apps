@@ -140,8 +140,8 @@ public class PesiCommandLineMerge extends PesiMergeBase {
     }
 
     private class TaxonInformation{
-        TaxonBase<?> taxon1;
-        TaxonBase<?> taxon2;
+        TaxonBase taxon1;
+        TaxonBase taxon2;
         int taxonToUse = 1;   //
         int nameToUse = 1;
     }
@@ -215,8 +215,8 @@ public class PesiCommandLineMerge extends PesiMergeBase {
     }
 
     private boolean compareTaxa(TaxonInformation taxonInformation) {
-        TaxonBase<?> removeTaxon = taxonInformation.taxon2;
-        TaxonBase<?> stayTaxon = taxonInformation.taxon1;
+        TaxonBase removeTaxon = taxonInformation.taxon2;
+        TaxonBase stayTaxon = taxonInformation.taxon1;
         if(removeTaxon.getId() == stayTaxon.getId()){
             logger.warn("Same taxon: "+  removeTaxon.getTitleCache());
             return false;
@@ -238,7 +238,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         }
     }
 
-    private String getStatusStr(TaxonBase<?> taxon) {
+    private String getStatusStr(TaxonBase taxon) {
         //TODO MAN and Taxon Synonyms
         if (taxon.isInstanceOf(Synonym.class)){
             return "Syn: ";
@@ -247,7 +247,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         }
     }
 
-    private void removeTaxon(TaxonBase<?> taxonBase) {
+    private void removeTaxon(TaxonBase taxonBase, TaxonName nameToRemove) {
         DeleteResult result;
         if (taxonBase.isInstanceOf(Taxon.class)){
             Taxon taxonToRemove = CdmBase.deproxy(taxonBase, Taxon.class);
@@ -279,8 +279,8 @@ public class PesiCommandLineMerge extends PesiMergeBase {
     private boolean moveTaxonInformation(TaxonInformation taxonInformation) {
         try {
 
-            TaxonBase<?> removeTaxon = CdmBase.deproxy(taxonInformation.taxonToUse == 2 ? taxonInformation.taxon1: taxonInformation.taxon2);
-            TaxonBase<?> stayTaxon = CdmBase.deproxy(taxonInformation.taxonToUse == 2 ? taxonInformation.taxon2 : taxonInformation.taxon1);
+            TaxonBase removeTaxon = CdmBase.deproxy(taxonInformation.taxonToUse == 2 ? taxonInformation.taxon1: taxonInformation.taxon2);
+            TaxonBase stayTaxon = CdmBase.deproxy(taxonInformation.taxonToUse == 2 ? taxonInformation.taxon2 : taxonInformation.taxon1);
 
             //mergeTaxa;
             mergeSources(removeTaxon, stayTaxon);
@@ -345,7 +345,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         return false;
     }
 
-    private Taxon accTaxon(TaxonBase<?> stayTaxon) {
+    private Taxon accTaxon(TaxonBase stayTaxon) {
         if (stayTaxon.isInstanceOf(Synonym.class)){
             return CdmBase.deproxy(stayTaxon, Synonym.class).getAcceptedTaxon();
         }else{
@@ -479,8 +479,8 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         }
     }
 
-    private void mergeCredits(TaxonBase<?> removeEntity,
-            TaxonBase<?> stayEntity) throws CloneNotSupportedException {
+    private void mergeCredits(TaxonBase removeEntity,
+            TaxonBase stayEntity) throws CloneNotSupportedException {
         String className = removeEntity.getClass().getSimpleName();
         for (Credit credit: removeEntity.getCredits()){
             System.out.println("Move "+className+" credit: " + credit.toString());
@@ -636,8 +636,8 @@ public class PesiCommandLineMerge extends PesiMergeBase {
     }
 
     private TaxonBase<?>[] readTaxa() {
-        TaxonBase<?> taxon1 = readTaxon("Taxon to be removed");
-        TaxonBase<?> taxon2 = readTaxon("Taxon to stay");
+        TaxonBase taxon1 = readTaxon("Taxon to be removed");
+        TaxonBase taxon2 = readTaxon("Taxon to stay");
         if (taxon1 == null || taxon2 == null){
             return null;
         }else{
@@ -645,8 +645,8 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         }
     }
 
-    private TaxonBase<?> readTaxon(String message) {
-        TaxonBase<?> taxon = null;
+    private TaxonBase readTaxon(String message) {
+        TaxonBase taxon = null;
         boolean quit = false;
         while (taxon == null && quit == false){
             String strTaxon = CdmUtils.readInputLine(message + ": ");
@@ -668,8 +668,8 @@ public class PesiCommandLineMerge extends PesiMergeBase {
     /**
      * Reads a taxon from database using it's id or uuid as String
      */
-    private TaxonBase<?> taxonByString(String strTaxon) {
-        TaxonBase<?> taxon = null;
+    private TaxonBase taxonByString(String strTaxon) {
+        TaxonBase taxon = null;
         if (strTaxon.matches("\\d{1,10}")){
             taxon = app.getTaxonService().find(Integer.valueOf(strTaxon));
         }else if (strTaxon.matches(CdmRegEx.UUID_RE)){

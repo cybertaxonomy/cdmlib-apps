@@ -112,7 +112,7 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 								"*", "*", null, null, pageSize, 1, null);
 						if (foundTaxa.size() == 1) {
 							// one matching Taxon found
-							TaxonBase<?> taxon = foundTaxa.iterator().next();
+							TaxonBase taxon = foundTaxa.iterator().next();
 							if (taxon != null) {
 								ITaxonNameBase name = taxon.getName();
 								if (name != null) {
@@ -126,7 +126,7 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 							}
 						} else if (foundTaxa.size() > 1) {
 							logger.warn("Multiple taxa match search criteria: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-							for (TaxonBase<?> foundTaxon : foundTaxa) {
+							for (TaxonBase foundTaxon : foundTaxa) {
 								logger.warn(foundTaxon.getUuid() + ", " + foundTaxon.getTitleCache());
 							}
 						} else if (foundTaxa.size() == 0) {

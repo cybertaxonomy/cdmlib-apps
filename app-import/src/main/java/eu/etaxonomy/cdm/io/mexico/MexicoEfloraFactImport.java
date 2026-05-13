@@ -87,7 +87,7 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
 	    boolean success = true ;
 
 	    @SuppressWarnings("unchecked")
-        Map<String, TaxonBase<?>> taxonMap = partitioner.getObjectMap(MexicoEfloraTaxonImport.NAMESPACE);
+        Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(MexicoEfloraTaxonImport.NAMESPACE);
         @SuppressWarnings("unchecked")
         Map<String, Reference> referenceMap = partitioner.getObjectMap(MexicoEfloraReferenceImportBase.NAMESPACE);
 
@@ -128,7 +128,7 @@ public class MexicoEfloraFactImport extends MexicoEfloraImportBase {
                             lastIdCatNombre = idCatNombre;
                         }else {
                             //new categorical data
-                            TaxonBase<?> taxonBase = taxonMap.get(uuidTaxonStr);
+                            TaxonBase taxonBase = taxonMap.get(uuidTaxonStr);
                             Taxon taxon;
                             if (taxonBase.isInstanceOf(Taxon.class)) {
                                 taxon = CdmBase.deproxy(taxonBase, Taxon.class);

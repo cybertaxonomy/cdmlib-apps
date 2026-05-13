@@ -223,7 +223,7 @@ public class FaunaEuropaeaVernacularNamesImport extends FaunaEuropaeaImportBase 
 		UUID taxonUuid;
 		TaxonDescription taxonDescription;
 		Taxon taxon;
-		for (TaxonBase<?> taxonBase : taxonList) {
+		for (TaxonBase taxonBase : taxonList) {
 
 			if (taxonBase != null) {
 

@@ -110,7 +110,7 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
         }
 	}
 
-	private boolean isIndexFungorumTaxon(TaxonBase<?> taxon){
+	private boolean isIndexFungorumTaxon(TaxonBase taxon){
 	    return taxon.getSources().stream()
 	            .anyMatch(osb->osb.getCitation() != null && osb.getCitation().getUuid().equals(PesiTransformer.uuidSourceRefIndexFungorum));
 	}

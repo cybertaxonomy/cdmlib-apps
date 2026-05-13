@@ -240,7 +240,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 				//taxon
 				Taxon taxon = null;
-				TaxonBase<?> taxonBase  = taxonMap.get(String.valueOf(taxonId));
+				TaxonBase taxonBase  = taxonMap.get(String.valueOf(taxonId));
 				if (taxonBase == null){
 					logger.warn("Taxon (" + taxonId + ") could not be found. Common name " + commonNameString + "(" + commonNameId + ") not imported");
 					continue;
@@ -323,7 +323,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 					//Taxon misappliedName = getMisappliedName(biblioRefMap, nomRefMap, misNameRefFk, taxon);
 					Taxon misappliedNameTaxon = null;
 					if (misappliedTaxonId != null){
-						TaxonBase<?> misTaxonBase =  taxonMap.get(String.valueOf(misappliedTaxonId));
+						TaxonBase misTaxonBase =  taxonMap.get(String.valueOf(misappliedTaxonId));
 						if (misTaxonBase == null){
 							logger.warn("MisappliedName not found for misappliedTaxonId " + misappliedTaxonId + "; commonNameId: " + commonNameId);
 						}else if (misTaxonBase.isInstanceOf(Taxon.class)){

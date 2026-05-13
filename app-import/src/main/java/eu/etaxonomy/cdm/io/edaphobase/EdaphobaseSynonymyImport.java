@@ -90,7 +90,7 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
                 if (synId == null || accId == null){
                     logger.warn("Either a_taxon or b_taxon is NULL for tax_synonym " + id);
                 }else{
-                    TaxonBase<?> synonymCandidate = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(synId), TaxonBase.class);
+                    TaxonBase synonymCandidate = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(synId), TaxonBase.class);
                     if (synonymCandidate == null){
                         logger.warn("Synonym " + synId + " not found for synonymRelations (tax_synonym): " + id);
                     }else if (synonymCandidate.isInstanceOf(Taxon.class)){
@@ -98,7 +98,7 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
                         logger.warn(message);
                     }else{
                         Synonym synonym = CdmBase.deproxy(synonymCandidate, Synonym.class);
-                        TaxonBase<?> accepted = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(accId), TaxonBase.class);
+                        TaxonBase accepted = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(accId), TaxonBase.class);
                         if (accepted == null){
                             logger.warn("Accepted(parent) taxon " + accId + " not found for tax_synonym " + id );
                         }else if(accepted.isInstanceOf(Synonym.class)){

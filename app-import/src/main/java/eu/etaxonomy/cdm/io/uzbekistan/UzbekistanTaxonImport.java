@@ -130,7 +130,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
         taxonName.addSource(makeOriginalSource(state));
 
         //taxon
-        TaxonBase<?> taxonBase = makeTaxonBase(state, line, record, taxonName, sec);
+        TaxonBase taxonBase = makeTaxonBase(state, line, record, taxonName, sec);
         //common name
         makeCommonName(line, record, taxonBase);
 
@@ -176,7 +176,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
 
     private void makeCommonName(String line,
             Map<String, String> record,
-            TaxonBase<?> taxonBase) {
+            TaxonBase taxonBase) {
         String commonNameStr = getValue(record, COMMON_NAME);
         if(isBlank(commonNameStr)){
             return;
@@ -215,9 +215,9 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
     }
 
 
-    private TaxonBase<?> makeTaxonBase(SimpleExcelTaxonImportState<CONFIG> state, String line,
+    private TaxonBase makeTaxonBase(SimpleExcelTaxonImportState<CONFIG> state, String line,
             Map<String, String> record, TaxonName taxonName, Reference sec) {
-        TaxonBase<?> taxonBase;
+        TaxonBase taxonBase;
         String statusStr = getValue(record, STATUS);
         String taxonUuidStr = getValue(record, TAXON_UUID);
         UUID taxonUuid = UUID.fromString(taxonUuidStr);
@@ -275,7 +275,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
         String rankStr = getValue(record, RANK);
 
         UUID taxonUuid = getUuid(record, TAXON_UUID, true, line);
-        TaxonBase<?> taxonBase = getTaxonService().find(taxonUuid);
+        TaxonBase taxonBase = getTaxonService().find(taxonUuid);
         TaxonName taxonName;
         if (taxonBase == null){
             taxonName = getNameService().find(taxonUuid);
@@ -285,7 +285,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
 
         UUID parentUuid = getUuid(record, PARENT_TAXON_UUID, false, line);
         if (parentUuid != null){
-            TaxonBase<?> parentBase = getTaxonService().find(parentUuid);
+            TaxonBase parentBase = getTaxonService().find(parentUuid);
             if(!parentBase.isInstanceOf(Taxon.class)){
                 logger.warn(line + "Parent taxon is not accepted: " + parentUuid);
             }else if (taxonBase == null || (!taxonBase.isInstanceOf(Taxon.class))){
@@ -303,7 +303,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
 
         UUID acceptedUuid = getUuid(record, ACCEPTED_TAXON_UUID, false, line);
         if (acceptedUuid != null){
-            TaxonBase<?> acceptedBase = getTaxonService().find(acceptedUuid);
+            TaxonBase acceptedBase = getTaxonService().find(acceptedUuid);
             if(acceptedBase == null){
                 logger.warn(line + "Taxon for existing uuid could not be found. This should not happen");
                 return;
@@ -323,7 +323,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
 
         UUID basionymUuid = getUuid(record, BASIONYM_UUID, false, line);
         if (basionymUuid != null){
-            TaxonBase<?> basionymTaxon = getTaxonService().find(basionymUuid);
+            TaxonBase basionymTaxon = getTaxonService().find(basionymUuid);
             if(basionymTaxon == null){
                 logger.warn(line + "Basionym does not exist as taxon but only as name: " + basionymUuid);
             }else{
@@ -336,7 +336,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
 
         UUID replacedSynonymUuid = getUuid(record, REPLACED_SYNONYM_UUID, false, line);
         if (replacedSynonymUuid != null){
-            TaxonBase<?> replacedTaxon = getTaxonService().find(replacedSynonymUuid);
+            TaxonBase replacedTaxon = getTaxonService().find(replacedSynonymUuid);
             if(replacedTaxon == null){
                 logger.warn(line + "Replaced synonym does not exist as taxon but only as name: " + replacedSynonymUuid);
             }else{
@@ -349,7 +349,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
 
         UUID nameTypeUuid = getUuid(record, NAME_TYPE_UUID, false, line);
         if (nameTypeUuid != null){
-            TaxonBase<?> typeTaxon = getTaxonService().find(nameTypeUuid);
+            TaxonBase typeTaxon = getTaxonService().find(nameTypeUuid);
             TaxonName typeName;
             if (typeTaxon == null){
                 typeName = getNameService().find(nameTypeUuid);
@@ -362,12 +362,12 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
         }
     }
 
-    private void adjustSynonymType(TaxonBase<?> taxonBase, TaxonBase<?> homotypicTaxon, String line) {
+    private void adjustSynonymType(TaxonBase taxonBase, TaxonBase homotypicTaxon, String line) {
         adjustSynonymTypeOrdered(taxonBase, homotypicTaxon, line);
         adjustSynonymTypeOrdered(homotypicTaxon, taxonBase, line);
     }
 
-    private void adjustSynonymTypeOrdered(TaxonBase<?> firstTaxon, TaxonBase<?> secondTaxon, String line) {
+    private void adjustSynonymTypeOrdered(TaxonBase firstTaxon, TaxonBase secondTaxon, String line) {
         if (firstTaxon == null){
             logger.warn(line + "first taxon is null for adjust synonym type");
         }else if (secondTaxon == null){

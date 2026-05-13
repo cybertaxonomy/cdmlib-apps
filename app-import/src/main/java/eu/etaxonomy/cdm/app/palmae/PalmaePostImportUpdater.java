@@ -107,7 +107,7 @@ public class PalmaePostImportUpdater {
 				logger.error("Treatment reference could not be found");
 				result = false;
 			}else{
-				for (TaxonBase<?> nameUsage : taxonList){
+				for (TaxonBase nameUsage : taxonList){
 					if ((i++ % 100) == 0){System.out.println(i);}
 
 					try {
@@ -162,12 +162,12 @@ public class PalmaePostImportUpdater {
 	 * @param nameUsage
 	 * @return
 	 */
-	private Taxon getAcceptedTreatmentTaxon(TaxonBase<?> nameUsage, IReference treatmentReference) {
+	private Taxon getAcceptedTreatmentTaxon(TaxonBase nameUsage, IReference treatmentReference) {
 		boolean hasSynonymInTreatment = false;
 		TaxonName name = nameUsage.getName();
 		@SuppressWarnings("rawtypes")
         Set<TaxonBase> candidateList = name.getTaxonBases();
-		for (TaxonBase<?> candidate : candidateList){
+		for (TaxonBase candidate : candidateList){
 			if (candidate instanceof Taxon){
 				if (isInTreatment(candidate, treatmentReference, false)){
 					return (Taxon)candidate;
@@ -193,7 +193,7 @@ public class PalmaePostImportUpdater {
 		return null;
 	}
 
-	private boolean isInTreatment(TaxonBase<?> taxonBase, IReference treatmentReference, boolean silent) {
+	private boolean isInTreatment(TaxonBase taxonBase, IReference treatmentReference, boolean silent) {
 		if (taxonBase.getSec().equals(treatmentReference)){
 			//treatment taxa
 			if (! silent){
@@ -241,7 +241,7 @@ public class PalmaePostImportUpdater {
 		}
 	}
 
-	private boolean addNameUsage(Taxon taxon, TaxonBase<?> nameUsageTaxon) {
+	private boolean addNameUsage(Taxon taxon, TaxonBase nameUsageTaxon) {
 		TaxonDescription myDescription = null;
 		for (TaxonDescription desc : taxon.getDescriptions()){
 			if (! desc.isImageGallery()){

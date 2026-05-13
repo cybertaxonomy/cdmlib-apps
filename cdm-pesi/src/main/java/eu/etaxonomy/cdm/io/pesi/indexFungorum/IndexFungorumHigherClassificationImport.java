@@ -240,7 +240,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
                     Taxon.class);
 			for (Taxon taxon : list){
 			    String uninomial = CdmBase.deproxy(taxon.getName()).getGenusOrUninomial();
-				TaxonBase<?> existing = taxonMap.put(uninomial, taxon);
+				TaxonBase existing = taxonMap.put(uninomial, taxon);
 				if (existing != null){
 				    logger.warn("There seem to be duplicate taxa for uninomial: " + uninomial);
 				}

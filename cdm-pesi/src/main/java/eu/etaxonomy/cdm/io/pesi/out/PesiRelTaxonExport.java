@@ -440,7 +440,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		if (! hasPesiTaxon(name)){
 			list.add(name);
 		}else{
-			for (TaxonBase<?> taxon: getPesiTaxa(name)){
+			for (TaxonBase taxon: getPesiTaxa(name)){
 				list.add(taxon);
 			}
 		}
@@ -610,7 +610,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * @return The database key of an object in the given relationship.
 	 */
 	private static Integer getObjectFk(RelationshipBase<?, ?, ?> relationship, PesiExportState state, boolean isFrom) {
-		TaxonBase<?> taxonBase = null;
+		TaxonBase taxonBase = null;
 		if (relationship.isInstanceOf(TaxonRelationship.class)) {
 			TaxonRelationship tr = (TaxonRelationship)relationship;
 			taxonBase = (isFrom) ? tr.getFromTaxon():  tr.getToTaxon();

@@ -242,7 +242,7 @@ public class IopiActivator {
 
 	//for FAUNA Europaea (http://rbg-web2.rbge.org.uk/FE/fe.html)
 	private static final String URLbase = "http://rbg-web2.rbge.org.uk/cgi-bin/nph-readbtree.pl/feout?FAMILY_XREF=%s&GENUS_XREF=%s&SPECIES_XREF=%s&TAXON_NAME_XREF=%s&RANK=%s";
-	public static Method makeUrlForTaxon(TaxonBase<?> taxon, ResultSet rs){
+	public static Method makeUrlForTaxon(TaxonBase taxon, ResultSet rs){
 		Method result = null;
 		ExtensionType urlExtensionType = ExtensionType.URL();
 

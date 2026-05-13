@@ -730,7 +730,7 @@ public class EuroMedEuroMossesImport<CONFIG extends EuroMedEuroMossesImportConfi
             return null;
         } else if (genusCandidates.size() > 1) {
             logger.warn(line + ">1 genus candidates " + genusStr + " found for " + speciesName.getTitleCache());
-            for (TaxonBase<?> taxonBase : genusCandidates) {
+            for (TaxonBase taxonBase : genusCandidates) {
                 if (taxonBase.isInstanceOf(Taxon.class)) {
                     if (genusTaxon != null) {
                         logger.warn(line + " ... and >1 of them are accepted");

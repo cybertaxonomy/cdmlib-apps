@@ -59,11 +59,11 @@ public class GermanSLTaxonRelationImport extends GermanSLTaxonImport {
         NameResult nameResult = makeName (line, record, state);
 
         Classification classification = getClassification(state);
-        TaxonBase<?> taxonBase = GermanSLTaxonImport.taxonIdMap.get(idStr);
+        TaxonBase taxonBase = GermanSLTaxonImport.taxonIdMap.get(idStr);
         Taxon parent;
         TaxonNode taxonNode = null;
         if (isAccepted(statusStr, nameResult)){
-            TaxonBase<?> parentTmp = GermanSLTaxonImport.taxonIdMap.get(parentStr);
+            TaxonBase parentTmp = GermanSLTaxonImport.taxonIdMap.get(parentStr);
             if (parentTmp == null){
                 logger.warn(line + "Parent is missing: "+ parentStr);
             }else if (parentTmp.isInstanceOf(Synonym.class)){
@@ -80,7 +80,7 @@ public class GermanSLTaxonRelationImport extends GermanSLTaxonImport {
 
             }
         } else {
-            TaxonBase<?> parentTmp = GermanSLTaxonImport.taxonIdMap.get(acceptedStr);
+            TaxonBase parentTmp = GermanSLTaxonImport.taxonIdMap.get(acceptedStr);
             if (parentTmp == null){
                 logger.warn(line + "Accepted taxon is missing: " + acceptedStr);
             }else if (parentTmp.isInstanceOf(Synonym.class)){

@@ -84,7 +84,7 @@ public class FaunaEuropaeaHeterotypicSynonymImport
 					NameRelationship nameRelation = null;
 					TaxonName acceptedName = null;
 
-					for (TaxonBase<?> synonym : synonymList) {
+					for (TaxonBase synonym : synonymList) {
 						synonymName = synonym.getName();
 						if (synonymName.isGroupsBasionym()) {
 							nameRelations = synonymName.getNameRelations();

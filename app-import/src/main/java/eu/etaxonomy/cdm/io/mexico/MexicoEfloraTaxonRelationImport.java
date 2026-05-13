@@ -79,10 +79,9 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, MexicoEfloraImportState state) {
 	    classification = null;
 	    boolean success = true ;
-	    @SuppressWarnings("rawtypes")
         Set<TaxonBase> taxaToSave = new HashSet<>();
 		@SuppressWarnings("unchecked")
-        Map<String, TaxonBase<?>> taxonMap = partitioner.getObjectMap(MexicoEfloraTaxonImport.NAMESPACE);
+        Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(MexicoEfloraTaxonImport.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try{
@@ -102,7 +101,7 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 				    parentUuidStr = null;
 				}
 
-				TaxonBase<?> taxonBase = taxonMap.get(uuid.toString());
+				TaxonBase taxonBase = taxonMap.get(uuid.toString());
 
 				try {
 				    if (taxonBase == null) {
@@ -110,7 +109,7 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 				        continue;
 				    }else if (taxonBase.isInstanceOf(Synonym.class) && accUuidStr != null) {
 				        Synonym syn = CdmBase.deproxy(taxonBase, Synonym.class);
-				        TaxonBase<?> related = taxonMap.get(accUuidStr);
+				        TaxonBase related = taxonMap.get(accUuidStr);
 				        if (!related.isInstanceOf(Taxon.class)){
 				            logger.warn(taxonId + ":  Accepted taxon for synonym is not accepted: " + accUuidStr);
 				        }else {
@@ -119,7 +118,7 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 				        }
 				    }else if (taxonBase.isInstanceOf(Taxon.class) && parentUuidStr != null) {
                         Taxon child = CdmBase.deproxy(taxonBase, Taxon.class);
-                        TaxonBase<?> parentBase = taxonMap.get(parentUuidStr);
+                        TaxonBase parentBase = taxonMap.get(parentUuidStr);
                         if (!parentBase.isInstanceOf(Taxon.class)){
                             logger.warn(taxonId + ":  Parent is not accepted: " + parentUuidStr);
                         }else {
@@ -137,7 +136,7 @@ public class MexicoEfloraTaxonRelationImport extends MexicoEfloraImportBase {
 
 				    if (basUuidStr != null) {
 				        TaxonName name = taxonBase.getName();
-				        TaxonBase<?> basionymTaxon = taxonMap.get(basUuidStr);
+				        TaxonBase basionymTaxon = taxonMap.get(basUuidStr);
 				        name.addBasionym(basionymTaxon.getName());
 				    }
 

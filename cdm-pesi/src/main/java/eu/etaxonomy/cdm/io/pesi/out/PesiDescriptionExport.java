@@ -298,7 +298,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 						success &= handleDescriptionElement(state, notesMapping, vernacularMapping, imageMapping,
 								addSourceSourceMapping, additionalSourceMapping, isImageGallery, element, null);
 					}else{
-						for (TaxonBase<?> taxonBase : name.getTaxonBases()){
+						for (TaxonBase taxonBase : name.getTaxonBases()){
 							if (isPesiTaxon(taxonBase)){
 								state.setCurrentTaxon(taxonBase);
 								success &= handleDescriptionElement(state, notesMapping, vernacularMapping, imageMapping,
@@ -641,7 +641,7 @@ public class PesiDescriptionExport extends PesiExportBase {
             try {
 				if (state.getTransformer().getKeyByNamedArea(area) == null){
 					String warning = "Area (%s,%s) not available in PESI transformer for taxon %s: ";
-					TaxonBase<?> taxon =  state.getCurrentTaxon();
+					TaxonBase taxon =  state.getCurrentTaxon();
 					warning = String.format(warning, area.getTitleCache(), area.getRepresentation(Language.ENGLISH()).getAbbreviatedLabel(),taxon ==null? "-" : taxon.getTitleCache());
 					logger.warn(warning);
 					return false;
@@ -1018,7 +1018,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")  //used by mapper
 	private static Integer getTaxonFk(DescriptionElementBase deb, PesiExportState state) {
-		TaxonBase<?> entity = state.getCurrentTaxon();
+		TaxonBase entity = state.getCurrentTaxon();
 		return state.getDbId(entity);
 	}
 
@@ -1041,7 +1041,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getTaxonFullNameCache(DescriptionElementBase deb, PesiExportState state) {
 
-		TaxonBase<?> taxon =  state.getCurrentTaxon();
+		TaxonBase taxon =  state.getCurrentTaxon();
 		TaxonName taxonName = taxon.getName();
 		TaxonName nvn = CdmBase.deproxy(taxonName);
 		String result = getCacheStrategy(nvn).getTitleCache(nvn);

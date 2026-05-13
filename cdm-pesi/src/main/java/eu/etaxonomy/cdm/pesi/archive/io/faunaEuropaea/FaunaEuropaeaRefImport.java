@@ -478,7 +478,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 		for (Reference ref : referenceList){
 			references.put(Integer.valueOf(ref.getSources().iterator().next().getIdInSource()), ref);
 		}
-		for (TaxonBase<?> taxonBase : taxonList) {
+		for (TaxonBase taxonBase : taxonList) {
 
 			// Create descriptions
 

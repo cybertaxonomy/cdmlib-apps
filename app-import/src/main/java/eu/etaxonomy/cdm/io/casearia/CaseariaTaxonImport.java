@@ -141,7 +141,7 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
 
             handleNomenclRemarkAndNameStatus(nomenclaturalRemarks, row, isNewName, name, statusTypes);
 
-            TaxonBase<?> taxonBase;
+            TaxonBase taxonBase;
             if (taxonClazz == Taxon.class){
                 taxonBase = Taxon.NewInstance(name, getSecRef());
             }else{
@@ -455,7 +455,7 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
             }
 
             UUID uuid = taxonMapping.get(sourceId);
-            TaxonBase<?> taxonBase = getTaxonService().find(uuid);
+            TaxonBase taxonBase = getTaxonService().find(uuid);
             if (taxonBase == null){
                 logger.warn(row + "taxonBase not found: " + sourceId);
                 return;
@@ -475,7 +475,7 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
                 child = CdmBase.deproxy(taxonBase, Taxon.class);
             //synonyms
             }else if(hasAccepted){
-                TaxonBase<?> accTaxonBase = getTaxonService().find(accUuid);
+                TaxonBase accTaxonBase = getTaxonService().find(accUuid);
                 if (accTaxonBase == null){
 //                    logger.warn(row + "acctaxon not found: " + accId + "; " + accName);
                 }else if(!accTaxonBase.isInstanceOf(Taxon.class)){
@@ -582,7 +582,7 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
 
             if (basionymId != null && false){
                 UUID basionymUuid = taxonMapping.get(basionymId);
-                TaxonBase<?> basionymTaxon = getTaxonService().find(basionymUuid);
+                TaxonBase basionymTaxon = getTaxonService().find(basionymUuid);
                 if (basionymTaxon != null){
                     if (hasSameAcceptedTaxon(taxonBase, basionymTaxon)){
                         if (taxonBase.getName().getBasionym() == null){
@@ -601,7 +601,7 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
         }
     }
 
-    private boolean hasSameAcceptedTaxon(TaxonBase<?> taxonBase, TaxonBase<?> basionymTaxon) {
+    private boolean hasSameAcceptedTaxon(TaxonBase taxonBase, TaxonBase basionymTaxon) {
         if (taxonBase.isInstanceOf(Synonym.class)){
             taxonBase = CdmBase.deproxy(taxonBase, Synonym.class).getAcceptedTaxon();
         }
@@ -616,7 +616,7 @@ public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportCo
             logger.warn(row + "Parent uuid is null. No parent found.");
             return null;
         }
-        TaxonBase<?> pTaxon = getTaxonService().find(parentUuid);
+        TaxonBase pTaxon = getTaxonService().find(parentUuid);
         if (pTaxon == null){
             logger.warn(row + "No parent found for parent UUID. This should not happen.");
             return null;

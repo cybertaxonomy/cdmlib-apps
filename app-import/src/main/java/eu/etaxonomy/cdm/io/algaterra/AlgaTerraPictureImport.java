@@ -99,7 +99,7 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 				//TODO etc. Created, Notes, Copyright, TermsOfUse etc.
 				try {
 
-					TaxonBase<?> taxonBase = taxonMap.get(String.valueOf(taxonId));
+					TaxonBase taxonBase = taxonMap.get(String.valueOf(taxonId));
 					if (taxonBase == null){
 						logger.warn("Could not find taxon (" + taxonId +") for picture fact " +  factId);
 					}else if (! taxonBase.isInstanceOf(Taxon.class)){

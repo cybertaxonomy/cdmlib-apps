@@ -162,7 +162,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         importAuthors(state, rs, name);
 
         //---TAXON---
-        TaxonBase<?> taxonBase = importTaxon(rs, name, state);
+        TaxonBase taxonBase = importTaxon(rs, name, state);
         if(taxonBase==null){
             RedListUtil.logMessage(id, "!SERIOUS ERROR! Taxon for name "+name+" could not be created!", logger);
             return;
@@ -184,7 +184,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         taxaToSave.add(taxonBase);
     }
 
-    private void cloneTaxon(final TaxonBase<?> gesamtListeTaxon, String relationString, String sourceNameSpace, Set<TaxonBase> taxaToSave, long id, RedListGefaesspflanzenImportState state){
+    private void cloneTaxon(final TaxonBase gesamtListeTaxon, String relationString, String sourceNameSpace, Set<TaxonBase> taxaToSave, long id, RedListGefaesspflanzenImportState state){
         if(isNotBlank(relationString) && !relationString.equals(".")){
             Taxon clonedTaxon = null;
 
@@ -203,7 +203,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
     }
 
-    private TaxonBase<?> importTaxon(ResultSet rs, INonViralName name, RedListGefaesspflanzenImportState state) throws SQLException {
+    private TaxonBase importTaxon(ResultSet rs, INonViralName name, RedListGefaesspflanzenImportState state) throws SQLException {
 
         long id = rs.getLong(RedListUtil.NAMNR);
         String taxNameString = rs.getString(RedListUtil.TAXNAME);
@@ -221,7 +221,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String ehrdString = rs.getString(RedListUtil.EHRD);
         String wisskString = rs.getString(RedListUtil.WISSK);
 
-        TaxonBase<?> taxonBase = null;
+        TaxonBase taxonBase = null;
         if(authorBasiString.trim().contains(RedListUtil.AUCT)){
             taxonBase = Taxon.NewInstance(name, null);
             taxonBase.setAppendedPhrase(RedListUtil.AUCT);
@@ -518,7 +518,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
     }
 
-    private void checkTaxonConsistency(long id, String taxNameString, String hybString, String epi1String, String epi2String, String epi3String, TaxonBase<?> taxonBase, RedListGefaesspflanzenImportState state) {
+    private void checkTaxonConsistency(long id, String taxNameString, String hybString, String epi1String, String epi2String, String epi3String, TaxonBase taxonBase, RedListGefaesspflanzenImportState state) {
         if(taxNameString.split(RedListUtil.HYB_SIGN).length>2){
             RedListUtil.logInfoMessage(id, "multiple hybrid signs. No name check for "+taxNameString, logger);
             return;

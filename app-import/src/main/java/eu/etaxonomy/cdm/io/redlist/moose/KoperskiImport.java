@@ -140,7 +140,7 @@ public class KoperskiImport extends SimpleExcelTaxonImport<KoperskiImportConfigu
         boolean isSynonym = "b".equals(synFlag) || "x".equals(synFlag);
         boolean isConcept = "k".equals(synFlag);
         
-        TaxonBase<?> taxonBase;
+        TaxonBase taxonBase;
         String fideRef = null;
 
         boolean isNotInGermany = false;
@@ -297,7 +297,7 @@ public class KoperskiImport extends SimpleExcelTaxonImport<KoperskiImportConfigu
         getTaxonService().save(taxonBase);
     }
 
-    private void checkName(TaxonBase<?> taxonBase, int line) {
+    private void checkName(TaxonBase taxonBase, int line) {
 		TaxonName name = taxonBase.getName();
 		boolean isProtected = name.isProtectedNameCache() || name.isProtectedTitleCache() || name.isProtectedFullTitleCache();
 		if (name.getNomenclaturalReference() != null) {

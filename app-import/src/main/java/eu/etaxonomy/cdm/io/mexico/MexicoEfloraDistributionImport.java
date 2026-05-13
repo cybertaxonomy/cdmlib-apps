@@ -77,11 +77,10 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
 
 	    boolean success = true ;
 
-	    @SuppressWarnings("rawtypes")
         Set<TaxonBase> taxaToSave = new HashSet<>();
 
 	    @SuppressWarnings("unchecked")
-        Map<String, TaxonBase<?>> taxonMap = partitioner.getObjectMap(MexicoEfloraTaxonImport.NAMESPACE);
+        Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(MexicoEfloraTaxonImport.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try{
@@ -104,7 +103,7 @@ public class MexicoEfloraDistributionImport extends MexicoEfloraImportBase {
 	            int idTipoRegion = rs.getInt("IdTipoRegion");
 
 			    try {
-    				TaxonBase<?> taxonBase = taxonMap.get(taxonUuid);
+    				TaxonBase taxonBase = taxonMap.get(taxonUuid);
     				if(isNotBlank(nombreStr) && taxonBase != null && taxonBase.getName() != null
     				        && !nombreStr.equals(taxonBase.getName().getNameCache())
     				        && !nombreStr.contains("(") && !taxonBase.getName().isHybrid()) {

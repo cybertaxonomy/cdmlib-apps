@@ -96,7 +96,7 @@ public class CaseariaDistributionImport extends SimpleExcelTaxonImport<CaseariaI
         if (uuid == null){
             logger.warn(row + "Taxon uuid not found in taxon mapping for " + sourceId);
         }
-        TaxonBase<?> taxonBase = getTaxonService().find(uuid);
+        TaxonBase taxonBase = getTaxonService().find(uuid);
         if (taxonBase == null){
             logger.warn(row + "Taxon " + sourceId + " for distribution "+area_label +" does not exist: " + fullCitation);
             return;

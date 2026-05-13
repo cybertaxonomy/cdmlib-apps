@@ -130,7 +130,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 
 		// the uuid of an accepted taxon is needed here. any accepted taxon will do.
-		TaxonBase<?> taxon = getTaxonService().find(UUID.fromString(acceptedTaxonUUID));
+		TaxonBase taxon = getTaxonService().find(UUID.fromString(acceptedTaxonUUID));
 		sourceRef = taxon.getSec();
 
 		Classification tree = getClassificationFor(state, sourceRef);
@@ -550,7 +550,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	 */
 	private void createParentChildRelationships(FaunaEuropaeaImportState state, Map<UUID, UUID> childParentMap, Map<UUID, UUID> taxonSpecialistMap, Map<UUID, UUID> taxonGroupCoordinatorMap, TransactionStatus tx) {
 		//gets the taxon "Hydroscaphidae"(family)
-		TaxonBase<?> taxon = getTaxonService().find(UUID.fromString(acceptedTaxonUUID));
+		TaxonBase taxon = getTaxonService().find(UUID.fromString(acceptedTaxonUUID));
 		sourceRef = taxon.getSec();
 		int limit = state.getConfig().getLimitSave();
 
@@ -570,7 +570,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		logger.info(parents.size() + "parents are available");
 		Map<UUID, TaxonBase> parentsMap = new HashMap<>(parents.size());
 
-		for (TaxonBase<?> taxonBase : parents){
+		for (TaxonBase taxonBase : parents){
 			parentsMap.put(taxonBase.getUuid(), taxonBase);
 		}
 
@@ -582,10 +582,10 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 			for (UUID uuid : parentValuesSet) {
 				logger.trace("parent uuid query: " + uuid);
 			}
-			for (TaxonBase<?> tb : children) {
+			for (TaxonBase tb : children) {
 				logger.trace("child uuid result: " + tb.getUuid());
 			}
-			for (TaxonBase<?> tb : parents) {
+			for (TaxonBase tb : parents) {
 				logger.trace("parent uuid result: " + tb.getUuid());
 			}
 		}
@@ -1221,7 +1221,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
        HashMap<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
-       for (TaxonBase<?> taxonBase : taxonList) {
+       for (TaxonBase taxonBase : taxonList) {
 
            if (taxonBase.isInstanceOf(Taxon.class)) { // this should always be the case since we should have fetched accepted taxon only, but you never know...
                acceptedTaxon = CdmBase.deproxy(taxonBase, Taxon.class);
@@ -1259,7 +1259,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
                            //}
 //                             inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymType.INFERRED_GENUS_OF());
                            if (inferredSynonymsLocal != null) {
-                               for (TaxonBase<?> synonym : inferredSynonymsLocal) {
+                               for (TaxonBase synonym : inferredSynonymsLocal) {
 //                                 TaxonNameBase<?,?> synonymName = synonym.getName();
                                    MarkerType markerType =getUuidMarkerType(PesiTransformer.uuidMarkerGuidIsMissing, state);
 

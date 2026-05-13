@@ -93,7 +93,7 @@ public class BerlinModelWebMarkerImport extends BerlinModelImportBase {
 
 					AnnotatableEntity annotatableEntity;
 					if ("PTaxon".equals(tableName)){
-						TaxonBase<?> taxon = taxonMap.get(String.valueOf(rIdentifierFk));
+						TaxonBase taxon = taxonMap.get(String.valueOf(rIdentifierFk));
 						if (taxon != null){
 							annotatableEntity = taxon;
 							taxaToBeSaved.add(taxon);

@@ -163,7 +163,7 @@ public class CoraTaxonImport<CONFIG extends CoraImportConfigurator>
         replaceNameAuthorsAndReferences(state, taxonName);
 
         //taxon
-        TaxonBase<?> taxonBase;
+        TaxonBase taxonBase;
         Reference secRef = makeSecRef(record, line, taxonNameStr);
 
         if (isBlank(statusStr) || "accepted".equals(statusStr)) {

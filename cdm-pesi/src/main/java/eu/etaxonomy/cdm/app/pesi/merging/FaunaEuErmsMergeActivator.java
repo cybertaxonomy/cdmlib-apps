@@ -102,8 +102,8 @@ public class FaunaEuErmsMergeActivator extends PesiMergeBase{
 		    List<String> row = authorIterator.next();
 			UUID uuidFaunaEu = UUID.fromString(row.get(faunaEuUuid));
 			UUID uuidErms = UUID.fromString(row.get(ermsUuid));
-			TaxonBase<?> taxonFaunaEu = appCtrInit.getTaxonService().find(uuidFaunaEu);
-			TaxonBase<?> taxonErms = appCtrInit.getTaxonService().find(uuidErms);
+			TaxonBase taxonFaunaEu = appCtrInit.getTaxonService().find(uuidFaunaEu);
+			TaxonBase taxonErms = appCtrInit.getTaxonService().find(uuidErms);
 // which information should be used can be found in last row -> needs to be done manually
 			if (Integer.parseInt(row.get(18)) == 1){
 				//isFaunaEu = 1 -> copy the author of Fauna Europaea to Erms
@@ -129,7 +129,7 @@ public class FaunaEuErmsMergeActivator extends PesiMergeBase{
 	}
 
 	private void setSpecificRank(List<TaxonBase> taxa, Rank rank){
-		for (TaxonBase<?> taxon: taxa){
+		for (TaxonBase taxon: taxa){
 			taxon.getName().setRank(rank);
 		}
 	}
@@ -161,8 +161,8 @@ public class FaunaEuErmsMergeActivator extends PesiMergeBase{
 	private void mergeSameStatus(){
 		List<List<String>> sameStatus = readCsvFile(sFileName + "_names.csv");
 
-		TaxonBase<?> taxonFaunaEu;
-		TaxonBase<?> taxonErms;
+		TaxonBase taxonFaunaEu;
+		TaxonBase taxonErms;
 		List<String> propertyPaths = new ArrayList<>();
 		propertyPaths.add("taxonBases.nodes.*");
 		for (List<String> row: sameStatus){
@@ -361,7 +361,7 @@ public class FaunaEuErmsMergeActivator extends PesiMergeBase{
 
 	//wenn Name und Rang identisch sind und auch der Status gleich, dann alle Informationen vom Fauna Europaea Taxon/Synonym zum Erms Taxon/Synonym
 
-	private void moveAllInformationsFromFaunaEuToErms(TaxonBase<?> faunaEu, TaxonBase<?> erms){
+	private void moveAllInformationsFromFaunaEuToErms(TaxonBase faunaEu, TaxonBase erms){
 		Set<Annotation> annotations = faunaEu.getAnnotations();
 		Set<Extension> extensions = faunaEu.getExtensions();
 		Set<Marker> markers = faunaEu.getMarkers();
@@ -441,7 +441,7 @@ public class FaunaEuErmsMergeActivator extends PesiMergeBase{
 	}
 
 	//after merging faunaEu taxon and erms taxon, the originalSource of the faunaEu taxon has to be moved to the erms taxon
-	private void moveOriginalDbToErmsTaxon(TaxonBase<?> faunaEuTaxon, TaxonBase<?> ermsTaxon){
+	private void moveOriginalDbToErmsTaxon(TaxonBase faunaEuTaxon, TaxonBase ermsTaxon){
 		Set<IdentifiableSource> sourcesFaunaEu = faunaEuTaxon.getSources();
 		IdentifiableSource sourceFaunaEu = sourcesFaunaEu.iterator().next();
 		ermsTaxon.addSource(sourceFaunaEu);

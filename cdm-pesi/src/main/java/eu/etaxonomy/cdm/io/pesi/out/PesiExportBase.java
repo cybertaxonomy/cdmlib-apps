@@ -91,7 +91,7 @@ public abstract class PesiExportBase
 
 		Iterator<CLASS> it = list.iterator();
 		while (it.hasNext()){
-			TaxonBase<?> taxonBase = it.next();
+			TaxonBase taxonBase = it.next();
 			if (! isPesiTaxon(taxonBase)){
 				it.remove();
 			}
@@ -126,7 +126,7 @@ public abstract class PesiExportBase
 			return true;
 		}else{
 			Set<TaxonBase> taxa = name.getTaxonBases();
-			for (TaxonBase<?> taxonBase : taxa){
+			for (TaxonBase taxonBase : taxa){
 				if (isPesiTaxon(taxonBase)){
 					return true;
 				}
@@ -241,7 +241,7 @@ public abstract class PesiExportBase
     }
 
     protected boolean isPesiTaxonNode(TaxonNode tn){
-        TaxonBase<?> fromTaxon;
+        TaxonBase fromTaxon;
         Taxon toTaxon;
 
         fromTaxon = tn.getTaxon();
@@ -279,7 +279,7 @@ public abstract class PesiExportBase
 	}
 
 	protected boolean isPesiTaxonOrSynonymRelationship(RelationshipBase rel){
-		TaxonBase<?> fromTaxon;
+		TaxonBase fromTaxon;
 		Taxon toTaxon;
 		if (rel.isInstanceOf(TaxonRelationship.class)){
 			TaxonRelationship taxRel = CdmBase.deproxy(rel, TaxonRelationship.class);
@@ -360,7 +360,7 @@ public abstract class PesiExportBase
 	 * @return
 	 */
 	protected boolean hasPesiTaxon(INonViralName taxonName) {
-		for (TaxonBase<?> taxon : taxonName.getTaxonBases()){
+		for (TaxonBase taxon : taxonName.getTaxonBases()){
 			if (isPesiTaxon(taxon)){
 				return true;
 			}
@@ -378,7 +378,7 @@ public abstract class PesiExportBase
 	 */
 	protected Set<TaxonBase<?>> getPesiTaxa(TaxonName name){
 		Set<TaxonBase<?>> result = new HashSet<>();
-		for (TaxonBase<?> taxonBase : name.getTaxonBases()){
+		for (TaxonBase taxonBase : name.getTaxonBases()){
 			if (isPesiTaxon(taxonBase)){
 				result.add(taxonBase);
 			}
@@ -403,7 +403,7 @@ public abstract class PesiExportBase
 	 * @param taxonBase
 	 * @return
 	 */
-	protected static boolean isPesiTaxon(TaxonBase<?> taxonBase, boolean excludeMisappliedNames) {
+	protected static boolean isPesiTaxon(TaxonBase taxonBase, boolean excludeMisappliedNames) {
 		if (taxonBase == null){
 		    return false;
 		}
@@ -468,7 +468,7 @@ public abstract class PesiExportBase
 		        logger.warn("Name has multiple taxa. Can't define correct ID. Use first one." + name.getUuid());
 		    }
 		    if (!name.getTaxonBases().isEmpty()){
-		        TaxonBase<?> tb = name.getTaxonBases().iterator().next();
+		        TaxonBase tb = name.getTaxonBases().iterator().next();
 		        return this.getDbId(tb, state);
             }else{
                 return ( cdmBase.getId() + state.getConfig().getNameIdStart() );
@@ -529,7 +529,7 @@ public abstract class PesiExportBase
 	 * @param taxon The {@link TaxonBase Taxon}.
 	 * @return Whether the given TaxonName is a misapplied name or not.
 	 */
-	protected static boolean isMisappliedName(TaxonBase<?> taxon) {
+	protected static boolean isMisappliedName(TaxonBase taxon) {
 		return getAcceptedTaxonForMisappliedName(taxon) != null;
 	}
 
@@ -538,7 +538,7 @@ public abstract class PesiExportBase
      * @param taxon The {@link TaxonBase Taxon}.
      * @return <code>true</code> if the the given taxon is a pp or partial synonym
      */
-    protected static boolean isProParteOrPartialSynonym(TaxonBase<?> taxon) {
+    protected static boolean isProParteOrPartialSynonym(TaxonBase taxon) {
         return getAcceptedTaxonForProParteSynonym(taxon) != null;
     }
 
@@ -547,7 +547,7 @@ public abstract class PesiExportBase
 	 * If this misapplied name is not a misapplied name, <code>null</code> is returned.
 	 * @param taxon The {@link TaxonBase Taxon}.
 	 */
-	protected static Taxon getAcceptedTaxonForMisappliedName(TaxonBase<?> taxon) {
+	protected static Taxon getAcceptedTaxonForMisappliedName(TaxonBase taxon) {
 		if (! taxon.isInstanceOf(Taxon.class)){
 			return null;
 		}
@@ -561,7 +561,7 @@ public abstract class PesiExportBase
 		return null;
 	}
 
-    protected static Taxon getAcceptedTaxonForProParteSynonym(TaxonBase<?> taxon) {
+    protected static Taxon getAcceptedTaxonForProParteSynonym(TaxonBase taxon) {
         if (! taxon.isInstanceOf(Taxon.class)){
             return null;
         }
@@ -695,7 +695,7 @@ public abstract class PesiExportBase
                 logger.debug("Name has no PESI source: " + identifiableEntity.getTitleCache());
                 @SuppressWarnings("rawtypes")
                 Set<TaxonBase> taxa = taxonName.getTaxonBases();
-                for (TaxonBase<?> taxonBase: taxa){
+                for (TaxonBase taxonBase: taxa){
                     filteredSources.addAll(filterAndOrderPesiSources(taxonBase.getSources()));
                 }
             }
@@ -705,7 +705,7 @@ public abstract class PesiExportBase
                     .anyMatch(s->PesiSource.IF == getSourceTypeOfSource(s));
             if (!indexFungorumSourceExists) {
                 Set<TaxonBase> taxa = taxonName.getTaxonBases();
-                for (TaxonBase<?> taxonBase: taxa){
+                for (TaxonBase taxonBase: taxa){
                     IdentifiableSource ifSource = getPesiSourceForSourceType(taxonBase, PesiSource.IF);
                     if (ifSource != null) {
                         filteredSources.add(ifSource);

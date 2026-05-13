@@ -164,7 +164,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         String relationS = rs.getString(RedListUtil.S);
 
         //Gesamtliste
-        TaxonBase<?> taxonBase = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
+        TaxonBase taxonBase = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
         taxonBase.setSec(gesamtListeClassification.getReference());
         Taxon parent = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, parentId, Taxon.class);
         if(parent!=null && !parent.isInstanceOf(Taxon.class)){
@@ -228,7 +228,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         addTaxonToClassification(classificationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, relationS, taxonBase, id, state);
     }
 
-    private void addTaxonToClassification(Classification classification, String classificationNamespace, String relationString, final TaxonBase<?> gesamtListeTaxon, long id, RedListGefaesspflanzenImportState state){
+    private void addTaxonToClassification(Classification classification, String classificationNamespace, String relationString, final TaxonBase gesamtListeTaxon, long id, RedListGefaesspflanzenImportState state){
         Taxon taxon = HibernateProxyHelper.deproxy(state.getRelatedObject(classificationNamespace, String.valueOf(id), TaxonBase.class), Taxon.class);
         //add concept relation to gesamtliste/checkliste
         if(taxon!=null && isNotBlank(relationString) && !relationString.equals(".")){
@@ -259,7 +259,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
     }
 
     private void createParentChildNodes(Classification classification, long id, String gueltString,
-            String taxZusatzString, TaxonBase<?> taxonBase, Taxon parent) {
+            String taxZusatzString, TaxonBase taxonBase, Taxon parent) {
         if(taxonBase==null){
             RedListUtil.logMessage(id, "child taxon/synonym of "+parent+"  is null. ("+classification.generateTitle()+")" , logger);
             return;

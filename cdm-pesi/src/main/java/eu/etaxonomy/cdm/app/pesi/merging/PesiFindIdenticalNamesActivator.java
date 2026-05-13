@@ -625,7 +625,7 @@ public class PesiFindIdenticalNamesActivator {
                     logger.warn("No taxonbase attached to name. This is not yet handled: " + nameAndIdStr);
                     continue;
                 }
-                for (TaxonBase<?> taxonBase : taxonBases)                {
+                for (TaxonBase taxonBase : taxonBases)                {
                     if (!taxonBase.isPublish()){
                         continue;
                     }
@@ -748,7 +748,7 @@ public class PesiFindIdenticalNamesActivator {
         }
     }
 
-    private void makeChildrenCount(TaxonBase<?> taxonBase, PesiMergeObject mergeObject) {
+    private void makeChildrenCount(TaxonBase taxonBase, PesiMergeObject mergeObject) {
         if (! (taxonBase instanceof Taxon)) {
             mergeObject.setnChildren(null);
         }else {
@@ -934,7 +934,7 @@ public class PesiFindIdenticalNamesActivator {
 		Set<TaxonBase> taxonBases = ermsName.getTaxonBases();
 		if (!taxonBases.isEmpty()) {
 		    Taxon taxon = null;
-			TaxonBase<?> taxonBase = taxonBases.iterator().next();
+			TaxonBase taxonBase = taxonBases.iterator().next();
 			if (taxonBase instanceof Synonym) {
 				taxon = ((Synonym)taxonBase).getAcceptedTaxon();
 			}else{
@@ -957,7 +957,7 @@ public class PesiFindIdenticalNamesActivator {
 			taxon = getAccTaxonForTaxonSynonym(taxon);
 		//else take synonym
 		}else if (name.getTaxonBases() != null && !name.getTaxonBases().isEmpty()){
-			TaxonBase<?> taxonBase = name.getTaxonBases().iterator().next();
+			TaxonBase taxonBase = name.getTaxonBases().iterator().next();
 			if (taxonBase instanceof Synonym) {
 				Synonym syn = (Synonym)taxonBase;
 				taxon = syn.getAcceptedTaxon();

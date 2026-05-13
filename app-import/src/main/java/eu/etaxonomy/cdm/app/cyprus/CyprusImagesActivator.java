@@ -613,7 +613,7 @@ public class CyprusImagesActivator {
                 return null;
             }
         }
-        TaxonBase<?> taxonBase = list.get(0);
+        TaxonBase taxonBase = list.get(0);
         Taxon result;
         if (taxonBase.isInstanceOf(Synonym.class)){
             result = CdmBase.deproxy(taxonBase, Synonym.class).getAcceptedTaxon();

@@ -207,7 +207,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 						continue; //next taxon
 					}
 				}
-				TaxonBase<?> taxonBase;
+				TaxonBase taxonBase;
 				Synonym synonym;
 				Taxon taxon;
 				Reference sec = (lastScrutinyRef != null && isRightAccessSec(refFkInt)) ? lastScrutinyRef: reference;

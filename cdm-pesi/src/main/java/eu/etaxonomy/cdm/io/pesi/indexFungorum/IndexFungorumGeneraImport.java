@@ -167,7 +167,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
                     Taxon.class);  //only use index fungorum taxa not being genus (important for partitions not being first partition)
             for (Taxon taxon : list){
                 String uninomial = CdmBase.deproxy(taxon.getName()).getGenusOrUninomial();
-                TaxonBase<?> existing = taxonMap.put(uninomial, taxon);
+                TaxonBase existing = taxonMap.put(uninomial, taxon);
                 if (existing != null){
                     logger.warn("There seem to be duplicate taxa for uninomial: " + uninomial);
                 }

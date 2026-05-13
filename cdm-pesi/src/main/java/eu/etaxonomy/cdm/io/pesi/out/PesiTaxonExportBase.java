@@ -145,7 +145,7 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
         //mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
     }
 
-    static Integer findKingdomIdFromTreeIndex(TaxonBase<?> taxonBase, PesiExportState state) {
+    static Integer findKingdomIdFromTreeIndex(TaxonBase taxonBase, PesiExportState state) {
         Taxon taxon;
         if (taxonBase instanceof Synonym){
             taxon = ((Synonym) taxonBase).getAcceptedTaxon();
@@ -331,7 +331,7 @@ public abstract class PesiTaxonExportBase extends PesiExportBase {
 
     private static List<TaxonNode> getTaxonNodes(TaxonName taxonName) {
         List<TaxonNode> result = new ArrayList<>();
-        for (TaxonBase<?> tb:taxonName.getTaxonBases()){
+        for (TaxonBase tb:taxonName.getTaxonBases()){
             Taxon taxon;
             //TODO handle ERMS taxon relationships
             if (tb.isInstanceOf(Taxon.class)){

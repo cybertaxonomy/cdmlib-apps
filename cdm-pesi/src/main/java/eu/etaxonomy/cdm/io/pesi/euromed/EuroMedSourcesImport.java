@@ -54,7 +54,7 @@ public class EuroMedSourcesImport
         tx = startTransaction();
         sourceRef = getSourceRef(state);
         List<TaxonBase<?>> taxa = getTaxonService().list(null, null, null, null, propPath);
-        for (TaxonBase<?> taxon : taxa){
+        for (TaxonBase taxon : taxa){
             taxon.addImportSource(String.valueOf(taxon.getId()),
                     TaxonBase.class.getSimpleName(), sourceRef, null);
         }

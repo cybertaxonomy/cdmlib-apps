@@ -39,7 +39,7 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 
 	private IdentifiableEntity<?> currentToObject;
 	private IdentifiableEntity<?> currentFromObject;
-	private TaxonBase<?> currentTaxon;
+	private TaxonBase currentTaxon;
 	private boolean sourceForAdditionalSourceCreated = false;
 
 	private final Map<UUID, MarkerType> markerTypeMap = new HashMap<>();
@@ -118,10 +118,10 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	}
 
 
-	public TaxonBase<?> getCurrentTaxon() {
+	public TaxonBase getCurrentTaxon() {
 		return currentTaxon;
 	}
-	public void setCurrentTaxon(TaxonBase<?> currentTaxon) {
+	public void setCurrentTaxon(TaxonBase currentTaxon) {
 		this.currentTaxon = currentTaxon;
 	}
 

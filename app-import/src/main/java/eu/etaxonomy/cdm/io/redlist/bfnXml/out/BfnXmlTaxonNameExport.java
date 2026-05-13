@@ -258,7 +258,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         }
     }
 
-    private void exportWissName(TaxonBase<?> taxon, Element parent) {
+    private void exportWissName(TaxonBase taxon, Element parent) {
         Element wissName = new Element(BfnXmlConstants.EL_WISSNAME);
         parent.addContent(wissName);
 
@@ -288,7 +288,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         addNanteil(wissName, BfnXmlConstants.BEREICH_WISSNAME, name.getTitleCache());
     }
 
-    private void exportEpithet(TaxonBase<?> taxon, Element wissName, INonViralName name, Rank rank) {
+    private void exportEpithet(TaxonBase taxon, Element wissName, INonViralName name, Rank rank) {
         //eindeutiger Code
         Set<IdentifiableSource> sources = taxon.getSources();
         for (IdentifiableSource identifiableSource : sources) {

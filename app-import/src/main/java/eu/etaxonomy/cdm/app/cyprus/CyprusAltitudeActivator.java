@@ -151,7 +151,7 @@ public class CyprusAltitudeActivator {
 
 
 	private Taxon getTaxon(CdmApplicationController app, UUID baseUuid, UUID acceptedUuid, UUID parentUuid, String acceptedName, int row) {
-		TaxonBase<?> base = app.getTaxonService().find(baseUuid);
+		TaxonBase base = app.getTaxonService().find(baseUuid);
 
 		Taxon result = null;
 		if (base.isInstanceOf(Taxon.class)){
@@ -163,7 +163,7 @@ public class CyprusAltitudeActivator {
 			}
 		}
 		if (result == null){
-			TaxonBase<?> accepted = app.getTaxonService().find(acceptedUuid);
+			TaxonBase accepted = app.getTaxonService().find(acceptedUuid);
 			Taxon t = CdmBase.deproxy(accepted, Taxon.class);;
 			if (t.getTaxonNodes().size() == 1 && t.getTaxonNodes().iterator().next().getClassification().getUuid().equals(classificationUuid)){
 				if (hasSynonym(t, base)){
@@ -188,7 +188,7 @@ public class CyprusAltitudeActivator {
 		return result;
 	}
 
-	private boolean hasSynonym(Taxon t, TaxonBase<?> base) {
+	private boolean hasSynonym(Taxon t, TaxonBase base) {
 		if (base.isInstanceOf(Synonym.class)){
 			for (Synonym syn : t.getSynonyms()){
 				if (syn.equals(base)){

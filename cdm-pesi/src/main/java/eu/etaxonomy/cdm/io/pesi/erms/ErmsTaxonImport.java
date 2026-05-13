@@ -244,7 +244,7 @@ public class ErmsTaxonImport
 	}
 
 	@Override
-	public TaxonBase<?> createObject(ResultSet rs, ErmsImportState state) throws SQLException {
+	public TaxonBase createObject(ResultSet rs, ErmsImportState state) throws SQLException {
 
 	    int statusId = rs.getInt("status_id");
 		Integer meId = rs.getInt("id");
@@ -257,7 +257,7 @@ public class ErmsTaxonImport
 		Reference citation = state.getTransactionalSourceReference();
 		addOriginalSource(rs, taxonName, "id", NAME_NAMESPACE, citation);
 
-		TaxonBase<?> result;
+		TaxonBase result;
 		//handle accepted<-> synonym, we create more accepted taxa as we need them within the tree or to attache factual data
 		if (state.getAcceptedTaxaKeys().contains(meId)){
 			Taxon taxon = Taxon.NewInstance(taxonName, citation);
@@ -385,8 +385,8 @@ public class ErmsTaxonImport
     }
 
     @SuppressWarnings("unused")  //used by MethodMapper
-    private static TaxonBase<?> appendedPhraseForMisapplications(ResultSet rs, ErmsImportState state) throws SQLException{
-        TaxonBase<?> taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
+    private static TaxonBase appendedPhraseForMisapplications(ResultSet rs, ErmsImportState state) throws SQLException{
+        TaxonBase taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
         TaxonName taxonName = taxon.getName();
         String unacceptreason = rs.getString("tu_unacceptreason");
         IRelationshipType[] rels = state.getTransformer().getSynonymRelationTypesByKey(unacceptreason, state);
@@ -413,8 +413,8 @@ public class ErmsTaxonImport
     }
 
     @SuppressWarnings("unused")  //used by MethodMapper
-    private static TaxonBase<?> testTitleCache(ResultSet rs, ErmsImportState state) throws SQLException{
-        TaxonBase<?> taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
+    private static TaxonBase testTitleCache(ResultSet rs, ErmsImportState state) throws SQLException{
+        TaxonBase taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
         TaxonName taxonName = taxon.getName();
         String displayName = rs.getString("tu_displayname");
         displayName = displayName == null ? null : displayName.trim();

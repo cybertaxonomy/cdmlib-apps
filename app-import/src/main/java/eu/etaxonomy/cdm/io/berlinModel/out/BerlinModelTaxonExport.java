@@ -121,7 +121,7 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 			mapping.initialize(state);
 
 			int count = 0;
-			for (TaxonBase<?> taxon : list){
+			for (TaxonBase taxon : list){
 				doCount(count++, modCount, pluralString);
 				success &= mapping.invoke(taxon);
 			}
@@ -168,12 +168,12 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static Integer getStatusFk(TaxonBase<?> taxon){
+	private static Integer getStatusFk(TaxonBase taxon){
 		return BerlinModelTransformer.taxonBase2statusFk(taxon);
 	}
 
 	@SuppressWarnings("unused")
-	private static String getDoubtfulFlag(TaxonBase<?> taxon){
+	private static String getDoubtfulFlag(TaxonBase taxon){
 		if (taxon.isDoubtful()){
 			return "d";
 		}else{

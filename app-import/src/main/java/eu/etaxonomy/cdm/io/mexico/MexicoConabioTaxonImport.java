@@ -72,7 +72,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
     }
 
     //dirty I know, but who cares, needed by distribution and commmon name import
-    protected static final Map<String, TaxonBase<?>> taxonIdMap = new HashMap<>();
+    protected static final Map<String, TaxonBase> taxonIdMap = new HashMap<>();
 
     private Classification classification;
 
@@ -131,7 +131,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         //status
         String statusStr = getValue(record, "EstatusNombre");
         String originalInfo = null;
-        TaxonBase<?> taxonBase;
+        TaxonBase taxonBase;
         if ("aceptado".equals(statusStr)){
             Reference sec = getSecRef(state, referenciaNombre, line);
             taxonBase = Taxon.NewInstance(name, sec);
@@ -438,7 +438,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
 
         Classification classification = getClassification(state);
         String idCat = getValue(record, "IdCAT");
-        TaxonBase<?> taxonBase = taxonIdMap.get(idCat);
+        TaxonBase taxonBase = taxonIdMap.get(idCat);
         Taxon parent;
         if(statusStr == null){
             logger.warn("No statusStr in line " +line);
@@ -486,7 +486,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
     }
 
-    private Taxon getAccepted(TaxonBase<?> taxonBase) {
+    private Taxon getAccepted(TaxonBase taxonBase) {
         if (taxonBase.isInstanceOf(Taxon.class)){
             return CdmBase.deproxy(taxonBase, Taxon.class);
         }else{

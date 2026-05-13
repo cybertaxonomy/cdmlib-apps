@@ -136,7 +136,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 					Reference sourceRef = state.getTransactionalSourceReference();
 
 					Taxon acceptedTaxon =  taxonMap.get(String.valueOf(acceptedTaxonId));
-					TaxonBase<?> thisTaxon = null;
+					TaxonBase thisTaxon = null;
 
 					IZoologicalName name = null;
 					if (isBlank(specSystaxRank) ){

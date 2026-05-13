@@ -141,7 +141,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
         Set<TaxonBase> taxaToSave = new HashSet<>();
 
 		@SuppressWarnings("unchecked")
-        Map<String, TaxonBase<?>> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
+        Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 
@@ -390,10 +390,10 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	 * @param taxonMap
 	 * @return
 	 */
-	private TaxonDescription getTaxonDescription(int newTaxonId, int oldTaxonId, TaxonDescription oldDescription, Map<String, TaxonBase<?>> taxonMap, int occurrenceId, Reference sourceSec){
+	private TaxonDescription getTaxonDescription(int newTaxonId, int oldTaxonId, TaxonDescription oldDescription, Map<String, TaxonBase> taxonMap, int occurrenceId, Reference sourceSec){
 		TaxonDescription result = null;
 		if (oldDescription == null || newTaxonId != oldTaxonId){
-			TaxonBase<?> taxonBase = taxonMap.get(String.valueOf(newTaxonId));
+			TaxonBase taxonBase = taxonMap.get(String.valueOf(newTaxonId));
 			//TODO for testing
 			//TaxonBase taxonBase = Taxon.NewInstance(TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES()), null);
 			Taxon taxon;

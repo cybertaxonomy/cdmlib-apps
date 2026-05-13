@@ -320,7 +320,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 					String notes = CdmUtils.Nz(rs.getString("notes"));
 					Boolean doubtfulFlag = rs.getBoolean("DoubtfulFlag");
 
-					TaxonBase<?> taxonBase = getTaxon(taxonMap, taxonId, taxonId);
+					TaxonBase taxonBase = getTaxon(taxonMap, taxonId, taxonId);
 					Feature feature = getFeature(featureMap, categoryFkInt) ;
 
 					if (taxonBase == null){
@@ -1091,7 +1091,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         mediaRepresentation.addRepresentationPart(image);
     }
 
-	private TaxonBase<?> getTaxon(@SuppressWarnings("rawtypes") Map<String, TaxonBase> taxonMap, Integer taxonIdObj, Number taxonId){
+	private TaxonBase getTaxon(@SuppressWarnings("rawtypes") Map<String, TaxonBase> taxonMap, Integer taxonIdObj, Number taxonId){
 		if (taxonIdObj != null){
 			return taxonMap.get(String.valueOf(taxonId));
 		}else{

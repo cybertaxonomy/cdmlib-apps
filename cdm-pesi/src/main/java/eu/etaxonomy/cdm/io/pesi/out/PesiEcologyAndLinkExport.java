@@ -123,7 +123,7 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
                 logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
             }
 
-			for (TaxonBase<?> taxon : taxonList) {
+			for (TaxonBase taxon : taxonList) {
 				doCount(count++, modCount, pluralString);
 				state.setCurrentTaxon(taxon);
 				if (!taxon.getMarkers().isEmpty()){
@@ -157,7 +157,7 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
 		return success;
 	}
 
-	private boolean handleSingleEcologyTaxon(TaxonBase<?> taxon, PesiExportMapping mapping) {
+	private boolean handleSingleEcologyTaxon(TaxonBase taxon, PesiExportMapping mapping) {
 
 	    boolean success = true;
 	    String ecologyStr = getEcologyString(taxon);
@@ -168,7 +168,7 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
 		return success;
 	}
 
-    private static String getEcologyString(TaxonBase<?> taxon) {
+    private static String getEcologyString(TaxonBase taxon) {
         String ecologyStr = null;
 	    ecologyStr = CdmUtils.concat(", ", ecologyStr, createEcologyStr(taxon, "marine", ErmsTransformer.uuidMarkerMarine));
 	    ecologyStr = CdmUtils.concat(", ", ecologyStr, createEcologyStr(taxon, "brackish", ErmsTransformer.uuidMarkerBrackish));
@@ -177,7 +177,7 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
         return ecologyStr;
     }
 
-    private static String createEcologyStr(TaxonBase<?> taxon, String strEcology, UUID markerUuid) {
+    private static String createEcologyStr(TaxonBase taxon, String strEcology, UUID markerUuid) {
         Set<Marker> markers = taxon.getMarkers(markerUuid);
         long count = markers.stream().map(m->m.getFlag()).distinct().count();
         if (count == 0) {
@@ -197,7 +197,7 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
         }
     }
 
-    private boolean handleSingleLinkTaxon(TaxonBase<?> taxon, PesiExportMapping mapping) {
+    private boolean handleSingleLinkTaxon(TaxonBase taxon, PesiExportMapping mapping) {
 
         boolean success = true;
         Set<Extension> urlExtensions = taxon.getFilteredExtensions(ErmsTransformer.uuidExtErmsLink);
@@ -215,7 +215,7 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
 	}
 
     @SuppressWarnings("unused")  //used by mapper
-    private static Integer getTaxonFk(TaxonBase<?> taxonBase, PesiExportState state) {
+    private static Integer getTaxonFk(TaxonBase taxonBase, PesiExportState state) {
         return state.getDbId(taxonBase);
     }
 
@@ -225,7 +225,7 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
     }
 
     @SuppressWarnings("unused")  //used by mapper
-    private static String getNote_1(TaxonBase<?> taxon) {
+    private static String getNote_1(TaxonBase taxon) {
         return getEcologyString(taxon);
     }
 

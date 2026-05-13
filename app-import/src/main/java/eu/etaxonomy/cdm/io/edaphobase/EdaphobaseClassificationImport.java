@@ -112,12 +112,12 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
         Integer parentTaxonFk = nullSafeInt(rs, "parent_taxon_fk");
 
         if (parentTaxonFk != null){
-            TaxonBase<?> parent = state.getRelatedObject(TAXON_NAMESPACE, parentTaxonFk.toString(), TaxonBase.class);
+            TaxonBase parent = state.getRelatedObject(TAXON_NAMESPACE, parentTaxonFk.toString(), TaxonBase.class);
             if (parent == null){
                 logger.warn("Parent taxon " + parentTaxonFk + " not found for taxon " + id );
             }else{
 
-                TaxonBase<?> child = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(id), TaxonBase.class);
+                TaxonBase child = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(id), TaxonBase.class);
 
                 if (isValid){
                     if (parent.isInstanceOf(Synonym.class)){

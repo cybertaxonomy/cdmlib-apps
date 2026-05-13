@@ -179,7 +179,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 			if (logger.isDebugEnabled()) {
 				logger.debug("multiple taxa with this name found: " + taxonName);
 			}
-			for (TaxonBase<?> taxonBase : taxa) {
+			for (TaxonBase taxonBase : taxa) {
 				Taxon tax = (Taxon)taxonBase;
 				if (tree.isTaxonInTree(tax)) {
 					taxon = tax;

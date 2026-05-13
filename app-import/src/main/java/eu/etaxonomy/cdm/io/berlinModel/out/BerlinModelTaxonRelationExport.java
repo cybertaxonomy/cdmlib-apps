@@ -159,7 +159,7 @@ public class BerlinModelTaxonRelationExport extends BerlinModelExportBase<Relati
 	}
 
 	private static Integer getObjectFk(RelationshipBase<?, ?, ?> rel, DbExportStateBase<?, IExportTransformer> state, boolean isName, boolean isFrom){
-		TaxonBase<?> taxon = null;
+		TaxonBase taxon = null;
 		if (rel.isInstanceOf(TaxonRelationship.class)){
 			TaxonRelationship tr = (TaxonRelationship)rel;
 			taxon = (isFrom) ? tr.getFromTaxon():  tr.getToTaxon();

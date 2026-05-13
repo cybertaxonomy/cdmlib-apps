@@ -170,7 +170,7 @@ public class UseImport {
 			}
 
 			List<TaxonBase> taxa = service.findTaxaByID(lstTaxonIDs);
-			for(TaxonBase<?> idTaxa : taxa) {
+			for(TaxonBase idTaxa : taxa) {
 				//System.out.println(idTaxa.getUuid().toString());
 				System.out.println(idTaxa.getName());
 			}
@@ -195,7 +195,7 @@ public class UseImport {
 				citation.setDatePublished(year);
 				citation.setTitleCache(lstUpdate.get(6), true);
 				//citation.
-				for(TaxonBase<?> taxon : taxa) {
+				for(TaxonBase taxon : taxa) {
 					String taxonUUID = taxon.getUuid().toString();
 					//System.out.println(idTaxonToUpdate + "|" + taxonUUID);
 					if(idTaxonToUpdate.equals(taxonUUID)) {
@@ -288,7 +288,7 @@ public class UseImport {
 			for (ArrayList<String> lstUseSummary : lstUseSummaries) {
 				i++;
 				String idTaxonToUpdate = lstUseSummary.get(3);
-				TaxonBase<?> taxon = taxonService.find(UUID.fromString(idTaxonToUpdate));
+				TaxonBase taxon = taxonService.find(UUID.fromString(idTaxonToUpdate));
 				if (taxon != null) {
 					TaxonDescription newUseDescription = TaxonDescription.NewInstance();
 					Marker useMarker = Marker.NewInstance(useMarkerType, true);

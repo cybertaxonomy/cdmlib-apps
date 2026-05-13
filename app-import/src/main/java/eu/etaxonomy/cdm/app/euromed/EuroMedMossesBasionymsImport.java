@@ -163,7 +163,7 @@ public class EuroMedMossesBasionymsImport {
                     if (basionymName.getTaxonBases().size() > 0) {
                         logger.warn(lineStr + "Basionym is already a synonym: " + basionymName.getTitleCache());
                     }
-                    TaxonBase<?> taxonBase = taxonBases.iterator().next();
+                    TaxonBase taxonBase = taxonBases.iterator().next();
                     Synonym newSynonym;
                     if (taxonBase.isInstanceOf(Taxon.class)) {
                         Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);

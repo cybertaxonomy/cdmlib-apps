@@ -104,7 +104,7 @@ public class FloraHellenicaImageCaptionImport<CONFIG extends FloraHellenicaImpor
             matchConfig.setTaxonNameTitle(name);
             matchConfig.setIncludeSynonyms(false);
             List<TaxonBase> taxa = getTaxonService().findTaxaByName(matchConfig);
-            TaxonBase<?> taxonBase;
+            TaxonBase taxonBase;
             if (taxa.isEmpty()){
                 logger.warn(line + "Taxon not found for name: " + name);
                 return null;

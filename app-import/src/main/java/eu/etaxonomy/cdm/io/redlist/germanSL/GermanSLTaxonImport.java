@@ -82,7 +82,7 @@ public class GermanSLTaxonImport
     }
 
     //dirty I know, but who cares, needed by distribution and common name import
-    protected static final Map<String, TaxonBase<?>> taxonIdMap = new HashMap<>();
+    protected static final Map<String, TaxonBase> taxonIdMap = new HashMap<>();
 
 
     private  static List<String> expectedKeys= Arrays.asList(new String[]{
@@ -114,7 +114,7 @@ public class GermanSLTaxonImport
 
         //status
         String statusStr = getValue(record, SYNONYM);
-        TaxonBase<?> taxonBase;
+        TaxonBase taxonBase;
         if (isAccepted(statusStr, nameResult)){
             taxonBase = Taxon.NewInstance(taxonName, sec);
 //            if (nameResult.proParte){
@@ -365,7 +365,7 @@ public class GermanSLTaxonImport
      * @param commmonNameStr
      * @param taxonBase
      */
-    private void makeCommonName(String commmonNameStr, TaxonBase<?> taxonBase, String line) {
+    private void makeCommonName(String commmonNameStr, TaxonBase taxonBase, String line) {
         if (taxonBase.isInstanceOf(Synonym.class)){
             //synonym common names should be neglected
             return;
@@ -387,7 +387,7 @@ public class GermanSLTaxonImport
      * @param next
      * @return
      */
-    private Taxon getAccepted(TaxonBase<?> taxonBase) {
+    private Taxon getAccepted(TaxonBase taxonBase) {
         if (taxonBase.isInstanceOf(Taxon.class)){
             return CdmBase.deproxy(taxonBase, Taxon.class);
         }else{

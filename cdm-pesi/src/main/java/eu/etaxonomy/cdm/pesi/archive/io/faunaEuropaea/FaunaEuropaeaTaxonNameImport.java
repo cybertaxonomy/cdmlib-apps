@@ -360,7 +360,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				Extension.NewInstance(zooName, fauComment, getExtensionType(PesiTransformer.uuidExtFauComment, "FauComment", "FauComment", "FC"));
 				Extension.NewInstance(zooName, fauExtraCodes, getExtensionType(PesiTransformer.uuidExtFauExtraCodes, "FauExtraCodes", "FauExtraCodes", "FEC"));
 				*/
-				TaxonBase<?> taxonBase;
+				TaxonBase taxonBase;
 
 				Synonym synonym = null;
 				Taxon taxon;
@@ -517,7 +517,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		{
 			if (logger.isDebugEnabled()) { logger.debug("Taxon # " + id); }
 
-			TaxonBase<?> taxonBase = taxonMap.get(id);
+			TaxonBase taxonBase = taxonMap.get(id);
 			TaxonName taxonName = CdmBase.deproxy(taxonBase.getName());
 			FaunaEuropaeaTaxon fauEuTaxon = fauEuTaxonMap.get(id);
 			boolean useOriginalGenus = false;
@@ -560,7 +560,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 	}
 
 
-	private void createBasionym(FaunaEuropaeaTaxon fauEuTaxon, TaxonBase<?> taxonBase,
+	private void createBasionym(FaunaEuropaeaTaxon fauEuTaxon, TaxonBase taxonBase,
 	        TaxonName taxonName, FaunaEuropaeaImportConfigurator fauEuConfig,
 			Set<Synonym> synonymSet, FaunaEuropaeaImportState state) {
 
@@ -980,7 +980,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 	/** Sets name parts and caches */
 	private String setCompleteTaxonName(String concatString, boolean useOriginalGenus,
 			String genusOrUninomial, String infraGenericEpithet, String specificEpithet, String infraSpecificEpithet,
-			FaunaEuropaeaTaxon fauEuTaxon, TaxonBase<?> taxonBase, FaunaEuropaeaImportConfigurator fauEuConfig) {
+			FaunaEuropaeaTaxon fauEuTaxon, TaxonBase taxonBase, FaunaEuropaeaImportConfigurator fauEuConfig) {
 
 		boolean success = true;
 

@@ -230,7 +230,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 
 			logger.debug("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 
-			for (TaxonBase<?> taxon : list) {
+			for (TaxonBase taxon : list) {
 				doCount(count++, modCount, pluralString);
 				TaxonName taxonName = taxon.getName();
 
@@ -295,7 +295,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		return success;
 	}
 
-	private void validatePhaseOne(TaxonBase<?> taxon, TaxonName taxonName) {
+	private void validatePhaseOne(TaxonBase taxon, TaxonName taxonName) {
 
 	    // Check whether some rules are violated
 		String genusOrUninomial = taxonName.getGenusOrUninomial();
@@ -468,7 +468,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 			if (logger.isDebugEnabled()) {
                 logger.debug("Fetched " + list.size() + " " + pluralString + ". Exporting...");
             }
-			for (TaxonBase<?> taxon : list) {
+			for (TaxonBase taxon : list) {
 				TaxonName taxonName = CdmBase.deproxy(taxon.getName());
 				// Determine expertFk
 				Integer expertFk = getExpertGUID(taxon, state);
@@ -609,7 +609,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @param ancestorRank The ancestor rank.
 	 * @return Whether a parent at a specific level has a specific Rank.
 	 */
-	private boolean validateAncestorOfSpecificRank(TaxonBase<?> taxonBase, int level, Rank ancestorRank) {
+	private boolean validateAncestorOfSpecificRank(TaxonBase taxonBase, int level, Rank ancestorRank) {
 		boolean result = false;
 		TaxonNode parentNode = null;
 		if (taxonBase.isInstanceOf(Taxon.class)){
@@ -808,7 +808,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	//used by mapper
-	protected static String getAuthorString(TaxonBase<?> taxon) {
+	protected static String getAuthorString(TaxonBase taxon) {
 		try {
 		    // For misapplied names there are special rules
             if (isMisappliedName(taxon)){
@@ -841,7 +841,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		}
 	}
 
-	private static String getMisappliedNameAuthorship(TaxonBase<?> taxon){
+	private static String getMisappliedNameAuthorship(TaxonBase taxon){
         String result;
 	    String relAppendedPhrase = taxon.getAppendedPhrase();
         Reference sec = taxon.getSec();
@@ -869,7 +869,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
      * @see MethodMapper
      */
     //used by Mapper
-    private static String getDisplayName(TaxonBase<?> taxon) {
+    private static String getDisplayName(TaxonBase taxon) {
         boolean isMisapplied = isMisappliedName(taxon);
         TaxonName taxonName = taxon.getName();
         String result = getDisplayName(taxonName, isMisapplied);
@@ -935,7 +935,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	*/
 	@SuppressWarnings("unused")
-	private static String getWebShowName(TaxonBase<?> taxon) {
+	private static String getWebShowName(TaxonBase taxon) {
 	    if (isMisappliedName(taxon)){
 	        //for misapplications the webshowname is the same as the displayname as they do not show the nom.ref. in displayname
 	        return getDisplayName(taxon);
@@ -1003,7 +1003,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	}
 
     @SuppressWarnings("unused")     //used by mapper
-    private static String getFullName(TaxonBase<?> taxon) {
+    private static String getFullName(TaxonBase taxon) {
         if (isMisappliedName(taxon)){
             String result = getCacheStrategy(taxon.getName()).getNameCache(taxon.getName());
             result = result + " " + getMisappliedNameAuthorship(taxon);
@@ -1172,7 +1172,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @return The <code>TaxonStatusFk</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static Integer getTaxonStatusFk(TaxonBase<?> taxon, PesiExportState state) {
+	private static Integer getTaxonStatusFk(TaxonBase taxon, PesiExportState state) {
 		try {
 			return PesiTransformer.taxonBase2statusFk(taxon);
 		} catch (Exception e) {
@@ -1190,7 +1190,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getTaxonStatusCache(TaxonBase<?> taxon, PesiExportState state) throws UndefinedTransformerMethodException {
+	private static String getTaxonStatusCache(TaxonBase taxon, PesiExportState state) throws UndefinedTransformerMethodException {
 		return state.getTransformer().getTaxonStatusCacheByKey(getTaxonStatusFk(taxon, state));
 	}
 
@@ -1396,7 +1396,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
      * @see MethodMapper
      */
     @SuppressWarnings("unused")  //used by methodmapper
-    private static Integer getSourceFk(TaxonBase<?> taxonBase, PesiExportState state) {
+    private static Integer getSourceFk(TaxonBase taxonBase, PesiExportState state) {
         if (taxonBase.getSec() != null){
             return state.getDbId(taxonBase.getSec());
         }else{
@@ -1547,7 +1547,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @return The <code>GUID</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static String getGUID(TaxonBase<?> taxon) {
+	private static String getGUID(TaxonBase taxon) {
 
 	    List<PesiSource> sourceTypes = getSourceTypes(taxon);
         if (sourceTypes.size() < 1) {
@@ -1564,7 +1564,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
      * @return The <code>GUID2</code> attribute value.
      * @see MethodMapper
      */
-    private static String getGUID2(TaxonBase<?> taxon) {
+    private static String getGUID2(TaxonBase taxon) {
 
         List<PesiSource> sourceTypes = getSourceTypes(taxon);
         if (sourceTypes.size() < 2) {
@@ -1575,7 +1575,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         return getGuidForSourceType(taxon, secondSourceType);
     }
 
-    private static String getGuidForSourceType(TaxonBase<?> taxon, PesiSource sourceType) {
+    private static String getGuidForSourceType(TaxonBase taxon, PesiSource sourceType) {
         //TODO use switch
         if (sourceType == PesiSource.EM) {
             return taxon.getUuid().toString();
@@ -1589,7 +1589,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         return null;
     }
 
-    private static String getIndexFungorumGuid(TaxonBase<?> taxon) {
+    private static String getIndexFungorumGuid(TaxonBase taxon) {
         if (taxon.getLsid() != null && "indexfungorum.org".equals(taxon.getLsid().getAuthority())){
             return taxon.getLsid().getLsid();
         }else {
@@ -1603,7 +1603,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         }
     }
 
-    private static String getFauEuGuid(TaxonBase<?> taxon) {
+    private static String getFauEuGuid(TaxonBase taxon) {
         if (taxon.getLsid() != null && "faunaeur.org".equals(taxon.getLsid().getAuthority())){
             return taxon.getLsid().getLsid();
         }else {
@@ -1626,7 +1626,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         }
     }
 
-    private static String getErmsGuid(TaxonBase<?> taxon) {
+    private static String getErmsGuid(TaxonBase taxon) {
         if (taxon.getLsid() != null && "marinespecies.org".equals(taxon.getLsid().getAuthority())){
             return taxon.getLsid().getLsid();
         }else {
@@ -1641,7 +1641,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
     }
 
     @SuppressWarnings("unused")
-	private static String getWfoId(TaxonBase<?> taxon) {
+	private static String getWfoId(TaxonBase taxon) {
         Identifier wfoId = taxon.getName().getIdentifier(IdentifierType.uuidWfoNameIdentifier);
         if (wfoId != null && wfoId.getIdentifier() != null) {
             return wfoId.getIdentifier();
@@ -1659,7 +1659,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
     }
 
     @SuppressWarnings("unused")
-    private static String getBacklink(TaxonBase<?> taxon, PesiExportState state) {
+    private static String getBacklink(TaxonBase taxon, PesiExportState state) {
         List<PesiSource> sourceTypes = getSourceTypes(taxon);
         if (sourceTypes.size() < 1) {
             return null;
@@ -1670,7 +1670,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
     }
 
     @SuppressWarnings("unused")
-    private static String getBacklink2(TaxonBase<?> taxon, PesiExportState state) {
+    private static String getBacklink2(TaxonBase taxon, PesiExportState state) {
         List<PesiSource> sourceTypes = getSourceTypes(taxon);
         if (sourceTypes.size() < 2) {
             return null;
@@ -1680,7 +1680,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         return getBacklinkForSourceType(state, taxon, firstSourceType);
     }
 
-    private static String getBacklinkForSourceType(PesiExportState state, TaxonBase<?> taxon, PesiSource sourceType) {
+    private static String getBacklinkForSourceType(PesiExportState state, TaxonBase taxon, PesiSource sourceType) {
 
         switch (sourceType) {
         case EM:
@@ -1696,17 +1696,17 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         }
      }
 
-    private static String getBacklinkEuroMed(PesiExportState state, TaxonBase<?> taxonBase) {
+    private static String getBacklinkEuroMed(PesiExportState state, TaxonBase taxonBase) {
         String baseUrl = state.getConfig().getEuromedBaseUrl();
         return getBacklinkCdm(taxonBase, baseUrl);
     }
 
-    private static String getBacklinkFauEu(PesiExportState state, TaxonBase<?> taxonBase) {
+    private static String getBacklinkFauEu(PesiExportState state, TaxonBase taxonBase) {
         String baseUrl = state.getConfig().getFauEuBaseUrl();
         return getBacklinkCdm(taxonBase, baseUrl);
     }
 
-    private static String getBacklinkCdm(TaxonBase<?> taxonBase, String baseUrl) {
+    private static String getBacklinkCdm(TaxonBase taxonBase, String baseUrl) {
         if (taxonBase.isInstanceOf(Taxon.class)) {
             if (isMisappliedName(taxonBase)) {
                 Taxon acceptedTaxon = getAcceptedTaxonForMisappliedName(taxonBase);
@@ -1728,7 +1728,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
     }
 
 
-    private static String getBacklinkIndexFungorum(PesiExportState state, TaxonBase<?> taxon) {
+    private static String getBacklinkIndexFungorum(PesiExportState state, TaxonBase taxon) {
         String baseUrl = state.getConfig().getIndexFungorumBaseUrl();
                 IdentifiableSource ifSource = getPesiSourceForSourceType(taxon, PesiSource.IF);
         if (ifSource == null) {
@@ -1740,7 +1740,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         }
     }
 
-    private static String getBacklinkErms(PesiExportState state, TaxonBase<?> taxon) {
+    private static String getBacklinkErms(PesiExportState state, TaxonBase taxon) {
         String baseUrl = state.getConfig().getErmsBaseUrl();
         IdentifiableSource ermsSource = getPesiSourceForSourceType(taxon, PesiSource.ERMS);
         if (ermsSource == null) {
@@ -1753,7 +1753,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
     }
 
     @SuppressWarnings("unused")
-    private static String getFauEuUUID(TaxonBase<?> taxon) {
+    private static String getFauEuUUID(TaxonBase taxon) {
 
         List<PesiSource> sourceTypes = getSourceTypes(taxon);
         if(sourceTypes.contains(PesiSource.FE)) {
@@ -1796,7 +1796,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
      * @see MethodMapper
      */
 	@SuppressWarnings("unused")
-	private static String getNameGUID(TaxonBase<?> taxon) {
+	private static String getNameGUID(TaxonBase taxon) {
         if (taxon.getLsid() != null || taxon.hasMarker(PesiTransformer.uuidMarkerGuidIsMissing, true)){
             return null;
         }else{
@@ -1811,7 +1811,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getDerivedFromGuid(TaxonBase<?> taxon) {
+	private static String getDerivedFromGuid(TaxonBase taxon) {
 		String result = null;
 		try {
     		// The same as GUID for now
@@ -1829,7 +1829,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
      * @see MethodMapper
      */
     @SuppressWarnings("unused")
-    private static String getDerivedFromGuid2(TaxonBase<?> taxon) {
+    private static String getDerivedFromGuid2(TaxonBase taxon) {
         String result = null;
         try {
             // The same as GUID2 for now
@@ -1847,7 +1847,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getCacheCitation(TaxonBase<?> taxonBase, PesiExportState state) {
+	private static String getCacheCitation(TaxonBase taxonBase, PesiExportState state) {
 		// !!! See also doPhaseUpdates
 
 		TaxonName taxonName = taxonBase.getName();
@@ -1874,7 +1874,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		}
 	}
 
-    private static String getCacheCitationForSourceType(TaxonBase<?> taxonBase, PesiExportState state,
+    private static String getCacheCitationForSourceType(TaxonBase taxonBase, PesiExportState state,
             TaxonName taxonName, PesiSource sourceType) {
 
         //TODO why does ERMS use accessed through eu-nomen, while E+M uses accessed through E+M
@@ -1976,11 +1976,11 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	//@SuppressWarnings("unused")  //for some reason it is also called by getCacheCitation
-	private static String getExpertName(TaxonBase<?> taxon) {
+	private static String getExpertName(TaxonBase taxon) {
 	    return getExpertNameForExpertType(taxon, PesiTransformer.uuidExtExpertName);
 	}
 
-	private static String getExpertNameForExpertType(TaxonBase<?> taxon, UUID exensionType) {
+	private static String getExpertNameForExpertType(TaxonBase taxon, UUID exensionType) {
 	    try {
 		    List<String> result = new ArrayList<>();
 
@@ -2021,7 +2021,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 		}
 	}
 
-    private static void addExpertExtension(TaxonBase<?> taxon, UUID exensionType, List<String> result) {
+    private static void addExpertExtension(TaxonBase taxon, UUID exensionType, List<String> result) {
         Set<String> expertNamesExtensions = taxon.getExtensions(exensionType);
         expertNamesExtensions.stream()
                 .filter(e->isNotBlank(e))
@@ -2033,7 +2033,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see #getSpeciesExpertGUID(TaxonBase, PesiExportState)
 	 * @see #getExpertName(TaxonBase)
 	 */
-	private static Integer getExpertGUID(TaxonBase<?> taxon, PesiExportState state) {
+	private static Integer getExpertGUID(TaxonBase taxon, PesiExportState state) {
 	    //TODO implement expertGUID, but not clear which GUID to use
 	    //     In SQL a separate DB/Excel file was used (pesiimport3.TempPesiExperts)
 	    //     Data only available for FauEu. Links to http://editexpertnet.org/ which
@@ -2054,7 +2054,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getSpeciesExpertName(TaxonBase<?> taxon) {
+	private static String getSpeciesExpertName(TaxonBase taxon) {
 	    return getExpertNameForExpertType(taxon, PesiTransformer.uuidExtSpeciesExpertName);
 
 	}
@@ -2084,7 +2084,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
 	 * @see #getExpertGUID(TaxonBase, PesiExportState)
      * @see #getSpeciesExpertName(TaxonBase)
 	 */
-	private static Integer getSpeciesExpertGUID(TaxonBase<?> taxon, PesiExportState state) {
+	private static Integer getSpeciesExpertGUID(TaxonBase taxon, PesiExportState state) {
         //TODO implement SpeciesExpertGUID, but not clear which GUID to use
 	    //     See comments in getExpertGUID
         return null;

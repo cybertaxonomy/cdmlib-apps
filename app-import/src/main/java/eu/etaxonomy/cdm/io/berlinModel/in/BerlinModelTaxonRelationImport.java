@@ -280,8 +280,8 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 					String notes = rs.getString("notes");
 					boolean isConceptRelationship = rs.getBoolean("is_concept_relation");
 
-					TaxonBase<?> taxon1 = taxonMap.get(String.valueOf(taxon1Id));
-					TaxonBase<?> taxon2 = taxonMap.get(String.valueOf(taxon2Id));
+					TaxonBase taxon1 = taxonMap.get(String.valueOf(taxon1Id));
+					TaxonBase taxon2 = taxonMap.get(String.valueOf(taxon2Id));
 
 					String refFk = String.valueOf(relRefFk);
 					Reference citation = refMap.get(refFk);
@@ -615,7 +615,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 				Integer classificationRefFk = rs.getInt("secRefFk");
 				String taxonId = rs.getString("RIdentifier");
 				Classification classification = getClassification(state, classificationMap, classificationRefFk);
-				TaxonBase<?> taxon = taxonMap.get(taxonId);
+				TaxonBase taxon = taxonMap.get(taxonId);
 				if (taxon == null){
 					String message = "TaxonBase for taxon id (%s) not found in taxonMap";
 					logger.warn(String.format(message, taxonId, taxonId));

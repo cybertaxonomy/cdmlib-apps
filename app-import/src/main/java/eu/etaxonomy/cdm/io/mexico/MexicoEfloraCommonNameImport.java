@@ -121,7 +121,7 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
         Set<TaxonBase> taxaToSave = new HashSet<>();
 
 	    @SuppressWarnings("unchecked")
-        Map<String, TaxonBase<?>> taxonMap = partitioner.getObjectMap(MexicoEfloraTaxonImport.NAMESPACE);
+        Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(MexicoEfloraTaxonImport.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try{
@@ -143,7 +143,7 @@ public class MexicoEfloraCommonNameImport extends MexicoEfloraImportBase {
 			    int idRegion = rs.getInt("IdRegion");
 
 			    try {
-    				TaxonBase<?> taxonBase = taxonMap.get(taxonUuid);
+    				TaxonBase taxonBase = taxonMap.get(taxonUuid);
     				Taxon taxon;
     				if (taxonBase.isInstanceOf(Taxon.class)) {
     				    taxon = CdmBase.deproxy(taxonBase, Taxon.class);

@@ -123,7 +123,7 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
                 logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
             }
 
-			for (TaxonBase<?> taxon : taxonList) {
+			for (TaxonBase taxon : taxonList) {
 				countTaxa++;
 				doCount(count++, modCount, parentPluralString);
 				state.setCurrentTaxon(taxon);
@@ -154,7 +154,7 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 		return success;
 	}
 
-	private boolean handleSingleTaxon(TaxonBase<?> taxon, PesiExportMapping mapping) {
+	private boolean handleSingleTaxon(TaxonBase taxon, PesiExportMapping mapping) {
 
 	    boolean success = true;
 
@@ -200,7 +200,7 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")  //used by mapper
 	private static Integer getTaxonFk(IdentifiableSource source, PesiExportState state) {
-		TaxonBase<?> entity = state.getCurrentTaxon();
+		TaxonBase entity = state.getCurrentTaxon();
 		return state.getDbId(entity);
 	}
 

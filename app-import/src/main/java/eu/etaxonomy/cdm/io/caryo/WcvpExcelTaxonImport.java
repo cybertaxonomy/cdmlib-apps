@@ -165,7 +165,7 @@ public class WcvpExcelTaxonImport<CONFIG extends WcvpExcelTaxonImportConfigurato
         }
 
         //taxon
-        TaxonBase<?> taxonBase = makeTaxonBase(state, line, record, name, sec, isNewName);
+        TaxonBase taxonBase = makeTaxonBase(state, line, record, name, sec, isNewName);
 
         if (taxonBase != null){
             Set<CdmBase> transientEntities = NonViralNameParserImpl.getTransientEntitiesOfParsedName(taxonBase.getName());
@@ -565,15 +565,15 @@ public class WcvpExcelTaxonImport<CONFIG extends WcvpExcelTaxonImportConfigurato
     }
 
 
-    private TaxonBase<?> makeTaxonBase(SimpleExcelTaxonImportState<CONFIG> state, String line,
+    private TaxonBase makeTaxonBase(SimpleExcelTaxonImportState<CONFIG> state, String line,
             Map<String, String> record, TaxonName taxonName, Reference sec, boolean isNewName) {
 
-        TaxonBase<?> taxonBase;
+        TaxonBase taxonBase;
         boolean isUnplaced = false;
         String taxStatusStr = getValue(record, Kew_Taxonomic_Status);
 
 
-        TaxonBase<?> existingTaxon = null;
+        TaxonBase existingTaxon = null;
         if (!isNewName && !taxonName.getTaxa().isEmpty()) {
             if (taxonName.getTaxa().size() > 1) {
                 System.out.println("  " + line + "Existing name is used in more than 1 taxon/synonym: " + taxonName.getTitleCache());
@@ -639,7 +639,7 @@ public class WcvpExcelTaxonImport<CONFIG extends WcvpExcelTaxonImportConfigurato
         }
 
         Classification classification = getClassification(state);
-        TaxonBase<?> taxonBase = getTaxon(record);
+        TaxonBase taxonBase = getTaxon(record);
         TaxonName taxonName = taxonBase.getName();
 
         if (taxonBase.isInstanceOf(Taxon.class)){
@@ -707,7 +707,7 @@ public class WcvpExcelTaxonImport<CONFIG extends WcvpExcelTaxonImportConfigurato
                 || "Illegitimate".equals(statusStr) || "Orthographic".equals(statusStr)){
             String accKewId = getValue(record, Kew_Rel_Acc_Name_ID);
             UUID accUuid = taxonMap.get(accKewId);
-            TaxonBase<?> accBase = getTaxonService().find(accUuid);
+            TaxonBase accBase = getTaxonService().find(accUuid);
             if (accBase == null){
                 logger.warn(kewId + "Accepted Taxon does not exist: " + accKewId + line);
                 return null;
@@ -743,7 +743,7 @@ public class WcvpExcelTaxonImport<CONFIG extends WcvpExcelTaxonImportConfigurato
             String higherName = getHigherRankName(taxonName);
             UUID parentTaxonUuid = higherName == null ? null : taxonMap.get(higherName);
             if (parentTaxonUuid != null){
-                TaxonBase<?> parentBase = getTaxonService().find(parentTaxonUuid);
+                TaxonBase parentBase = getTaxonService().find(parentTaxonUuid);
                 if (parentBase == null){
                     return null;
                 } else if (parentBase.isInstanceOf(Taxon.class)){
@@ -810,12 +810,12 @@ public class WcvpExcelTaxonImport<CONFIG extends WcvpExcelTaxonImportConfigurato
         return null;
     }
 
-    private void adjustSynonymType(TaxonBase<?> taxonBase, TaxonBase<?> homotypicTaxon, String line) {
+    private void adjustSynonymType(TaxonBase taxonBase, TaxonBase homotypicTaxon, String line) {
         adjustSynonymTypeOrdered(taxonBase, homotypicTaxon, line);
         adjustSynonymTypeOrdered(homotypicTaxon, taxonBase, line);
     }
 
-    private void adjustSynonymTypeOrdered(TaxonBase<?> firstTaxon, TaxonBase<?> secondTaxon, String line) {
+    private void adjustSynonymTypeOrdered(TaxonBase firstTaxon, TaxonBase secondTaxon, String line) {
         if (firstTaxon == null){
             logger.warn(line + "first taxon is null for adjust synonym type");
         }else if (secondTaxon == null){
@@ -828,10 +828,10 @@ public class WcvpExcelTaxonImport<CONFIG extends WcvpExcelTaxonImportConfigurato
         }
     }
 
-    protected TaxonBase<?> getTaxon(Map<String, String> record) {
+    protected TaxonBase getTaxon(Map<String, String> record) {
         String kew_name_id = getValue(record, Kew_Name_ID);
         UUID taxonUuid = taxonMap.get(kew_name_id);
-        TaxonBase<?> taxon = getTaxonService().find(taxonUuid);
+        TaxonBase taxon = getTaxonService().find(taxonUuid);
         return taxon;
     }
 

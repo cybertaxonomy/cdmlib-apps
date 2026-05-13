@@ -85,7 +85,7 @@ public class RedListGefaesspflanzenTaxonExcelImport<CONFIG extends RedListGefaes
         String noStr = getValue(record, ID_COL);
 
         //species
-        TaxonBase<?> taxon = makeTaxon(state, line, record, noStr);
+        TaxonBase taxon = makeTaxon(state, line, record, noStr);
 
         getTaxonService().save(taxon);
         saveNameRelations(taxon.getName());
@@ -120,7 +120,7 @@ public class RedListGefaesspflanzenTaxonExcelImport<CONFIG extends RedListGefaes
      * @param noStr
      * @return
      */
-    private TaxonBase<?> makeTaxon(SimpleExcelTaxonImportState<CONFIG> state, String line, Map<String, String> record,
+    private TaxonBase makeTaxon(SimpleExcelTaxonImportState<CONFIG> state, String line, Map<String, String> record,
             String noStr) {
 
 //        TaxonNode familyTaxon = getFamilyTaxon(record, state);
@@ -163,7 +163,7 @@ public class RedListGefaesspflanzenTaxonExcelImport<CONFIG extends RedListGefaes
 
         state.getDeduplicationHelper().replaceAuthorNamesAndNomRef(name);
 
-        TaxonBase<?> taxon;
+        TaxonBase taxon;
         if ("1".equals(synFlag) || isAuct){
             taxon = Taxon.NewInstance(name, getSecReference(state));
         }else if ("b".equals(synFlag)||"x".equals(synFlag)){
@@ -195,7 +195,7 @@ public class RedListGefaesspflanzenTaxonExcelImport<CONFIG extends RedListGefaes
      * @param isAuct
      * @param vollName
      */
-    private void checkVollname(SimpleExcelTaxonImportState<CONFIG> state, TaxonBase<?> taxon, String vollName, String sensuStr, boolean isAuct) {
+    private void checkVollname(SimpleExcelTaxonImportState<CONFIG> state, TaxonBase taxon, String vollName, String sensuStr, boolean isAuct) {
         TaxonName name = taxon.getName();
         String titleCache = (sensuStr == null && !isAuct) ? name.getTitleCache() : taxon.getTitleCache();
         vollName = vollName.replace(" agg.", " aggr.").replace(" (E)", "");

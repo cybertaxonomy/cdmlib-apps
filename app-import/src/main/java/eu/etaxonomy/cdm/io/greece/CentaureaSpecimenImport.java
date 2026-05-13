@@ -136,7 +136,7 @@ public class CentaureaSpecimenImport<CONFIG extends CentaureaSpecimenImportConfi
         try {
 
             //species
-            TaxonBase<?> taxonBase = getTaxon(state, record, line);
+            TaxonBase taxonBase = getTaxon(state, record, line);
             if (taxonBase != null){
                 handleRecordForTaxon(state, line, taxonBase);
             }else {
@@ -206,7 +206,7 @@ public class CentaureaSpecimenImport<CONFIG extends CentaureaSpecimenImportConfi
     }
 
     protected void handleRecordForTaxon(SimpleExcelSpecimenImportState<CONFIG> state,
-            String line, TaxonBase<?> taxonBase) {
+            String line, TaxonBase taxonBase) {
 
         Map<String, String> record = state.getOriginalRecord();
         Taxon taxon = getTaxon(taxonBase);
@@ -247,7 +247,7 @@ public class CentaureaSpecimenImport<CONFIG extends CentaureaSpecimenImportConfi
     }
 
     private DerivedUnit makeSpecimen(SimpleExcelSpecimenImportState<CONFIG> state, String line,
-            Map<String, String> record, TaxonBase<?> taxonBase) {
+            Map<String, String> record, TaxonBase taxonBase) {
 
         String basisOfRecord = getValue(record, COL_BASIS_OF_RECORD);
         if (basisOfRecord != null && !basisOfRecord.trim().equals("PreservedSpecimen")) {
@@ -603,7 +603,7 @@ public class CentaureaSpecimenImport<CONFIG extends CentaureaSpecimenImportConfi
         }
     }
 
-    private Taxon getTaxon(TaxonBase<?> taxonBase) {
+    private Taxon getTaxon(TaxonBase taxonBase) {
         if (taxonBase.isInstanceOf(Synonym.class)){
             return CdmBase.deproxy(taxonBase, Synonym.class).getAcceptedTaxon();
         }else{
@@ -612,7 +612,7 @@ public class CentaureaSpecimenImport<CONFIG extends CentaureaSpecimenImportConfi
     }
 
     @SuppressWarnings("unused")
-    private TaxonBase<?> getTaxonByCdmId(SimpleExcelSpecimenImportState<CONFIG> state, String line,
+    private TaxonBase getTaxonByCdmId(SimpleExcelSpecimenImportState<CONFIG> state, String line,
             Map<String, String> record, String noStr) {
 
         String strUuidTaxon = record.get(COL_TAXON_UUID);
@@ -624,7 +624,7 @@ public class CentaureaSpecimenImport<CONFIG extends CentaureaSpecimenImportConfi
                 state.getResult().addError("Taxon uuid has incorrect format. Taxon could not be loaded. Data not imported.", null, line);
                 return null;
             }
-            TaxonBase<?> result = getTaxonService().find(uuidTaxon);
+            TaxonBase result = getTaxonService().find(uuidTaxon);
             if (result == null){
                 state.getResult().addError("Taxon for uuid  "+strUuidTaxon+" could not be found in database. "
                         + "Taxon could not be loaded. Data not imported.", null, line);

@@ -133,7 +133,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
 
             logMultipleCandidates(row, existingNames, fullNameMatches);
 
-            TaxonBase<?> existingTaxon;
+            TaxonBase existingTaxon;
             if(allFullNameTaxa.size()>1){
                 existingTaxon = findBestMatchingTaxon(allFullNameTaxa, clazz, row);
                 name = existingTaxon.getName();
@@ -201,7 +201,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
 
             handleNomenclRemarkAndNameStatus(nomenclaturalRemarks, row, isNewName, name, statusTypes);
 
-            TaxonBase<?> taxonBase = existingTaxon;
+            TaxonBase taxonBase = existingTaxon;
 
             if (taxonBase == null){
                 if (clazz == Taxon.class){
@@ -248,12 +248,12 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
         return result;
     }
 
-    private TaxonBase<?> findBestMatchingTaxon(@SuppressWarnings("rawtypes") List<TaxonBase> allFullNameTaxa,
+    private TaxonBase findBestMatchingTaxon(@SuppressWarnings("rawtypes") List<TaxonBase> allFullNameTaxa,
             Class<? extends CdmBase> clazz, String row) {
 
-        TaxonBase<?> result = null;
-        TaxonBase<?> otherStatus = null;
-        for (TaxonBase<?> taxonBase : allFullNameTaxa) {
+        TaxonBase result = null;
+        TaxonBase otherStatus = null;
+        for (TaxonBase taxonBase : allFullNameTaxa) {
             if (taxonBase.isInstanceOf(clazz)){
                 if (result != null){
                     logger.warn(row + "More than 1 taxon with matching full name AND matching status exists. This is not further handled. Arbitrary one taken.");
@@ -541,7 +541,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
             }
 
             UUID uuid = taxonMapping.get(sourceId);
-            TaxonBase<?> taxonBase = getTaxonService().find(uuid);
+            TaxonBase taxonBase = getTaxonService().find(uuid);
             if (taxonBase == null){
                 logger.warn(row + "taxonBase not found: " + sourceId);
                 return;
@@ -560,7 +560,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                 logger.info(row + "accID is null");
                 child = CdmBase.deproxy(taxonBase, Taxon.class);
             }else if(hasAccepted){
-                TaxonBase<?> accTaxonBase = getTaxonService().find(accUuid);
+                TaxonBase accTaxonBase = getTaxonService().find(accUuid);
                 if (accTaxonBase == null){
                     logger.warn(row + "acctaxon not found: " + accId + "; " + accName);
                 }else if(!accTaxonBase.isInstanceOf(Taxon.class)){
@@ -658,7 +658,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
 
             if (basionymId != null && false){
                 UUID basionymUuid = taxonMapping.get(basionymId);
-                TaxonBase<?> basionymTaxon = getTaxonService().find(basionymUuid);
+                TaxonBase basionymTaxon = getTaxonService().find(basionymUuid);
                 if (basionymTaxon != null){
                     if (hasSameAcceptedTaxon(taxonBase, basionymTaxon)){
                         if (taxonBase.getName().getBasionym() == null){
@@ -677,7 +677,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
         }
     }
 
-    private boolean hasSameAcceptedTaxon(TaxonBase<?> taxonBase, TaxonBase<?> basionymTaxon) {
+    private boolean hasSameAcceptedTaxon(TaxonBase taxonBase, TaxonBase basionymTaxon) {
         if (taxonBase.isInstanceOf(Synonym.class)){
             taxonBase = CdmBase.deproxy(taxonBase, Synonym.class).getAcceptedTaxon();
         }
@@ -692,7 +692,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
             logger.warn(row + "Parent uuid is null. No parent found.");
             return null;
         }
-        TaxonBase<?> pTaxon = getTaxonService().find(parentUuid);
+        TaxonBase pTaxon = getTaxonService().find(parentUuid);
         if (pTaxon == null){
             logger.warn(row + "No parent found for parent UUID. This should not happen.");
             return null;

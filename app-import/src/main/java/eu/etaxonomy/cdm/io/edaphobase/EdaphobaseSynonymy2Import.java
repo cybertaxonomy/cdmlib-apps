@@ -107,7 +107,7 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
                 if (synId == null || accId == null){
                     logger.warn("Either a_taxon or b_taxon is NULL for tax_synonym " + id);
                 }else{
-                    TaxonBase<?> synonymCandidate = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(synId), TaxonBase.class);
+                    TaxonBase synonymCandidate = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(synId), TaxonBase.class);
                     if (synonymCandidate == null){
                         logger.warn("Synonym " + synId + " not found for synonymRelations (tax_synonym): " + id);
                     }else if (isSynonym && synonymCandidate.isInstanceOf(Taxon.class)){
@@ -139,14 +139,14 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
     }
 
     private void handleConceptRelationship(EdaphobaseImportState state, @SuppressWarnings("rawtypes") Set<TaxonBase> taxaToSave, int id,
-                Integer accId, Integer role, TaxonBase<?> fromTaxonBase) {
+                Integer accId, Integer role, TaxonBase fromTaxonBase) {
 
         if (!role.equals(11613)){
                String message = "Concept relation is not of type is included in ('11613'). This is not expected here. tax_synonym: " + id;
                logger.warn(message);
            }else{
                Taxon fromTaxon = CdmBase.deproxy(fromTaxonBase, Taxon.class);
-               TaxonBase<?> toTaxonBase = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(accId), TaxonBase.class);
+               TaxonBase toTaxonBase = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(accId), TaxonBase.class);
                if (toTaxonBase == null){
                    logger.warn("Accepted(parent) taxon " + accId + " not found for tax_synonym " + id );
                }else if(toTaxonBase.isInstanceOf(Synonym.class)){
@@ -163,7 +163,7 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
     }
 
     private void handleSynonymToInvalid(EdaphobaseImportState state, ResultSet rs, @SuppressWarnings("rawtypes") Set<TaxonBase> taxaToSave, Integer synId,
-            Integer accId, TaxonBase<?> synonymCandidate) throws SQLException {
+            Integer accId, TaxonBase synonymCandidate) throws SQLException {
         Synonym synonym = CdmBase.deproxy(synonymCandidate, Synonym.class);
         if (state.hasAcceptedTaxon(synId)){
             //TODO do some further homotypie checking
@@ -182,7 +182,7 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
                     logger.warn("All unvalid not handled: " + synId);
                 }
             }
-            TaxonBase<?> acceptedC = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(accC), TaxonBase.class);
+            TaxonBase acceptedC = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(accC), TaxonBase.class);
             if (acceptedC == null || acceptedC.isInstanceOf(Synonym.class)){
                 logger.warn("Taxon c does not exist or is not valid taxon.");
             }else{

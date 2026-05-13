@@ -128,7 +128,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
     private IdentifiableEntity<?> makeSourceUse(ErmsImportState state, String srcUseString,
             Reference ref, String strTaxonId, String strPageNr, String strSourceId) {
 
-        TaxonBase<?> taxonBase = (TaxonBase<?>)state.getRelatedObject(ErmsImportBase.TAXON_NAMESPACE, strTaxonId);
+        TaxonBase taxonBase = (TaxonBase<?>)state.getRelatedObject(ErmsImportBase.TAXON_NAMESPACE, strTaxonId);
         if (taxonBase == null){
             logger.warn("TaxonBase " + strTaxonId + " could not be found for source ID " + strSourceId + " and source use " + srcUseString);
         }else{
@@ -157,7 +157,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 //			logger.warn("Source is null");
 //			return null;
 //		}
-//		TaxonBase<?> taxonBase = (TaxonBase<?>)state.getRelatedObject(ErmsImportBase.TAXON_NAMESPACE, strTaxonId);
+//		TaxonBase taxonBase = (TaxonBase<?>)state.getRelatedObject(ErmsImportBase.TAXON_NAMESPACE, strTaxonId);
 //		Taxon taxon;
 //
 //		//if taxon base is a synonym, add the description to the accepted taxon
@@ -190,7 +190,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 //	private IdentifiableEntity<?> makeSourceOfSynonymy(@SuppressWarnings("unused") ResultSetPartitioner<?> partitioner,
 //	        ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 //
-//		TaxonBase<?> taxonBase = (TaxonBase<?>)state.getRelatedObject(ErmsImportBase.TAXON_NAMESPACE, strTaxonId);
+//		TaxonBase taxonBase = (TaxonBase<?>)state.getRelatedObject(ErmsImportBase.TAXON_NAMESPACE, strTaxonId);
 //		if (taxonBase == null){
 //			String warning = "taxonBase (id = " + strTaxonId + ") could not be found ";
 //			logger.warn(warning);

@@ -241,7 +241,7 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
             if (list.size()>1){
                 logger.warn("More than 1 taxon found for media: " + taxonNameStr);
             }
-            TaxonBase<?> taxonBase = list.get(0);
+            TaxonBase taxonBase = list.get(0);
             Taxon result;
             if (taxonBase.isInstanceOf(Synonym.class)){
                 result = CdmBase.deproxy(taxonBase, Synonym.class).getAcceptedTaxon();
