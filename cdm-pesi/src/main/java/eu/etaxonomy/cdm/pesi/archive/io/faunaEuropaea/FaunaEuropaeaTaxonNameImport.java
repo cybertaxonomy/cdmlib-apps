@@ -124,7 +124,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		Map<String, MapWrapper<? extends CdmBase>> stores = state.getStores();
 		MapWrapper<TeamOrPersonBase> authorStore = (MapWrapper<TeamOrPersonBase>)stores.get(ICdmIO.TEAM_STORE);
 
-		Map<Integer, TaxonBase<?>> taxonMap = null;
+		Map<Integer, TaxonBase> taxonMap = null;
 		Map<Integer, FaunaEuropaeaTaxon> fauEuTaxonMap = null;
 		/* Store for heterotypic synonyms to be save separately */
 		Set<Synonym> synonymSet = null;
@@ -188,7 +188,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				if ((i++ % limit) == 0) {
 
 					txStatus = startTransaction();
-					taxonMap = new HashMap<Integer, TaxonBase<?>>(limit);
+					taxonMap = new HashMap<Integer, TaxonBase>(limit);
 					fauEuTaxonMap = new HashMap<Integer, FaunaEuropaeaTaxon>(limit);
 					synonymSet = new HashSet<Synonym>();
 
@@ -492,7 +492,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 	}
 
 	private void commitTaxa(FaunaEuropaeaImportState state,
-			TransactionStatus txStatus, Map<Integer, TaxonBase<?>> taxonMap,
+			TransactionStatus txStatus, Map<Integer, TaxonBase> taxonMap,
 			Map<Integer, FaunaEuropaeaTaxon> fauEuTaxonMap,
 			Set<Synonym> synonymSet) {
 		processTaxaSecondPass(state, taxonMap, fauEuTaxonMap, synonymSet);
@@ -507,7 +507,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 	/**
 	 * Processes taxa from complete taxon store
 	 */
-	private void processTaxaSecondPass(FaunaEuropaeaImportState state, Map<Integer, TaxonBase<?>> taxonMap,
+	private void processTaxaSecondPass(FaunaEuropaeaImportState state, Map<Integer, TaxonBase> taxonMap,
 			Map<Integer, FaunaEuropaeaTaxon> fauEuTaxonMap, Set<Synonym> synonymSet) {
 		if(logger.isDebugEnabled()) { logger.debug("Processing taxa second pass..."); }
 

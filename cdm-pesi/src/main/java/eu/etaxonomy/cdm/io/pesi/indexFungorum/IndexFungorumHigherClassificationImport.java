@@ -233,7 +233,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		try{
 			//taxon map
 			nameSpace = IndexFungorumImportBase.NAMESPACE_SUPRAGENERIC_NAMES ;
-			Map<String, TaxonBase<?>> taxonMap = new HashMap<>();
+			Map<String, TaxonBase> taxonMap = new HashMap<>();
             List<Taxon> list = getCommonService().getHqlResult(
                     "SELECT t FROM Taxon t JOIN t.sources s WHERE s.citation.uuid = ?0",
                     new Object[]{ PesiTransformer.uuidSourceRefIndexFungorum},

@@ -96,7 +96,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
                     continue;
                 }
             }else{
-                TaxonBase<?>[] taxa = null;
+                TaxonBase[] taxa = null;
                 while (taxa == null) {
                     taxa = readTaxa();
                 }
@@ -635,13 +635,13 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         return false;
     }
 
-    private TaxonBase<?>[] readTaxa() {
+    private TaxonBase[] readTaxa() {
         TaxonBase taxon1 = readTaxon("Taxon to be removed");
         TaxonBase taxon2 = readTaxon("Taxon to stay");
         if (taxon1 == null || taxon2 == null){
             return null;
         }else{
-            return new TaxonBase<?>[]{taxon1, taxon2};
+            return new TaxonBase[]{taxon1, taxon2};
         }
     }
 

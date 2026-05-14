@@ -128,7 +128,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
     private IdentifiableEntity<?> makeSourceUse(ErmsImportState state, String srcUseString,
             Reference ref, String strTaxonId, String strPageNr, String strSourceId) {
 
-        TaxonBase taxonBase = (TaxonBase<?>)state.getRelatedObject(ErmsImportBase.TAXON_NAMESPACE, strTaxonId);
+        TaxonBase taxonBase = (TaxonBase)state.getRelatedObject(ErmsImportBase.TAXON_NAMESPACE, strTaxonId);
         if (taxonBase == null){
             logger.warn("TaxonBase " + strTaxonId + " could not be found for source ID " + strSourceId + " and source use " + srcUseString);
         }else{

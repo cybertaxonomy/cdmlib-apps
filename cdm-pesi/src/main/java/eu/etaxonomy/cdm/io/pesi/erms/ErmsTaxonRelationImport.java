@@ -35,7 +35,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * @since 09.03.2010
  */
 @Component
-public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implements ICheckIgnoreMapper{
+public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase> implements ICheckIgnoreMapper{
 
     private static final long serialVersionUID = 4092728796922591257L;
 

@@ -224,7 +224,7 @@ public class PesiTaxonExport extends PesiTaxonExportBase {
         }
 
 		int partitionCount = 0;
-		List<TaxonBase<?>> list;
+		List<TaxonBase> list;
 		List<String> propPath = null;  //do not use property path to avoid memory leak
 		while ((list = getNextTaxonPartition(null, limit, partitionCount++, propPath)) != null   ) {
 

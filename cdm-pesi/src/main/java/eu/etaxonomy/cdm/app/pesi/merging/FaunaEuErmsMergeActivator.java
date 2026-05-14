@@ -97,7 +97,7 @@ public class FaunaEuErmsMergeActivator extends PesiMergeBase{
 		//authors: get firstAuthor if isFauEu = 1 otherwise get secondAuthor
 
 		Iterator<List<String>> authorIterator = authors.iterator();
-		List<TaxonBase<?>> taxaToSave = new ArrayList<>();  //TODO: needed?
+		List<TaxonBase> taxaToSave = new ArrayList<>();  //TODO: needed?
 		while (authorIterator.hasNext()){
 		    List<String> row = authorIterator.next();
 			UUID uuidFaunaEu = UUID.fromString(row.get(faunaEuUuid));

@@ -69,8 +69,8 @@ import eu.etaxonomy.cdm.strategy.cache.name.TaxonNameDefaultCacheStrategy;
  */
 @Component
 public class ErmsTaxonImport
-        extends ErmsImportBase<TaxonBase<?>>
-        implements IMappingImport<TaxonBase<?>, ErmsImportState>{
+        extends ErmsImportBase<TaxonBase>
+        implements IMappingImport<TaxonBase, ErmsImportState>{
 
     private static final long serialVersionUID = -7111568277264140051L;
     private static Logger logger = LogManager.getLogger();
@@ -386,7 +386,7 @@ public class ErmsTaxonImport
 
     @SuppressWarnings("unused")  //used by MethodMapper
     private static TaxonBase appendedPhraseForMisapplications(ResultSet rs, ErmsImportState state) throws SQLException{
-        TaxonBase taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
+        TaxonBase taxon = (TaxonBase)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
         TaxonName taxonName = taxon.getName();
         String unacceptreason = rs.getString("tu_unacceptreason");
         IRelationshipType[] rels = state.getTransformer().getSynonymRelationTypesByKey(unacceptreason, state);
@@ -414,7 +414,7 @@ public class ErmsTaxonImport
 
     @SuppressWarnings("unused")  //used by MethodMapper
     private static TaxonBase testTitleCache(ResultSet rs, ErmsImportState state) throws SQLException{
-        TaxonBase taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
+        TaxonBase taxon = (TaxonBase)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
         TaxonName taxonName = taxon.getName();
         String displayName = rs.getString("tu_displayname");
         displayName = displayName == null ? null : displayName.trim();

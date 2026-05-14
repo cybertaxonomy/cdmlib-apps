@@ -376,8 +376,8 @@ public abstract class PesiExportBase
 	 * @param name
 	 * @return
 	 */
-	protected Set<TaxonBase<?>> getPesiTaxa(TaxonName name){
-		Set<TaxonBase<?>> result = new HashSet<>();
+	protected Set<TaxonBase> getPesiTaxa(TaxonName name){
+		Set<TaxonBase> result = new HashSet<>();
 		for (TaxonBase taxonBase : name.getTaxonBases()){
 			if (isPesiTaxon(taxonBase)){
 				result.add(taxonBase);

@@ -158,7 +158,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 
 			//taxon map
 		    String nameSpace = NAMESPACE_SUPRAGENERIC_NAMES ;
-			Map<String, TaxonBase<?>> taxonMap = new HashMap<>();
+			Map<String, TaxonBase> taxonMap = new HashMap<>();
             List<Taxon> list = getCommonService().getHqlResult(
                       " SELECT t FROM TaxonBase t "
                     + " JOIN t.sources s "
