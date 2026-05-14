@@ -509,7 +509,7 @@ public class CaucasusEuroMedActivator {
 
 	/**
 	  * copied from {@link FirstDataInserter#checkGroup}
-     */
+      */
     private Group checkGroup(IGroupService groupService, UUID groupUuid, String groupName, String[] requiredAuthorities) {
         Group group = groupService.load(groupUuid);
         if(group == null){
