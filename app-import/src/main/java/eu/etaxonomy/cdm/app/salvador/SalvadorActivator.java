@@ -9,7 +9,6 @@
 package eu.etaxonomy.cdm.app.salvador;
 
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -197,28 +196,26 @@ public class SalvadorActivator {
             GrantedAuthorityImpl roleAdmin = app.getGrantedAuthorityService().findAuthorityString(Role.ROLE_ADMIN.getAuthority());
             adminGroup.addGrantedAuthority(roleAdmin);
 
-//            UserDetails wgbDetails = app.getUserService().loadUserByUsername("w.berendsohn");
-            List<User> users = app.getUserService().listByUsername("w.berendsohn", null, null, null, null, null, null);
-            for (User user: users){
+            User user = app.getUserService().loadUserByUsernameAsUser("w.berendsohn");
+            if (user != null){
                 adminGroup.addMember(user);
             }
-            users = app.getUserService().listByUsername("admin", null, null, null, null, null, null);
-            for (User user: users){
+            user = app.getUserService().loadUserByUsernameAsUser("admin");
+            if (user != null){
                 adminGroup.addMember(user);
             }
             app.getGroupService().saveOrUpdate(adminGroup);
 
             //gruber
-            List<Group> editorGroups = app.getGroupService().listByName("Editor", null, null, null, null, null, null);
-            for (Group editorGroup: editorGroups){
-                users = app.getUserService().listByUsername("k.gruber", null, null, null, null, null, null);
-                for (User user: users){
+            Group editorGroup = app.getGroupService().loadByName("Editor");
+            if (editorGroup != null){
+                user = app.getUserService().loadUserByUsernameAsUser("k.gruber");
+                if (user != null){
                     editorGroup.addMember(user);
                 }
             }
             app.commitTransaction(tx);
         }
-
     }
 
 	public static void main(String[] args) {

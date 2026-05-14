@@ -9,7 +9,6 @@
 
 package eu.etaxonomy.cdm.app.berlinModelImport;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,7 +47,6 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 import eu.etaxonomy.cdm.model.term.Representation;
 import eu.etaxonomy.cdm.model.term.TermTree;
 import eu.etaxonomy.cdm.persistence.permission.Role;
-import eu.etaxonomy.cdm.persistence.query.MatchMode;
 
 
 /**
@@ -426,12 +424,12 @@ public class CaucasusEuroMedActivator {
 
                 //eraabstraube
                 String eraabstraube = "e.raabstraube";
-                List<User> users = app.getUserService().listByUsername(eraabstraube, MatchMode.EXACT, null, null, null, null, null);
+                User user = app.getUserService().loadUserByUsernameAsUser(eraabstraube);
                 User userEraabStraube;
-                if (users.isEmpty()){
+                if (user == null){
                     userEraabStraube = User.NewInstance(eraabstraube, eraabstraube);
                 }else{
-                    userEraabStraube = users.get(0);
+                    userEraabStraube = user;
                 }
                 if (userEraabStraube.getPerson() == null){
                     Person eckhard = Person.NewInstance();
@@ -464,12 +462,12 @@ public class CaucasusEuroMedActivator {
 
                 //cichorieae-editor
                 String cichorieaeEditor = "cichorieae-editor";
-                app.getUserService().listByUsername(cichorieaeEditor, MatchMode.EXACT, null, null, null, null, null);
+                user = app.getUserService().loadUserByUsernameAsUser(cichorieaeEditor);
                 User userCichEditor;
-                if (users.isEmpty()){
+                if (user == null){
                     userCichEditor = User.NewInstance(cichorieaeEditor, cichorieaeEditor);
                 }else{
-                    userCichEditor = users.get(0);
+                    userCichEditor = user;
                 }
                 app.getUserService().saveOrUpdate(userCichEditor);
 

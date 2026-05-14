@@ -148,7 +148,7 @@ public class DipteraPostImportUpdater {
 	}
 
 	private TaxonName getScientificName(String originalNameString, INameService nameService) {
-		Pager<TaxonName> names = nameService.findByName(null, originalNameString, null, null, null, null, null, null);
+		Pager<TaxonName> names = nameService.findByName(null, originalNameString, null, null, null, null, null);
 		if (names.getCount() != 1){
 			return null;
 		}else{
