@@ -18,23 +18,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
-import eu.etaxonomy.cdm.model.agent.Contact;
 import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.permission.User;
-import eu.etaxonomy.cdm.model.reference.OriginalSourceBase;
 
 
 /**
@@ -89,9 +85,9 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 		Map<String, Person> persons = null;
 		Map<String, User> users= null;
 
-		Map<Integer, UUID> userUuids = new HashMap<Integer, UUID>();
-		Map<Integer, Institution> institiutions= new HashMap<Integer, Institution>();
-		Collection<Institution> institutionsToSave = new HashSet<Institution>();
+		Map<Integer, UUID> userUuids = new HashMap<>();
+		Map<Integer, Institution> institiutions= new HashMap<>();
+		Collection<Institution> institutionsToSave = new HashSet<>();
 		int limit = state.getConfig().getLimitSave();
 		//this.authenticate("admin", "00000");
 
@@ -165,8 +161,8 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 				if ((i++ % limit) == 0) {
 
 					txStatus = startTransaction();
-					persons= new HashMap<String,Person>(limit);
-					users = new HashMap<String,User>(limit);
+					persons= new HashMap<>(limit);
+					users = new HashMap<>(limit);
 
 
 					if(logger.isInfoEnabled()) {
@@ -174,33 +170,13 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 					}
 				}
 
-				Person person = null;
-				User user = null;
+				Person person= Person.NewTitledInstance(userPerson);
 
-				person= Person.NewTitledInstance(userPerson);
-
-				person.addEmailAddress(userMail);
-				try{
-				    if (!StringUtils.isBlank(userHomepage)){
-				        person.addUrl(URI.create(userHomepage));
-				    }
-				}catch(IllegalArgumentException e){
-				    logger.debug(e.getMessage());
-				}
 				if (institutionId != 1){//1 = private
 				    Institution institution ;
 				    if (!institiutions.containsKey(institutionId)){
 				        institution = Institution.NewInstance();
 				        institution.setName(orgName);
-				        Contact contact = Contact.NewInstance();
-	                    try{
-	                        if (!StringUtils.isBlank(orgHomepage)){
-	                            contact.addUrl(URI.create(orgHomepage));
-	                        }
-	                    }catch(IllegalArgumentException e){
-	                        logger.debug(e.getMessage());
-	                    }
-	                    institution.setContact(contact);
 	                    institutionsToSave.add(institution);
 				    } else {
 				        institution = institiutions.get(institutionId);
@@ -209,7 +185,7 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 
     				person.addInstitutionalMembership(institution, null, null, null);
 				}
-				user = User.NewInstance(userPerson, userPwd);
+				User user = User.NewInstance(userPerson, userPwd);
 				user.setPerson(person);
 				if (userActive == FaunaEuropaeaTransformer.U_ACTIVE){
 				    user.setAccountNonLocked(false);
@@ -218,9 +194,6 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 				}
 
 				if (!persons.containsKey(userPerson)) {
-					if (userPerson == null) {
-						logger.warn("User is null");
-					}
 
 					persons.put(userPerson, person);
 					if (logger.isTraceEnabled()) {
@@ -250,9 +223,6 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 				// Store persons
 				if (!users.containsKey(userPerson.toLowerCase())) {
 
-					if (user == null) {
-						logger.warn("User is null");
-					}
 					users.put(userPerson.toLowerCase(), user);
 					if (logger.isTraceEnabled()) {
 						logger.trace("Stored user (" + userPerson + ")");
@@ -307,8 +277,8 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 
 		Iterator<Entry<UUID, AgentBase>> it = userMap.entrySet().iterator();
 		while (it.hasNext()){
-			AgentBase person = it.next().getValue();
-			int userID = Integer.valueOf(((OriginalSourceBase)person.getSources().iterator().next()).getIdInSource());
+			AgentBase<?> person = it.next().getValue();
+			int userID = Integer.valueOf(person.getSources().iterator().next().getIdInSource());
 			UUID uuid = person.getUuid();
 			agentsUUID.put(userID, uuid);
 		}

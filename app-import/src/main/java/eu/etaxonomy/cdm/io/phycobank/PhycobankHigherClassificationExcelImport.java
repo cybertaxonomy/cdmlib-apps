@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.api.filter.MatchMode;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -30,7 +31,6 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
-import eu.etaxonomy.cdm.persistence.query.MatchMode;
 
 /**
  * @author a.mueller
@@ -215,14 +215,6 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
         }
     }
 
-
-    /**
-     * @param state
-     * @param uninomial
-     * @param rank
-     * @param sec
-     * @return
-     */
     protected Taxon getOrMakeTaxon(SimpleExcelTaxonImportState<CONFIG> state,
             RankedUninomial rankedUninomial, String line) {
 

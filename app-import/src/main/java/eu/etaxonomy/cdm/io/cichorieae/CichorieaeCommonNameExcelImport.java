@@ -18,7 +18,6 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.criterion.Criterion;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -171,7 +170,6 @@ public class CichorieaeCommonNameExcelImport
 	private NamedArea getArea(CichorieaeCommonNameImportState state, String area) {
 		NamedArea result;
 		List<OrderHint> orderHints = null;
-		List<Criterion> criteria = null;
 		result = areaStore.get(area);
 
 		if (result == null){
@@ -181,9 +179,9 @@ public class CichorieaeCommonNameExcelImport
 				e.printStackTrace();
 			}
 			if (result == null){
-				List<? extends NamedArea> candidates = getTermService().findByTitle(Country.class, area, null, criteria, null, null, orderHints, null).getRecords();
+				List<? extends NamedArea> candidates = getTermService().findByTitle(Country.class, area, null, null, null, orderHints, null).getRecords();
 				if (candidates.size() == 0){
-					candidates = getTermService().findByTitle(NamedArea.class, area, null, criteria, null, null, orderHints, null).getRecords();
+					candidates = getTermService().findByTitle(NamedArea.class, area, null, null, null, orderHints, null).getRecords();
 				}
 				if (candidates.size()>0){
 					//TODO

@@ -43,9 +43,6 @@ public abstract class AbstractImageImporter
 	protected IReferenceService referenceService;
 	protected ICommonService commonService;
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, java.util.Map)
-	 */
 	@Override
 	public void doInvoke(ImageImportState state) {
 		//cdmApp = config.getCdmAppController();
