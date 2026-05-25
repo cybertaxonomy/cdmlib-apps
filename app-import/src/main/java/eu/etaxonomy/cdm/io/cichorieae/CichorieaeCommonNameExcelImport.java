@@ -179,9 +179,10 @@ public class CichorieaeCommonNameExcelImport
 				e.printStackTrace();
 			}
 			if (result == null){
-				List<? extends NamedArea> candidates = getTermService().findByTitle(Country.class, area, null, null, null, orderHints, null).getRecords();
+				List<? extends NamedArea> candidates = getTermService().findByTitle(
+				        Country.class, area, null, null, null, null, orderHints, null).getRecords();
 				if (candidates.size() == 0){
-					candidates = getTermService().findByTitle(NamedArea.class, area, null, null, null, orderHints, null).getRecords();
+					candidates = getTermService().findByTitle(NamedArea.class, area, null, null, null, null, orderHints, null).getRecords();
 				}
 				if (candidates.size()>0){
 					//TODO
