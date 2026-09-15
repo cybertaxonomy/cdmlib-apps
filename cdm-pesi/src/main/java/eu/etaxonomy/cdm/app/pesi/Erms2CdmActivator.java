@@ -19,7 +19,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.filter.TaxonNodeFilter.ORDER;
+import eu.etaxonomy.cdm.filter.TaxonNodeFilter.TaxonNodeFilterSortMode;
 import eu.etaxonomy.cdm.io.cdm2cdm.Cdm2CdmImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
@@ -80,7 +80,7 @@ public class Erms2CdmActivator {
 
         config.setDbSchemaValidation(hbm2dll);
         config.getTaxonNodeFilter().orSubtree(uuidTaxonNodeFilter);
-        config.getTaxonNodeFilter().setOrder(ORDER.TREEINDEX);
+        config.getTaxonNodeFilter().setSortMode(TaxonNodeFilterSortMode.TREEINDEX);
 
         config.setCheck(check);
 //        config.setRecordsPerTransaction(partitionSize);
